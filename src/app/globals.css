@@ -28,5 +28,10 @@ body {
 
 /* Apply padding individually to each page + section */
 .section-padding {
-  @apply px-2 md:px-4 lg:px-8;
+  @apply px-2 md:px-6 lg:px-8;
+}
+
+/* --- Animation Styling --- */
+.translate-y {
+  @apply transition-all duration-300 hover:-translate-y-1;
 }
