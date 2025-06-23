@@ -16,16 +16,16 @@ function Header() {
 
       <div>
         <ul className="flex items-center justify-between gap-x-6">
-          <li>
+          <li className="font-semibold transition-all duration-300 hover:-translate-y-1">
             <a href="#">Juma&apos;ah</a>
           </li>
-          <li>
+          <li className="font-semibold transition-all duration-300 hover:-translate-y-1">
             <a href="#">Co-Foundr Matching</a>
           </li>
-          <li>
+          <li className="font-semibold transition-all duration-300 hover:-translate-y-1">
             <a href="#">Startup Jobs</a>
           </li>
-          <li>
+          <li className="font-semibold transition-all duration-300 hover:-translate-y-1">
             <a href="#">Mission</a>
           </li>
 
