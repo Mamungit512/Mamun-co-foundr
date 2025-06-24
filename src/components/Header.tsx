@@ -1,10 +1,11 @@
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { IoIosArrowDown } from "react-icons/io";
 
 function Header() {
   return (
-    <div className="section-padding flex items-center justify-between bg-(--yellow)">
+    <header className="section-padding flex items-center justify-between bg-(--yellow)">
       <a href="#">
         <Image
           src="/img/Mamun Logo.png"
@@ -29,15 +30,29 @@ function Header() {
             <a href="#">Mission</a>
           </li>
 
-          <li>
-            <button className="flex cursor-pointer items-center gap-x-2">
-              <FaRegCircleUser className="size-8" />
-              <IoIosArrowDown />
-            </button>
-          </li>
+          <SignedIn>
+            <li>
+              <UserButton
+                appearance={{
+                  elements: {
+                    userButtonAvatarBox: { width: "48px", height: "48px" },
+                  },
+                }}
+              />
+            </li>
+          </SignedIn>
+
+          <SignedOut>
+            <li>
+              <button className="flex cursor-pointer items-center gap-x-2">
+                <FaRegCircleUser className="size-8" />
+                <IoIosArrowDown />
+              </button>
+            </li>
+          </SignedOut>
         </ul>
       </div>
-    </div>
+    </header>
   );
 }
 

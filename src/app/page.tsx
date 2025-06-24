@@ -1,3 +1,6 @@
+"use client";
+
+import { SignInButton } from "@clerk/nextjs";
 import Image from "next/image";
 import React from "react";
 import { MdKeyboardArrowRight } from "react-icons/md";
@@ -10,7 +13,7 @@ Page the user first sees when navigating to the root url of the site
 
 function page() {
   return (
-    <div className="flex flex-col items-center justify-center px-40 pt-20 pb-40 text-center">
+    <section className="flex flex-col items-center justify-center px-40 pt-20 pb-40 text-center">
       <div className="mb-10">
         <h1 className="text-7xl">MAMUN</h1>
         <p className="text-4xl">Muslim Co-Foundr Matching</p>
@@ -59,14 +62,16 @@ function page() {
 
         <div className="relative mt-6">
           <div className="absolute left-20">
-            <div className="flex items-center rounded-md bg-(--yellow-secondary) px-5 py-3 text-nowrap">
-              <div className="flex items-center">
-                <a href="" className="font-semibold">
-                  Login to Co-foundr Matching
-                </a>
-                <MdKeyboardArrowRight className="size-7" />
-              </div>
-            </div>
+            <SignInButton>
+              <button className="cursor-pointer">
+                <div className="translate-y flex cursor-pointer items-center rounded-md bg-(--yellow-secondary) px-5 py-3 font-semibold text-nowrap">
+                  <p>Login to Co-foundr Matching</p>
+                  <div className="flex items-center">
+                    <MdKeyboardArrowRight className="size-7" />
+                  </div>
+                </div>
+              </button>
+            </SignInButton>
 
             <p className="mt-4 line-clamp-2 text-sm">
               (Actual founders who found their co-founders on Mamun)
@@ -74,7 +79,7 @@ function page() {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
