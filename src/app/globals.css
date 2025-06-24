@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+:root {
+  --background-grey: #e8e6e6;
+  --yellow: #e8ee16;
+  --yellow-secondary: #fff86b;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Apply padding individually to each page + section */
+.section-padding {
+  @apply px-2 md:px-6 lg:px-8;
+}
+
+/* --- Animation Styling --- */
+.translate-y {
+  @apply transition-all duration-300 hover:-translate-y-1;
+}
