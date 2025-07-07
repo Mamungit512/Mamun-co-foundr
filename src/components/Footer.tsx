@@ -3,7 +3,7 @@ import React from "react";
 
 function Footer() {
   return (
-    <footer className="flex w-full items-center justify-center gap-x-4 bg-(--yellow) pt-16 pb-30">
+    <footer className="flex w-full items-center justify-center gap-x-4 bg-(--charcoal-black) pt-16 pb-30 text-(--mist-white)">
       <a
         href=""
         className="translate-y hover:underline hover:underline-offset-4"

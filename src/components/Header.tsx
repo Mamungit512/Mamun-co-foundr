@@ -5,7 +5,7 @@ import { IoIosArrowDown } from "react-icons/io";
 
 function Header() {
   return (
-    <header className="section-padding flex items-center justify-between bg-(--yellow)">
+    <header className="section-padding flex items-center justify-between bg-(--charcoal-black) text-(--mist-white)">
       <a href="#">
         <Image
           src="/img/Mamun Logo.png"
