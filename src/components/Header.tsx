@@ -1,7 +1,5 @@
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
-import { FaRegCircleUser } from "react-icons/fa6";
-import { IoIosArrowDown } from "react-icons/io";
 
 function Header() {
   return (
@@ -45,8 +43,11 @@ function Header() {
           <SignedOut>
             <li>
               <button className="flex cursor-pointer items-center gap-x-2">
-                <FaRegCircleUser className="size-8" />
-                <IoIosArrowDown />
+                <SignInButton>
+                  <button className="rounded-md bg-(--mist-white) px-4 py-2 font-semibold text-(--charcoal-black)">
+                    Login
+                  </button>
+                </SignInButton>
               </button>
             </li>
           </SignedOut>
