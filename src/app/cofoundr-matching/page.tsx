@@ -12,14 +12,45 @@ function CofoundrMatching() {
         Muslim Co-Foundr Matching
       </h1>
 
-      <div className="mx-auto flex w-5/6 flex-col justify-center gap-x-12 rounded-2xl border-2 bg-(--mist-white) px-12 py-20 lg:flex-row xl:w-3/4">
-        <div className="object-fit relative mx-auto mb-10 aspect-[3/4] max-h-96 w-full max-w-72 flex-none lg:mb-0 lg:w-72">
-          <Image
-            src="/img/bilal-hayat.png"
-            alt="Bilal Hayat Profile"
-            fill
-            className="rounded-t-full object-cover"
-          />
+      <div className="mx-auto flex w-5/6 flex-col justify-center gap-x-24 rounded-2xl border-2 bg-(--mist-white) px-12 py-20 lg:flex-row xl:w-3/4 xl:gap-x-20">
+        {/* Striped Arch Overlay */}
+        <div className="relative mx-auto mb-10 aspect-[3/4] max-h-96 w-full max-w-72 flex-none overflow-visible">
+          <svg
+            viewBox="0 0 100 55"
+            preserveAspectRatio="none"
+            className="pointer-events-none absolute top-0 left-1/2 h-48 w-[130%] -translate-x-1/2 -translate-y-12"
+          >
+            <defs>
+              <pattern
+                id="stripes"
+                width="10"
+                height="10"
+                patternUnits="userSpaceOnUse"
+              >
+                <rect width="5" height="12" fill="#9B5753" />
+                <rect x="5" width="5" height="12" fill="#D7CFCE" />
+              </pattern>
+            </defs>
+
+            {/* Half-oval filled with stripes */}
+            <ellipse
+              cx="50" /* Center horizontally */
+              cy="55" /* Position near bottom of viewBox */
+              rx="50" /* Radius wider than viewBox to overflow */
+              ry="55" /* Radius tall enough to form half-oval */
+              fill="url(#stripes)"
+            />
+          </svg>
+
+          <div className="relative aspect-[3/4] max-h-96 w-full max-w-72 overflow-hidden">
+            {/* Image */}
+            <Image
+              src="/img/bilal-hayat.png"
+              alt="Bilal Hayat Profile"
+              fill
+              className="rounded-t-full object-cover"
+            />
+          </div>
         </div>
 
         <div>
