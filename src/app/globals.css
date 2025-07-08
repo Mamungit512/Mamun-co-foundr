@@ -1,8 +1,21 @@
 @import "tailwindcss";
 
 :root {
+  /* - colors - */
   --mist-white: #fafaf9;
   --charcoal-black: #1c1c1c;
+
+  /* - font size - */
+  --heading-1: 17.942rem;
+  --heading-2: 11.089rem;
+  --heading-3: 6.854rem;
+  --heading-4: 4.236rem;
+  --heading-4-weight: 700;
+  --heading-5: 2.618rem;
+  --heading-5-weight: 700;
+  --heading-6: 1.618rem;
+  --heading-6-weight: 700;
+  --body: 1rem;
 }
 
 body {
@@ -19,4 +32,25 @@ body {
 /* --- Animation Styling --- */
 .translate-y {
   @apply transition-all duration-300 hover:-translate-y-1;
+}
+
+/* --- Heading Sizes --- */
+@utility heading-3 {
+  font-size: var(--heading-3);
+  font-weight: var(--heading-3-weight);
+}
+
+@utility heading-4 {
+  font-size: var(--heading-4);
+  font-weight: var(--heading-4-weight);
+}
+
+@utility heading-5 {
+  font-size: var(--heading-5);
+  font-weight: var(--heading-5-weight);
+}
+
+@utility heading-6 {
+  font-size: var(--heading-6);
+  font-weight: var(--heading-6-weight);
 }

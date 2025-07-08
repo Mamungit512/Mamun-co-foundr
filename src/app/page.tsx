@@ -13,14 +13,14 @@ Page the user first sees when navigating to the root url of the site
 
 function page() {
   return (
-    <section className="flex flex-col items-center justify-center bg-(--charcoal-black) px-40 pt-20 pb-40 text-center text-(--mist-white)">
-      <div className="mb-10">
-        <h1 className="text-7xl">MAMUN</h1>
-        <p className="text-4xl">Muslim Co-Foundr Matching</p>
+    <section className="flex flex-col items-center justify-center bg-(--charcoal-black) px-40 pt-12 pb-40 text-center text-(--mist-white)">
+      <div className="mb-8">
+        <h1 className="heading-4 font-bold">MAMUN</h1>
+        <p className="heading-5">Muslim Co-Foundr Matching</p>
       </div>
 
       <div className="flex flex-col items-center">
-        <p className="mb-8 px-1 text-2xl font-bold">
+        <p className="heading-6 mb-8 px-1 font-semibold">
           <b>
             <i>Where Muslim founders find each other</i>
           </b>
