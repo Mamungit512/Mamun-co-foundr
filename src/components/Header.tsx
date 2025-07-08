@@ -1,17 +1,18 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
+import Link from "next/link";
 
 function Header() {
   return (
     <header className="section-padding flex items-center justify-between bg-(--charcoal-black) text-(--mist-white)">
-      <a href="#">
+      <Link href="/">
         <Image
           src="/img/Mamun Logo.png"
           width={130}
           height={100}
           alt="Mamun Logo. Circle with a line through it next to Mamun in all capital letters"
         />
-      </a>
+      </Link>
 
       <div>
         <ul className="flex items-center justify-between gap-x-6">
@@ -19,7 +20,7 @@ function Header() {
             <a href="#">Juma&apos;ah</a>
           </li>
           <li className="translate-y font-semibold">
-            <a href="#">Co-Foundr Matching</a>
+            <a href="/cofoundr-matching">Co-Foundr Matching</a>
           </li>
           <li className="translate-y font-semibold">
             <a href="#">Startup Jobs</a>

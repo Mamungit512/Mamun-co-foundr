@@ -13,20 +13,20 @@ Page the user first sees when navigating to the root url of the site
 
 function page() {
   return (
-    <section className="flex flex-col items-center justify-center bg-(--charcoal-black) px-40 pt-20 pb-40 text-center text-(--mist-white)">
-      <div className="mb-10">
-        <h1 className="text-7xl">MAMUN</h1>
-        <p className="text-4xl">Muslim Co-Foundr Matching</p>
+    <section className="flex flex-col items-center justify-center bg-(--charcoal-black) px-40 pt-12 pb-40 text-center text-(--mist-white)">
+      <div className="mb-8">
+        <h1 className="heading-4 font-bold">MAMUN</h1>
+        <p className="heading-6 lg:heading-5">Muslim Co-Foundr Matching</p>
       </div>
 
       <div className="flex flex-col items-center">
-        <p className="mb-8 px-1 text-2xl font-bold">
+        <p className="lg:heading-6 mb-8 px-1 font-semibold">
           <b>
             <i>Where Muslim founders find each other</i>
           </b>
         </p>
 
-        <div className="relative grid w-96 grid-cols-2">
+        <div className="relative grid w-56 grid-cols-2 sm:w-72 md:w-96">
           <Image
             className="ml-3 aspect-square rounded-full object-cover"
             src="/img/woman-profile.png"
@@ -61,10 +61,10 @@ function page() {
         </div>
 
         <div className="relative mt-6">
-          <div className="absolute left-20">
+          <div className="md:absolute md:left-20">
             <SignInButton>
               <button className="cursor-pointer">
-                <div className="translate-y flex cursor-pointer items-center rounded-md bg-(--mist-white) px-5 py-3 font-semibold text-nowrap text-(--charcoal-black)">
+                <div className="translate-y flex cursor-pointer items-center rounded-md bg-(--mist-white) px-4 py-2 font-semibold text-nowrap text-(--charcoal-black) md:px-5 md:py-3">
                   <p>Login to Co-foundr Matching</p>
                   <div className="flex items-center">
                     <MdKeyboardArrowRight className="size-7" />
