@@ -12,8 +12,8 @@ function CofoundrMatching() {
         Muslim Co-Foundr Matching
       </h1>
 
-      <div className="mx-auto flex w-3/4 justify-center gap-x-12 rounded-2xl border-2 bg-(--mist-white) px-12 py-20">
-        <div className="object-fit relative aspect-[3/4] w-72">
+      <div className="mx-auto flex w-5/6 flex-col justify-center gap-x-12 rounded-2xl border-2 bg-(--mist-white) px-12 py-20 lg:flex-row xl:w-3/4">
+        <div className="object-fit relative mx-auto mb-10 aspect-[3/4] max-h-96 w-full max-w-72 flex-none lg:mb-0 lg:w-72">
           <Image
             src="/img/bilal-hayat.png"
             alt="Bilal Hayat Profile"
