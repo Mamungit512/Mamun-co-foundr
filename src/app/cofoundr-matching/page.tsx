@@ -2,13 +2,14 @@ import BatteryLevel from "@/components/BatteryLevel";
 import StripedArch from "@/components/StripedArch";
 import Image from "next/image";
 import React from "react";
+import { CiCircleInfo } from "react-icons/ci";
 import { FaLocationDot, FaStar } from "react-icons/fa6";
 import { ImCross } from "react-icons/im";
 import { TbMessageCircleFilled } from "react-icons/tb";
 
 function CofoundrMatching() {
   return (
-    <section className="section-padding bg-(--charcoal-black) pt-8 pb-20">
+    <section className="section-padding flex flex-col items-center bg-(--charcoal-black) pt-8 pb-20">
       <h1 className="heading-4 mb-10 text-(--mist-white)">
         Muslim Co-Foundr Matching
       </h1>
@@ -30,18 +31,40 @@ function CofoundrMatching() {
         </div>
 
         <div>
-          <div className="flex items-center justify-between">
+          <div className="mb-2 flex items-center justify-between">
             <h2 className="heading-5">Bilal Hayat</h2>
-            <div>
+            <div className="flex items-center">
               <BatteryLevel level={80} />
+              <button
+                className="ml-3 cursor-pointer"
+                title="Founder Battery Level"
+              >
+                <CiCircleInfo />
+              </button>
             </div>
           </div>
 
-          <h3 className="heading-6 mb-2 text-gray-700">Marketing Specialist</h3>
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="heading-6">Marketing Specialist</h3>
+
+            <div className="flex items-center gap-x-1 text-sm">
+              <p className="text-gray-700">
+                <b>COS:</b>
+              </p>
+              <p className="text-gray-700"> 70%</p>
+
+              <button
+                className="ml-3 cursor-pointer text-base"
+                title="Current Occupation Satisfaction"
+              >
+                <CiCircleInfo />
+              </button>
+            </div>
+          </div>
 
           <div className="mb-4 flex items-center">
             <FaLocationDot className="mr-2" />
-            <p>Brussels, Belgium</p>
+            <p>Brussels, Belgium 🇧🇪</p>
           </div>
 
           <div className="mb-2">
