@@ -1,5 +1,6 @@
 "use client";
 
+import FAQ from "@/components/home/faq";
 import { SignInButton } from "@clerk/nextjs";
 import Image from "next/image";
 import React from "react";
@@ -122,6 +123,9 @@ function page() {
           </p>
         </div>
       </section>
+
+      {/* -- FAQ -- */}
+      <FAQ />
     </main>
   );
 }
