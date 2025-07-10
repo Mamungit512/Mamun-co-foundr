@@ -1,7 +1,9 @@
-import React from "react";
-import { FaMinus } from "react-icons/fa6";
+import { useState } from "react";
+import { FaMinus, FaPlus } from "react-icons/fa6";
 
 function FAQ() {
+  const [openFaqId, setOpenFaqId] = useState<number | null>(null);
+
   const faqList = [
     {
       id: 1,
@@ -71,26 +73,40 @@ function FAQ() {
         "Yes, you can specify your interest in Sharia-compliant ventures in your profile and  preferences. Mamun might also explore integrating with Islamic financial institutions in  the future to facilitate access to Sharia-compliant funding.",
     },
   ];
-  return (
-    <section className="mt-50">
-      <h2 className="heading-5 mb-10">Frequently Asked Questions</h2>
-      {faqList.map((faq) => (
-        <div
-          key={faq.id + "-" + faq.question.substring(0, 4)}
-          className="mb-14"
-        >
-          <div className="flex items-center justify-between">
-            <p className="text-xl">{faq.question}</p>
-            <button className="cursor-pointer">
-              <FaMinus />
-            </button>
-          </div>
 
-          <div className="mt-10 text-left">
-            <p>{faq.answer}</p>
+  return (
+    <section className="mt-50 w-full">
+      <h2 className="heading-5 mb-10">Frequently Asked Questions</h2>
+      <hr className="mb-10 border-gray-400" />
+      {faqList.map((faq) => {
+        const isOpen = openFaqId === faq.id;
+        return (
+          <div
+            key={faq.id + "-" + faq.question.substring(0, 4)}
+            className="mb-10"
+          >
+            {/* - Question - */}
+            <div className="flex items-center justify-between">
+              <p className="text-xl font-semibold">{faq.question}</p>
+              <button
+                className="cursor-pointer"
+                onClick={() => setOpenFaqId(isOpen ? null : faq.id)}
+              >
+                {isOpen ? <FaMinus /> : <FaPlus />}
+              </button>
+            </div>
+
+            {/* - Answer - */}
+            {isOpen && (
+              <div className="mt-6 text-left">
+                <p>{faq.answer}</p>
+              </div>
+            )}
+
+            <hr className="mt-10 border-gray-400" />
           </div>
-        </div>
-      ))}
+        );
+      })}
     </section>
   );
 }
