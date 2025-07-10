@@ -25,7 +25,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={`${satoshi.className} bg-(--charcoal-black) antialiased`}
+          className={`${satoshi.className} scroll-smooth bg-(--charcoal-black) antialiased lg:text-lg`}
         >
           <Header />
           {children}

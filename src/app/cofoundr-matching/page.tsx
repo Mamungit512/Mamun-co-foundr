@@ -1,80 +1,115 @@
-import BatteryLevel from "@/components/BatteryLevel";
+import ReactLenis from "lenis/react";
 import Image from "next/image";
 import React from "react";
+import { CiCircleInfo } from "react-icons/ci";
 import { FaLocationDot, FaStar } from "react-icons/fa6";
 import { ImCross } from "react-icons/im";
 import { TbMessageCircleFilled } from "react-icons/tb";
 
+import BatteryLevel from "@/components/BatteryLevel";
+import StripedArch from "@/components/StripedArch";
+
 function CofoundrMatching() {
   return (
-    <section className="section-padding bg-(--charcoal-black) pt-8 pb-20">
-      <h1 className="heading-4 mb-10 text-(--mist-white)">
-        Muslim Co-Foundr Matching
-      </h1>
+    <ReactLenis root>
+      <section className="section-padding flex flex-col items-center bg-(--charcoal-black) pt-8 pb-20">
+        <h1 className="heading-4 mb-10 text-(--mist-white)">
+          Muslim Co-Foundr Matching
+        </h1>
 
-      <div className="mx-auto flex w-5/6 flex-col justify-center gap-x-12 rounded-2xl border-2 bg-(--mist-white) px-12 py-20 lg:flex-row xl:w-3/4">
-        <div className="object-fit relative mx-auto mb-10 aspect-[3/4] max-h-96 w-full max-w-72 flex-none lg:mb-0 lg:w-72">
-          <Image
-            src="/img/bilal-hayat.png"
-            alt="Bilal Hayat Profile"
-            fill
-            className="rounded-t-full object-cover"
-          />
-        </div>
+        <div className="mx-auto flex w-5/6 flex-col justify-center gap-x-24 rounded-2xl border-2 bg-(--mist-white) px-12 py-20 lg:flex-row xl:w-3/4 xl:gap-x-20">
+          {/* Striped Arch Overlay */}
+          <div className="relative mx-auto mb-10 aspect-[3/4] max-h-96 w-full max-w-72 flex-none overflow-visible">
+            <StripedArch />
 
-        <div>
-          <div className="flex items-center justify-between">
-            <h2 className="heading-5">Bilal Hayat</h2>
-            <div>
-              <BatteryLevel level={80} />
+            <div className="relative aspect-[3/4] max-h-96 w-full max-w-72 overflow-hidden">
+              {/* Image */}
+              <Image
+                src="/img/bilal-hayat.png"
+                alt="Bilal Hayat Profile"
+                fill
+                className="rounded-t-full object-cover"
+              />
             </div>
           </div>
 
-          <h3 className="heading-6 mb-2 text-gray-700">Marketing Specialist</h3>
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <h2 className="heading-5">Bilal Hayat</h2>
+              <div className="flex items-center">
+                <BatteryLevel level={80} />
+                <button
+                  className="ml-3 cursor-pointer"
+                  title="Founder Battery Level"
+                >
+                  <CiCircleInfo />
+                </button>
+              </div>
+            </div>
 
-          <div className="mb-4 flex items-center">
-            <FaLocationDot className="mr-2" />
-            <p>Brussels, Belgium</p>
-          </div>
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="heading-6">Marketing Specialist</h3>
 
-          <div className="mb-2">
-            <p className="heading-6 font-bold">Bio:</p>
-            <p></p>
-          </div>
+              <div className="flex items-center gap-x-1 text-sm">
+                <p className="text-gray-700">
+                  <b>COS:</b>
+                </p>
+                <p className="text-gray-700"> 70%</p>
 
-          <p className="heading-6 font-bold">Accomplishments:</p>
-          <ul className="flex flex-col gap-y-1">
-            <li>
-              Built Appetas, an instant website builder for SMBs. Acquired by
-              Google in 2014.
-            </li>
+                <button
+                  className="ml-3 cursor-pointer text-base"
+                  title="Current Occupation Satisfaction"
+                >
+                  <CiCircleInfo />
+                </button>
+              </div>
+            </div>
 
-            <li>
-              Youngest engineer to be promoted to E7 (Senior Staff) at DoorDash.
-            </li>
+            <div className="mb-4 flex items-center">
+              <FaLocationDot className="mr-2" />
+              <p>Brussels, Belgium 🇧🇪</p>
+            </div>
 
-            <li>
-              Scored a perfect 180 (99.99 percentile) on my LSAT and was on law
-              review at Harvard Law School.
-            </li>
-          </ul>
+            <div className="mb-2">
+              <p className="heading-6 font-bold">Bio:</p>
+              <p></p>
+            </div>
 
-          <div className="mt-10 flex items-center justify-center gap-x-10">
-            <button className="cursor-pointer">
-              <ImCross className="size-5 text-red-500" />
-            </button>
+            <p className="heading-6 font-bold">Accomplishments:</p>
+            <ul className="flex flex-col gap-y-1">
+              <li>
+                Built Appetas, an instant website builder for SMBs. Acquired by
+                Google in 2014.
+              </li>
 
-            <button className="cursor-pointer">
-              <FaStar className="size-7 text-gray-500" />
-            </button>
+              <li>
+                Youngest engineer to be promoted to E7 (Senior Staff) at
+                DoorDash.
+              </li>
 
-            <button className="cursor-pointer">
-              <TbMessageCircleFilled className="size-7 text-blue-500" />
-            </button>
+              <li>
+                Scored a perfect 180 (99.99 percentile) on my LSAT and was on
+                law review at Harvard Law School.
+              </li>
+            </ul>
+
+            <div className="mt-10 flex items-center justify-center gap-x-10">
+              <button className="cursor-pointer">
+                <ImCross className="size-5 text-red-500" />
+              </button>
+
+              <button className="cursor-pointer">
+                <FaStar className="size-7 text-gray-500" />
+              </button>
+
+              <button className="cursor-pointer">
+                <TbMessageCircleFilled className="size-7 text-blue-500" />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </ReactLenis>
   );
 }
 
