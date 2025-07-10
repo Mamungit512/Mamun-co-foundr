@@ -5,7 +5,7 @@
   --mist-white: #fafaf9;
   --charcoal-black: #1c1c1c;
 
-  /* - font size - */
+  /* - font sizes according to golden ratio typescale - */
   --heading-1: 17.942rem;
   --heading-2: 11.089rem;
   --heading-3: 6.854rem;
@@ -34,7 +34,7 @@ body {
   @apply transition-all duration-300 hover:-translate-y-1;
 }
 
-/* --- Heading Sizes --- */
+/* --- Heading Size Utility Classes --- */
 @utility heading-3 {
   font-size: var(--heading-3);
   font-weight: var(--heading-3-weight);

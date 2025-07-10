@@ -14,7 +14,7 @@ Page the user first sees when navigating to the root url of the site
 
 function page() {
   return (
-    <main className="flex flex-col items-center justify-center bg-(--charcoal-black) px-40 pt-12 pb-40 text-center text-(--mist-white)">
+    <main className="flex flex-col items-center justify-center bg-(--charcoal-black) px-5 pt-12 pb-40 text-center text-(--mist-white) sm:px-10 lg:px-40">
       {/* -- Hero Section -- */}
       <section>
         <div className="mb-8">
@@ -92,7 +92,9 @@ function page() {
             <p className="heading-6 text-gray-400">[01]</p>
           </div>
 
-          <h3 className="heading-6 text-gray-400">Connect</h3>
+          <h3 className="md:heading-6 text-2xl font-bold text-gray-400">
+            Connect
+          </h3>
           <p className="mt-2">
             Create a profile and tell us about yourself. Our matching engine
             shows you profiles that fit your preferences.
@@ -104,7 +106,9 @@ function page() {
             <h2 className="heading-5">Engage</h2>
             <p className="heading-6 text-gray-400">[02]</p>
           </div>
-          <h3 className="heading-6 text-gray-400">Match</h3>
+          <h3 className="md:heading-6 text-2xl font-bold text-gray-400">
+            Match
+          </h3>
           <p className="mt-2">
             If a profile piques your interest, invite them to connect. If they
             accept your invite, that&apos;s a match!
@@ -116,7 +120,9 @@ function page() {
             <h2 className="heading-5">Start</h2>
             <p className="heading-6 text-gray-400">[03]</p>
           </div>
-          <h3 className="heading-6 text-gray-400">Conversation</h3>
+          <h3 className="md:heading-6 text-2xl font-bold text-gray-400">
+            Conversation
+          </h3>
           <p className="mt-2">
             Find a time to start the conversation. Let Mamun co-foundr help you
             connect with like-minded individuals.

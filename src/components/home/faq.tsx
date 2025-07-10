@@ -87,7 +87,7 @@ function FAQ() {
           >
             {/* - Question - */}
             <div className="flex items-center justify-between">
-              <p className="text-xl font-semibold">{faq.question}</p>
+              <p className="text-left text-xl font-semibold">{faq.question}</p>
               <button
                 className="cursor-pointer"
                 onClick={() => setOpenFaqId(isOpen ? null : faq.id)}
