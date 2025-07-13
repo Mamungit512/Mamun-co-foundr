@@ -8,6 +8,7 @@ import { TbMessageCircleFilled } from "react-icons/tb";
 
 import BatteryLevel from "@/components/BatteryLevel";
 import StripedArch from "@/components/StripedArch";
+import InformationTooltipButton from "@/components/ui/InformationTooltipButton";
 
 function CofoundrMatching() {
   return (
@@ -38,12 +39,23 @@ function CofoundrMatching() {
               <h2 className="heading-5">Bilal Hayat</h2>
               <div className="flex items-center">
                 <BatteryLevel level={80} />
-                <button
-                  className="ml-3 cursor-pointer"
-                  title="Founder Battery Level"
+                <InformationTooltipButton
+                  text={
+                    <div className="absolute top-full left-1/2 mt-2 w-[26rem] -translate-x-1/2 rounded bg-gray-400 px-2 py-1 text-sm text-white shadow">
+                      <p className="mb-3">The Founder&apos;s Battery:</p>
+                      <p>
+                        Users can update their &lsquo;battery level&rsquo; to
+                        indicate their readiness—whether they&apos;re actively
+                        seeking a partner, energized, maintaining balance, or
+                        nearing burnout—ensuring better matches and stronger
+                        startup collaborations. Similar to the iPhone battery
+                        level setting visuals, again from 0-100%
+                      </p>
+                    </div>
+                  }
                 >
                   <CiCircleInfo />
-                </button>
+                </InformationTooltipButton>
               </div>
             </div>
 
@@ -55,13 +67,20 @@ function CofoundrMatching() {
                   <b>COS:</b>
                 </p>
                 <p className="text-gray-700"> 70%</p>
-
-                <button
-                  className="ml-3 cursor-pointer text-base"
-                  title="Current Occupation Satisfaction"
+                <InformationTooltipButton
+                  text={
+                    <div className="absolute top-full left-1/2 mt-2 w-[26rem] -translate-x-1/2 rounded bg-gray-400 px-2 py-1 text-sm text-white shadow">
+                      <p className="mb-3">Current Occupation Satisfaction:</p>
+                      <p>
+                        A gauge of your overall contentment with their career
+                        path and their motivation for seeking a new venture from
+                        0-100%.
+                      </p>
+                    </div>
+                  }
                 >
                   <CiCircleInfo />
-                </button>
+                </InformationTooltipButton>
               </div>
             </div>
 
