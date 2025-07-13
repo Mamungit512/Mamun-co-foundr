@@ -17,13 +17,7 @@ function Header() {
       <div>
         <ul className="flex items-center justify-between gap-x-6">
           <li className="translate-y font-semibold">
-            <a href="#">Juma&apos;ah</a>
-          </li>
-          <li className="translate-y font-semibold">
             <a href="/cofoundr-matching">Co-Foundr Matching</a>
-          </li>
-          <li className="translate-y font-semibold">
-            <a href="#">Startup Jobs</a>
           </li>
           <li className="translate-y font-semibold">
             <a href="#">Mission</a>
