@@ -13,7 +13,7 @@ import InformationTooltipButton from "@/components/ui/InformationTooltipButton";
 function CofoundrMatching() {
   return (
     <ReactLenis root>
-      <section className="section-padding flex flex-col items-center bg-(--charcoal-black) pt-8 pb-20">
+      <section className="section-padding section-height flex flex-col items-center bg-(--charcoal-black) pt-8 pb-20">
         <h1 className="heading-4 mb-10 text-(--mist-white)">
           Muslim Co-Foundr Matching
         </h1>

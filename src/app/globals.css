@@ -16,6 +16,8 @@
   --heading-6: 1.618rem;
   --heading-6-weight: 700;
   --body: 1rem;
+
+  --content-height: calc(100vh - 330px); /* 82px header + 248px footer */
 }
 
 body {
@@ -44,7 +46,9 @@ body {
   @apply transition-all duration-300 hover:-translate-y-1;
 }
 
-/* --- Heading Size Utility Classes --- */
+/* ----- Utility Classes ----- */
+
+/* - Heading Size Utility Classes - */
 @utility heading-3 {
   font-size: var(--heading-3);
   font-weight: var(--heading-3-weight);
@@ -63,4 +67,10 @@ body {
 @utility heading-6 {
   font-size: var(--heading-6);
   font-weight: var(--heading-6-weight);
+}
+
+/* - Content Height - */
+@utility section-height {
+  /* Sets sections to a minimum height of 100vh - header height - footer height */
+  min-height: var(--content-height);
 }

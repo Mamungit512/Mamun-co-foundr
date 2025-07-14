@@ -17,10 +17,13 @@ function Header() {
       <div>
         <ul className="flex items-center justify-between gap-x-6">
           <li className="translate-y font-semibold">
-            <a href="/cofoundr-matching">Co-Foundr Matching</a>
+            <Link href="/cofoundr-matching">Co-Foundr Matching</Link>
           </li>
           <li className="translate-y font-semibold">
             <a href="#">Mission</a>
+          </li>
+          <li className="translate-y font-semibold">
+            <Link href="/careers">Careers</Link>
           </li>
 
           <SignedIn>
