@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 function Footer() {
@@ -11,7 +12,7 @@ function Footer() {
         {" "}
         Careers
       </a>
-      <a href="#">
+      <Link href="/">
         <Image
           src="/img/Mamun Logo.png"
           width={100}
@@ -19,12 +20,11 @@ function Footer() {
           className="translate-y"
           alt="Mamun Logo. Circle with a line through it next to Mamun in all capital letters"
         />
-      </a>
+      </Link>
       <a
-        href=""
+        href="mailto:mamun@mamuncofoundr.com"
         className="translate-y hover:underline hover:underline-offset-4"
       >
-        {" "}
         Contact Us
       </a>
     </footer>
