@@ -39,7 +39,6 @@ function WhoYouAreForm({
             <label>First Name</label>
             <FormInput
               type="text"
-              required
               {...register("firstName", { required: true })}
             />
             {errors.firstName && (
@@ -51,7 +50,6 @@ function WhoYouAreForm({
             <label htmlFor="lastName">Last Name</label>
             <FormInput
               type="text"
-              required
               {...register("lastName", { required: true })}
             />
             {errors.lastName && (
@@ -62,11 +60,7 @@ function WhoYouAreForm({
 
         <div className="flex w-full flex-col gap-x-20 gap-y-2">
           <label htmlFor="city">City</label>
-          <FormInput
-            type="text"
-            required
-            {...register("city", { required: true })}
-          />
+          <FormInput type="text" {...register("city", { required: true })} />
           {errors.city && (
             <p className="text-sm text-red-500">City is required</p>
           )}
@@ -74,11 +68,7 @@ function WhoYouAreForm({
 
         <div className="flex w-full flex-col gap-x-20 gap-y-2">
           <label htmlFor="country">Country</label>
-          <FormInput
-            type="text"
-            required
-            {...register("country", { required: true })}
-          />
+          <FormInput type="text" {...register("country", { required: true })} />
           {errors.country && (
             <p className="text-sm text-red-500">Country is required</p>
           )}
@@ -90,7 +80,6 @@ function WhoYouAreForm({
           </label>
           <FormInput
             type="number"
-            required
             {...register("satisfaction", {
               required: true,
               min: 0,
