@@ -1,5 +1,5 @@
 // --- This file lists the logic performed once the user completes and submits the onboarding flow form ---
-// --- Specifically it will update the Clerk user's "publicMetadata" ---
+// --- Specifically it will update the Clerk user's "publicMetadata" to store the onboarding info provided by the user ---
 
 "use server";
 
@@ -19,8 +19,7 @@ export const completeOnboarding = async (formData: OnboardingData) => {
     const res = await client.users.updateUser(userId, {
       publicMetadata: {
         onboardingComplete: true,
-        applicationName: formData.get("applicationName"),
-        applicationType: formData.get("applicationType"),
+        ...formData, // All collected onboarding data
       },
     });
     return { message: res.publicMetadata };
