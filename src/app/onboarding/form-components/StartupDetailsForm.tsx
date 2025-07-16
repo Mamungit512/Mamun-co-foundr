@@ -4,7 +4,7 @@ import React from "react";
 import { useForm, useWatch } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
 
-type StartupDetailsFormData = {
+export type StartupDetailsFormData = {
   hasStartup: "yes" | "no";
   name?: string;
   description?: string;

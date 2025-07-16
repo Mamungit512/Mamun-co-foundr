@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 
 import FormInput from "@/components/ui/FormInput";
 
-type WhoYouAreFormData = {
+export type WhoYouAreFormData = {
   firstName: string;
   lastName: string;
   city: string;

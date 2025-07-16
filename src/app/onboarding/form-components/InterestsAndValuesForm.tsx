@@ -4,7 +4,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
 
-type InterestsAndValuesFormData = {
+export type InterestsAndValuesFormData = {
   interests?: string;
   priorityAreas?: string[];
   hobbies?: string;

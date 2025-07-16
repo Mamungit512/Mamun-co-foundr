@@ -2,7 +2,7 @@ import FormInput from "@/components/ui/FormInput";
 import React from "react";
 import { useForm } from "react-hook-form";
 
-type OnboardingSocialsFormData = {
+export type OnboardingSocialsFormData = {
   linkedin: string;
   twitter: string;
   git: string;
