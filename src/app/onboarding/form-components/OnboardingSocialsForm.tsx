@@ -70,18 +70,15 @@ function OnboardingSocialsForm({
       </div>
 
       {/* Navigation Buttons */}
-      <div className="flex items-center gap-x-2">
+      <div className="mt-6 flex justify-between">
         <button
           type="button"
           onClick={onBack}
-          className="mt-6 cursor-pointer rounded bg-(--mist-white) px-4 py-2 text-(--charcoal-black)"
+          className="rounded border border-white px-4 py-2 text-white"
         >
           Back
         </button>
-        <button
-          type="submit"
-          className="mt-6 cursor-pointer rounded bg-(--mist-white) px-4 py-2 text-(--charcoal-black)"
-        >
+        <button type="submit" className="rounded bg-white px-4 py-2 text-black">
           Next
         </button>
       </div>
