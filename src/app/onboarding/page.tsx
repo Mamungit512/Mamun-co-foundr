@@ -16,7 +16,11 @@ export default function OnboardingComponent() {
 
   // - Handles logic after user completes a page in the onboarding process -
   const handleNext = () => {
-    setStepNumber(stepNumber + 1);
+    setStepNumber((prev) => prev + 1);
+  };
+
+  const handleBack = () => {
+    setStepNumber((prev) => prev - 1);
   };
 
   // const handleSubmit = async (formData: FormData) => {
@@ -46,9 +50,9 @@ export default function OnboardingComponent() {
       </p>
 
       {stepNumber === 1 && <WhoYouAreForm onNext={handleNext} />}
-      {stepNumber === 2 && <OnboardingSocialsForm />}
+      {stepNumber === 2 && <OnboardingSocialsForm onBack={handleBack} />}
 
-      <button type="submit">Submit</button>
+
     </section>
   );
 }
