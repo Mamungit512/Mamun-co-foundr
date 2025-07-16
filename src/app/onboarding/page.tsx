@@ -5,8 +5,8 @@ import { useState } from "react";
 // import { useRouter } from "next/navigation";
 
 // import { completeOnboarding } from "./_actions";
-import WhoYouAreForm from "./WhoYouAreForm";
-import OnboardingSocialsForm from "./OnboardingSocialsForm";
+import WhoYouAreForm from "./form-components/WhoYouAreForm";
+import OnboardingSocialsForm from "./form-components/OnboardingSocialsForm";
 
 export default function OnboardingComponent() {
   const [stepNumber, setStepNumber] = useState(1);
@@ -50,9 +50,9 @@ export default function OnboardingComponent() {
       </p>
 
       {stepNumber === 1 && <WhoYouAreForm onNext={handleNext} />}
-      {stepNumber === 2 && <OnboardingSocialsForm onBack={handleBack} />}
-
-
+      {stepNumber === 2 && (
+        <OnboardingSocialsForm onBack={handleBack} onNext={handleNext} />
+      )}
     </section>
   );
 }
