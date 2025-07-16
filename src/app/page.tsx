@@ -16,7 +16,7 @@ Page the user first sees when navigating to the root url of the site
 function page() {
   return (
     <ReactLenis root>
-      <main className="flex flex-col items-center justify-center bg-(--charcoal-black) px-5 pt-12 pb-40 text-center text-(--mist-white) sm:px-10 lg:px-40">
+      <main className="section-height flex flex-col items-center justify-center bg-(--charcoal-black) px-5 pt-12 pb-40 text-center text-(--mist-white) sm:px-10 lg:px-40">
         {/* -- Hero Section -- */}
         <section>
           <div className="mb-8">
