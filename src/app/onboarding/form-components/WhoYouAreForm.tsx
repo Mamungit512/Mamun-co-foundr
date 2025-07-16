@@ -32,13 +32,15 @@ function WhoYouAreForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <h2 className="heading-6 mb-6">Who You Are</h2>
+      <h2 className="heading-6 mb-6">Your Profile Basics</h2>
       <div className="flex flex-col gap-y-3">
         <div className="flex gap-x-6">
+          {/* First Name */}
           <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
             <label>First Name</label>
             <FormInput
               type="text"
+              placeholder="e.g. Teslim"
               {...register("firstName", { required: true })}
             />
             {errors.firstName && (
@@ -46,10 +48,12 @@ function WhoYouAreForm({
             )}
           </div>
 
+          {/* Last Name */}
           <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
             <label htmlFor="lastName">Last Name</label>
             <FormInput
               type="text"
+              placeholder="e.g. Deen"
               {...register("lastName", { required: true })}
             />
             {errors.lastName && (
@@ -58,28 +62,40 @@ function WhoYouAreForm({
           </div>
         </div>
 
+        {/* City */}
         <div className="flex w-full flex-col gap-x-20 gap-y-2">
           <label htmlFor="city">City</label>
-          <FormInput type="text" {...register("city", { required: true })} />
+          <FormInput
+            type="text"
+            placeholder="e.g. Austin"
+            {...register("city", { required: true })}
+          />
           {errors.city && (
             <p className="text-sm text-red-500">City is required</p>
           )}
         </div>
 
+        {/* Country */}
         <div className="flex w-full flex-col gap-x-20 gap-y-2">
           <label htmlFor="country">Country</label>
-          <FormInput type="text" {...register("country", { required: true })} />
+          <FormInput
+            type="text"
+            placeholder="e.g. United States"
+            {...register("country", { required: true })}
+          />
           {errors.country && (
             <p className="text-sm text-red-500">Country is required</p>
           )}
         </div>
 
+        {/* Current Occupation Satisfaction */}
         <div className="flex w-full flex-col gap-x-20 gap-y-2">
           <label htmlFor="satisfaction">
             Current Occupation Satisfaction (%)
           </label>
           <FormInput
             type="number"
+            placeholder="e.g. 75"
             {...register("satisfaction", {
               required: true,
               min: 0,
@@ -94,15 +110,25 @@ function WhoYouAreForm({
           )}
         </div>
 
+        {/* Gender */}
         <div className="flex gap-x-6">
           <div className="flex w-full flex-col gap-x-20 gap-y-2">
             <label htmlFor="gender">Gender (Optional)</label>
-            <FormInput type="text" {...register("gender")} />
+            <FormInput
+              type="text"
+              placeholder="e.g. Female, Male, Non-binary"
+              {...register("gender")}
+            />
           </div>
 
+          {/* Birthdate */}
           <div className="flex w-full flex-col gap-x-20 gap-y-2">
             <label htmlFor="birthdate">Birthdate (Optional)</label>
-            <FormInput type="text" {...register("birthdate")} />
+            <FormInput
+              type="text"
+              placeholder="MM/DD/YYYY"
+              {...register("birthdate")}
+            />
           </div>
         </div>
       </div>

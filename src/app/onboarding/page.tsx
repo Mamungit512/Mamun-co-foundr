@@ -7,6 +7,7 @@ import { useState } from "react";
 // import { completeOnboarding } from "./_actions";
 import WhoYouAreForm from "./form-components/WhoYouAreForm";
 import OnboardingSocialsForm from "./form-components/OnboardingSocialsForm";
+import IntroAccomplishments from "./form-components/IntroAccomplishments";
 
 export default function OnboardingComponent() {
   const [stepNumber, setStepNumber] = useState(1);
@@ -52,6 +53,9 @@ export default function OnboardingComponent() {
       {stepNumber === 1 && <WhoYouAreForm onNext={handleNext} />}
       {stepNumber === 2 && (
         <OnboardingSocialsForm onBack={handleBack} onNext={handleNext} />
+      )}
+      {stepNumber === 2 && (
+        <IntroAccomplishments onBack={handleBack} onNext={handleNext} />
       )}
     </section>
   );

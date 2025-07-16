@@ -21,32 +21,55 @@ function OnboardingSocialsForm({
   const onSubmit = (data: OnboardingSocialsFormData) => {
     onNext(data);
   };
+
   return (
     <form
       className="mt-14 flex flex-col gap-y-3"
       onSubmit={handleSubmit(onSubmit)}
     >
       <h2 className="heading-6 mb-3">Socials</h2>
+
+      {/* LinkedIn */}
       <div className="flex w-full flex-col gap-x-20 gap-y-2">
         <label htmlFor="linkedin">LinkedIn URL (Optional)</label>
-        <FormInput type="text" {...register("linkedin")} />
+        <FormInput
+          type="text"
+          placeholder="https://www.linkedin.com/in/your-name"
+          {...register("linkedin")}
+        />
       </div>
 
+      {/* Twitter */}
       <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
         <label htmlFor="twitter">Twitter URL (Optional)</label>
-        <FormInput type="text" {...register("twitter")} />
+        <FormInput
+          type="text"
+          placeholder="https://twitter.com/yourhandle"
+          {...register("twitter")}
+        />
       </div>
 
+      {/* GitHub / GitLab */}
       <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
         <label htmlFor="git">GitHub/GitLab URL (Optional)</label>
-        <FormInput type="text" {...register("git")} />
+        <FormInput
+          type="text"
+          placeholder="https://github.com/yourusername"
+          {...register("git")}
+        />
       </div>
 
+      {/* Personal Website */}
       <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
         <label htmlFor="personalWebsite">Personal Website URL (Optional)</label>
-        <FormInput type="text" {...register("personalWebsite")} />
+        <FormInput
+          type="text"
+          placeholder="https://yourportfolio.com"
+          {...register("personalWebsite")}
+        />
       </div>
 
+      {/* Navigation Buttons */}
       <div className="flex items-center gap-x-2">
         <button
           type="button"
