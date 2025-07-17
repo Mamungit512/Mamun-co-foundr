@@ -21,10 +21,10 @@ function Header() {
             <Link href="/cofoundr-matching">Co-Foundr Matching</Link>
           </li>
           <li className="translate-y font-semibold">
-            <a href="/mission">Mission</a>
+            <Link href="/mission">Mission</Link>
           </li>
           <li className="translate-y font-semibold">
-            <Link href="/careers">Careers</Link>
+            <Link href="/contact-us">Contact Us</Link>
           </li>
 
           <SignedIn>
