@@ -41,7 +41,7 @@ function CofoundrMatching() {
                 <BatteryLevel level={80} />
                 <InformationTooltipButton
                   text={
-                    <div className="absolute top-full left-1/2 mt-2 w-[26rem] -translate-x-1/2 rounded bg-gray-400 px-2 py-1 text-sm text-white shadow">
+                    <div className="absolute top-full left-1/2 mt-2 w-[26rem] -translate-x-1/2 rounded bg-(--charcoal-black) px-2 py-1 text-sm text-white shadow">
                       <p className="mb-3">The Founder&apos;s Battery:</p>
                       <p>
                         Users can update their &lsquo;battery level&rsquo; to
@@ -69,7 +69,7 @@ function CofoundrMatching() {
                 <p className="text-gray-700"> 70%</p>
                 <InformationTooltipButton
                   text={
-                    <div className="absolute top-full left-1/2 mt-2 w-[26rem] -translate-x-1/2 rounded bg-gray-400 px-2 py-1 text-sm text-white shadow">
+                    <div className="absolute top-full left-1/2 mt-2 w-[26rem] -translate-x-1/2 rounded bg-(--charcoal-black) px-2 py-1 text-sm text-white shadow">
                       <p className="mb-3">Current Occupation Satisfaction:</p>
                       <p>
                         A gauge of your overall contentment with their career
