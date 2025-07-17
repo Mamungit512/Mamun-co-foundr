@@ -21,7 +21,7 @@ function Header() {
             <Link href="/cofoundr-matching">Co-Foundr Matching</Link>
           </li>
           <li className="translate-y font-semibold">
-            <a href="#">Mission</a>
+            <a href="/mission">Mission</a>
           </li>
           <li className="translate-y font-semibold">
             <Link href="/careers">Careers</Link>
