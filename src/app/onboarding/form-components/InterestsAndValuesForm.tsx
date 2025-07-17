@@ -19,10 +19,18 @@ function InterestsAndValuesForm({
   onBack: () => void;
   onNext: (data: InterestsAndValuesFormData) => void;
 }) {
+  const [otherPriority, setOtherPriority] = React.useState("");
+  const [showOtherInput, setShowOtherInput] = React.useState(false);
+
   const { register, handleSubmit } = useForm<InterestsAndValuesFormData>();
 
   const onSubmit = (data: InterestsAndValuesFormData) => {
-    onNext(data);
+    const mergedPriorityAreas = [
+      ...(data.priorityAreas || []),
+      ...(showOtherInput && otherPriority ? [otherPriority] : []),
+    ];
+
+    onNext({ ...data, priorityAreas: mergedPriorityAreas });
   };
 
   const priorityOptions = [
@@ -69,6 +77,26 @@ function InterestsAndValuesForm({
               <span>{area}</span>
             </label>
           ))}
+
+          {/* "Other" checkbox */}
+          <label className="flex items-center gap-x-2">
+            <input
+              type="checkbox"
+              value="Other"
+              onChange={(e) => setShowOtherInput(e.target.checked)}
+            />
+            <span>Other</span>
+          </label>
+
+          {showOtherInput && (
+            <input
+              type="text"
+              placeholder="Please specify"
+              className="rounded-sm border border-gray-400 bg-gray-700 px-2 py-1 text-white"
+              value={otherPriority}
+              onChange={(e) => setOtherPriority(e.target.value)}
+            />
+          )}
         </div>
       </div>
 
