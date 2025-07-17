@@ -19,6 +19,13 @@ function ContactPage() {
           </div>
 
           <FormInput type="email" name="email" placeholder="Email" required />
+          <input
+            type="text"
+            name="website"
+            autoComplete="off"
+            tabIndex={-1}
+            style={{ display: "none" }}
+          />
 
           <div>
             <label className="mb-3 block font-medium">
@@ -94,7 +101,7 @@ function ContactPage() {
               href="mailto:Press@mamuncofoundr.com"
               className="underline hover:text-white"
             >
-              Press@mamuncofoundr.com
+              mamun@mamuncofoundr.com
             </a>
           </p>
         </div>
