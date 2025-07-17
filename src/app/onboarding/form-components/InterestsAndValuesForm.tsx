@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
 
@@ -15,34 +15,63 @@ export type InterestsAndValuesFormData = {
 function InterestsAndValuesForm({
   onBack,
   onNext,
+  defaultValues, // add this prop
 }: {
   onBack: () => void;
   onNext: (data: InterestsAndValuesFormData) => void;
+  defaultValues?: Partial<InterestsAndValuesFormData>;
 }) {
-  const [otherPriority, setOtherPriority] = React.useState("");
-  const [showOtherInput, setShowOtherInput] = React.useState(false);
+  const priorityOptions = useMemo(
+    () => [
+      "Emerging Tech",
+      "AI",
+      "Healthcare",
+      "Fintech",
+      "Circular Economy",
+      "Climate",
+      "Education",
+      "Consumer",
+    ],
+    [],
+  );
 
-  const { register, handleSubmit } = useForm<InterestsAndValuesFormData>();
+  // States for the "Other" priority input visibility and value
+  const [showOtherInput, setShowOtherInput] = React.useState(false);
+  const [otherPriority, setOtherPriority] = React.useState("");
+
+  const { register, handleSubmit, reset } = useForm<InterestsAndValuesFormData>(
+    {
+      defaultValues,
+    },
+  );
+
+  // When defaultValues change (or on mount), check if "Other" should be shown and prefilled
+  useEffect(() => {
+    if (defaultValues?.priorityAreas) {
+      // Filter priorityAreas to those not in preset options
+      const others = defaultValues.priorityAreas.filter(
+        (area) => !priorityOptions.includes(area),
+      );
+      if (others.length > 0) {
+        setShowOtherInput(true);
+        setOtherPriority(others[0]);
+      } else {
+        setShowOtherInput(false);
+        setOtherPriority("");
+      }
+      // Reset form with new defaultValues
+      reset(defaultValues);
+    }
+  }, [defaultValues, reset, priorityOptions]);
 
   const onSubmit = (data: InterestsAndValuesFormData) => {
+    // Combine checked priorities with the "Other" if shown and filled
     const mergedPriorityAreas = [
       ...(data.priorityAreas || []),
       ...(showOtherInput && otherPriority ? [otherPriority] : []),
     ];
-
     onNext({ ...data, priorityAreas: mergedPriorityAreas });
   };
-
-  const priorityOptions = [
-    "Emerging Tech",
-    "AI",
-    "Healthcare",
-    "Fintech",
-    "Circular Economy",
-    "Climate",
-    "Education",
-    "Consumer",
-  ];
 
   return (
     <form
@@ -73,6 +102,7 @@ function InterestsAndValuesForm({
                 type="checkbox"
                 value={area}
                 {...register("priorityAreas")}
+                defaultChecked={defaultValues?.priorityAreas?.includes(area)}
               />
               <span>{area}</span>
             </label>
@@ -82,7 +112,7 @@ function InterestsAndValuesForm({
           <label className="flex items-center gap-x-2">
             <input
               type="checkbox"
-              value="Other"
+              checked={showOtherInput}
               onChange={(e) => setShowOtherInput(e.target.checked)}
             />
             <span>Other</span>

@@ -18,16 +18,20 @@ export type StartupDetailsFormData = {
 function StartupDetailsForm({
   onNext,
   onBack,
+  defaultValues, // Add this prop
 }: {
   onNext: (data: StartupDetailsFormData) => void;
   onBack: () => void;
+  defaultValues?: Partial<StartupDetailsFormData>; // optional
 }) {
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<StartupDetailsFormData>();
+  } = useForm<StartupDetailsFormData>({
+    defaultValues, // Pass it here
+  });
 
   const hasStartup = useWatch({ control, name: "hasStartup" });
 
