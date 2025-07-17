@@ -12,11 +12,15 @@ export type OnboardingSocialsFormData = {
 function OnboardingSocialsForm({
   onBack,
   onNext,
+  defaultValues, // new optional prop
 }: {
   onBack: () => void;
   onNext: (data: OnboardingSocialsFormData) => void;
+  defaultValues?: Partial<OnboardingSocialsFormData>; // optional partial
 }) {
-  const { register, handleSubmit } = useForm<OnboardingSocialsFormData>();
+  const { register, handleSubmit } = useForm<OnboardingSocialsFormData>({
+    defaultValues,
+  });
 
   const onSubmit = (data: OnboardingSocialsFormData) => {
     onNext(data);

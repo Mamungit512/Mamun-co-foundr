@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import FormInput from "@/components/ui/FormInput";
@@ -17,14 +17,25 @@ export type WhoYouAreFormData = {
 
 function WhoYouAreForm({
   onNext,
+  defaultValues,
 }: {
   onNext: (data: WhoYouAreFormData) => void;
+  defaultValues?: Partial<WhoYouAreFormData>;
 }) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<WhoYouAreFormData>();
+    reset,
+  } = useForm<WhoYouAreFormData>({
+    defaultValues,
+  });
+
+  useEffect(() => {
+    if (defaultValues) {
+      reset(defaultValues);
+    }
+  }, [defaultValues, reset]);
 
   const onSubmit = (data: WhoYouAreFormData) => {
     onNext(data);

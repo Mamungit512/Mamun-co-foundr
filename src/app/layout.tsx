@@ -3,9 +3,9 @@ import { ClerkProvider } from "@clerk/nextjs";
 import localFont from "next/font/local";
 
 import "./globals.css";
-import Header from "@/components/Header";
+import Header from "@/components/header_footer/Header";
 import Socials from "@/components/Socials";
-import Footer from "@/components/Footer";
+import Footer from "@/components/header_footer/Footer";
 
 const satoshi = localFont({
   src: "../../public/fonts/Satoshi-Variable.ttf",

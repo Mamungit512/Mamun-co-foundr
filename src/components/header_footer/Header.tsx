@@ -7,10 +7,11 @@ function Header() {
     <header className="section-padding flex items-center justify-between bg-(--charcoal-black) text-(--mist-white)">
       <Link href="/">
         <Image
-          src="/img/Mamun Logo.png"
-          width={130}
+          src="/img/mamun-transparent-logo.png"
+          width={140}
           height={100}
           alt="Mamun Logo. Circle with a line through it next to Mamun in all capital letters"
+          className="translate-y"
         />
       </Link>
 
@@ -20,10 +21,10 @@ function Header() {
             <Link href="/cofoundr-matching">Co-Foundr Matching</Link>
           </li>
           <li className="translate-y font-semibold">
-            <a href="#">Mission</a>
+            <Link href="/mission">Mission</Link>
           </li>
           <li className="translate-y font-semibold">
-            <Link href="/careers">Careers</Link>
+            <Link href="/contact-us">Contact Us</Link>
           </li>
 
           <SignedIn>
@@ -40,13 +41,13 @@ function Header() {
 
           <SignedOut>
             <li>
-              <button className="flex cursor-pointer items-center gap-x-2">
+              <div className="flex items-center gap-x-2">
                 <SignInButton>
-                  <button className="rounded-md bg-(--mist-white) px-4 py-2 font-semibold text-(--charcoal-black)">
+                  <button className="cursor-pointer rounded-md bg-(--mist-white) px-4 py-2 font-semibold text-(--charcoal-black)">
                     Login
                   </button>
                 </SignInButton>
-              </button>
+              </div>
             </li>
           </SignedOut>
         </ul>

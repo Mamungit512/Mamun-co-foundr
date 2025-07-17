@@ -16,15 +16,24 @@ export type IntroAccomplishmentsFormData = {
 function IntroAccomplishments({
   onNext,
   onBack,
+  defaultValues, // new prop
 }: {
   onNext: (data: IntroAccomplishmentsFormData) => void;
   onBack: () => void;
+  defaultValues?: Partial<IntroAccomplishmentsFormData>; // optional partial
 }) {
+  // Pass defaultValues to useForm for pre-filling inputs
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<IntroAccomplishmentsFormData>();
+    watch,
+  } = useForm<IntroAccomplishmentsFormData>({
+    defaultValues,
+  });
+
+  // Watch isTechnical for radio checked state
+  const isTechnicalValue = watch("isTechnical");
 
   const onSubmit = (data: IntroAccomplishmentsFormData) => {
     onNext(data);
@@ -59,11 +68,7 @@ function IntroAccomplishments({
           rows={4}
           placeholder={`Built an app used by 10k+ users\nLaunched a startup\nTop 5% LeetCode`}
         />
-        {errors.accomplishments && (
-          <p className="text-sm text-red-500">
-            At least one accomplishment is required
-          </p>
-        )}
+        {/* No validation error needed here unless you want it */}
       </div>
 
       {/* Education */}
@@ -101,6 +106,7 @@ function IntroAccomplishments({
               type="radio"
               value="yes"
               {...register("isTechnical", { required: true })}
+              checked={isTechnicalValue === "yes"}
             />
             <span className="ml-2">Yes</span>
           </label>
@@ -109,6 +115,7 @@ function IntroAccomplishments({
               type="radio"
               value="no"
               {...register("isTechnical", { required: true })}
+              checked={isTechnicalValue === "no"}
             />
             <span className="ml-2">No</span>
           </label>

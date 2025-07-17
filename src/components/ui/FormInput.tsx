@@ -7,7 +7,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
     return (
       <input
         ref={ref}
-        className={`${className} rounded-sm border border-gray-400 bg-gray-700 px-2 py-1`}
+        className={`${className} w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white placeholder-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none`}
         {...props}
       />
     );

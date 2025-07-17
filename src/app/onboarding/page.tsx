@@ -10,6 +10,7 @@ import OnboardingSocialsForm from "./form-components/OnboardingSocialsForm";
 import IntroAccomplishments from "./form-components/IntroAccomplishments";
 import StartupDetailsForm from "./form-components/StartupDetailsForm";
 import InterestsAndValuesForm from "./form-components/InterestsAndValuesForm";
+import ReviewForm from "./form-components/ReviewForm";
 
 import type { WhoYouAreFormData } from "./form-components/WhoYouAreForm";
 import type { OnboardingSocialsFormData } from "./form-components/OnboardingSocialsForm";
@@ -25,32 +26,30 @@ export type OnboardingData = Partial<
     StartupDetailsFormData &
     InterestsAndValuesFormData
 >;
+
 export default function OnboardingComponent() {
   const [stepNumber, setStepNumber] = useState(1);
-  const [formData, setFormData] = useState<OnboardingData>({}); // Keeps track of cumulative data from each onboarding step
+  const [formData, setFormData] = useState<OnboardingData>({});
   const [error, setError] = useState<string | null>(null);
 
   const { user } = useUser();
   const router = useRouter();
 
-  // - Handles logic after user completes a page in the onboarding process -
-  const handleNext = (stepData: Partial<OnboardingData>) => {
-    setFormData((prev) => ({ ...prev, ...stepData })); // Adds steps data to cumulative form data
-    setStepNumber((prev) => prev + 1);
-  };
-
   const handleBack = () => {
     setStepNumber((prev) => prev - 1);
   };
 
-  const handleSubmit = async (finalStepData: Partial<OnboardingData>) => {
-    const combinedData = { ...formData, ...finalStepData }; // Combines last steps data to cumulativ form data
+  const handleEditStep = (step: number) => {
+    setStepNumber(step);
+  };
+
+  const handleSubmit = async () => {
     try {
-      const res = await completeOnboarding(combinedData);
+      const res = await completeOnboarding(formData);
       if (res?.error) {
         setError(res.error);
       } else {
-        await user?.reload(); // update Clerk metadata
+        await user?.reload();
         router.push("/");
       }
     } catch (err) {
@@ -58,6 +57,7 @@ export default function OnboardingComponent() {
       setError("Something went wrong.");
     }
   };
+
   return (
     <section className="section-height section-padding bg-(--charcoal-black) text-(--mist-white)">
       <h1 className="heading-5">Welcome to Mamun Cofoundr Matching!</h1>
@@ -66,18 +66,63 @@ export default function OnboardingComponent() {
       </p>
 
       {error && <p className="text-red-500">{error}</p>}
-      {stepNumber === 1 && <WhoYouAreForm onNext={handleNext} />}
+
+      {stepNumber === 1 && (
+        <WhoYouAreForm
+          onNext={(newData) => {
+            setFormData((prev) => ({ ...prev, ...newData }));
+            setStepNumber(2);
+          }}
+          defaultValues={formData} // pass current saved data here to pre-fill form
+        />
+      )}
       {stepNumber === 2 && (
-        <IntroAccomplishments onBack={handleBack} onNext={handleNext} />
+        <IntroAccomplishments
+          onBack={handleBack}
+          onNext={(newData) => {
+            setFormData((prev) => ({ ...prev, ...newData }));
+            setStepNumber(3);
+          }}
+          defaultValues={formData}
+        />
       )}
       {stepNumber === 3 && (
-        <OnboardingSocialsForm onBack={handleBack} onNext={handleNext} />
+        <OnboardingSocialsForm
+          onBack={handleBack}
+          onNext={(newData) => {
+            setFormData((prev) => ({ ...prev, ...newData }));
+            setStepNumber(4);
+          }}
+          defaultValues={formData}
+        />
       )}
       {stepNumber === 4 && (
-        <StartupDetailsForm onBack={handleBack} onNext={handleNext} />
+        <StartupDetailsForm
+          onBack={handleBack}
+          onNext={(newData) => {
+            setFormData((prev) => ({ ...prev, ...newData }));
+            setStepNumber(5);
+          }}
+          defaultValues={formData}
+        />
       )}
       {stepNumber === 5 && (
-        <InterestsAndValuesForm onBack={handleBack} onNext={handleSubmit} />
+        <InterestsAndValuesForm
+          onBack={handleBack}
+          onNext={(newData) => {
+            setFormData((prev) => ({ ...prev, ...newData }));
+            setStepNumber(6);
+          }}
+          defaultValues={formData}
+        />
+      )}
+      {stepNumber === 6 && (
+        <ReviewForm
+          data={formData}
+          onBack={handleBack}
+          onEdit={handleEditStep}
+          onSubmit={handleSubmit}
+        />
       )}
     </section>
   );
