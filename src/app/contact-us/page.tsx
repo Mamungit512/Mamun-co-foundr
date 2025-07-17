@@ -28,22 +28,12 @@ function ContactPage() {
           />
 
           <div>
-            <label className="mb-3 block font-medium">
-              How did you hear about us?
-            </label>
-            <div className="space-y-2">
-              {["Friends", "Social Media", "Other"].map((option) => (
-                <label key={option} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    name="heardAboutUs"
-                    value={option.toLowerCase()}
-                    className="accent-white"
-                  />
-                  <span>{option}</span>
-                </label>
-              ))}
-            </div>
+            <textarea
+              name="message"
+              placeholder="Message"
+              rows={5}
+              className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white placeholder-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none"
+            ></textarea>
           </div>
 
           <div>
@@ -73,17 +63,27 @@ function ContactPage() {
           </div>
 
           <div>
-            <textarea
-              name="message"
-              placeholder="Message"
-              rows={5}
-              className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white placeholder-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none"
-            ></textarea>
+            <label className="mb-3 block font-medium">
+              How did you hear about us?
+            </label>
+            <div className="space-y-2">
+              {["Friends", "Social Media", "Other"].map((option) => (
+                <label key={option} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="heardAboutUs"
+                    value={option.toLowerCase()}
+                    className="accent-white"
+                  />
+                  <span>{option}</span>
+                </label>
+              ))}
+            </div>
           </div>
 
           <button
             type="submit"
-            className="mt-6 rounded-xl bg-white px-6 py-3 font-medium text-[var(--charcoal-black)] transition hover:bg-white/90"
+            className="mt-6 cursor-pointer rounded-xl bg-white px-6 py-3 font-medium text-[var(--charcoal-black)] transition hover:bg-white/90"
           >
             Send Message
           </button>
