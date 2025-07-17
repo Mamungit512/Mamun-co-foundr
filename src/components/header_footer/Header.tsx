@@ -41,13 +41,13 @@ function Header() {
 
           <SignedOut>
             <li>
-              <button className="flex cursor-pointer items-center gap-x-2">
+              <div className="flex items-center gap-x-2">
                 <SignInButton>
-                  <button className="rounded-md bg-(--mist-white) px-4 py-2 font-semibold text-(--charcoal-black)">
+                  <button className="cursor-pointer rounded-md bg-(--mist-white) px-4 py-2 font-semibold text-(--charcoal-black)">
                     Login
                   </button>
                 </SignInButton>
-              </button>
+              </div>
             </li>
           </SignedOut>
         </ul>
