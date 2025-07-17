@@ -7,10 +7,11 @@ function Header() {
     <header className="section-padding flex items-center justify-between bg-(--charcoal-black) text-(--mist-white)">
       <Link href="/">
         <Image
-          src="/img/Mamun Logo.png"
-          width={130}
+          src="/img/mamun-transparent-logo.png"
+          width={140}
           height={100}
           alt="Mamun Logo. Circle with a line through it next to Mamun in all capital letters"
+          className="translate-y"
         />
       </Link>
 
