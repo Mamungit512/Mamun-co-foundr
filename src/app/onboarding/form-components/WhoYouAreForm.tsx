@@ -4,16 +4,7 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import FormInput from "@/components/ui/FormInput";
-
-export type WhoYouAreFormData = {
-  firstName: string;
-  lastName: string;
-  city: string;
-  country: string;
-  satisfaction: number;
-  gender?: string;
-  birthdate?: string;
-};
+import { WhoYouAreFormData } from "../types";
 
 function WhoYouAreForm({
   onNext,

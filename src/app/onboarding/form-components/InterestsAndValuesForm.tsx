@@ -3,14 +3,8 @@
 import React, { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
+import { InterestsAndValuesFormData } from "../types";
 
-export type InterestsAndValuesFormData = {
-  interests?: string;
-  priorityAreas?: string[];
-  hobbies?: string;
-  journey?: string;
-  extra?: string;
-};
 
 function InterestsAndValuesForm({
   onBack,

@@ -3,17 +3,8 @@
 import React from "react";
 import { useForm, useWatch } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
+import { StartupDetailsFormData } from "../types";
 
-export type StartupDetailsFormData = {
-  hasStartup: "yes" | "no";
-  name?: string;
-  description?: string;
-  timeSpent?: string;
-  funding?: string;
-  coFounderStatus?: string;
-  fullTimeTimeline?: string;
-  responsibilities?: string[];
-};
 
 function StartupDetailsForm({
   onNext,

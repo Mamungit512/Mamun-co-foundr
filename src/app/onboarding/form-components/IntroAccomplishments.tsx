@@ -3,24 +3,16 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
-
-export type IntroAccomplishmentsFormData = {
-  personalIntro: string;
-  accomplishments?: string;
-  education: string;
-  experience: string;
-  isTechnical: "yes" | "no";
-  schedulingUrl?: string;
-};
+import { IntroAccomplishmentsFormData } from "../types";
 
 function IntroAccomplishments({
   onNext,
   onBack,
-  defaultValues, // new prop
+  defaultValues,
 }: {
   onNext: (data: IntroAccomplishmentsFormData) => void;
   onBack: () => void;
-  defaultValues?: Partial<IntroAccomplishmentsFormData>; // optional partial
+  defaultValues?: Partial<IntroAccomplishmentsFormData>;
 }) {
   // Pass defaultValues to useForm for pre-filling inputs
   const {

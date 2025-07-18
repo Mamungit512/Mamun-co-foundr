@@ -1,10 +1,10 @@
-// --- This file lists the logic performed once the user completes and submits the onboarding flow form ---
-// --- Specifically it will update the Clerk user's "publicMetadata" to store the onboarding info provided by the user ---
+// // --- This file lists the logic performed once the user completes and submits the onboarding flow form ---
+// // --- Specifically it will update the Clerk user's "publicMetadata" to store the onboarding info provided by the user ---
 
 "use server";
 
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { OnboardingData } from "./page";
+import { OnboardingData } from "./types";
 
 export const completeOnboarding = async (formData: OnboardingData) => {
   const { userId } = await auth();
