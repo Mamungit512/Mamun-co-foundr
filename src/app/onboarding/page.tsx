@@ -77,7 +77,7 @@ export default function OnboardingComponent() {
       // Upsert into supabase
       const userId = user?.id;
       const token = await session?.getToken();
-      console.log("JWT ------>", token);
+
       if (!userId) {
         return { message: "No Logged In User" };
       }
