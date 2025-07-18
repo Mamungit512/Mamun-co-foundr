@@ -20,9 +20,7 @@ function Header() {
           <li className="translate-y font-semibold">
             <Link href="/cofoundr-matching">Co-Foundr Matching</Link>
           </li>
-          <li className="translate-y font-semibold">
-            <Link href="/mission">Mission</Link>
-          </li>
+
           <li className="translate-y font-semibold">
             <Link href="/contact-us">Contact Us</Link>
           </li>

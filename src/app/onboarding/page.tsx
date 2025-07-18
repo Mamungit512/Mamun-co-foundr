@@ -114,7 +114,7 @@ export default function OnboardingComponent() {
         setError(res.error);
       } else {
         await user?.reload();
-        router.push("/onboarding");
+        router.push("/cofoundr-matching");
       }
     } catch (err) {
       console.error(err);
