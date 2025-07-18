@@ -94,18 +94,13 @@ export default function OnboardingComponent() {
         },
       );
 
-      // Upsert into Supabase "profiles" table
-
+      // -- Upsert into Supabase "profiles" table --
       const dbData = transformFormDataForDb(formData);
-      console.log(userId);
-      const { data: onboardingUpsertData, error: dbError } = await supabase
-        .from("profiles")
-        .upsert({
-          user_id: userId,
-          ...dbData,
-        });
-      console.log(dbData);
-      console.log(onboardingUpsertData);
+
+      const { error: dbError } = await supabase.from("profiles").upsert({
+        user_id: userId,
+        ...dbData,
+      });
 
       if (dbError) {
         console.error("Supabase returned an error:", dbError);
@@ -114,12 +109,12 @@ export default function OnboardingComponent() {
 
       // -- Complete Onboarding -> Update Clerk Metadata --
       const res = await completeOnboarding(formData);
-      console.log(res);
+
       if (res?.error) {
         setError(res.error);
       } else {
         await user?.reload();
-        router.push("/");
+        router.push("/onboarding");
       }
     } catch (err) {
       console.error(err);
