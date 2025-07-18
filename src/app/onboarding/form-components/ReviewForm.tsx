@@ -1,5 +1,5 @@
 import React from "react";
-import { OnboardingData } from "../page";
+import { OnboardingData } from "../types";
 
 type ReviewFormProps = {
   data: OnboardingData;
