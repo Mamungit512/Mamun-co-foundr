@@ -6,6 +6,7 @@ import "./globals.css";
 import Header from "@/components/header_footer/Header";
 import Socials from "@/components/Socials";
 import Footer from "@/components/header_footer/Footer";
+import QueryProvider from "./_providers/QueryProvider";
 
 const satoshi = localFont({
   src: "../../public/fonts/Satoshi-Variable.ttf",
@@ -27,10 +28,12 @@ export default function RootLayout({
         <body
           className={`${satoshi.className} scroll-smooth bg-(--charcoal-black) antialiased lg:text-lg`}
         >
-          <Header />
-          {children}
-          <Socials />
-          <Footer />
+          <QueryProvider>
+            <Header />
+            {children}
+            <Socials />
+            <Footer />
+          </QueryProvider>
         </body>
       </html>
     </ClerkProvider>

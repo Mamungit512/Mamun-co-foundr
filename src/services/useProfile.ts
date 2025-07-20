@@ -1,0 +1,34 @@
+import { useQuery } from "@tanstack/react-query";
+import { useAuth, useSession } from "@clerk/nextjs";
+import { getProfileByUserId } from "./profileService";
+import { OnboardingData } from "@/app/onboarding/types";
+
+export function useUserProfile() {
+  const { userId } = useAuth();
+  const { session } = useSession();
+
+  return useQuery<OnboardingData, { message: string }>({
+    queryKey: ["profile", userId],
+    queryFn: async () => {
+      if (!userId) {
+        throw { message: "You must be logged in to view your profile" };
+      }
+
+      const token = await session?.getToken();
+      if (!token) {
+        throw { message: "Authentication failed. Please log in again." };
+      }
+
+      try {
+        return await getProfileByUserId(userId);
+      } catch (error) {
+        throw {
+          message: "Failed to load profile. Please try again later.",
+          originalError: error,
+        };
+      }
+    },
+    enabled: !!userId,
+    retry: 1,
+  });
+}
