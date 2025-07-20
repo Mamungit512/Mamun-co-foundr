@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import type { OnboardingData } from "../onboarding/types";
-
 import { useUserProfile } from "@/services/useProfile";
+import FormInput from "@/components/ui/FormInput";
+import type { OnboardingData } from "../onboarding/types";
 
 export default function EditProfile() {
   const { data: profileData, isLoading, isError, error } = useUserProfile();
@@ -14,7 +14,7 @@ export default function EditProfile() {
     handleSubmit,
     reset,
     control,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
   } = useForm<Partial<OnboardingData>>({
     defaultValues: profileData,
   });
@@ -24,7 +24,6 @@ export default function EditProfile() {
   }, [profileData, reset]);
 
   const onSubmit = (formData: Partial<OnboardingData>) => {
-    // mutation.mutate(formData);
     console.log(formData);
   };
 
@@ -32,318 +31,301 @@ export default function EditProfile() {
   if (isError) return <p>Error loading profile: {error?.message}</p>;
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="mx-auto max-w-3xl space-y-6 p-6"
-    >
-      <h1 className="mb-6 text-2xl font-bold">Edit Your Profile</h1>
-
-      {/* WhoYouAreFormData */}
-      <div>
-        <label>First Name *</label>
-        <input
-          {...register("firstName", { required: "First name is required" })}
-          className="input"
-          type="text"
-        />
-        {errors.firstName && (
-          <p className="error">{errors.firstName.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label>Last Name *</label>
-        <input
-          {...register("lastName", { required: "Last name is required" })}
-          className="input"
-          type="text"
-        />
-        {errors.lastName && <p className="error">{errors.lastName.message}</p>}
-      </div>
-
-      <div>
-        <label>City *</label>
-        <input
-          {...register("city", { required: "City is required" })}
-          className="input"
-          type="text"
-        />
-        {errors.city && <p className="error">{errors.city.message}</p>}
-      </div>
-
-      <div>
-        <label>Country *</label>
-        <input
-          {...register("country", { required: "Country is required" })}
-          className="input"
-          type="text"
-        />
-        {errors.country && <p className="error">{errors.country.message}</p>}
-      </div>
-
-      <div>
-        <label>Satisfaction (0-10) *</label>
-        <input
-          {...register("satisfaction", {
-            required: "Satisfaction is required",
-            min: { value: 0, message: "Minimum is 0" },
-            max: { value: 10, message: "Maximum is 10" },
-            valueAsNumber: true,
-          })}
-          className="input"
-          type="number"
-          min={0}
-          max={10}
-        />
-        {errors.satisfaction && (
-          <p className="error">{errors.satisfaction.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label>Gender</label>
-        <input {...register("gender")} className="input" type="text" />
-      </div>
-
-      <div>
-        <label>Birthdate</label>
-        <input {...register("birthdate")} className="input" type="date" />
-      </div>
-
-      {/* IntroAccomplishmentsFormData */}
-      <div>
-        <label>Personal Introduction *</label>
-        <textarea
-          {...register("personalIntro", {
-            required: "Personal intro is required",
-          })}
-          className="input"
-          rows={4}
-        />
-        {errors.personalIntro && (
-          <p className="error">{errors.personalIntro.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label>Accomplishments</label>
-        <textarea {...register("accomplishments")} className="input" rows={3} />
-      </div>
-
-      <div>
-        <label>Education *</label>
-        <input
-          {...register("education", { required: "Education is required" })}
-          className="input"
-          type="text"
-        />
-        {errors.education && (
-          <p className="error">{errors.education.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label>Experience *</label>
-        <input
-          {...register("experience", { required: "Experience is required" })}
-          className="input"
-          type="text"
-        />
-        {errors.experience && (
-          <p className="error">{errors.experience.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label>Are you technical? *</label>
-        <select
-          {...register("isTechnical", {
-            required: "Please select technical status",
-            validate: (v) => v === "yes" || v === "no" || "Must be yes or no",
-          })}
-          className="input"
-        >
-          <option value="">Select...</option>
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
-        </select>
-        {errors.isTechnical && (
-          <p className="error">{errors.isTechnical.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label>Scheduling URL</label>
-        <input {...register("schedulingUrl")} className="input" type="url" />
-      </div>
-
-      {/* OnboardingSocialsFormData */}
-      <div>
-        <label>LinkedIn</label>
-        <input {...register("linkedin")} className="input" type="url" />
-      </div>
-
-      <div>
-        <label>Twitter</label>
-        <input {...register("twitter")} className="input" type="url" />
-      </div>
-
-      <div>
-        <label>GitHub</label>
-        <input {...register("git")} className="input" type="url" />
-      </div>
-
-      <div>
-        <label>Personal Website</label>
-        <input {...register("personalWebsite")} className="input" type="url" />
-      </div>
-
-      {/* StartupDetailsFormData */}
-      <div>
-        <label>Do you have a startup? *</label>
-        <select
-          {...register("hasStartup", {
-            required: "Please select an option",
-            validate: (v) => v === "yes" || v === "no" || "Must be yes or no",
-          })}
-          className="input"
-        >
-          <option value="">Select...</option>
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
-        </select>
-        {errors.hasStartup && (
-          <p className="error">{errors.hasStartup.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label>Startup Name</label>
-        <input {...register("name")} className="input" type="text" />
-      </div>
-
-      <div>
-        <label>Startup Description</label>
-        <textarea {...register("description")} className="input" rows={3} />
-      </div>
-
-      <div>
-        <label>Time Spent on Startup</label>
-        <input {...register("timeSpent")} className="input" type="text" />
-      </div>
-
-      <div>
-        <label>Startup Funding</label>
-        <input {...register("funding")} className="input" type="text" />
-      </div>
-
-      <div>
-        <label>Cofounder Status</label>
-        <input {...register("coFounderStatus")} className="input" type="text" />
-      </div>
-
-      <div>
-        <label>Full-time Timeline</label>
-        <input
-          {...register("fullTimeTimeline")}
-          className="input"
-          type="text"
-        />
-      </div>
-
-      <div>
-        <label>Responsibilities (comma separated)</label>
-        <Controller
-          control={control}
-          name="responsibilities"
-          render={({ field }) => {
-            const value = Array.isArray(field.value)
-              ? field.value.join(", ")
-              : "";
-            return (
-              <input
-                className="input"
-                type="text"
-                value={value}
-                onChange={(e) => {
-                  const arr = e.target.value
-                    .split(",")
-                    .map((s) => s.trim())
-                    .filter(Boolean);
-                  field.onChange(arr);
-                }}
-              />
-            );
-          }}
-        />
-      </div>
-
-      {/* InterestsAndValuesFormData */}
-      <div>
-        <label>Interests</label>
-        <textarea {...register("interests")} className="input" rows={3} />
-      </div>
-
-      <div>
-        <label>Priority Areas (comma separated)</label>
-        <Controller
-          control={control}
-          name="priorityAreas"
-          render={({ field }) => {
-            const value = Array.isArray(field.value)
-              ? field.value.join(", ")
-              : "";
-            return (
-              <input
-                className="input"
-                type="text"
-                value={value}
-                onChange={(e) => {
-                  const arr = e.target.value
-                    .split(",")
-                    .map((s) => s.trim())
-                    .filter(Boolean);
-                  field.onChange(arr);
-                }}
-              />
-            );
-          }}
-        />
-      </div>
-
-      <div>
-        <label>Hobbies</label>
-        <textarea {...register("hobbies")} className="input" rows={3} />
-      </div>
-
-      <div>
-        <label>Journey</label>
-        <textarea {...register("journey")} className="input" rows={3} />
-      </div>
-
-      <div>
-        <label>Extra</label>
-        <textarea {...register("extra")} className="input" rows={3} />
-      </div>
-
-      <button
-        type="submit"
-        // disabled={isSaving}
-        className="rounded bg-black px-6 py-2 text-white hover:bg-gray-800"
+    <section className="bg-(--charcoal-black) text-(--mist-white)">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="mx-auto max-w-3xl rounded-lg p-8 text-white"
       >
-        Save Changes
-        {/* {isSaving ? "Saving..." : "Save Changes"} */}
-      </button>
+        <h1 className="mb-8 text-3xl font-semibold">Edit Your Profile</h1>
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        // disabled={isSubmitting || mutation.isLoading}
-        className="rounded bg-black px-6 py-2 text-white hover:bg-gray-800"
-      >
-        Save Changes
-        {/* {mutation.isLoading ? "Saving..." : "Save Changes"} */}
-      </button>
-    </form>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <label className="flex flex-col">
+            First Name *
+            <FormInput
+              placeholder="First Name"
+              {...register("firstName", { required: "First name is required" })}
+            />
+          </label>
+
+          <label className="flex flex-col">
+            Last Name *
+            <FormInput
+              placeholder="Last Name"
+              {...register("lastName", { required: "Last name is required" })}
+            />
+          </label>
+
+          <label className="flex flex-col">
+            City *
+            <FormInput
+              placeholder="City"
+              {...register("city", { required: "City is required" })}
+            />
+          </label>
+
+          <label className="flex flex-col">
+            Country *
+            <FormInput
+              placeholder="Country"
+              {...register("country", { required: "Country is required" })}
+            />
+          </label>
+
+          <label className="flex flex-col">
+            Satisfaction (0-10) *
+            <FormInput
+              type="number"
+              placeholder="Satisfaction (0-10)"
+              {...register("satisfaction", {
+                required: "Satisfaction is required",
+                min: { value: 0, message: "Minimum is 0" },
+                max: { value: 10, message: "Maximum is 10" },
+                valueAsNumber: true,
+              })}
+            />
+          </label>
+
+          <label className="flex flex-col">
+            Gender
+            <FormInput
+              type="text"
+              placeholder="Gender"
+              {...register("gender")}
+            />
+          </label>
+
+          <label className="flex flex-col">
+            Birthdate
+            <FormInput
+              type="date"
+              placeholder="Birthdate"
+              {...register("birthdate")}
+            />
+          </label>
+
+          <label className="flex flex-col">
+            Education *
+            <FormInput
+              placeholder="Education"
+              {...register("education", { required: "Education is required" })}
+            />
+          </label>
+
+          <label className="flex flex-col">
+            Experience *
+            <FormInput
+              placeholder="Experience"
+              {...register("experience", {
+                required: "Experience is required",
+              })}
+            />
+          </label>
+
+          <label className="flex flex-col">
+            Scheduling URL
+            <FormInput
+              placeholder="Scheduling URL"
+              type="url"
+              {...register("schedulingUrl")}
+            />
+          </label>
+
+          <label className="flex flex-col">
+            LinkedIn URL
+            <FormInput
+              placeholder="LinkedIn URL"
+              type="url"
+              {...register("linkedin")}
+            />
+          </label>
+
+          <label className="flex flex-col">
+            Twitter URL
+            <FormInput
+              placeholder="Twitter URL"
+              type="url"
+              {...register("twitter")}
+            />
+          </label>
+
+          <label className="flex flex-col">
+            GitHub URL
+            <FormInput
+              placeholder="GitHub URL"
+              type="url"
+              {...register("git")}
+            />
+          </label>
+
+          <label className="flex flex-col">
+            Personal Website
+            <FormInput
+              placeholder="Personal Website"
+              type="url"
+              {...register("personalWebsite")}
+            />
+          </label>
+
+          <label className="flex flex-col">
+            Startup Name
+            <FormInput placeholder="Startup Name" {...register("name")} />
+          </label>
+
+          <label className="flex flex-col">
+            Time Spent on Startup
+            <FormInput
+              placeholder="Time Spent on Startup"
+              {...register("timeSpent")}
+            />
+          </label>
+
+          <label className="flex flex-col">
+            Startup Funding
+            <FormInput placeholder="Startup Funding" {...register("funding")} />
+          </label>
+
+          <label className="flex flex-col">
+            Cofounder Status
+            <FormInput
+              placeholder="Cofounder Status"
+              {...register("coFounderStatus")}
+            />
+          </label>
+
+          <label className="flex flex-col">
+            Full-time Timeline
+            <FormInput
+              placeholder="Full-time Timeline"
+              {...register("fullTimeTimeline")}
+            />
+          </label>
+        </div>
+
+        <label className="mt-6 flex flex-col">
+          Personal Introduction *
+          <textarea
+            rows={4}
+            placeholder="Personal Introduction"
+            {...register("personalIntro", {
+              required: "Personal intro is required",
+            })}
+            className="mt-1 rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
+          />
+        </label>
+
+        <label className="mt-6 flex flex-col">
+          Accomplishments
+          <textarea
+            rows={3}
+            placeholder="Accomplishments"
+            {...register("accomplishments")}
+            className="mt-1 rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
+          />
+        </label>
+
+        <label className="mt-6 flex flex-col">
+          Responsibilities (comma separated)
+          <Controller
+            control={control}
+            name="responsibilities"
+            render={({ field }) => {
+              const value = Array.isArray(field.value)
+                ? field.value.join(", ")
+                : "";
+              return (
+                <FormInput
+                  type="text"
+                  value={value}
+                  onChange={(e) => {
+                    const arr = e.target.value
+                      .split(",")
+                      .map((s) => s.trim())
+                      .filter(Boolean);
+                    field.onChange(arr);
+                  }}
+                  className="mt-1"
+                />
+              );
+            }}
+          />
+        </label>
+
+        <label className="mt-6 flex flex-col">
+          Interests
+          <textarea
+            rows={3}
+            placeholder="Interests"
+            {...register("interests")}
+            className="mt-1 rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
+          />
+        </label>
+
+        <label className="mt-6 flex flex-col">
+          Priority Areas (comma separated)
+          <Controller
+            control={control}
+            name="priorityAreas"
+            render={({ field }) => {
+              const value = Array.isArray(field.value)
+                ? field.value.join(", ")
+                : "";
+              return (
+                <FormInput
+                  value={value}
+                  onChange={(e) => {
+                    const arr = e.target.value
+                      .split(",")
+                      .map((s) => s.trim())
+                      .filter(Boolean);
+                    field.onChange(arr);
+                  }}
+                  className="mt-1"
+                />
+              );
+            }}
+          />
+        </label>
+
+        <label className="mt-6 flex flex-col">
+          Hobbies
+          <textarea
+            rows={3}
+            placeholder="Hobbies"
+            {...register("hobbies")}
+            className="mt-1 rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
+          />
+        </label>
+
+        <label className="mt-6 flex flex-col">
+          Journey
+          <textarea
+            rows={3}
+            placeholder="Journey"
+            {...register("journey")}
+            className="mt-1 rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
+          />
+        </label>
+
+        <label className="mt-6 flex flex-col">
+          Extra
+          <textarea
+            rows={3}
+            placeholder="Extra"
+            {...register("extra")}
+            className="mt-1 rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
+          />
+        </label>
+
+        <div className="mt-8 flex justify-end gap-4">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="rounded border border-white px-6 py-2 text-white transition hover:bg-white hover:text-black"
+          >
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </section>
   );
 }
