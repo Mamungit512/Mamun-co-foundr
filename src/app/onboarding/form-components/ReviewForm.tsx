@@ -124,7 +124,7 @@ export default function ReviewForm({
           Back
         </button>
         <button
-          className="rounded bg-green-600 px-4 py-2 text-white"
+          className="cursor-pointer rounded bg-green-600 px-4 py-2 text-white"
           onClick={onSubmit}
         >
           Confirm & Submit

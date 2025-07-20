@@ -1,6 +1,9 @@
+"use client";
+
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
+import { FaUser } from "react-icons/fa6";
 
 function Header() {
   return (
@@ -33,7 +36,15 @@ function Header() {
                     userButtonAvatarBox: { width: "48px", height: "48px" },
                   },
                 }}
-              />
+              >
+                <UserButton.MenuItems>
+                  <UserButton.Link
+                    label="Edit cofoundr profile"
+                    href="/edit-profile"
+                    labelIcon={<FaUser />}
+                  />
+                </UserButton.MenuItems>
+              </UserButton>
             </li>
           </SignedIn>
 
