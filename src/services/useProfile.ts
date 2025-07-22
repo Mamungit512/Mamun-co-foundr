@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth, useSession } from "@clerk/nextjs";
-import { getProfileByUserId } from "./profileService";
+import { getProfileByUserId, upsertUserProfile } from "./profileService";
 import { OnboardingData } from "@/app/onboarding/types";
 
 export function useUserProfile() {
@@ -30,5 +30,19 @@ export function useUserProfile() {
     },
     enabled: !!userId,
     retry: 1,
+  });
+}
+
+export function useProfileUpsert() {
+  const { userId } = useAuth();
+
+  return useMutation({
+    mutationFn: (formData: OnboardingData) => {
+      if (!userId) {
+        throw new Error("No logged in user.");
+      }
+
+      return upsertUserProfile({ userId, formData });
+    },
   });
 }

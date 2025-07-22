@@ -12,7 +12,7 @@ import StartupDetailsForm from "./form-components/StartupDetailsForm";
 import InterestsAndValuesForm from "./form-components/InterestsAndValuesForm";
 import ReviewForm from "./form-components/ReviewForm";
 import { OnboardingData } from "./types";
-import { upsertUserProfile } from "@/services/profileService";
+import { useProfileUpsert } from "@/services/useProfile";
 
 export default function OnboardingComponent() {
   const [stepNumber, setStepNumber] = useState(1);
@@ -22,6 +22,8 @@ export default function OnboardingComponent() {
   const { user } = useUser();
   const { session } = useSession();
   const router = useRouter();
+
+  const { mutateAsync: upsertProfileMutationFn } = useProfileUpsert();
 
   const handleBack = () => {
     setStepNumber((prev) => prev - 1);
@@ -42,10 +44,7 @@ export default function OnboardingComponent() {
       }
 
       // -- Upsert OnboardingData into DB --
-      const { success, error } = await upsertUserProfile({
-        userId,
-        formData,
-      });
+      const { success, error } = await upsertProfileMutationFn(formData);
 
       if (!success) {
         setError(error || "Unknown error");
