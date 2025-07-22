@@ -1,6 +1,7 @@
 import { OnboardingData } from "@/app/onboarding/types";
 import { supabase } from "./supabaseClient";
 
+// -- Types --
 type UserProfileFromDb = {
   accomplishments: string | null;
   birthdate: string | null;
@@ -85,6 +86,47 @@ function mapProfileToOnboardingData(
   };
 }
 
+// Convert OnboardingData into Supabase-compliant format
+const mapOnboardingDatatoProfileDB = (data: OnboardingData) => {
+  return {
+    first_name: data.firstName || null,
+    last_name: data.lastName || null,
+    city: data.city || null,
+    country: data.country || null,
+    satisfaction: data.satisfaction ?? null,
+    gender: data.gender || null,
+    birthdate: data.birthdate ? new Date(data.birthdate) : null,
+
+    personal_intro: data.personalIntro || null,
+    accomplishments: data.accomplishments || null,
+    education: data.education || null,
+    experience: data.experience || null,
+    is_technical: data.isTechnical === "yes",
+
+    linkedin: data.linkedin || null,
+    twitter: data.twitter || null,
+    git: data.git || null,
+    personal_website: data.personalWebsite || null,
+
+    has_startup: data.hasStartup === "yes",
+    startup_name: data.name || null,
+    startup_description: data.description || null,
+    startup_time_spent: data.timeSpent || null,
+    startup_funding: data.funding || null,
+    cofounder_status: data.coFounderStatus || null,
+    fulltime_timeline: data.fullTimeTimeline || null,
+    responsibilities: data.responsibilities || null,
+
+    interests: data.interests || null,
+    priority_areas: data.priorityAreas || null,
+    hobbies: data.hobbies || null,
+    journey: data.journey || null,
+    extra: data.extra || null,
+
+    onboarding_complete: true,
+  };
+};
+
 // Fetch profile by userId
 export async function getProfileByUserId(
   userId: string,
@@ -106,3 +148,27 @@ export async function getProfileByUserId(
 //   if (error) throw error;
 //   return data;
 // }
+export async function upsertUserProfile({
+  userId,
+  formData,
+}: {
+  userId: string;
+  formData: OnboardingData;
+}): Promise<{ success: boolean; error?: string }> {
+  if (!userId) return { success: false, error: "Missing user ID" };
+
+  // -- Upsert into Supabase "profiles" table --
+  const dbData = mapOnboardingDatatoProfileDB(formData);
+
+  const { error: dbError } = await supabase.from("profiles").upsert({
+    user_id: userId,
+    ...dbData,
+  });
+
+  if (dbError) {
+    console.error("Supabase returned an error:", dbError);
+    throw new Error(`Error saving profile: ${dbError.message}`);
+  }
+
+  return { success: true };
+}

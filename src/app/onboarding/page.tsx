@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useSession, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
 
 import { completeOnboarding } from "./_actions";
 import WhoYouAreForm from "./form-components/WhoYouAreForm";
@@ -13,6 +12,7 @@ import StartupDetailsForm from "./form-components/StartupDetailsForm";
 import InterestsAndValuesForm from "./form-components/InterestsAndValuesForm";
 import ReviewForm from "./form-components/ReviewForm";
 import { OnboardingData } from "./types";
+import { upsertUserProfile } from "@/services/profileService";
 
 export default function OnboardingComponent() {
   const [stepNumber, setStepNumber] = useState(1);
@@ -31,80 +31,25 @@ export default function OnboardingComponent() {
     setStepNumber(step);
   };
 
-  // Convert OnboardingData into Supabase-compliant format
-  const transformFormDataForDb = (data: OnboardingData) => {
-    return {
-      first_name: data.firstName || null,
-      last_name: data.lastName || null,
-      city: data.city || null,
-      country: data.country || null,
-      satisfaction: data.satisfaction ?? null,
-      gender: data.gender || null,
-      birthdate: data.birthdate ? new Date(data.birthdate) : null,
-
-      personal_intro: data.personalIntro || null,
-      accomplishments: data.accomplishments || null,
-      education: data.education || null,
-      experience: data.experience || null,
-      is_technical: data.isTechnical === "yes",
-
-      linkedin: data.linkedin || null,
-      twitter: data.twitter || null,
-      git: data.git || null,
-      personal_website: data.personalWebsite || null,
-
-      has_startup: data.hasStartup === "yes",
-      startup_name: data.name || null,
-      startup_description: data.description || null,
-      startup_time_spent: data.timeSpent || null,
-      startup_funding: data.funding || null,
-      cofounder_status: data.coFounderStatus || null,
-      fulltime_timeline: data.fullTimeTimeline || null,
-      responsibilities: data.responsibilities || null,
-
-      interests: data.interests || null,
-      priority_areas: data.priorityAreas || null,
-      hobbies: data.hobbies || null,
-      journey: data.journey || null,
-      extra: data.extra || null,
-
-      onboarding_complete: true,
-    };
-  };
-
   const handleSubmit = async () => {
     try {
       // Upsert into supabase
       const userId = user?.id;
       const token = await session?.getToken();
 
-      if (!userId) {
-        return { message: "No Logged In User" };
+      if (!userId || !token) {
+        return { message: "No Logged In User or Missing Token" };
       }
 
-      const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_KEY!,
-        {
-          global: {
-            headers: {
-              Authorization: `Bearer ${token}`, // your Clerk JWT token
-            },
-          },
-        },
-      );
-
-      // -- Upsert into Supabase "profiles" table --
-      const dbData = transformFormDataForDb(formData);
-
-      const { error: dbError } = await supabase.from("profiles").upsert({
-        user_id: userId,
-        ...dbData,
+      // -- Upsert OnboardingData into DB --
+      const { success, error } = await upsertUserProfile({
+        userId,
+        formData,
       });
 
-      if (dbError) {
-        console.error("Supabase returned an error:", dbError);
-        throw new Error(`Error saving profile: ${dbError.message}`);
+      if (!success) {
+        setError(error || "Unknown error");
+        return;
       }
 
       // -- Complete Onboarding -> Update Clerk Metadata --
