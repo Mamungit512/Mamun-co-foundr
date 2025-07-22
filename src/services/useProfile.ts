@@ -20,7 +20,7 @@ export function useUserProfile() {
       }
 
       try {
-        return await getProfileByUserId(userId);
+        return await getProfileByUserId(userId, token);
       } catch (error) {
         throw {
           message: "Failed to load profile. Please try again later.",
@@ -36,13 +36,22 @@ export function useUserProfile() {
 export function useProfileUpsert() {
   const { userId } = useAuth();
 
+  const { session } = useSession();
+
   return useMutation({
-    mutationFn: (formData: OnboardingData) => {
-      if (!userId) {
-        throw new Error("No logged in user.");
+    mutationFn: async (formData: OnboardingData) => {
+      const token = await session?.getToken();
+
+      if (!userId || !token) {
+        throw new Error("No logged in user or authentication has failed");
       }
 
-      return upsertUserProfile({ userId, formData });
+      try {
+        return await upsertUserProfile({ userId, token, formData });
+      } catch (error) {
+        console.error(error);
+        throw new Error("Error upserting profile information to database");
+      }
     },
   });
 }

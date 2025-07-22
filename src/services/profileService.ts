@@ -1,5 +1,5 @@
 import { OnboardingData } from "@/app/onboarding/types";
-import { supabase } from "./supabaseClient";
+import { createSupabaseClientWithToken } from "./supabaseClient";
 
 // -- Types --
 type UserProfileFromDb = {
@@ -130,7 +130,10 @@ const mapOnboardingDatatoProfileDB = (data: OnboardingData) => {
 // Fetch profile by userId
 export async function getProfileByUserId(
   userId: string,
+  token: string,
 ): Promise<OnboardingData> {
+  const supabase = createSupabaseClientWithToken(token);
+  
   const { data, error } = await supabase
     .from("profiles")
     .select("*")
@@ -150,15 +153,19 @@ export async function getProfileByUserId(
 // }
 export async function upsertUserProfile({
   userId,
+  token,
   formData,
 }: {
   userId: string;
+  token: string;
   formData: OnboardingData;
 }): Promise<{ success: boolean; error?: string }> {
   if (!userId) return { success: false, error: "Missing user ID" };
 
   // -- Upsert into Supabase "profiles" table --
   const dbData = mapOnboardingDatatoProfileDB(formData);
+
+  const supabase = createSupabaseClientWithToken(token);
 
   const { error: dbError } = await supabase.from("profiles").upsert({
     user_id: userId,
