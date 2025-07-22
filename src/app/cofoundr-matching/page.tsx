@@ -7,7 +7,6 @@ import { ImCross } from "react-icons/im";
 import { TbMessageCircleFilled } from "react-icons/tb";
 
 import BatteryLevel from "@/components/BatteryLevel";
-import StripedArch from "@/components/StripedArch";
 import InformationTooltipButton from "@/components/ui/InformationTooltipButton";
 
 function CofoundrMatching() {
@@ -19,17 +18,24 @@ function CofoundrMatching() {
         </h1>
 
         <div className="mx-auto flex w-5/6 flex-col justify-center gap-x-24 rounded-2xl border-2 bg-(--mist-white) px-12 py-20 lg:flex-row xl:w-3/4 xl:gap-x-20">
-          {/* Striped Arch Overlay */}
-          <div className="relative mx-auto mb-10 aspect-[3/4] max-h-96 w-full max-w-72 flex-none overflow-visible">
-            <StripedArch />
+          {/* <div className="relative mx-auto mb-10 aspect-[3/4] max-h-96 w-full max-w-72 flex-none overflow-visible"> */}
+          <div className="relative mx-auto mb-10 h-[30rem] w-96">
+            {/* Striped Arch SVG */}
+            <Image
+              src="/img/arch1.svg"
+              alt="Decorative Arch"
+              fill
+              className="z-10 object-contain"
+            />
 
-            <div className="relative aspect-[3/4] max-h-96 w-full max-w-72 overflow-hidden">
-              {/* Image */}
+            {/* Profile Image */}
+            {/* <div className="absolute inset-4 z-0 overflow-hidden rounded-t-full"> */}
+            <div className="absolute top-12 left-14 z-0 h-96 w-60 overflow-hidden rounded-t-full">
               <Image
                 src="/img/bilal-hayat.png"
                 alt="Bilal Hayat Profile"
                 fill
-                className="rounded-t-full object-cover"
+                className="rounded-t-full object-contain"
               />
             </div>
           </div>
