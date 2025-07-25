@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth, useSession } from "@clerk/nextjs";
 import { getProfileByUserId, upsertUserProfile } from "./profileService";
 import { OnboardingData } from "@/app/onboarding/types";
+import toast from "react-hot-toast";
 
 export function useUserProfile() {
   const { userId } = useAuth();
@@ -52,6 +53,12 @@ export function useProfileUpsert() {
         console.error(error);
         throw new Error("Error upserting profile information to database");
       }
+    },
+    onSuccess: () => {
+      toast.success("Profile updated successfully!");
+    },
+    onError: (error) => {
+      toast.error(error?.message || "Failed to update profile.");
     },
   });
 }

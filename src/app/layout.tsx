@@ -7,6 +7,7 @@ import Header from "@/components/header_footer/Header";
 import Socials from "@/components/Socials";
 import Footer from "@/components/header_footer/Footer";
 import QueryProvider from "./_providers/QueryProvider";
+import { Toaster } from "react-hot-toast";
 
 const satoshi = localFont({
   src: "../../public/fonts/Satoshi-Variable.ttf",
@@ -34,6 +35,7 @@ export default function RootLayout({
             <Socials />
             <Footer />
           </QueryProvider>
+          <Toaster position="bottom-right" />
         </body>
       </html>
     </ClerkProvider>
