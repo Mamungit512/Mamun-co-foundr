@@ -167,10 +167,13 @@ export async function upsertUserProfile({
 
   const supabase = createSupabaseClientWithToken(token);
 
-  const { error: dbError } = await supabase.from("profiles").upsert({
-    user_id: userId,
-    ...dbData,
-  });
+  const { error: dbError } = await supabase.from("profiles").upsert(
+    {
+      user_id: userId,
+      ...dbData,
+    },
+    { onConflict: "user_id" },
+  );
 
   if (dbError) {
     console.error("Supabase returned an error:", dbError);

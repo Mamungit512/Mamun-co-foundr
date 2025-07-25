@@ -2,12 +2,16 @@
 
 import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useUserProfile } from "@/features/profile/useProfile";
+import {
+  useProfileUpsert,
+  useUserProfile,
+} from "@/features/profile/useProfile";
 import FormInput from "@/components/ui/FormInput";
 import type { OnboardingData } from "../onboarding/types";
 
 export default function EditProfile() {
   const { data: profileData, isLoading, isError, error } = useUserProfile();
+  const { mutateAsync: upsertProfileMutationFn } = useProfileUpsert();
 
   const {
     register,
@@ -23,8 +27,9 @@ export default function EditProfile() {
     if (profileData) reset(profileData);
   }, [profileData, reset]);
 
-  const onSubmit = (formData: Partial<OnboardingData>) => {
-    console.log(formData);
+  const onSubmit = async (formData: Partial<OnboardingData>) => {
+    // -- Upsert editted profile data into DB --
+    await upsertProfileMutationFn(formData);
   };
 
   if (isLoading) return <p>Loading profile...</p>;
