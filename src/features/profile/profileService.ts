@@ -1,5 +1,5 @@
 import { OnboardingData } from "@/app/onboarding/types";
-import { createSupabaseClientWithToken } from "./supabaseClient";
+import { createSupabaseClientWithToken } from "../../lib/supabaseClient";
 
 // -- Types --
 type UserProfileFromDb = {
@@ -133,7 +133,7 @@ export async function getProfileByUserId(
   token: string,
 ): Promise<OnboardingData> {
   const supabase = createSupabaseClientWithToken(token);
-  
+
   const { data, error } = await supabase
     .from("profiles")
     .select("*")

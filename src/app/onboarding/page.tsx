@@ -12,7 +12,7 @@ import StartupDetailsForm from "./form-components/StartupDetailsForm";
 import InterestsAndValuesForm from "./form-components/InterestsAndValuesForm";
 import ReviewForm from "./form-components/ReviewForm";
 import { OnboardingData } from "./types";
-import { useProfileUpsert } from "@/services/useProfile";
+import { useProfileUpsert } from "@/features/profile/useProfile";
 
 export default function OnboardingComponent() {
   const [stepNumber, setStepNumber] = useState(1);

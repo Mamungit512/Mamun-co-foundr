@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useUserProfile } from "@/services/useProfile";
+import { useUserProfile } from "@/features/profile/useProfile";
 import FormInput from "@/components/ui/FormInput";
 import type { OnboardingData } from "../onboarding/types";
 
