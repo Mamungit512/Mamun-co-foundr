@@ -14,7 +14,7 @@ export default function EditProfile() {
     handleSubmit,
     reset,
     control,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = useForm<Partial<OnboardingData>>({
     defaultValues: profileData,
   });
@@ -39,23 +39,22 @@ export default function EditProfile() {
         <h1 className="mb-8 text-3xl font-semibold">Edit Your Profile</h1>
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <label className="flex flex-col">
-            First Name *
+          <div>
+            <label>First Name *</label>
             <FormInput
               placeholder="First Name"
               {...register("firstName", { required: "First name is required" })}
             />
-          </label>
-
-          <label className="flex flex-col">
-            Last Name *
+          </div>
+          <div>
+            <label>Last Name *</label>
             <FormInput
               placeholder="Last Name"
               {...register("lastName", { required: "Last name is required" })}
             />
-          </label>
+          </div>
 
-          <label className="flex flex-col">
+          <label>
             City *
             <FormInput
               placeholder="City"
@@ -63,168 +62,175 @@ export default function EditProfile() {
             />
           </label>
 
-          <label className="flex flex-col">
-            Country *
+          <div>
+            <label>Country *</label>
             <FormInput
               placeholder="Country"
               {...register("country", { required: "Country is required" })}
             />
-          </label>
+          </div>
 
-          <label className="flex flex-col">
-            Satisfaction (0-10) *
+          <div>
+            <label className="flex flex-col">Satisfaction (0-10) *</label>
             <FormInput
               type="number"
-              placeholder="Satisfaction (0-10)"
+              placeholder="Satisfaction (0-100)"
               {...register("satisfaction", {
                 required: "Satisfaction is required",
                 min: { value: 0, message: "Minimum is 0" },
-                max: { value: 10, message: "Maximum is 10" },
+                max: { value: 100, message: "Maximum is 100" },
                 valueAsNumber: true,
               })}
             />
-          </label>
+            {errors.satisfaction && (
+              <p className="text-sm text-red-500">
+                {errors.satisfaction.message}
+              </p>
+            )}
+          </div>
 
-          <label className="flex flex-col">
-            Gender
+          <div>
+            <label className="flex flex-col">Gender</label>
             <FormInput
               type="text"
               placeholder="Gender"
               {...register("gender")}
             />
-          </label>
+          </div>
 
-          <label className="flex flex-col">
-            Birthdate
+          <div>
+            <label className="flex flex-col">Birthdate</label>
             <FormInput
               type="date"
               placeholder="Birthdate"
               {...register("birthdate")}
             />
-          </label>
+          </div>
 
-          <label className="flex flex-col">
-            Education *
+          <div>
+            <label className="flex flex-col">Education *</label>
             <FormInput
               placeholder="Education"
               {...register("education", { required: "Education is required" })}
             />
-          </label>
+          </div>
 
-          <label className="flex flex-col">
-            Experience *
+          <div>
+            <label className="flex flex-col">Experience *</label>
             <FormInput
               placeholder="Experience"
               {...register("experience", {
                 required: "Experience is required",
               })}
             />
-          </label>
+          </div>
 
-          <label className="flex flex-col">
-            Scheduling URL
+          <div>
+            <label className="flex flex-col">Scheduling URL</label>
             <FormInput
               placeholder="Scheduling URL"
               type="url"
               {...register("schedulingUrl")}
             />
-          </label>
+          </div>
 
-          <label className="flex flex-col">
-            LinkedIn URL
+          <div>
+            <label className="flex flex-col">LinkedIn URL</label>
             <FormInput
               placeholder="LinkedIn URL"
               type="url"
               {...register("linkedin")}
             />
-          </label>
+          </div>
 
-          <label className="flex flex-col">
-            Twitter URL
+          <div>
+            <label className="flex flex-col">Twitter URL</label>
             <FormInput
               placeholder="Twitter URL"
               type="url"
               {...register("twitter")}
             />
-          </label>
+          </div>
 
-          <label className="flex flex-col">
-            GitHub URL
+          <div>
+            <label className="flex flex-col">GitHub URL</label>
             <FormInput
               placeholder="GitHub URL"
               type="url"
               {...register("git")}
             />
-          </label>
+          </div>
 
-          <label className="flex flex-col">
-            Personal Website
+          <div>
+            <label className="flex flex-col">Personal Website</label>
             <FormInput
               placeholder="Personal Website"
               type="url"
               {...register("personalWebsite")}
             />
-          </label>
+          </div>
 
-          <label className="flex flex-col">
-            Startup Name
+          <div>
+            <label className="flex flex-col">Startup Name</label>
             <FormInput placeholder="Startup Name" {...register("name")} />
-          </label>
+          </div>
 
-          <label className="flex flex-col">
-            Time Spent on Startup
+          <div>
+            <label className="flex flex-col">Time Spent on Startup</label>
             <FormInput
               placeholder="Time Spent on Startup"
               {...register("timeSpent")}
             />
-          </label>
+          </div>
 
-          <label className="flex flex-col">
-            Startup Funding
+          <div>
+            <label className="flex flex-col">Startup Funding</label>
             <FormInput placeholder="Startup Funding" {...register("funding")} />
-          </label>
+          </div>
 
-          <label className="flex flex-col">
-            Cofounder Status
+          <div>
             <FormInput
               placeholder="Cofounder Status"
               {...register("coFounderStatus")}
             />
-          </label>
+            <label className="flex flex-col">Cofounder Status</label>
+          </div>
 
-          <label className="flex flex-col">
-            Full-time Timeline
+          <div>
+            <label className="flex flex-col">Full-time Timeline</label>
             <FormInput
               placeholder="Full-time Timeline"
               {...register("fullTimeTimeline")}
             />
-          </label>
+          </div>
         </div>
 
-        <label className="mt-6 flex flex-col">
-          Personal Introduction *
+        <div>
+          <label className="mt-6 flex flex-col">Personal Introduction *</label>
           <textarea
             rows={4}
             placeholder="Personal Introduction"
             {...register("personalIntro", {
               required: "Personal intro is required",
             })}
-            className="mt-1 rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
+            className="mt-1 w-full rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
           />
-        </label>
+        </div>
 
-        <label className="mt-6 flex flex-col">
-          Accomplishments
+        <div>
+          <label className="mt-6 flex flex-col">Accomplishments</label>
           <textarea
             rows={3}
             placeholder="Accomplishments"
             {...register("accomplishments")}
-            className="mt-1 rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
+            className="mt-1 w-full rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
           />
-        </label>
+        </div>
 
-        <label className="mt-6 flex flex-col">
-          Responsibilities (comma separated)
+        <div>
+          <label className="mt-6 flex flex-col">
+            Responsibilities (comma separated)
+          </label>
           <Controller
             control={control}
             name="responsibilities"
@@ -248,17 +254,17 @@ export default function EditProfile() {
               );
             }}
           />
-        </label>
+        </div>
 
-        <label className="mt-6 flex flex-col">
-          Interests
+        <div>
+          <label className="mt-6 flex flex-col">Interests</label>
           <textarea
             rows={3}
             placeholder="Interests"
             {...register("interests")}
-            className="mt-1 rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
+            className="mt-1 w-full rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
           />
-        </label>
+        </div>
 
         <label className="mt-6 flex flex-col">
           Priority Areas (comma separated)
@@ -286,41 +292,41 @@ export default function EditProfile() {
           />
         </label>
 
-        <label className="mt-6 flex flex-col">
-          Hobbies
+        <div>
+          <label className="mt-6 flex flex-col">Hobbies</label>
           <textarea
             rows={3}
             placeholder="Hobbies"
             {...register("hobbies")}
-            className="mt-1 rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
+            className="mt-1 w-full rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
           />
-        </label>
+        </div>
 
-        <label className="mt-6 flex flex-col">
-          Journey
+        <div>
+          <label className="mt-6 flex flex-col">Journey</label>
           <textarea
             rows={3}
             placeholder="Journey"
             {...register("journey")}
-            className="mt-1 rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
+            className="mt-1 w-full rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
           />
-        </label>
+        </div>
 
-        <label className="mt-6 flex flex-col">
-          Extra
+        <div>
+          <label className="mt-6 flex flex-col">Extra</label>
           <textarea
             rows={3}
             placeholder="Extra"
             {...register("extra")}
-            className="mt-1 rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
+            className="mt-1 w-full rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
           />
-        </label>
+        </div>
 
         <div className="mt-8 flex justify-end gap-4">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="rounded border border-white px-6 py-2 text-white transition hover:bg-white hover:text-black"
+            className="cursor-pointer rounded border border-white px-6 py-2 text-white transition hover:bg-white hover:text-black"
           >
             Save Changes
           </button>
