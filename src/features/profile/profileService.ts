@@ -145,12 +145,6 @@ export async function getProfileByUserId(
 }
 
 // Upsert profile data
-// export async function upsertProfile(profileData: any) {
-//   const { data, error } = await supabase.from("profiles").upsert(profileData);
-
-//   if (error) throw error;
-//   return data;
-// }
 export async function upsertUserProfile({
   userId,
   token,
