@@ -1,11 +1,14 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
+import AccessCodeForm from "@/components/home/AccessCodeForm";
 import FAQ from "@/components/home/faq";
 import { SignInButton } from "@clerk/nextjs";
 import ReactLenis from "lenis/react";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { MdKeyboardArrowRight } from "react-icons/md";
+
 
 /* ------
 HOME PAGE
@@ -14,6 +17,12 @@ Page the user first sees when navigating to the root url of the site
 ------ */
 
 function page() {
+  const [accessGranted, setAccessGranted] = useState(false);
+
+  if (!accessGranted) {
+    return <AccessCodeForm onSuccess={() => setAccessGranted(true)} />;
+  }
+
   return (
     <ReactLenis root>
       <main className="section-height flex flex-col items-center justify-center bg-(--charcoal-black) px-5 pt-12 pb-40 text-center text-(--mist-white) sm:px-10 lg:px-40">

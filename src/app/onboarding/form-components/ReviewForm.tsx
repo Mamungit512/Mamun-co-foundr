@@ -14,6 +14,8 @@ export default function ReviewForm({
   onEdit,
   onSubmit,
 }: ReviewFormProps) {
+
+  
   return (
     <div className="space-y-6">
       <h2 className="heading-5">Review Your Info</h2>
@@ -124,7 +126,7 @@ export default function ReviewForm({
           Back
         </button>
         <button
-          className="rounded bg-green-600 px-4 py-2 text-white"
+          className="cursor-pointer rounded bg-green-600 px-4 py-2 text-white"
           onClick={onSubmit}
         >
           Confirm & Submit

@@ -6,6 +6,8 @@ import "./globals.css";
 import Header from "@/components/header_footer/Header";
 import Socials from "@/components/Socials";
 import Footer from "@/components/header_footer/Footer";
+import QueryProvider from "./_providers/QueryProvider";
+import { Toaster } from "react-hot-toast";
 
 const satoshi = localFont({
   src: "../../public/fonts/Satoshi-Variable.ttf",
@@ -14,6 +16,9 @@ const satoshi = localFont({
 export const metadata: Metadata = {
   title: "Mamun Cofounder Platform",
   description: "Cofounding Platform for the Muslim Community",
+  icons: {
+    icon: "/img/favicon.ico",
+  },
 };
 
 export default function RootLayout({
@@ -27,10 +32,13 @@ export default function RootLayout({
         <body
           className={`${satoshi.className} scroll-smooth bg-(--charcoal-black) antialiased lg:text-lg`}
         >
-          <Header />
-          {children}
-          <Socials />
-          <Footer />
+          <QueryProvider>
+            <Header />
+            {children}
+            <Socials />
+            <Footer />
+          </QueryProvider>
+          <Toaster position="bottom-right" />
         </body>
       </html>
     </ClerkProvider>
