@@ -2,13 +2,14 @@
 "use client";
 
 import AccessCodeForm from "@/components/home/AccessCodeForm";
+import CTA from "@/components/home/CTA";
 import FAQ from "@/components/home/faq";
+import Vision from "@/components/home/Vision";
 import { SignInButton } from "@clerk/nextjs";
 import ReactLenis from "lenis/react";
 import Image from "next/image";
 import React, { useState } from "react";
 import { MdKeyboardArrowRight } from "react-icons/md";
-
 
 /* ------
 HOME PAGE
@@ -141,8 +142,14 @@ function page() {
           </div>
         </section>
 
+        {/* --- Vision Section --- */}
+        <Vision />
+
         {/* -- FAQ -- */}
         <FAQ />
+
+        {/* --- CTA Section */}
+        <CTA />
       </main>
     </ReactLenis>
   );

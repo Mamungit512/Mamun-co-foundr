@@ -4,7 +4,7 @@ import React from "react";
 
 function Footer() {
   return (
-    <footer className="flex w-full items-center justify-center gap-x-4 bg-(--charcoal-black) pt-16 pb-30 text-(--mist-white)">
+    <footer className="flex w-full items-center justify-center gap-x-5 bg-(--charcoal-black) pt-16 pb-30 text-(--mist-white)">
       <Link
         href="/careers"
         className="translate-y hover:underline hover:underline-offset-4"
@@ -13,10 +13,10 @@ function Footer() {
       </Link>
       <Link href="/">
         <Image
-          src="/img/Mamun Logo.png"
+          src="/img/mamun-transparent-logo.png"
           width={100}
           height={100}
-          className="translate-y"
+          className="translate-y translate-y-1"
           alt="Mamun Logo. Circle with a line through it next to Mamun in all capital letters"
         />
       </Link>
