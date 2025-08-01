@@ -144,6 +144,23 @@ export async function getProfileByUserId(
   return mapProfileToOnboardingData(data) as OnboardingData;
 }
 
+// Get 20 profiles (batch fetching)
+export async function getProfiles({ token }: { token: string }) {
+  const supabase = createSupabaseClientWithToken(token);
+
+  const { data: profiles, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .limit(20);
+
+  if (error) {
+    throw error;
+    console.error(error);
+  }
+
+  return profiles;
+}
+
 // Upsert profile data
 export async function upsertUserProfile({
   userId,

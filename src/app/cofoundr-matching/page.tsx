@@ -119,15 +119,15 @@ function CofoundrMatching() {
             </ul>
 
             <div className="mt-10 flex items-center justify-center gap-x-10">
-              <button className="cursor-pointer">
+              <button className="translate-y cursor-pointer">
                 <ImCross className="size-5 text-red-500" />
               </button>
 
-              <button className="cursor-pointer">
+              <button className="translate-y cursor-pointer">
                 <FaStar className="size-7 text-gray-500" />
               </button>
 
-              <button className="cursor-pointer">
+              <button className="translate-y cursor-pointer">
                 <TbMessageCircleFilled className="size-7 text-blue-500" />
               </button>
             </div>
