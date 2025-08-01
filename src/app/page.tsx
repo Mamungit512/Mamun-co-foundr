@@ -2,6 +2,7 @@
 "use client";
 
 import AccessCodeForm from "@/components/home/AccessCodeForm";
+import CTA from "@/components/home/CTA";
 import FAQ from "@/components/home/faq";
 import Vision from "@/components/home/Vision";
 import { SignInButton } from "@clerk/nextjs";
@@ -146,6 +147,9 @@ function page() {
 
         {/* -- FAQ -- */}
         <FAQ />
+
+        {/* --- CTA Section */}
+        <CTA />
       </main>
     </ReactLenis>
   );
