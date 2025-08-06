@@ -20,12 +20,12 @@ function Footer() {
           alt="Mamun Logo. Circle with a line through it next to Mamun in all capital letters"
         />
       </Link>
-      <a
-        href="mailto:mamun@mamuncofoundr.com"
+      <Link
+        href="/contact-us"
         className="translate-y hover:underline hover:underline-offset-4"
       >
         Contact Us
-      </a>
+      </Link>
     </footer>
   );
 }
