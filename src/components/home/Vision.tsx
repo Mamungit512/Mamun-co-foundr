@@ -6,7 +6,7 @@ function Vision() {
   return (
     <section className="mt-50 w-full">
       <p className="mb-28 text-center font-semibold">
-        Vision: Removing Barriers to Usher in the{" "}
+        Vision: Removing barriers to usher in the{" "}
         <span className="text-yellow-300">Islamic Renaissance 2.0</span>
       </p>
       <div className="flex gap-x-20">
@@ -16,7 +16,7 @@ function Vision() {
 
           <p>
             Engage with innovators and visionaries from around the globe, and
-            transcend borders. Your ideal founder awaits you
+            transcend borders. Your ideal founder awaits you.
           </p>
         </div>
 
@@ -26,7 +26,7 @@ function Vision() {
 
           <p>
             Mamun isn&apos;t just for business. It&apos;s for anyone looking to
-            make a positive impact on the world
+            make a positive impact on the world.
           </p>
         </div>
 
