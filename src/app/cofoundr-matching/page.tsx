@@ -1,6 +1,8 @@
+"use client";
+
 import ReactLenis from "lenis/react";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { CiCircleInfo } from "react-icons/ci";
 import { FaLocationDot, FaStar } from "react-icons/fa6";
 import { ImCross } from "react-icons/im";
@@ -8,8 +10,16 @@ import { TbMessageCircleFilled } from "react-icons/tb";
 
 import BatteryLevel from "@/components/BatteryLevel";
 import InformationTooltipButton from "@/components/ui/InformationTooltipButton";
+import { useGetProfiles } from "@/features/profile/useProfile";
 
 function CofoundrMatching() {
+  const [curProfileIdx, setCurProfileIdx] = useState(0);
+  const { data: profiles } = useGetProfiles();
+
+  console.log(profiles);
+
+  const curProfile = profiles && profiles[curProfileIdx];
+
   return (
     <ReactLenis root>
       <section className="section-padding section-height flex flex-col items-center bg-(--charcoal-black) pt-8 pb-20">

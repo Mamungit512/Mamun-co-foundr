@@ -8,6 +8,7 @@ import {
 import { OnboardingData } from "@/app/onboarding/types";
 import toast from "react-hot-toast";
 
+
 export function useGetProfiles() {
   const { session } = useSession();
 
@@ -28,7 +29,7 @@ export function useGetProfiles() {
         return await getProfiles({ token });
       } catch (error) {
         throw {
-          message: "Faild to load user profiles. Please try again later",
+          message: "Failed to load user profiles. Please try again later",
           originalError: error,
         };
       }
