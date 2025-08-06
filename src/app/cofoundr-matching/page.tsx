@@ -2,7 +2,7 @@
 
 import ReactLenis from "lenis/react";
 import Image from "next/image";
-import React, { useState } from "react";
+// import React, { useState } from "react";
 import { CiCircleInfo } from "react-icons/ci";
 import { FaLocationDot, FaStar } from "react-icons/fa6";
 import { ImCross } from "react-icons/im";
@@ -13,12 +13,12 @@ import InformationTooltipButton from "@/components/ui/InformationTooltipButton";
 import { useGetProfiles } from "@/features/profile/useProfile";
 
 function CofoundrMatching() {
-  const [curProfileIdx, setCurProfileIdx] = useState(0);
+  // const [curProfileIdx, setCurProfileIdx] = useState(0);
   const { data: profiles } = useGetProfiles();
 
   console.log(profiles);
 
-  const curProfile = profiles && profiles[curProfileIdx];
+  // const curProfile = profiles && profiles[curProfileIdx];
 
   return (
     <ReactLenis root>
