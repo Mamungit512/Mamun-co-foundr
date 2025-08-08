@@ -16,8 +16,6 @@ function CofoundrMatching() {
   const [curProfileIdx, setCurProfileIdx] = useState(0);
   const { data: profiles } = useGetProfiles();
 
-  console.log(profiles);
-
   if (!profiles || profiles.length === 0) return <p>No profiles found.</p>;
 
   const curProfile = profiles[curProfileIdx];
@@ -84,13 +82,13 @@ function CofoundrMatching() {
             </div>
 
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="heading-6">Marketing Specialist</h3>
+              <h3 className="heading-6">{curProfile.title}</h3>
 
               <div className="flex items-center gap-x-1 text-sm">
                 <p className="text-gray-700">
                   <b>COS:</b>
                 </p>
-                <p className="text-gray-700"> 70%</p>
+                <p className="text-gray-700"> {curProfile.satisfaction}%</p>
                 <InformationTooltipButton
                   text={
                     <div className="absolute top-full left-1/2 mt-2 w-[26rem] -translate-x-1/2 rounded bg-(--charcoal-black) px-2 py-1 text-sm text-white shadow">
@@ -110,30 +108,19 @@ function CofoundrMatching() {
 
             <div className="mb-4 flex items-center">
               <FaLocationDot className="mr-2" />
-              <p>Brussels, Belgium 🇧🇪</p>
+              <p>
+                {curProfile.city}, {curProfile.country}
+              </p>
             </div>
 
             <div className="mb-2">
               <p className="heading-6 font-bold">Bio:</p>
-              <p></p>
+              <p>{curProfile.personal_intro}</p>
             </div>
 
             <p className="heading-6 font-bold">Accomplishments:</p>
             <ul className="flex flex-col gap-y-1">
-              <li>
-                Built Appetas, an instant website builder for SMBs. Acquired by
-                Google in 2014.
-              </li>
-
-              <li>
-                Youngest engineer to be promoted to E7 (Senior Staff) at
-                DoorDash.
-              </li>
-
-              <li>
-                Scored a perfect 180 (99.99 percentile) on my LSAT and was on
-                law review at Harvard Law School.
-              </li>
+              {curProfile.accomplishments}
             </ul>
 
             <div className="mt-10 flex items-center justify-center gap-x-10">

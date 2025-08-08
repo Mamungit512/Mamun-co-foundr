@@ -34,6 +34,7 @@ type UserProfileFromDb = {
   startup_funding: string | null;
   startup_name: string | null;
   startup_time_spent: string | null;
+  title: string;
   twitter: string | null;
   updated_at: string;
   user_id: string;
@@ -47,6 +48,7 @@ function mapProfileToOnboardingData(
     // WhoYouAreFormData
     firstName: profile.first_name,
     lastName: profile.last_name,
+    title: profile.title,
     city: profile.city,
     country: profile.country,
     satisfaction: profile.satisfaction,
@@ -91,6 +93,7 @@ const mapOnboardingDatatoProfileDB = (data: OnboardingData) => {
   return {
     first_name: data.firstName || null,
     last_name: data.lastName || null,
+    title: data.title,
     city: data.city || null,
     country: data.country || null,
     satisfaction: data.satisfaction ?? null,

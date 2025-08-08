@@ -8,7 +8,6 @@ import {
 import { OnboardingData } from "@/app/onboarding/types";
 import toast from "react-hot-toast";
 
-
 export function useGetProfiles() {
   const { session } = useSession();
 
@@ -82,6 +81,8 @@ export function useProfileUpsert() {
       if (!userId || !token) {
         throw new Error("No logged in user or authentication has failed");
       }
+
+     
 
       try {
         return await upsertUserProfile({ userId, token, formData });
