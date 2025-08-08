@@ -2,7 +2,7 @@
 
 import ReactLenis from "lenis/react";
 import Image from "next/image";
-// import React, { useState } from "react";
+import React, { useState } from "react";
 import { CiCircleInfo } from "react-icons/ci";
 import { FaLocationDot, FaStar } from "react-icons/fa6";
 import { ImCross } from "react-icons/im";
@@ -13,12 +13,18 @@ import InformationTooltipButton from "@/components/ui/InformationTooltipButton";
 import { useGetProfiles } from "@/features/profile/useProfile";
 
 function CofoundrMatching() {
-  // const [curProfileIdx, setCurProfileIdx] = useState(0);
+  const [curProfileIdx, setCurProfileIdx] = useState(0);
   const { data: profiles } = useGetProfiles();
 
   console.log(profiles);
 
-  // const curProfile = profiles && profiles[curProfileIdx];
+  if (!profiles || profiles.length === 0) return <p>No profiles found.</p>;
+
+  const curProfile = profiles[curProfileIdx];
+
+  const handleNextProfile = () => {
+    setCurProfileIdx((prev) => (prev + 1 < profiles.length ? prev + 1 : 0));
+  };
 
   return (
     <ReactLenis root>
@@ -52,7 +58,9 @@ function CofoundrMatching() {
 
           <div>
             <div className="mb-2 flex items-center justify-between">
-              <h2 className="heading-5">Bilal Hayat</h2>
+              <h2 className="heading-5">
+                {curProfile.first_name} {curProfile.last_name}
+              </h2>
               <div className="flex items-center">
                 <BatteryLevel level={80} />
                 <InformationTooltipButton
@@ -129,7 +137,10 @@ function CofoundrMatching() {
             </ul>
 
             <div className="mt-10 flex items-center justify-center gap-x-10">
-              <button className="translate-y cursor-pointer">
+              <button
+                className="translate-y cursor-pointer"
+                onClick={handleNextProfile}
+              >
                 <ImCross className="size-5 text-red-500" />
               </button>
 
