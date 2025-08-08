@@ -59,6 +59,14 @@ export default function EditProfile() {
             />
           </div>
 
+          <div>
+            <label>Title *</label>
+            <FormInput
+              placeholder="Title: (Ex. Software Engineer)"
+              {...register("title", { required: "Title is required" })}
+            />
+          </div>
+
           <label>
             City *
             <FormInput

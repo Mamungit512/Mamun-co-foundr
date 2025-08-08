@@ -7,6 +7,17 @@ export type OnboardingData = Partial<
     InterestsAndValuesFormData
 >;
 
+export type WhoYouAreFormData = {
+  firstName: string;
+  lastName: string;
+  title: string;
+  city: string;
+  country: string;
+  satisfaction: number;
+  gender?: string;
+  birthdate?: string;
+};
+
 export type InterestsAndValuesFormData = {
   interests?: string;
   priorityAreas?: string[];
@@ -40,14 +51,4 @@ export type StartupDetailsFormData = {
   coFounderStatus?: string;
   fullTimeTimeline?: string;
   responsibilities?: string[];
-};
-
-export type WhoYouAreFormData = {
-  firstName: string;
-  lastName: string;
-  city: string;
-  country: string;
-  satisfaction: number;
-  gender?: string;
-  birthdate?: string;
 };
