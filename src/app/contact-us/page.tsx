@@ -1,8 +1,42 @@
+"use client";
+
 import React from "react";
 import FormInput from "@/components/ui/FormInput";
 import ReactLenis from "lenis/react";
+import { useForm } from "react-hook-form";
+
+type ContactFormValues = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  message: string;
+  helpTopics: string[];
+  heardAboutUs: string[];
+};
 
 function ContactPage() {
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting, isSubmitSuccessful, isSubmitted },
+    reset,
+  } = useForm<ContactFormValues>();
+
+  const onSubmit = async (data: ContactFormValues) => {
+    try {
+      const res = await fetch("/api/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) throw new Error("Failed to send contact us message");
+
+      reset();
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <ReactLenis root>
       <section className="section-padding section-height bg-[var(--charcoal-black)] pt-8 pb-20 text-[var(--mist-white)]">
@@ -14,13 +48,28 @@ function ContactPage() {
             </p>
           </div>
 
-          <form className="space-y-8">
+          <form className="space-y-8" onSubmit={handleSubmit(onSubmit)}>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <FormInput name="firstName" placeholder="First name" required />
-              <FormInput name="lastName" placeholder="Last name" required />
+              <FormInput
+                {...register("firstName", {
+                  required: "First name is required",
+                })}
+                placeholder="First name"
+              />
+              <FormInput
+                {...register("lastName", { required: "Last name is required" })}
+                placeholder="Last name"
+              />
             </div>
 
-            <FormInput type="email" name="email" placeholder="Email" required />
+            <FormInput
+              type="email"
+              placeholder="Email"
+              {...register("email", {
+                required: "Email is required",
+                pattern: { value: /^\S+@\S+$/i, message: "Invalid email" },
+              })}
+            />
             <input
               type="text"
               name="website"
@@ -31,7 +80,7 @@ function ContactPage() {
 
             <div>
               <textarea
-                name="message"
+                {...register("message", { required: "Message is required" })}
                 placeholder="Message"
                 rows={5}
                 className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white placeholder-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none"
@@ -54,7 +103,7 @@ function ContactPage() {
                   <label key={option} className="flex items-center gap-2">
                     <input
                       type="checkbox"
-                      name="helpTopics"
+                      {...register("helpTopics")}
                       value={option.toLowerCase().replace(/\s+/g, "-")}
                       className="accent-white"
                     />
@@ -73,7 +122,7 @@ function ContactPage() {
                   <label key={option} className="flex items-center gap-2">
                     <input
                       type="checkbox"
-                      name="heardAboutUs"
+                      {...register("heardAboutUs")}
                       value={option.toLowerCase()}
                       className="accent-white"
                     />
@@ -87,8 +136,18 @@ function ContactPage() {
               type="submit"
               className="mt-6 cursor-pointer rounded-xl bg-white px-6 py-3 font-medium text-[var(--charcoal-black)] transition hover:bg-white/90"
             >
-              Send Message
+              {isSubmitting ? "Sending..." : "Send Message"}
             </button>
+
+            {/* Status Messages */}
+            {isSubmitted && isSubmitSuccessful && (
+              <p className="text-green-400">Message sent successfully!</p>
+            )}
+            {isSubmitted && !isSubmitSuccessful && (
+              <p className="text-red-400">
+                Something went wrong. Please try again.
+              </p>
+            )}
           </form>
           <div className="mt-12 border-t border-white/10 pt-8 text-sm text-white/60">
             <h3 className="mb-1 text-base font-medium text-white">
