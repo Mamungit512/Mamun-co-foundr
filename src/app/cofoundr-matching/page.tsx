@@ -37,7 +37,7 @@ function CofoundrMatching() {
         <div className="mx-auto w-5/6 rounded-2xl border-2 bg-(--mist-white) px-12 py-20 xl:w-3/4">
           <div className="flex flex-col justify-center gap-x-24 lg:flex-row xl:gap-x-20">
             {/* <div className="relative mx-auto mb-10 aspect-[3/4] max-h-96 w-full max-w-72 flex-none overflow-visible"> */}
-            <div className="relative mx-auto mb-10 h-[30rem] w-96">
+            <div className="relative mx-auto mb-10 h-[30rem] w-96 flex-none">
               {/* Striped Arch SVG */}
               <Image
                 src="/img/arch1.svg"
@@ -48,7 +48,7 @@ function CofoundrMatching() {
 
               {/* Profile Image */}
               {/* <div className="absolute inset-4 z-0 overflow-hidden rounded-t-full"> */}
-              <div className="absolute top-12 left-14 z-0 h-96 w-60 overflow-hidden rounded-t-full">
+              <div className="absolute top-12 left-18 z-0 h-96 w-60 overflow-hidden rounded-t-full">
                 <Image
                   src="/img/bilal-hayat.png"
                   alt="Bilal Hayat Profile"
