@@ -125,6 +125,45 @@ export async function getProfiles({ token }: { token: string }) {
   return profiles;
 }
 
+// Fetch profiles (excluding skipped)
+export async function getProfilesNoSkipped({ token }: { token: string }) {
+  const supabase = createSupabaseClientWithToken(token);
+
+  // --- Get User ID ---
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError) throw userError;
+  if (!user) throw new Error("User not found");
+
+  const currentUserId = user.id;
+
+  // --- Fetch Profiles ---
+  const { data: profiles, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .neq("id", currentUserId)
+    .not(
+      "id",
+      "in",
+      supabase
+        .from("user_profile_actions")
+        .select("profile_id")
+        .eq("user_id", currentUserId)
+        .eq("action_type", "skip"),
+    )
+    .limit(1);
+
+  if (error) {
+    throw error;
+    console.error(error);
+  }
+
+  return profiles;
+}
+
 // Upsert profile data
 export async function upsertUserProfile({
   userId,
