@@ -4,7 +4,6 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import FormInput from "@/components/ui/FormInput";
-import { WhoYouAreFormData } from "../types";
 
 function WhoYouAreForm({
   onNext,

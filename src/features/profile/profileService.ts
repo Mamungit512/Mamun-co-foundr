@@ -1,4 +1,3 @@
-import { OnboardingData } from "@/app/onboarding/types";
 import { createSupabaseClientWithToken } from "../../lib/supabaseClient";
 
 // Mapping Functions to Convert Data to/from Database

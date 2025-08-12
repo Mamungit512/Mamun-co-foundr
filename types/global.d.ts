@@ -44,4 +44,59 @@ declare global {
     updated_at: string;
     user_id: string;
   };
+
+  // Combine all individual form step types
+  type OnboardingData = Partial<
+    WhoYouAreFormData &
+      IntroAccomplishmentsFormData &
+      OnboardingSocialsFormData &
+      StartupDetailsFormData &
+      InterestsAndValuesFormData
+  >;
+
+  type WhoYouAreFormData = {
+    firstName: string;
+    lastName: string;
+    title: string;
+    city: string;
+    country: string;
+    satisfaction: number;
+    gender?: string;
+    birthdate?: string;
+  };
+
+  type InterestsAndValuesFormData = {
+    interests?: string;
+    priorityAreas?: string[];
+    hobbies?: string;
+    journey?: string;
+    extra?: string;
+  };
+
+  type IntroAccomplishmentsFormData = {
+    personalIntro: string;
+    accomplishments?: string;
+    education: string;
+    experience: string;
+    isTechnical: "yes" | "no";
+    schedulingUrl?: string;
+  };
+
+  type OnboardingSocialsFormData = {
+    linkedin: string;
+    twitter: string;
+    git: string;
+    personalWebsite: string;
+  };
+
+  type StartupDetailsFormData = {
+    hasStartup: "yes" | "no";
+    name?: string;
+    description?: string;
+    timeSpent?: string;
+    funding?: string;
+    coFounderStatus?: string;
+    fullTimeTimeline?: string;
+    responsibilities?: string[];
+  };
 }
