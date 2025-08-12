@@ -64,6 +64,18 @@ function WhoYouAreForm({
           </div>
         </div>
 
+        <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
+          <label htmlFor="lastName">Job Title</label>
+          <FormInput
+            type="text"
+            placeholder="e.g. UX Designer, Software Engineer, etc"
+            {...register("title", { required: true })}
+          />
+          {errors.title && (
+            <p className="text-sm text-red-500">Job title is required</p>
+          )}
+        </div>
+
         {/* City */}
         <div className="flex w-full flex-col gap-x-20 gap-y-2">
           <label htmlFor="city">City</label>
