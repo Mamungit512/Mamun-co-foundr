@@ -196,3 +196,55 @@ export async function upsertUserProfile({
 
   return { success: true };
 }
+
+// Create new profile (admin role required)
+
+// Upsert profile data
+export async function createUserProfile({
+  userId,
+  token,
+  formData,
+}: {
+  userId: string;
+  token: string;
+  formData: OnboardingData;
+}): Promise<{ success: boolean; error?: string }> {
+  if (!userId) return { success: false, error: "Missing user ID" };
+
+  const supabase = createSupabaseClientWithToken(token);
+
+  // --- Check if user is an admin
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("is_admin") // or .select("role") depending on your schema
+    .eq("user_id", userId)
+    .single();
+
+  if (profileError) {
+    console.error("Error fetching profile:", profileError);
+    return { success: false, error: "Failed to verify admin status" };
+  }
+
+  if (!profile?.is_admin) {
+    return { success: false, error: "Unauthorized: Admin access required" };
+  }
+
+  // --- Insert profile data ---
+
+  const dbData = mapOnboardingDatatoProfileDB(formData);
+
+  const { error: dbError } = await supabase.from("profiles").upsert(
+    {
+      user_id: userId,
+      ...dbData,
+    },
+    { onConflict: "user_id" },
+  );
+
+  if (dbError) {
+    console.error("Supabase returned an error:", dbError);
+    throw new Error(`Error saving profile: ${dbError.message}`);
+  }
+
+  return { success: true };
+}
