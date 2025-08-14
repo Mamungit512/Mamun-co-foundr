@@ -1,33 +1,33 @@
 import React from "react";
 
-function CofoundrShowMore({ curProfile }: { curProfile: UserProfileFromDb }) {
+function CofoundrShowMore({ curProfile }: { curProfile: OnboardingData }) {
   return (
     <>
       <div className="mt-20">
         <h2 className="heading-5"> Startup Plans</h2>
         <h3 className="heading-6 font-bold">Has Startup:</h3>
         <ul className="flex flex-col gap-y-1">
-          {curProfile.has_startup ? "Yes" : "No"}
+          {curProfile.hasStartup ? "Yes" : "No"}
         </ul>
 
-        {curProfile.has_startup && (
+        {curProfile.hasStartup && (
           <div>
             <h3 className="heading-6 font-bold">Startup Name:</h3>
-            <ul className="flex flex-col gap-y-1">{curProfile.startup_name}</ul>
+            <ul className="flex flex-col gap-y-1">{curProfile.startupName}</ul>
 
             <h3 className="heading-6 font-bold">Startup Description:</h3>
             <ul className="flex flex-col gap-y-1">
-              {curProfile.startup_description}
+              {curProfile.startupDescription}
             </ul>
 
             <h3 className="heading-6 font-bold">Time Spent on Startup:</h3>
             <ul className="flex flex-col gap-y-1">
-              {curProfile.startup_time_spent}
+              {curProfile.startupTimeSpent}
             </ul>
 
             <h3 className="heading-6 font-bold">Current Startup Funding:</h3>
             <ul className="flex flex-col gap-y-1">
-              {curProfile.startup_funding}
+              {curProfile.startupFunding}
             </ul>
           </div>
         )}
@@ -62,7 +62,7 @@ function CofoundrShowMore({ curProfile }: { curProfile: UserProfileFromDb }) {
         <ul className="flex flex-col gap-y-1">{curProfile.git}</ul>
 
         <h3 className="heading-6 font-bold">Personal Website:</h3>
-        <ul className="flex flex-col gap-y-1">{curProfile.personal_website}</ul>
+        <ul className="flex flex-col gap-y-1">{curProfile.personalWebsite}</ul>
       </div>
     </>
   );
