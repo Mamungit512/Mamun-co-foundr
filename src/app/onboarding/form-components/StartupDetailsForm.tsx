@@ -4,8 +4,6 @@ import React from "react";
 import { useForm, useWatch } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
 
-
-
 function StartupDetailsForm({
   onNext,
   onBack,
@@ -79,7 +77,7 @@ function StartupDetailsForm({
             <FormInput
               type="text"
               placeholder="e.g. Cohub, FinTrack"
-              {...register("name")}
+              {...register("startupName")}
             />
           </div>
 
@@ -89,7 +87,7 @@ function StartupDetailsForm({
               rows={3}
               placeholder="Tell us what it's about in 1–2 sentences"
               className="rounded-sm border border-gray-400 bg-gray-700 px-2 py-1 text-white"
-              {...register("description")}
+              {...register("startupDescription")}
             />
           </div>
 
@@ -98,7 +96,7 @@ function StartupDetailsForm({
             <FormInput
               type="text"
               placeholder="e.g. 3 months in, MVP built and 5 users"
-              {...register("timeSpent")}
+              {...register("startupTimeSpent")}
             />
           </div>
 
@@ -107,7 +105,7 @@ function StartupDetailsForm({
             <FormInput
               type="text"
               placeholder="e.g. Bootstrapped, Pre-seed, $20k grant"
-              {...register("funding")}
+              {...register("startupFunding")}
             />
           </div>
 

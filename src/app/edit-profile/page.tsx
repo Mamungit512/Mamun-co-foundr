@@ -8,7 +8,6 @@ import {
 } from "@/features/profile/useProfile";
 import FormInput from "@/components/ui/FormInput";
 
-
 export default function EditProfile() {
   const { data: profileData, isLoading, isError, error } = useUserProfile();
   const { mutateAsync: upsertProfileMutationFn } = useProfileUpsert();
@@ -185,20 +184,23 @@ export default function EditProfile() {
 
           <div>
             <label className="flex flex-col">Startup Name</label>
-            <FormInput placeholder="Startup Name" {...register("name")} />
+            <FormInput
+              placeholder="Startup Name"
+              {...register("startupName")}
+            />
           </div>
 
           <div>
             <label className="flex flex-col">Time Spent on Startup</label>
             <FormInput
               placeholder="Time Spent on Startup"
-              {...register("timeSpent")}
+              {...register("startupTimeSpent")}
             />
           </div>
 
           <div>
             <label className="flex flex-col">Startup Funding</label>
-            <FormInput placeholder="Startup Funding" {...register("funding")} />
+            <FormInput placeholder="Startup Funding" {...register("startupFunding")} />
           </div>
 
           <div>
