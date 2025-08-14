@@ -196,9 +196,7 @@ export async function upsertUserProfile({
   return { success: true };
 }
 
-// Create new profile (admin role required)
-
-// Upsert profile data
+// -- Create new TEST profile (admin role required) --
 export async function createUserProfile({
   userId,
   token,
@@ -212,7 +210,7 @@ export async function createUserProfile({
 
   const supabase = createSupabaseClientWithToken(token);
 
-  // --- Check if user is an admin
+  // --- Check if user is an admin ---
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("is_admin") // or .select("role") depending on your schema
@@ -232,16 +230,15 @@ export async function createUserProfile({
 
   const dbData = mapOnboardingDatatoProfileDB(formData);
 
-  const { error: dbError } = await supabase.from("profiles").upsert(
+  const { error: dbError } = await supabase.from("profiles").insert([
     {
-      user_id: userId,
       ...dbData,
+      user_id: formData.user_id,
     },
-    { onConflict: "user_id" },
-  );
+  ]);
 
   if (dbError) {
-    console.error("Supabase returned an error:", dbError);
+    console.error("Error inserting profile:", dbError);
     throw new Error(`Error saving profile: ${dbError.message}`);
   }
 
