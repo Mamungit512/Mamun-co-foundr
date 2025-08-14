@@ -5,10 +5,18 @@ import { useSession, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
 import { completeOnboarding } from "./_actions";
+import WhoYouAreForm from "./form-components/WhoYouAreForm";
+import OnboardingSocialsForm from "./form-components/OnboardingSocialsForm";
+import IntroAccomplishments from "./form-components/IntroAccomplishments";
+import StartupDetailsForm from "./form-components/StartupDetailsForm";
+import InterestsAndValuesForm from "./form-components/InterestsAndValuesForm";
+import ReviewForm from "./form-components/ReviewForm";
+import { OnboardingData } from "./types";
 import { useProfileUpsert } from "@/features/profile/useProfile";
-import CreateProfile from "@/components/forms/CreateProfile";
 
 export default function OnboardingComponent() {
+  const [stepNumber, setStepNumber] = useState(1);
+  const [formData, setFormData] = useState<OnboardingData>({});
   const [error, setError] = useState<string | null>(null);
 
   const { user } = useUser();
@@ -17,14 +25,22 @@ export default function OnboardingComponent() {
 
   const { mutateAsync: upsertProfileMutationFn } = useProfileUpsert();
 
-  const handleSubmit = async (formData: OnboardingData) => {
+  const handleBack = () => {
+    setStepNumber((prev) => prev - 1);
+  };
+
+  const handleEditStep = (step: number) => {
+    setStepNumber(step);
+  };
+
+  const handleSubmit = async () => {
     try {
       // Upsert into supabase
       const userId = user?.id;
       const token = await session?.getToken();
 
       if (!userId || !token) {
-        return { success: false, error: "No Logged In User or Missing Token" };
+        return { message: "No Logged In User or Missing Token" };
       }
 
       // -- Upsert OnboardingData into DB --
@@ -32,10 +48,7 @@ export default function OnboardingComponent() {
 
       if (!success) {
         setError(error || "Unknown error");
-        return {
-          success: false,
-          error: "Error upserting into profiles table",
-        };
+        return;
       }
 
       // -- Complete Onboarding -> Update Clerk Metadata --
@@ -51,8 +64,6 @@ export default function OnboardingComponent() {
       console.error(err);
       setError("Something went wrong.");
     }
-
-    return { success: true };
   };
 
   return (
@@ -64,7 +75,63 @@ export default function OnboardingComponent() {
 
       {error && <p className="text-red-500">{error}</p>}
 
-      <CreateProfile onSubmit={handleSubmit} onError={(e) => setError(e)} />
+      {stepNumber === 1 && (
+        <WhoYouAreForm
+          onNext={(newData) => {
+            setFormData((prev) => ({ ...prev, ...newData }));
+            setStepNumber(2);
+          }}
+          defaultValues={formData} // pass current saved data here to pre-fill form
+        />
+      )}
+      {stepNumber === 2 && (
+        <IntroAccomplishments
+          onBack={handleBack}
+          onNext={(newData) => {
+            setFormData((prev) => ({ ...prev, ...newData }));
+            setStepNumber(3);
+          }}
+          defaultValues={formData}
+        />
+      )}
+      {stepNumber === 3 && (
+        <OnboardingSocialsForm
+          onBack={handleBack}
+          onNext={(newData) => {
+            setFormData((prev) => ({ ...prev, ...newData }));
+            setStepNumber(4);
+          }}
+          defaultValues={formData}
+        />
+      )}
+      {stepNumber === 4 && (
+        <StartupDetailsForm
+          onBack={handleBack}
+          onNext={(newData) => {
+            setFormData((prev) => ({ ...prev, ...newData }));
+            setStepNumber(5);
+          }}
+          defaultValues={formData}
+        />
+      )}
+      {stepNumber === 5 && (
+        <InterestsAndValuesForm
+          onBack={handleBack}
+          onNext={(newData) => {
+            setFormData((prev) => ({ ...prev, ...newData }));
+            setStepNumber(6);
+          }}
+          defaultValues={formData}
+        />
+      )}
+      {stepNumber === 6 && (
+        <ReviewForm
+          data={formData}
+          onBack={handleBack}
+          onEdit={handleEditStep}
+          onSubmit={handleSubmit}
+        />
+      )}
     </section>
   );
 }

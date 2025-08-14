@@ -5,10 +5,10 @@ import {
   getProfiles,
   upsertUserProfile,
 } from "./profileService";
+import { OnboardingData } from "@/app/onboarding/types";
 import toast from "react-hot-toast";
 
 export function useGetProfiles() {
-  const { userId } = useAuth();
   const { session } = useSession();
 
   const {
@@ -24,13 +24,8 @@ export function useGetProfiles() {
         throw { message: "Authentication failed. Please log in again." };
       }
 
-      if (!userId) {
-        throw { message: "No user id. Please log in." };
-      }
-
       try {
-        const currentUser = await getProfileByUserId(userId?.toString(), token);
-        return await getProfiles({ token }, currentUser);
+        return await getProfiles({ token });
       } catch (error) {
         throw {
           message: "Failed to load user profiles. Please try again later",
@@ -86,6 +81,8 @@ export function useProfileUpsert() {
       if (!userId || !token) {
         throw new Error("No logged in user or authentication has failed");
       }
+
+     
 
       try {
         return await upsertUserProfile({ userId, token, formData });

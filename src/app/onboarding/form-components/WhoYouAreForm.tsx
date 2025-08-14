@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import FormInput from "@/components/ui/FormInput";
+import { WhoYouAreFormData } from "../types";
 
 function WhoYouAreForm({
   onNext,
@@ -61,18 +62,6 @@ function WhoYouAreForm({
               <p className="text-sm text-red-500">Last name is required</p>
             )}
           </div>
-        </div>
-
-        <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
-          <label htmlFor="lastName">Job Title</label>
-          <FormInput
-            type="text"
-            placeholder="e.g. UX Designer, Software Engineer, etc"
-            {...register("title", { required: true })}
-          />
-          {errors.title && (
-            <p className="text-sm text-red-500">Job title is required</p>
-          )}
         </div>
 
         {/* City */}

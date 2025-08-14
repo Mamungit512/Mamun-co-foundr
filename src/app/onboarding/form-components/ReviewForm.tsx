@@ -1,4 +1,5 @@
 import React from "react";
+import { OnboardingData } from "../types";
 
 type ReviewFormProps = {
   data: OnboardingData;
@@ -13,6 +14,8 @@ export default function ReviewForm({
   onEdit,
   onSubmit,
 }: ReviewFormProps) {
+
+  
   return (
     <div className="space-y-6">
       <h2 className="heading-5">Review Your Info</h2>
@@ -24,7 +27,6 @@ export default function ReviewForm({
           fields={[
             { label: "First Name", value: data.firstName },
             { label: "Last Name", value: data.lastName },
-            { label: "Job Title", value: data.title },
             { label: "Gender", value: data.gender || "—" },
             { label: "Birthdate", value: data.birthdate || "—" },
             {
