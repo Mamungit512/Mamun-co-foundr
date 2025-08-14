@@ -55,7 +55,7 @@ declare global {
   >;
 
   type WhoYouAreFormData = {
-    user_id ?: string;
+    user_id?: string;
     firstName: string;
     lastName: string;
     title: string;
@@ -92,10 +92,10 @@ declare global {
 
   type StartupDetailsFormData = {
     hasStartup: "yes" | "no";
-    name?: string;
-    description?: string;
-    timeSpent?: string;
-    funding?: string;
+    startupName?: string;
+    startupDescription?: string;
+    startupTimeSpent?: string;
+    startupFunding?: string;
     coFounderStatus?: string;
     fullTimeTimeline?: string;
     responsibilities?: string[];

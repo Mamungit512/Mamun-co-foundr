@@ -1,94 +1,9 @@
+import {
+  mapOnboardingDatatoProfileDB,
+  mapProfileToOnboardingData,
+} from "@/lib/mapProfileToFromDBFormat";
 import { createSupabaseClientWithToken } from "../../lib/supabaseClient";
-
-// Mapping Functions to Convert Data to/from Database
-function mapProfileToOnboardingData(
-  profile: UserProfileFromDb,
-): OnboardingData {
-  return {
-    // WhoYouAreFormData
-    firstName: profile.first_name,
-    lastName: profile.last_name,
-    title: profile.title,
-    city: profile.city,
-    country: profile.country,
-    satisfaction: profile.satisfaction,
-    gender: profile.gender ?? undefined,
-    birthdate: profile.birthdate ?? undefined,
-
-    // IntroAccomplishmentsFormData
-    personalIntro: profile.personal_intro,
-    accomplishments: profile.accomplishments ?? undefined,
-    education: profile.education,
-    experience: profile.experience,
-    isTechnical: profile.is_technical ? "yes" : "no",
-    schedulingUrl: undefined, // No field provided in DB object, set to undefined
-
-    // OnboardingSocialsFormData
-    linkedin: profile.linkedin ?? "",
-    twitter: profile.twitter ?? "",
-    git: profile.git ?? "",
-    personalWebsite: profile.personal_website ?? "",
-
-    // StartupDetailsFormData
-    hasStartup: profile.has_startup ? "yes" : "no",
-    name: profile.startup_name ?? undefined,
-    description: profile.startup_description ?? undefined,
-    timeSpent: profile.startup_time_spent ?? undefined,
-    funding: profile.startup_funding ?? undefined,
-    coFounderStatus: profile.cofounder_status ?? undefined,
-    fullTimeTimeline: profile.fulltime_timeline ?? undefined,
-    responsibilities: profile.responsibilities ?? undefined,
-
-    // InterestsAndValuesFormData
-    interests: profile.interests ?? undefined,
-    priorityAreas: profile.priority_areas ?? [],
-    hobbies: profile.hobbies ?? undefined,
-    journey: profile.journey ?? undefined,
-    extra: profile.extra ?? undefined,
-  };
-}
-
-// Convert OnboardingData into Supabase-compliant format
-const mapOnboardingDatatoProfileDB = (data: OnboardingData) => {
-  return {
-    first_name: data.firstName || null,
-    last_name: data.lastName || null,
-    title: data.title,
-    city: data.city || null,
-    country: data.country || null,
-    satisfaction: data.satisfaction ?? null,
-    gender: data.gender || null,
-    birthdate: data.birthdate ? new Date(data.birthdate) : null,
-
-    personal_intro: data.personalIntro || null,
-    accomplishments: data.accomplishments || null,
-    education: data.education || null,
-    experience: data.experience || null,
-    is_technical: data.isTechnical === "yes",
-
-    linkedin: data.linkedin || null,
-    twitter: data.twitter || null,
-    git: data.git || null,
-    personal_website: data.personalWebsite || null,
-
-    has_startup: data.hasStartup === "yes",
-    startup_name: data.name || null,
-    startup_description: data.description || null,
-    startup_time_spent: data.timeSpent || null,
-    startup_funding: data.funding || null,
-    cofounder_status: data.coFounderStatus || null,
-    fulltime_timeline: data.fullTimeTimeline || null,
-    responsibilities: data.responsibilities || null,
-
-    interests: data.interests || null,
-    priority_areas: data.priorityAreas || null,
-    hobbies: data.hobbies || null,
-    journey: data.journey || null,
-    extra: data.extra || null,
-
-    onboarding_complete: true,
-  };
-};
+import { sortProfiles } from "../matching/matchingService";
 
 // Fetch profile by userId
 export async function getProfileByUserId(
@@ -107,8 +22,11 @@ export async function getProfileByUserId(
   return mapProfileToOnboardingData(data) as OnboardingData;
 }
 
-// Get 20 profiles (batch fetching)
-export async function getProfiles({ token }: { token: string }) {
+// Get Profiles: Gets 20 profiles (batch fetching) and sorts them by relevance using sorting algorithm
+export async function getProfiles(
+  { token }: { token: string },
+  currentUser: OnboardingData,
+) {
   const supabase = createSupabaseClientWithToken(token);
 
   const { data: profiles, error } = await supabase
@@ -121,7 +39,15 @@ export async function getProfiles({ token }: { token: string }) {
     console.error(error);
   }
 
-  return profiles;
+  if (!profiles) return [];
+
+  console.log(profiles);
+  const mappedProfiles = profiles.map(mapProfileToOnboardingData);
+
+  // --- Sort profiles based on scoring algorithm ---
+  const sorted = sortProfiles(currentUser, mappedProfiles);
+
+  return sorted;
 }
 
 // Fetch profiles (excluding skipped)

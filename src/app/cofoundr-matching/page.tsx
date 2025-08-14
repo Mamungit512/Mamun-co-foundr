@@ -61,7 +61,7 @@ function CofoundrMatching() {
             <div>
               <div className="mb-2 flex items-center justify-between">
                 <h2 className="heading-5">
-                  {curProfile.first_name} {curProfile.last_name}
+                  {curProfile.firstName} {curProfile.lastName}
                 </h2>
                 <div className="flex items-center">
                   <BatteryLevel level={80} />
@@ -119,7 +119,7 @@ function CofoundrMatching() {
 
               <div className="mb-2">
                 <h3 className="heading-6 font-bold">Bio:</h3>
-                <p>{curProfile.personal_intro}</p>
+                <p>{curProfile.personalIntro}</p>
               </div>
 
               <h3 className="heading-6 font-bold">Accomplishments:</h3>
@@ -127,9 +127,9 @@ function CofoundrMatching() {
                 {curProfile.accomplishments}
               </ul>
 
-              <h3 className="heading-6 font-bold">Is Technical:</h3>
+              <h3 className="heading-6 font-bold">Technical:</h3>
               <ul className="flex flex-col gap-y-1">
-                {curProfile.is_technical ? "Yes" : "No"}
+                {curProfile.isTechnical ? "Yes" : "No"}
               </ul>
 
               <h3 className="heading-6 font-bold">Education:</h3>
