@@ -7,7 +7,7 @@ import {
   useUserProfile,
 } from "@/features/profile/useProfile";
 import FormInput from "@/components/ui/FormInput";
-import type { OnboardingData } from "../onboarding/types";
+
 
 export default function EditProfile() {
   const { data: profileData, isLoading, isError, error } = useUserProfile();

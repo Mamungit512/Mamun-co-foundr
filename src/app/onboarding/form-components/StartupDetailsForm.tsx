@@ -3,7 +3,7 @@
 import React from "react";
 import { useForm, useWatch } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
-import { StartupDetailsFormData } from "../types";
+
 
 
 function StartupDetailsForm({

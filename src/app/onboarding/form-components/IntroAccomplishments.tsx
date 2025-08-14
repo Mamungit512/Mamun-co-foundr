@@ -3,7 +3,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
-import { IntroAccomplishmentsFormData } from "../types";
+
 
 function IntroAccomplishments({
   onNext,
