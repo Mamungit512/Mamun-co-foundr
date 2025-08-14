@@ -55,6 +55,7 @@ declare global {
   >;
 
   type WhoYouAreFormData = {
+    user_id ?: string;
     firstName: string;
     lastName: string;
     title: string;
