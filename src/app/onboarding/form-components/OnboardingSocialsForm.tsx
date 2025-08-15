@@ -1,7 +1,7 @@
 import FormInput from "@/components/ui/FormInput";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { OnboardingSocialsFormData } from "../types";
+
 
 
 
