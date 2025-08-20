@@ -4,7 +4,7 @@ import ReactLenis from "lenis/react";
 import Image from "next/image";
 import React, { useState } from "react";
 import { CiCircleInfo } from "react-icons/ci";
-import { FaLocationDot, FaStar } from "react-icons/fa6";
+import { FaHeart, FaLocationDot } from "react-icons/fa6";
 import { ImCross } from "react-icons/im";
 import { TbMessageCircleFilled } from "react-icons/tb";
 
@@ -148,7 +148,7 @@ function CofoundrMatching() {
                 </button>
 
                 <button className="translate-y cursor-pointer">
-                  <FaStar className="size-7 text-gray-500" />
+                  <FaHeart className="size-7 text-gray-500" />
                 </button>
 
                 <button className="translate-y cursor-pointer">
