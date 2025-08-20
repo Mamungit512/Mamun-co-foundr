@@ -4,7 +4,6 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
 
-
 function IntroAccomplishments({
   onNext,
   onBack,
@@ -61,6 +60,24 @@ function IntroAccomplishments({
           placeholder={`Built an app used by 10k+ users\nLaunched a startup\nTop 5% LeetCode`}
         />
         {/* No validation error needed here unless you want it */}
+      </div>
+
+      {/* Ummah Question */}
+      <div className="flex flex-col gap-y-2">
+        <label htmlFor="ummah">
+          If you were a civilizational engineer for the Ummah, what idea would
+          you bring?
+        </label>
+        <FormInput
+          {...register("ummah", { required: true })}
+          type="text"
+          placeholder="Your degree, school, etc."
+        />
+        {errors.ummah && (
+          <p className="text-sm text-red-500">
+            &quot;If you were a civilizational engineer...&quot; is required
+          </p>
+        )}
       </div>
 
       {/* Education */}

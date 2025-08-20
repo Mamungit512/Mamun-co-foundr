@@ -43,6 +43,7 @@ declare global {
     twitter: string | null;
     updated_at: string;
     user_id: string;
+    ummah: string;
   };
 
   // Combine all individual form step types
@@ -77,6 +78,7 @@ declare global {
   type IntroAccomplishmentsFormData = {
     personalIntro: string;
     accomplishments?: string;
+    ummah: string;
     education: string;
     experience: string;
     isTechnical: "yes" | "no";
