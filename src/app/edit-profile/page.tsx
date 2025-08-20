@@ -200,7 +200,10 @@ export default function EditProfile() {
 
           <div>
             <label className="flex flex-col">Startup Funding</label>
-            <FormInput placeholder="Startup Funding" {...register("startupFunding")} />
+            <FormInput
+              placeholder="Startup Funding"
+              {...register("startupFunding")}
+            />
           </div>
 
           <div>
@@ -238,6 +241,19 @@ export default function EditProfile() {
             rows={3}
             placeholder="Accomplishments"
             {...register("accomplishments")}
+            className="mt-1 w-full rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
+          />
+        </div>
+
+        <div>
+          <label className="mt-6 flex flex-col">
+            If you were a civilizational engineer for the Ummah, what idea would
+            you bring?
+          </label>
+          <textarea
+            rows={3}
+            placeholder=""
+            {...register("ummah")}
             className="mt-1 w-full rounded-sm border border-white bg-transparent px-3 py-2 placeholder-gray-400"
           />
         </div>
