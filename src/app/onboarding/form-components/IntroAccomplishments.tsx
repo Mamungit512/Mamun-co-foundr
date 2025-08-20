@@ -71,7 +71,7 @@ function IntroAccomplishments({
         <FormInput
           {...register("ummah", { required: true })}
           type="text"
-          placeholder="Your degree, school, etc."
+          placeholder="Your idea here"
         />
         {errors.ummah && (
           <p className="text-sm text-red-500">

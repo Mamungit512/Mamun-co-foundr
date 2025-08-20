@@ -138,6 +138,12 @@ function CofoundrMatching() {
               <h3 className="heading-6 font-bold">Work Experience:</h3>
               <ul className="flex flex-col gap-y-1">{curProfile.experience}</ul>
 
+              <h3 className="heading-6 font-bold">
+                If you were a civilizational engineer for the Ummah, what idea
+                would you bring?
+              </h3>
+              <ul className="flex flex-col gap-y-1">{curProfile.ummah}</ul>
+
               {/* --- Next, Save, Message Buttons --- */}
               <div className="mt-10 flex items-center justify-center gap-x-10">
                 <button
