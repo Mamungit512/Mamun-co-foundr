@@ -15,5 +15,8 @@ export async function GET(req: Request) {
   // Use "Buffer" from node to handle and manipulate the ray arrayBuffer data
   const buffer = Buffer.from(arrayBuffer); // Create a new node.js buffer from arrayBuffer
 
+  // TO DELETE LATER
+  console.log(req, buffer);
+
   return new NextResponse(imageUrl); // Change this later
 }
