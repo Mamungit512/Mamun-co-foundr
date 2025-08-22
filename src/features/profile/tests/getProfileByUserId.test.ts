@@ -61,7 +61,7 @@ describe("getProfileByUserId", () => {
     expect(result).toEqual(fakeMapped);
     expect(mockFrom).toHaveBeenCalledWith("profiles");
     expect(mockSelect).toHaveBeenCalled();
-    expect(mockEq).toHaveBeenCalledWith("id", "123");
+    expect(mockEq).toHaveBeenCalledWith("user_id", "123");
     expect(mockSingle).toHaveBeenCalled();
     expect(mockMapProfileToOnboardingData).toHaveBeenCalledWith(fakeDbData);
   });

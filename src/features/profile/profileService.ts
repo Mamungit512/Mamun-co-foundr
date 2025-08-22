@@ -19,6 +19,8 @@ export async function getProfileByUserId(
     .single();
 
   if (error) throw error;
+
+  if (!data) throw new Error("No profile found");
   return mapProfileToOnboardingData(data) as OnboardingData;
 }
 
