@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import localFont from "next/font/local";
+import { Analytics } from "@vercel/analytics/next";
 
 import "./globals.css";
 import Header from "@/components/header_footer/Header";
@@ -39,6 +40,7 @@ export default function RootLayout({
             <Footer />
           </QueryProvider>
           <Toaster position="bottom-right" />
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>

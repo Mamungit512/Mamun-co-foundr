@@ -4,7 +4,7 @@ import ReactLenis from "lenis/react";
 import Image from "next/image";
 import React, { useState } from "react";
 import { CiCircleInfo } from "react-icons/ci";
-import { FaLocationDot, FaStar } from "react-icons/fa6";
+import { FaHeart, FaLocationDot } from "react-icons/fa6";
 import { ImCross } from "react-icons/im";
 import { TbMessageCircleFilled } from "react-icons/tb";
 
@@ -138,6 +138,12 @@ function CofoundrMatching() {
               <h3 className="heading-6 font-bold">Work Experience:</h3>
               <ul className="flex flex-col gap-y-1">{curProfile.experience}</ul>
 
+              <h3 className="heading-6 font-bold">
+                If you were a civilizational engineer for the Ummah, what idea
+                would you bring?
+              </h3>
+              <ul className="flex flex-col gap-y-1">{curProfile.ummah}</ul>
+
               {/* --- Next, Save, Message Buttons --- */}
               <div className="mt-10 flex items-center justify-center gap-x-10">
                 <button
@@ -148,7 +154,7 @@ function CofoundrMatching() {
                 </button>
 
                 <button className="translate-y cursor-pointer">
-                  <FaStar className="size-7 text-gray-500" />
+                  <FaHeart className="size-7 text-gray-500" />
                 </button>
 
                 <button className="translate-y cursor-pointer">
