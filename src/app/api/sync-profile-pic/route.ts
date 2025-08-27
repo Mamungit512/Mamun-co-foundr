@@ -45,15 +45,16 @@ export async function GET() {
   const publicUrl = publicUrlData.publicUrl;
 
   // --- Update Supabase User Row with profile pic url ---
-  const { error: dbError } = await supabase
-    .from("users")
-    .update({ pfp_url: publicUrl })
-    .eq("user_id", user.id);
-
-  if (dbError) {
-    console.error(dbError);
+  try {
+    await supabase
+      .from("profiles")
+      .update({ pfp_url: publicUrl })
+      .eq("user_id", user.id);
+  } catch (err) {
+    console.error(err);
+    console.error("There was an error updating the user's pfp_url");
     return new Response("Error updating user row with pfp", { status: 500 });
   }
 
-  return NextResponse.json({ imageUrl: publicUrl });
+  return NextResponse.json({ success: true, imageUrl: publicUrl });
 }

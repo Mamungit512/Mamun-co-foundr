@@ -32,6 +32,7 @@ declare global {
     onboarding_complete: boolean;
     personal_intro: string;
     personal_website: string | null;
+    pfp_url?: string | null;
     priority_areas: string[]; // array of strings
     responsibilities: string[] | null;
     satisfaction: number;
@@ -59,6 +60,7 @@ declare global {
     user_id?: string;
     firstName: string;
     lastName: string;
+    pfp_url?: string;
     title: string;
     city: string;
     country: string;
