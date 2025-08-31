@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa6";
+import { motion } from "motion/react";
 
 function FAQ() {
   const [openFaqId, setOpenFaqId] = useState<number | null>(null);
@@ -74,9 +75,20 @@ function FAQ() {
     },
   ];
 
+  const toggleFaq = (faqId: number) => {
+    setOpenFaqId(openFaqId === faqId ? null : faqId);
+  };
+
   return (
-    <section className="mt-50 w-full">
-      <h2 className="heading-5 mb-10">Frequently Asked Questions</h2>
+    <section className="mt-50 w-full px-6 py-20 sm:px-8 lg:px-12">
+      <div className="mx-auto max-w-4xl">
+        <div className="mb-16 text-center">
+          <h2 className="heading-5 mb-4">Frequently Asked Questions</h2>
+          <p className="text-lg text-gray-300">
+            Everything you need to know about Mamun
+          </p>
+        </div>
+      </div>
       <hr className="mb-10 border-gray-400" />
       {faqList.map((faq) => {
         const isOpen = openFaqId === faq.id;
@@ -85,22 +97,50 @@ function FAQ() {
             key={faq.id + "-" + faq.question.substring(0, 4)}
             className="mb-10"
           >
-            {/* - Question - */}
-            <div className="flex items-center justify-between">
-              <p className="text-left text-xl font-semibold">{faq.question}</p>
-              <button
-                className="cursor-pointer"
-                onClick={() => setOpenFaqId(isOpen ? null : faq.id)}
-              >
-                {isOpen ? <FaMinus /> : <FaPlus />}
-              </button>
+            {/* - Question Block (Clickable) - */}
+            <div
+              className="flex cursor-pointer items-center justify-between rounded-lg p-4 transition-all duration-200 hover:bg-gray-800/30"
+              onClick={() => toggleFaq(faq.id)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  toggleFaq(faq.id);
+                }
+              }}
+            >
+              <p className="pr-4 text-left text-xl font-semibold">
+                {faq.question}
+              </p>
+              <div className="flex-shrink-0">
+                {isOpen ? (
+                  <FaMinus className="text-yellow-300" />
+                ) : (
+                  <FaPlus className="text-yellow-300" />
+                )}
+              </div>
             </div>
 
             {/* - Answer - */}
             {isOpen && (
-              <div className="mt-6 text-left">
-                <p>{faq.answer}</p>
-              </div>
+              <motion.div
+                className="mt-4 ml-4 text-left text-gray-300"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+              >
+                {Array.isArray(faq.answer) ? (
+                  <ul className="list-inside list-disc space-y-2">
+                    {faq.answer.map((item, index) => (
+                      <li key={index}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>{faq.answer}</p>
+                )}
+              </motion.div>
             )}
 
             <hr className="mt-10 border-gray-400" />
