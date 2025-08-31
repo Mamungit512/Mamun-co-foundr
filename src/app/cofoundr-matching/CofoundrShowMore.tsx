@@ -1,70 +1,164 @@
 import React from "react";
+import { motion } from "motion/react";
 
 function CofoundrShowMore({ curProfile }: { curProfile: OnboardingData }) {
   return (
-    <>
-      <div className="mt-20">
-        <h2 className="heading-5"> Startup Plans</h2>
-        <h3 className="heading-6 font-bold">Has Startup:</h3>
-        <ul className="flex flex-col gap-y-1">
-          {curProfile.hasStartup ? "Yes" : "No"}
-        </ul>
-
-        {curProfile.hasStartup && (
-          <div>
-            <h3 className="heading-6 font-bold">Startup Name:</h3>
-            <ul className="flex flex-col gap-y-1">{curProfile.startupName}</ul>
-
-            <h3 className="heading-6 font-bold">Startup Description:</h3>
-            <ul className="flex flex-col gap-y-1">
-              {curProfile.startupDescription}
-            </ul>
-
-            <h3 className="heading-6 font-bold">Time Spent on Startup:</h3>
-            <ul className="flex flex-col gap-y-1">
-              {curProfile.startupTimeSpent}
-            </ul>
-
-            <h3 className="heading-6 font-bold">Current Startup Funding:</h3>
-            <ul className="flex flex-col gap-y-1">
-              {curProfile.startupFunding}
-            </ul>
+    <div className="space-y-12">
+      {/* Startup Plans Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <h2 className="heading-5 mb-6 text-center text-yellow-300">
+          Startup Plans
+        </h2>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="font-semibold text-gray-300">Has Startup:</span>
+            <span
+              className={`rounded-full px-3 py-1 text-sm font-medium ${
+                curProfile.hasStartup
+                  ? "border border-green-500/30 bg-green-500/20 text-green-400"
+                  : "border border-gray-500/30 bg-gray-500/20 text-gray-400"
+              }`}
+            >
+              {curProfile.hasStartup ? "Yes" : "No"}
+            </span>
           </div>
-        )}
-      </div>
 
-      <div className="mt-20">
-        <h2 className="heading-5">Personal Interests</h2>
+          {curProfile.hasStartup && (
+            <div className="space-y-4 border-l-2 border-yellow-300/30 pl-4">
+              <div>
+                <h3 className="heading-6 mb-2 font-bold text-yellow-300">
+                  Startup Name
+                </h3>
+                <p className="text-gray-300">{curProfile.startupName}</p>
+              </div>
 
-        <h3 className="heading-6 font-bold">Interests:</h3>
-        <ul className="flex flex-col gap-y-1">{curProfile.interests}</ul>
+              <div>
+                <h3 className="heading-6 mb-2 font-bold text-yellow-300">
+                  Description
+                </h3>
+                <p className="leading-relaxed text-gray-300">
+                  {curProfile.startupDescription}
+                </p>
+              </div>
 
-        <h3 className="heading-6 font-bold">Hobbies:</h3>
-        <ul className="flex flex-col gap-y-1">{curProfile.hobbies}</ul>
+              <div>
+                <h3 className="heading-6 mb-2 font-bold text-yellow-300">
+                  Time Investment
+                </h3>
+                <p className="text-gray-300">{curProfile.startupTimeSpent}</p>
+              </div>
 
-        <h3 className="heading-6 font-bold">Journey:</h3>
-        <ul className="flex flex-col gap-y-1">{curProfile.journey}</ul>
+              <div>
+                <h3 className="heading-6 mb-2 font-bold text-yellow-300">
+                  Current Funding
+                </h3>
+                <p className="text-gray-300">{curProfile.startupFunding}</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </motion.div>
 
-        <h3 className="heading-6 font-bold">Extra Info:</h3>
-        <ul className="flex flex-col gap-y-1">{curProfile.extra}</ul>
-      </div>
+      {/* Personal Interests Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+      >
+        <h2 className="heading-5 mb-6 text-center text-yellow-300">
+          Personal Interests
+        </h2>
+        <div className="grid gap-6 sm:grid-cols-2">
+          <div>
+            <h3 className="heading-6 mb-3 font-bold text-yellow-300">
+              Interests
+            </h3>
+            <p className="leading-relaxed text-gray-300">
+              {curProfile.interests}
+            </p>
+          </div>
 
-      <div className="mt-20">
-        <h2 className="heading-5">Socials</h2>
+          <div>
+            <h3 className="heading-6 mb-3 font-bold text-yellow-300">
+              Hobbies
+            </h3>
+            <p className="leading-relaxed text-gray-300">
+              {curProfile.hobbies}
+            </p>
+          </div>
 
-        <h3 className="heading-6 font-bold">LinkedIn:</h3>
-        <ul className="flex flex-col gap-y-1">{curProfile.linkedin}</ul>
+          <div className="sm:col-span-2">
+            <h3 className="heading-6 mb-3 font-bold text-yellow-300">
+              Journey
+            </h3>
+            <p className="leading-relaxed text-gray-300">
+              {curProfile.journey}
+            </p>
+          </div>
 
-        <h3 className="heading-6 font-bold">Twitter:</h3>
-        <ul className="flex flex-col gap-y-1">{curProfile.twitter}</ul>
+          <div className="sm:col-span-2">
+            <h3 className="heading-6 mb-3 font-bold text-yellow-300">
+              Additional Info
+            </h3>
+            <p className="leading-relaxed text-gray-300">{curProfile.extra}</p>
+          </div>
+        </div>
+      </motion.div>
 
-        <h3 className="heading-6 font-bold">Git:</h3>
-        <ul className="flex flex-col gap-y-1">{curProfile.git}</ul>
+      {/* Socials Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+      >
+        <h2 className="heading-5 mb-6 text-center text-yellow-300">Socials</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="flex items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3">
+            <span className="text-blue-400">💼</span>
+            <div>
+              <h3 className="font-semibold text-gray-300">LinkedIn</h3>
+              <p className="text-sm text-gray-400">
+                {curProfile.linkedin || "Not provided"}
+              </p>
+            </div>
+          </div>
 
-        <h3 className="heading-6 font-bold">Personal Website:</h3>
-        <ul className="flex flex-col gap-y-1">{curProfile.personalWebsite}</ul>
-      </div>
-    </>
+          <div className="flex items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3">
+            <span className="text-blue-400">🐦</span>
+            <div>
+              <h3 className="font-semibold text-gray-300">Twitter</h3>
+              <p className="text-sm text-gray-400">
+                {curProfile.twitter || "Not provided"}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3">
+            <span className="text-green-400">📝</span>
+            <div>
+              <h3 className="font-semibold text-gray-300">Git</h3>
+              <p className="text-sm text-gray-400">
+                {curProfile.git || "Not provided"}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3">
+            <span className="text-purple-400">🌐</span>
+            <div>
+              <h3 className="font-semibold text-gray-300">Website</h3>
+              <p className="text-sm text-gray-400">
+                {curProfile.personalWebsite || "Not provided"}
+              </p>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
   );
 }
 
