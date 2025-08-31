@@ -12,6 +12,7 @@ export function mapProfileToOnboardingData(
     satisfaction: profile.satisfaction,
     gender: profile.gender ?? undefined,
     birthdate: profile.birthdate ?? undefined,
+    pfp_url: profile.pfp_url ?? undefined,
 
     // IntroAccomplishmentsFormData
     personalIntro: profile.personal_intro,
@@ -58,6 +59,7 @@ export function mapOnboardingDatatoProfileDB(data: OnboardingData) {
     satisfaction: data.satisfaction ?? null,
     gender: data.gender || null,
     birthdate: data.birthdate ? new Date(data.birthdate) : null,
+    pfp_url: data.pfp_url,
 
     personal_intro: data.personalIntro || null,
     accomplishments: data.accomplishments || null,

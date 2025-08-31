@@ -44,7 +44,18 @@ export default function OnboardingComponent() {
       if (res?.error) {
         setError(res.error);
       } else {
+        // --- Sync Clerk pfp to Supabase Storage Bucket ---
+        // try {
+        //   const syncRes = await fetch("/api/sync-profile-pic");
+        //   if (!syncRes.ok) throw new Error("Failed to sync profile pic");
+        //   const { imageUrl } = await syncRes.json();
+        //   console.log("Profile pic synced:", imageUrl);
+        // } catch (syncErr) {
+        //   console.error("Error syncing profile pic:", syncErr);
+        // }
+
         await user?.reload();
+
         router.push("/cofoundr-matching");
       }
     } catch (err) {

@@ -29,6 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
+      <Analytics />
       <html lang="en">
         <body
           className={`${satoshi.className} scroll-smooth bg-(--charcoal-black) antialiased lg:text-lg`}
@@ -40,7 +41,6 @@ export default function RootLayout({
             <Footer />
           </QueryProvider>
           <Toaster position="bottom-right" />
-          <Analytics />
         </body>
       </html>
     </ClerkProvider>

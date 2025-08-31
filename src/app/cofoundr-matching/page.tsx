@@ -22,6 +22,7 @@ function CofoundrMatching() {
   if (!profiles || profiles.length === 0) return <p>No profiles found.</p>;
 
   const curProfile = profiles[curProfileIdx];
+  console.log(curProfile.pfp_url);
 
   const handleNextProfile = () => {
     setCurProfileIdx((prev) => (prev + 1 < profiles.length ? prev + 1 : 0));
@@ -49,12 +50,14 @@ function CofoundrMatching() {
               {/* Profile Image */}
               {/* <div className="absolute inset-4 z-0 overflow-hidden rounded-t-full"> */}
               <div className="absolute top-12 left-18 z-0 h-96 w-60 overflow-hidden rounded-t-full">
-                <Image
-                  src="/img/bilal-hayat.png"
-                  alt="Bilal Hayat Profile"
-                  fill
-                  className="rounded-t-full object-contain"
-                />
+                {curProfile?.pfp_url && (
+                  <Image
+                    src={curProfile.pfp_url}
+                    alt="Bilal Hayat Profile"
+                    fill
+                    className="rounded-t-full object-contain"
+                  />
+                )}
               </div>
             </div>
 
