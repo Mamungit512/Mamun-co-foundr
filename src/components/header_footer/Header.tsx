@@ -3,7 +3,7 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import { FaPassport } from "react-icons/fa6";
+import { FaPassport, FaTrash } from "react-icons/fa6";
 
 function Header() {
   return (
@@ -42,6 +42,39 @@ function Header() {
                     label="Edit your ummatic passport"
                     href="/edit-profile"
                     labelIcon={<FaPassport />}
+                  />
+                  <UserButton.Action
+                    label="Delete Account"
+                    labelIcon={<FaTrash />}
+                    onClick={async () => {
+                      const confirmed = confirm(
+                        "Are you sure you want to delete your account? It will be permanently removed after 3 months.",
+                      );
+                      if (confirmed) {
+                        try {
+                          const response = await fetch("/api/delete-profile", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                          });
+
+                          if (response.ok) {
+                            alert("Your account has been marked for deletion.");
+                            // Optionally redirect to home page or sign out
+                            window.location.href = "/";
+                          } else {
+                            const errorData = await response.json();
+                            alert(
+                              `Error: ${errorData.error || "Failed to delete account"}`,
+                            );
+                          }
+                        } catch (error) {
+                          console.error("Error deleting account:", error);
+                          alert(
+                            "An error occurred while deleting your account. Please try again.",
+                          );
+                        }
+                      }
+                    }}
                   />
                 </UserButton.MenuItems>
               </UserButton>

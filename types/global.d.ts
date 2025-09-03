@@ -14,6 +14,8 @@ declare global {
     cofounder_status: string | null;
     country: string;
     created_at: string;
+    deleted_at: string | null; // Soft delete timestamp
+    permanent_delete_at: string | null; // Permanent delete timestamp
     education: string;
     experience: string;
     extra: string | null;
