@@ -16,6 +16,7 @@ export async function getProfileByUserId(
     .from("profiles")
     .select("*")
     .eq("user_id", userId)
+    .is("deleted_at", null) // Exclude soft-deleted profiles
     .single();
 
   if (error) throw error;
@@ -34,6 +35,7 @@ export async function getProfiles(
   const { data: profiles, error } = await supabase
     .from("profiles")
     .select("*")
+    .is("deleted_at", null) // Exclude soft-deleted profiles
     .limit(20);
 
   if (error) {
@@ -72,6 +74,7 @@ export async function getProfilesNoSkipped({ token }: { token: string }) {
     .from("profiles")
     .select("*")
     .neq("id", currentUserId)
+    .is("deleted_at", null) // Exclude soft-deleted profiles
     .not(
       "id",
       "in",
@@ -143,6 +146,7 @@ export async function createUserProfile({
     .from("profiles")
     .select("is_admin") // or .select("role") depending on your schema
     .eq("user_id", userId)
+    .is("deleted_at", null) // Exclude soft-deleted profiles
     .single();
 
   if (profileError) {

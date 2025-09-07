@@ -1,11 +1,19 @@
 "use client";
 
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+  useClerk,
+} from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import { FaPassport } from "react-icons/fa6";
+import { FaPassport, FaTrash } from "react-icons/fa6";
 
 function Header() {
+  const { signOut } = useClerk();
+
   return (
     <header className="section-padding flex items-center justify-between bg-(--charcoal-black) text-(--mist-white)">
       <Link href="/">
@@ -42,6 +50,41 @@ function Header() {
                     label="Edit your ummatic passport"
                     href="/edit-profile"
                     labelIcon={<FaPassport />}
+                  />
+                  <UserButton.Action
+                    label="Delete Account"
+                    labelIcon={<FaTrash />}
+                    onClick={async () => {
+                      const confirmed = confirm(
+                        "Are you sure you want to delete your account? It will be permanently removed after 3 months. Reactivate your account by logging back in before the permanent deletion date.",
+                      );
+                      if (confirmed) {
+                        try {
+                          const response = await fetch("/api/delete-profile", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                          });
+
+                          if (response.ok) {
+                            alert(
+                              "Your account has been marked for deletion. You will now be signed out.",
+                            );
+                            // Sign out the user after successful deletion
+                            signOut({ redirectUrl: "/" });
+                          } else {
+                            const errorData = await response.json();
+                            alert(
+                              `Error: ${errorData.error || "Failed to delete account"}`,
+                            );
+                          }
+                        } catch (error) {
+                          console.error("Error deleting account:", error);
+                          alert(
+                            "An error occurred while deleting your account. Please try again.",
+                          );
+                        }
+                      }
+                    }}
                   />
                 </UserButton.MenuItems>
               </UserButton>
