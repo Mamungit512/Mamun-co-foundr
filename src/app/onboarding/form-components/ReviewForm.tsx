@@ -36,10 +36,7 @@ export default function ReviewForm({
             },
             {
               label: "Current Satisfaction",
-              value:
-                typeof data.satisfaction === "number"
-                  ? `${data.satisfaction}/100`
-                  : "—",
+              value: data.satisfaction || "—",
             },
           ]}
           onEdit={() => onEdit(1)}
@@ -80,8 +77,11 @@ export default function ReviewForm({
               value: data.hasStartup === "yes" ? "Yes" : "No",
             },
             { label: "Company/Project Name", value: data.startupName || "—" },
-            { label: "Description", value: data.startupDescription|| "—" },
-            { label: "Time Spent & Progress", value: data.startupTimeSpent || "—" },
+            { label: "Description", value: data.startupDescription || "—" },
+            {
+              label: "Time Spent & Progress",
+              value: data.startupTimeSpent || "—",
+            },
             { label: "Funding Info", value: data.startupFunding || "—" },
             { label: "Co-Founder Status", value: data.coFounderStatus || "—" },
             {

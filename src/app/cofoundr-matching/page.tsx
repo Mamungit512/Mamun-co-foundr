@@ -166,7 +166,7 @@ function CofoundrMatching() {
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-400">COS:</span>
                         <span className="font-semibold text-yellow-300">
-                          {curProfile.satisfaction}%
+                          {curProfile.satisfaction}
                         </span>
                         <InformationTooltipButton
                           text={
@@ -177,7 +177,8 @@ function CofoundrMatching() {
                               <p className="text-gray-300">
                                 A gauge of your overall contentment with your
                                 career path and your motivation for seeking a
-                                new venture from 0-100%.
+                                new venture. Options: Happy, Content, Browsing,
+                                Unhappy.
                               </p>
                             </div>
                           }

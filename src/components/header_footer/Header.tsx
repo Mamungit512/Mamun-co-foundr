@@ -1,11 +1,19 @@
 "use client";
 
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+  useClerk,
+} from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { FaPassport, FaTrash } from "react-icons/fa6";
 
 function Header() {
+  const { signOut } = useClerk();
+
   return (
     <header className="section-padding flex items-center justify-between bg-(--charcoal-black) text-(--mist-white)">
       <Link href="/">
@@ -48,7 +56,7 @@ function Header() {
                     labelIcon={<FaTrash />}
                     onClick={async () => {
                       const confirmed = confirm(
-                        "Are you sure you want to delete your account? It will be permanently removed after 3 months.",
+                        "Are you sure you want to delete your account? It will be permanently removed after 3 months. Reactivate your account by logging back in before the permanent deletion date.",
                       );
                       if (confirmed) {
                         try {
@@ -58,9 +66,11 @@ function Header() {
                           });
 
                           if (response.ok) {
-                            alert("Your account has been marked for deletion.");
-                            // Optionally redirect to home page or sign out
-                            window.location.href = "/";
+                            alert(
+                              "Your account has been marked for deletion. You will now be signed out.",
+                            );
+                            // Sign out the user after successful deletion
+                            signOut({ redirectUrl: "/" });
                           } else {
                             const errorData = await response.json();
                             alert(

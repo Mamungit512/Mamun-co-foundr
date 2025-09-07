@@ -103,22 +103,23 @@ function WhoYouAreForm({
 
         {/* Current Occupation Satisfaction */}
         <div className="flex w-full flex-col gap-x-20 gap-y-2">
-          <label htmlFor="satisfaction">
-            Current Occupation Satisfaction (%)
-          </label>
-          <FormInput
-            type="number"
-            placeholder="e.g. 75"
-            {...register("satisfaction", {
-              required: true,
-              min: 0,
-              max: 100,
-              valueAsNumber: true,
-            })}
-          />
+          <label htmlFor="satisfaction">Current Occupation Satisfaction</label>
+          <div className="flex flex-col gap-y-2">
+            {["Happy", "Content", "Browsing", "Unhappy"].map((option) => (
+              <label key={option} className="flex items-center gap-x-2">
+                <input
+                  type="radio"
+                  value={option}
+                  {...register("satisfaction", { required: true })}
+                  className="text-(--mist-white) focus:ring-(--mist-white)"
+                />
+                <span className="text-white">{option}</span>
+              </label>
+            ))}
+          </div>
           {errors.satisfaction && (
             <p className="text-sm text-red-500">
-              Please enter a number between 0 and 100
+              Please select your current occupation satisfaction level
             </p>
           )}
         </div>

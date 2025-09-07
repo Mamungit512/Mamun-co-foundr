@@ -83,17 +83,24 @@ export default function EditProfile() {
           </div>
 
           <div>
-            <label className="flex flex-col">Satisfaction (0-10) *</label>
-            <FormInput
-              type="number"
-              placeholder="Satisfaction (0-100)"
-              {...register("satisfaction", {
-                required: "Satisfaction is required",
-                min: { value: 0, message: "Minimum is 0" },
-                max: { value: 100, message: "Maximum is 100" },
-                valueAsNumber: true,
-              })}
-            />
+            <label className="flex flex-col">
+              Current Occupation Satisfaction *
+            </label>
+            <div className="flex flex-col gap-y-2">
+              {["Happy", "Content", "Browsing", "Unhappy"].map((option) => (
+                <label key={option} className="flex items-center gap-x-2">
+                  <input
+                    type="radio"
+                    value={option}
+                    {...register("satisfaction", {
+                      required: "Satisfaction is required",
+                    })}
+                    className="text-(--mist-white) focus:ring-(--mist-white)"
+                  />
+                  <span className="text-white">{option}</span>
+                </label>
+              ))}
+            </div>
             {errors.satisfaction && (
               <p className="text-sm text-red-500">
                 {errors.satisfaction.message}

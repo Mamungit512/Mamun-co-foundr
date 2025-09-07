@@ -36,8 +36,9 @@ declare global {
     personal_website: string | null;
     pfp_url?: string | null;
     priority_areas: string[]; // array of strings
+
     responsibilities: string[] | null;
-    satisfaction: number;
+    satisfaction: "Happy" | "Content" | "Browsing" | "Unhappy";
     startup_description: string | null;
     startup_funding: string | null;
     startup_name: string | null;
@@ -66,7 +67,7 @@ declare global {
     title: string;
     city: string;
     country: string;
-    satisfaction: number;
+    satisfaction: "Happy" | "Content" | "Browsing" | "Unhappy";
     gender?: string;
     birthdate?: string;
   };
