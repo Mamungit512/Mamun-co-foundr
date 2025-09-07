@@ -3,14 +3,11 @@ import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-
     const evt = await verifyWebhook(req);
 
     // Do something with payload
     const { id } = evt.data;
     const eventType = evt.type;
-
-
 
     // Call sync-profile-pic endpoint when user updates their data
     if (eventType === "user.updated") {
@@ -26,12 +23,13 @@ export async function POST(req: NextRequest) {
 
       try {
         // Use proper base URL - fallback to localhost for development
-        const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
-          ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-          : process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+        const baseUrl =
+          process.env.NODE_ENV === "production"
+            ? process.env.NEXT_PUBLIC_PRODUCTION_URL ||
+              "https://www.mamuncofoundr.com"
+            : process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
         const syncUrl = `${baseUrl}/api/sync-profile-pic`;
-
 
         const res = await fetch(syncUrl, {
           method: "POST",
@@ -42,6 +40,8 @@ export async function POST(req: NextRequest) {
             userId: id,
             profileImageUrl: profileImageUrl,
           }),
+          // Add timeout for Vercel
+          signal: AbortSignal.timeout(25000), // 25 seconds (under Vercel's 30s limit)
         });
 
         if (!res.ok) {
@@ -54,6 +54,13 @@ export async function POST(req: NextRequest) {
         }
       } catch (syncErr) {
         console.error("Error calling sync-profile-pic:", syncErr);
+        if (syncErr instanceof Error) {
+          if (syncErr.name === "TimeoutError") {
+            console.error("Sync request timed out on Vercel");
+          } else if (syncErr.name === "AbortError") {
+            console.error("Sync request was aborted");
+          }
+        }
         // Don't fail the webhook, just log the error
       }
     }
