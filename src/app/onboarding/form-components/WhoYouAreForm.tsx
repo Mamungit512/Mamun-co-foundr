@@ -126,7 +126,7 @@ function WhoYouAreForm({
 
         {/* Battery Level */}
         <div className="flex w-full flex-col gap-x-20 gap-y-2">
-          <label htmlFor="batteryLevel">Founder's Battery Level</label>
+          <label htmlFor="batteryLevel">Founder&apos;s Battery Level</label>
           <div className="flex flex-col gap-y-2">
             {["Energized", "Content", "Burnt out"].map((option) => (
               <label key={option} className="flex items-center gap-x-2">
