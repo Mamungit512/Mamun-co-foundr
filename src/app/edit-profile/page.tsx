@@ -109,6 +109,32 @@ export default function EditProfile() {
           </div>
 
           <div>
+            <label className="flex flex-col">
+              Founder&apos;s Battery Level *
+            </label>
+            <div className="flex flex-col gap-y-2">
+              {["Energized", "Content", "Burnt out"].map((option) => (
+                <label key={option} className="flex items-center gap-x-2">
+                  <input
+                    type="radio"
+                    value={option}
+                    {...register("batteryLevel", {
+                      required: "Battery level is required",
+                    })}
+                    className="text-(--mist-white) focus:ring-(--mist-white)"
+                  />
+                  <span className="text-white">{option}</span>
+                </label>
+              ))}
+            </div>
+            {errors.batteryLevel && (
+              <p className="text-sm text-red-500">
+                {errors.batteryLevel.message}
+              </p>
+            )}
+          </div>
+
+          <div>
             <label className="flex flex-col">Gender</label>
             <FormInput
               type="text"

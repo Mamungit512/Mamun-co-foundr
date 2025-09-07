@@ -132,7 +132,9 @@ function CofoundrMatching() {
                         </p>
                       </div>
                       <div className="flex items-center gap-3">
-                        <BatteryLevel level={80} />
+                        <BatteryLevel
+                          level={curProfile.batteryLevel || "Content"}
+                        />
                         <InformationTooltipButton
                           text={
                             <div className="absolute top-full left-1/2 mt-2 w-80 -translate-x-1/2 rounded-lg border border-gray-700 bg-(--charcoal-black) p-4 text-sm text-white shadow-xl">
@@ -142,10 +144,8 @@ function CofoundrMatching() {
                               <p className="text-gray-300">
                                 Users can update their &apos;battery level&apos;
                                 to indicate their readiness—whether they&apos;re
-                                actively seeking a partner, energized,
-                                maintaining balance, or nearing burnout—ensuring
-                                better matches and stronger startup
-                                collaborations.
+                                Energized, Content, or Burnt out—ensuring better
+                                matches and stronger startup collaborations.
                               </p>
                             </div>
                           }

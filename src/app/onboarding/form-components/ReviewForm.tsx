@@ -38,6 +38,10 @@ export default function ReviewForm({
               label: "Current Satisfaction",
               value: data.satisfaction || "—",
             },
+            {
+              label: "Battery Level",
+              value: data.batteryLevel || "—",
+            },
           ]}
           onEdit={() => onEdit(1)}
         />

@@ -124,6 +124,29 @@ function WhoYouAreForm({
           )}
         </div>
 
+        {/* Battery Level */}
+        <div className="flex w-full flex-col gap-x-20 gap-y-2">
+          <label htmlFor="batteryLevel">Founder's Battery Level</label>
+          <div className="flex flex-col gap-y-2">
+            {["Energized", "Content", "Burnt out"].map((option) => (
+              <label key={option} className="flex items-center gap-x-2">
+                <input
+                  type="radio"
+                  value={option}
+                  {...register("batteryLevel", { required: true })}
+                  className="text-(--mist-white) focus:ring-(--mist-white)"
+                />
+                <span className="text-white">{option}</span>
+              </label>
+            ))}
+          </div>
+          {errors.batteryLevel && (
+            <p className="text-sm text-red-500">
+              Please select your current battery level
+            </p>
+          )}
+        </div>
+
         {/* Gender */}
         <div className="flex gap-x-6">
           <div className="flex w-full flex-col gap-x-20 gap-y-2">
