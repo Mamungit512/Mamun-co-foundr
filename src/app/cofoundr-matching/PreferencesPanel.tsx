@@ -57,7 +57,6 @@ export default function PreferencesPanel({
         preferredLocation: data.preferredLocation,
       };
 
-
       await upsertProfileMutationFn(updatedProfile);
       onPreferencesChange?.(data);
     } catch (error) {

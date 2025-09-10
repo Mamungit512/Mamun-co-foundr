@@ -8,6 +8,7 @@ import { FaHeart, FaLocationDot } from "react-icons/fa6";
 import { ImCross } from "react-icons/im";
 import { TbMessageCircleFilled } from "react-icons/tb";
 import { motion, AnimatePresence } from "motion/react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import BatteryLevel from "@/components/BatteryLevel";
 import PreferencesPanel from "@/app/cofoundr-matching/PreferencesPanel";
@@ -18,26 +19,87 @@ import CofoundrShowMore from "./CofoundrShowMore";
 function CofoundrMatching() {
   const [curProfileIdx, setCurProfileIdx] = useState(0);
   const [showMore, setShowMore] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: profiles } = useGetProfiles();
   const { data: currentUserProfile } = useUserProfile();
 
+  const onPreferencesChange = () => {
+    // Invalidate profiles query to refetch with new preferences
+    queryClient.invalidateQueries({ queryKey: ["profiles"] });
+  };
+
   if (!profiles || profiles.length === 0) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-(--charcoal-black)">
-        <div className="text-center text-(--mist-white)">
-          <h2 className="heading-5 mb-4">No Profiles Available</h2>
-          <p className="text-gray-300">
-            Check back later for new co-founder matches.
-          </p>
+      <ReactLenis root>
+        <div className="min-h-screen bg-(--charcoal-black) text-(--mist-white)">
+          {/* Header Section */}
+          <motion.header
+            className="px-6 py-8 sm:px-8 lg:px-12"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <div className="mx-auto max-w-7xl">
+              <h1 className="heading-4 mb-2 text-center">
+                Muslim Co-Foundr Matching
+              </h1>
+              <p className="text-center text-gray-300">
+                Discover your perfect co-founder match
+              </p>
+            </div>
+          </motion.header>
+
+          {/* Main Content */}
+          <motion.section
+            className="px-6 pb-20 sm:px-8 lg:px-12"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          >
+            <div className="mx-auto max-w-4xl">
+              {/* Preferences Panel */}
+              <PreferencesPanel
+                currentPreferences={{
+                  lookingFor: currentUserProfile?.lookingFor,
+                  preferredLocation: currentUserProfile?.preferredLocation,
+                }}
+                onPreferencesChange={onPreferencesChange}
+              />
+
+              {/* No Profiles Message */}
+              <div className="mt-8 overflow-hidden rounded-2xl border border-gray-800/50 bg-gray-900/50 shadow-2xl backdrop-blur-sm">
+                <div className="p-8 lg:p-12">
+                  <div className="flex flex-col items-center space-y-6 text-center">
+                    <div className="mb-6">
+                      <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gray-700/50">
+                        <FaHeart className="h-12 w-12 text-gray-400" />
+                      </div>
+                    </div>
+                    <h2 className="heading-5 mb-4 text-white">
+                      No Profiles Found
+                    </h2>
+                    <p className="mb-2 text-gray-300">
+                      No co-founder matches found with your current preferences.
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      Try adjusting your preferences above to see more potential
+                      matches.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.section>
         </div>
-      </div>
+      </ReactLenis>
     );
   }
 
   const curProfile = profiles[curProfileIdx];
 
   const handleNextProfile = () => {
+    if (!profiles || profiles.length === 0) return;
     setCurProfileIdx((prev) => (prev + 1 < profiles.length ? prev + 1 : 0));
   };
 
@@ -85,6 +147,7 @@ function CofoundrMatching() {
                 lookingFor: currentUserProfile?.lookingFor,
                 preferredLocation: currentUserProfile?.preferredLocation,
               }}
+              onPreferencesChange={onPreferencesChange}
             />
             <div className="overflow-hidden rounded-2xl border border-gray-800/50 bg-gray-900/50 shadow-2xl backdrop-blur-sm">
               <div className="p-8 lg:p-12">
