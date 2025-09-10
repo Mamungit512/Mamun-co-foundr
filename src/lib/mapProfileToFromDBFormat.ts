@@ -4,6 +4,7 @@ export function mapProfileToOnboardingData(
 ): OnboardingData {
   return {
     // WhoYouAreFormData
+    user_id: profile.user_id,
     firstName: profile.first_name,
     lastName: profile.last_name,
     title: profile.title,
@@ -39,13 +40,16 @@ export function mapProfileToOnboardingData(
     coFounderStatus: profile.cofounder_status ?? undefined,
     fullTimeTimeline: profile.fulltime_timeline ?? undefined,
     responsibilities: profile.responsibilities ?? undefined,
+    equityExpectation: profile.equity_expectation ?? undefined,
 
     // InterestsAndValuesFormData
     interests: profile.interests ?? undefined,
     priorityAreas: profile.priority_areas ?? [],
     hobbies: profile.hobbies ?? undefined,
-    journey: profile.journey ?? undefined,
-    extra: profile.extra ?? undefined,
+
+    // Preferences
+    lookingFor: profile.looking_for ?? undefined,
+    preferredLocation: profile.preferred_location ?? undefined,
   };
 }
 
@@ -83,12 +87,13 @@ export function mapOnboardingDatatoProfileDB(data: OnboardingData) {
     cofounder_status: data.coFounderStatus || null,
     fulltime_timeline: data.fullTimeTimeline || null,
     responsibilities: data.responsibilities || null,
+    equity_expectation: data.equityExpectation || null,
 
     interests: data.interests || null,
     priority_areas: data.priorityAreas || null,
     hobbies: data.hobbies || null,
-    journey: data.journey || null,
-    extra: data.extra || null,
+    looking_for: data.lookingFor || null,
+    preferred_location: data.preferredLocation || null,
 
     onboarding_complete: true,
   };

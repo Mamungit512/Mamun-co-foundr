@@ -83,9 +83,11 @@ function IntroAccomplishments({
       {/* Education */}
       <div className="flex flex-col gap-y-2">
         <label htmlFor="education">Education</label>
-        <FormInput
+        <textarea
+          id="education"
           {...register("education", { required: true })}
-          type="text"
+          className="rounded-sm border border-gray-400 bg-gray-700 px-2 py-1 text-white"
+          rows={3}
           placeholder="Your degree, school, etc."
         />
         {errors.education && (
@@ -96,9 +98,11 @@ function IntroAccomplishments({
       {/* Experience */}
       <div className="flex flex-col gap-y-2">
         <label htmlFor="experience">Work Experience</label>
-        <FormInput
+        <textarea
+          id="experience"
           {...register("experience", { required: true })}
-          type="text"
+          className="rounded-sm border border-gray-400 bg-gray-700 px-2 py-1 text-white"
+          rows={3}
           placeholder="Current/previous job title(s)"
         />
         {errors.experience && (

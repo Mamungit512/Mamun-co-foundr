@@ -93,6 +93,12 @@ export default function ReviewForm({
               value: data.fullTimeTimeline || "—",
             },
             {
+              label: "Equity Expectation",
+              value: data.equityExpectation
+                ? `${data.equityExpectation}%`
+                : "—",
+            },
+            {
               label: "Responsibilities",
               value: data.responsibilities?.length
                 ? data.responsibilities.join(", ")
@@ -113,8 +119,6 @@ export default function ReviewForm({
                 : "—",
             },
             { label: "Hobbies", value: data.hobbies || "—" },
-            { label: "Life Journey", value: data.journey || "—" },
-            { label: "Additional Notes", value: data.extra || "—" },
           ]}
           onEdit={() => onEdit(5)}
         />

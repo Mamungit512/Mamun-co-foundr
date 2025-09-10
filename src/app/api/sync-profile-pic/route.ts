@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { createClerkClient } from "@clerk/nextjs/server";
 
 export async function POST(req: Request) {
-  console.log("Entered sync-profile-pic endpoint");
+
 
   const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY! });
 
@@ -14,10 +14,6 @@ export async function POST(req: Request) {
     );
 
     const { userId, profileImageUrl } = await req.json(); // Receive request body data
-    console.log("Received data:", {
-      userId,
-      profileImageUrl: profileImageUrl?.substring(0, 100) + "...",
-    });
 
     if (!userId || !profileImageUrl) {
       console.error("Missing required data:", {
@@ -28,24 +24,24 @@ export async function POST(req: Request) {
     }
 
     //  --- Fetch Clerk User Profile as Raw Bytes ---
-    console.log("Fetching user data from Clerk...");
+
 
     try {
       // Get the user data from Clerk using the client
       const user = await clerk.users.getUser(userId);
-      console.log("User fetched from Clerk:", user.id);
+
 
       // Get the user's profile image data
       const imageUrl = user.imageUrl;
-      console.log("User's image URL from Clerk:", imageUrl);
+
 
       if (!imageUrl) {
-        console.log("No image URL found in user data");
+
         return new Response("No profile image found for user", { status: 404 });
       }
 
       // Fetch the image using the Clerk client's authenticated context
-      console.log("Fetching image from Clerk...");
+
       const imageResponse = await fetch(imageUrl, {
         headers: {
           Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
@@ -64,9 +60,7 @@ export async function POST(req: Request) {
       }
 
       const arrayBuffer = await imageResponse.arrayBuffer(); // Get ArrayBuffer (raw data of the image in bytes) from response
-      console.log(
-        `Image fetched successfully, size: ${arrayBuffer.byteLength} bytes`,
-      );
+
 
       // Use "Buffer" from node to handle and manipulate the raw arrayBuffer data
       const buffer = Buffer.from(arrayBuffer); // Create a new node.js buffer from arrayBuffer
@@ -75,11 +69,9 @@ export async function POST(req: Request) {
       // Generate unique file path with timestamp
       const timestamp = Date.now();
       const filePath = `${userId}_${timestamp}.jpg`;
-      console.log("Uploading to Supabase storage, file path:", filePath);
 
       // Clean up old profile pictures for this user
       try {
-        console.log("Cleaning up old profile pictures for user:", userId);
         const { data: oldFiles, error: listError } = await supabase.storage
           .from("profile-pic")
           .list("", {
@@ -89,9 +81,6 @@ export async function POST(req: Request) {
         if (listError) {
           console.error("Error listing old files:", listError);
         } else if (oldFiles && oldFiles.length > 0) {
-          console.log(
-            `Found ${oldFiles.length} old profile pictures to delete`,
-          );
 
           // Delete all old files for this user
           const { error: deleteError } = await supabase.storage
@@ -100,8 +89,6 @@ export async function POST(req: Request) {
 
           if (deleteError) {
             console.error("Error deleting old files:", deleteError);
-          } else {
-            console.log("Successfully deleted old profile pictures");
           }
         } else {
           console.log("No old profile pictures found to delete");
@@ -126,7 +113,7 @@ export async function POST(req: Request) {
         });
       }
 
-      console.log("Image uploaded successfully to Supabase storage");
+
 
       // --- Get Public URL of profile pic ---
       const { data: publicUrlData } = supabase.storage
@@ -134,10 +121,10 @@ export async function POST(req: Request) {
         .getPublicUrl(filePath);
 
       const publicUrl = publicUrlData.publicUrl;
-      console.log("Generated public URL:", publicUrl);
+
 
       // --- Update Supabase User Row with profile pic url ---
-      console.log("Updating user profile in database...");
+
       const { error: updateError } = await supabase
         .from("profiles")
         .update({ pfp_url: publicUrl })
@@ -151,7 +138,6 @@ export async function POST(req: Request) {
         );
       }
 
-      console.log("User profile updated successfully in database");
       return NextResponse.json({ success: true, imageUrl: publicUrl });
     } catch (clerkError) {
       console.error("Error fetching user from Clerk:", clerkError);

@@ -17,8 +17,8 @@ declare global {
     deleted_at: string | null; // Soft delete timestamp
     permanent_delete_at: string | null; // Permanent delete timestamp
     education: string;
+    equity_expectation: number | null;
     experience: string;
-    extra: string | null;
     first_name: string;
     fulltime_timeline: string | null;
     gender: string | null;
@@ -28,7 +28,6 @@ declare global {
     id: number;
     interests: string | null;
     is_technical: boolean;
-    journey: string | null;
     last_name: string;
     linkedin: string | null;
     onboarding_complete: boolean;
@@ -36,6 +35,8 @@ declare global {
     personal_website: string | null;
     pfp_url?: string | null;
     priority_areas: string[]; // array of strings
+    looking_for: "technical" | "non-technical" | "either" | null;
+    preferred_location: "same-city" | "same-country" | "remote" | null;
 
     responsibilities: string[] | null;
     satisfaction: "Happy" | "Content" | "Browsing" | "Unhappy";
@@ -57,7 +58,8 @@ declare global {
       IntroAccomplishmentsFormData &
       OnboardingSocialsFormData &
       StartupDetailsFormData &
-      InterestsAndValuesFormData
+      InterestsAndValuesFormData &
+      Preferences
   >;
 
   type WhoYouAreFormData = {
@@ -78,8 +80,6 @@ declare global {
     interests?: string;
     priorityAreas?: string[];
     hobbies?: string;
-    journey?: string;
-    extra?: string;
   };
 
   type IntroAccomplishmentsFormData = {
@@ -108,5 +108,11 @@ declare global {
     coFounderStatus?: string;
     fullTimeTimeline?: string;
     responsibilities?: string[];
+    equityExpectation?: number;
+  };
+
+  type Preferences = {
+    lookingFor: "technical" | "non-technical" | "either";
+    preferredLocation: "same-city" | "same-country" | "remote";
   };
 }

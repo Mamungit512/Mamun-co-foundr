@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth, useSession } from "@clerk/nextjs";
 import {
   getProfileByUserId,
@@ -76,8 +76,8 @@ export function useUserProfile() {
 
 export function useProfileUpsert() {
   const { userId } = useAuth();
-
   const { session } = useSession();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (formData: OnboardingData) => {
@@ -95,6 +95,9 @@ export function useProfileUpsert() {
       }
     },
     onSuccess: () => {
+      // Invalidate and refetch profiles and user profile queries
+      queryClient.invalidateQueries({ queryKey: ["profiles"] });
+      queryClient.invalidateQueries({ queryKey: ["userProfile", userId] });
       toast.success("Profile updated successfully!");
     },
     onError: (error) => {
