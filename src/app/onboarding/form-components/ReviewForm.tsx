@@ -119,8 +119,6 @@ export default function ReviewForm({
                 : "—",
             },
             { label: "Hobbies", value: data.hobbies || "—" },
-            { label: "Life Journey", value: data.journey || "—" },
-            { label: "Additional Notes", value: data.extra || "—" },
           ]}
           onEdit={() => onEdit(5)}
         />

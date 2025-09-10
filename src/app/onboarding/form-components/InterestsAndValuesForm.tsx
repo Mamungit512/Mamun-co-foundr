@@ -4,7 +4,6 @@ import React, { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
 
-
 function InterestsAndValuesForm({
   onBack,
   onNext,
@@ -131,28 +130,6 @@ function InterestsAndValuesForm({
           placeholder="e.g. Rock climbing, journaling, strategy games"
           className="rounded-sm border border-gray-400 bg-gray-700 px-2 py-1 text-white"
           {...register("hobbies")}
-        />
-      </div>
-
-      {/* Life Journey & Values */}
-      <div className="flex flex-col gap-y-2">
-        <label htmlFor="journey">Life Journey & Values</label>
-        <textarea
-          rows={3}
-          placeholder="Share a few sentences that reflect who you are and what you care about"
-          className="rounded-sm border border-gray-400 bg-gray-700 px-2 py-1 text-white"
-          {...register("journey")}
-        />
-      </div>
-
-      {/* Anything else you'd like to add */}
-      <div className="flex flex-col gap-y-2">
-        <label htmlFor="extra">Anything else you&apos;d like to add?</label>
-        <textarea
-          rows={3}
-          placeholder="Open space for anything we didn’t cover"
-          className="rounded-sm border border-gray-400 bg-gray-700 px-2 py-1 text-white"
-          {...register("extra")}
         />
       </div>
 

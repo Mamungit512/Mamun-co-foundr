@@ -19,7 +19,6 @@ declare global {
     education: string;
     equity_expectation: number | null;
     experience: string;
-    extra: string | null;
     first_name: string;
     fulltime_timeline: string | null;
     gender: string | null;
@@ -29,7 +28,6 @@ declare global {
     id: number;
     interests: string | null;
     is_technical: boolean;
-    journey: string | null;
     last_name: string;
     linkedin: string | null;
     onboarding_complete: boolean;
@@ -79,8 +77,6 @@ declare global {
     interests?: string;
     priorityAreas?: string[];
     hobbies?: string;
-    journey?: string;
-    extra?: string;
   };
 
   type IntroAccomplishmentsFormData = {

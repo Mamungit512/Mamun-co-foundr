@@ -45,8 +45,6 @@ export function mapProfileToOnboardingData(
     interests: profile.interests ?? undefined,
     priorityAreas: profile.priority_areas ?? [],
     hobbies: profile.hobbies ?? undefined,
-    journey: profile.journey ?? undefined,
-    extra: profile.extra ?? undefined,
   };
 }
 
@@ -89,8 +87,6 @@ export function mapOnboardingDatatoProfileDB(data: OnboardingData) {
     interests: data.interests || null,
     priority_areas: data.priorityAreas || null,
     hobbies: data.hobbies || null,
-    journey: data.journey || null,
-    extra: data.extra || null,
 
     onboarding_complete: true,
   };

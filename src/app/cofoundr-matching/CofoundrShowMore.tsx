@@ -90,22 +90,6 @@ function CofoundrShowMore({ curProfile }: { curProfile: OnboardingData }) {
               {curProfile.hobbies}
             </p>
           </div>
-
-          <div className="sm:col-span-2">
-            <h3 className="heading-6 mb-3 font-bold text-yellow-300">
-              Journey
-            </h3>
-            <p className="leading-relaxed text-gray-300">
-              {curProfile.journey}
-            </p>
-          </div>
-
-          <div className="sm:col-span-2">
-            <h3 className="heading-6 mb-3 font-bold text-yellow-300">
-              Additional Info
-            </h3>
-            <p className="leading-relaxed text-gray-300">{curProfile.extra}</p>
-          </div>
         </div>
       </motion.div>
 
