@@ -35,6 +35,7 @@ export async function getProfiles(
   const { data: profiles, error } = await supabase
     .from("profiles")
     .select("*")
+    .neq("user_id", currentUser.user_id) // Exclude current user's profile
     .is("deleted_at", null) // Exclude soft-deleted profiles
     .limit(20);
 
@@ -45,7 +46,6 @@ export async function getProfiles(
 
   if (!profiles) return [];
 
-  console.log(profiles);
   const mappedProfiles = profiles.map(mapProfileToOnboardingData);
 
   // --- Sort profiles based on scoring algorithm ---

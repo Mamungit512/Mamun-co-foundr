@@ -10,8 +10,9 @@ import { TbMessageCircleFilled } from "react-icons/tb";
 import { motion, AnimatePresence } from "motion/react";
 
 import BatteryLevel from "@/components/BatteryLevel";
+import PreferencesPanel from "@/app/cofoundr-matching/PreferencesPanel";
 import InformationTooltipButton from "@/components/ui/InformationTooltipButton";
-import { useGetProfiles } from "@/features/profile/useProfile";
+import { useGetProfiles, useUserProfile } from "@/features/profile/useProfile";
 import CofoundrShowMore from "./CofoundrShowMore";
 
 function CofoundrMatching() {
@@ -19,6 +20,7 @@ function CofoundrMatching() {
   const [showMore, setShowMore] = useState(false);
 
   const { data: profiles } = useGetProfiles();
+  const { data: currentUserProfile } = useUserProfile();
 
   if (!profiles || profiles.length === 0) {
     return (
@@ -77,6 +79,13 @@ function CofoundrMatching() {
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
         >
           <div className="mx-auto max-w-4xl">
+            {/* Preferences Panel */}
+            <PreferencesPanel
+              currentPreferences={{
+                lookingFor: currentUserProfile?.lookingFor,
+                preferredLocation: currentUserProfile?.preferredLocation,
+              }}
+            />
             <div className="overflow-hidden rounded-2xl border border-gray-800/50 bg-gray-900/50 shadow-2xl backdrop-blur-sm">
               <div className="p-8 lg:p-12">
                 <div className="flex flex-col items-center space-y-8">

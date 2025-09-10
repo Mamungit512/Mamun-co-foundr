@@ -35,6 +35,8 @@ declare global {
     personal_website: string | null;
     pfp_url?: string | null;
     priority_areas: string[]; // array of strings
+    looking_for: "technical" | "non-technical" | "either" | null;
+    preferred_location: "same-city" | "same-country" | "remote" | null;
 
     responsibilities: string[] | null;
     satisfaction: "Happy" | "Content" | "Browsing" | "Unhappy";
@@ -56,7 +58,8 @@ declare global {
       IntroAccomplishmentsFormData &
       OnboardingSocialsFormData &
       StartupDetailsFormData &
-      InterestsAndValuesFormData
+      InterestsAndValuesFormData &
+      Preferences
   >;
 
   type WhoYouAreFormData = {
@@ -106,5 +109,10 @@ declare global {
     fullTimeTimeline?: string;
     responsibilities?: string[];
     equityExpectation?: number;
+  };
+
+  type Preferences = {
+    lookingFor: "technical" | "non-technical" | "either";
+    preferredLocation: "same-city" | "same-country" | "remote";
   };
 }

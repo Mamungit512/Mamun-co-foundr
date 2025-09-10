@@ -4,6 +4,7 @@ export function mapProfileToOnboardingData(
 ): OnboardingData {
   return {
     // WhoYouAreFormData
+    user_id: profile.user_id,
     firstName: profile.first_name,
     lastName: profile.last_name,
     title: profile.title,
@@ -45,6 +46,10 @@ export function mapProfileToOnboardingData(
     interests: profile.interests ?? undefined,
     priorityAreas: profile.priority_areas ?? [],
     hobbies: profile.hobbies ?? undefined,
+
+    // Preferences
+    lookingFor: profile.looking_for ?? undefined,
+    preferredLocation: profile.preferred_location ?? undefined,
   };
 }
 
@@ -87,6 +92,8 @@ export function mapOnboardingDatatoProfileDB(data: OnboardingData) {
     interests: data.interests || null,
     priority_areas: data.priorityAreas || null,
     hobbies: data.hobbies || null,
+    looking_for: data.lookingFor || null,
+    preferred_location: data.preferredLocation || null,
 
     onboarding_complete: true,
   };
