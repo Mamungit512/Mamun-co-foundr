@@ -254,6 +254,26 @@ export default function EditProfile() {
               {...register("fullTimeTimeline")}
             />
           </div>
+
+          <div>
+            <label className="flex flex-col">Equity Expectation (%)</label>
+            <FormInput
+              type="number"
+              min="0"
+              max="100"
+              step="0.1"
+              placeholder="e.g. 20, 25.5"
+              {...register("equityExpectation", {
+                min: { value: 0, message: "Equity must be at least 0%" },
+                max: { value: 100, message: "Equity cannot exceed 100%" },
+              })}
+            />
+            {errors.equityExpectation && (
+              <p className="text-sm text-red-500">
+                {errors.equityExpectation.message}
+              </p>
+            )}
+          </div>
         </div>
 
         <div>

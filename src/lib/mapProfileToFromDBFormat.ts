@@ -39,6 +39,7 @@ export function mapProfileToOnboardingData(
     coFounderStatus: profile.cofounder_status ?? undefined,
     fullTimeTimeline: profile.fulltime_timeline ?? undefined,
     responsibilities: profile.responsibilities ?? undefined,
+    equityExpectation: profile.equity_expectation ?? undefined,
 
     // InterestsAndValuesFormData
     interests: profile.interests ?? undefined,
@@ -83,6 +84,7 @@ export function mapOnboardingDatatoProfileDB(data: OnboardingData) {
     cofounder_status: data.coFounderStatus || null,
     fulltime_timeline: data.fullTimeTimeline || null,
     responsibilities: data.responsibilities || null,
+    equity_expectation: data.equityExpectation || null,
 
     interests: data.interests || null,
     priority_areas: data.priorityAreas || null,

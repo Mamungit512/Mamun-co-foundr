@@ -93,6 +93,12 @@ export default function ReviewForm({
               value: data.fullTimeTimeline || "—",
             },
             {
+              label: "Equity Expectation",
+              value: data.equityExpectation
+                ? `${data.equityExpectation}%`
+                : "—",
+            },
+            {
               label: "Responsibilities",
               value: data.responsibilities?.length
                 ? data.responsibilities.join(", ")

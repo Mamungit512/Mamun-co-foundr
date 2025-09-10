@@ -17,6 +17,7 @@ declare global {
     deleted_at: string | null; // Soft delete timestamp
     permanent_delete_at: string | null; // Permanent delete timestamp
     education: string;
+    equity_expectation: number | null;
     experience: string;
     extra: string | null;
     first_name: string;
@@ -108,5 +109,6 @@ declare global {
     coFounderStatus?: string;
     fullTimeTimeline?: string;
     responsibilities?: string[];
+    equityExpectation?: number;
   };
 }
