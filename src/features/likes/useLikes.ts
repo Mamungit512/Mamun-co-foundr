@@ -40,6 +40,7 @@ export function useLikeProfile() {
       queryClient.invalidateQueries({ queryKey: ["likes"] });
       queryClient.invalidateQueries({ queryKey: ["liked-profiles"] });
       queryClient.invalidateQueries({ queryKey: ["mutual-likes"] });
+      queryClient.invalidateQueries({ queryKey: ["profiles"] }); // Refresh profiles to remove liked profiles
       queryClient.invalidateQueries({
         queryKey: ["like-status", variables.likedId],
       });

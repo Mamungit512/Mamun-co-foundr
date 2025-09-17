@@ -32,12 +32,32 @@ export async function getProfiles(
 ) {
   const supabase = createSupabaseClientWithToken(token);
 
-  const { data: profiles, error } = await supabase
+  // First, get all profiles that the current user has liked
+  const { data: likedProfiles, error: likedError } = await supabase
+    .from("likes")
+    .select("liked_id")
+    .eq("liker_id", currentUser.user_id);
+
+  if (likedError) {
+    console.error("Error fetching liked profiles:", likedError);
+    // Continue without filtering if there's an error fetching likes
+  }
+
+  const likedIds = likedProfiles?.map((like) => like.liked_id) || [];
+
+  // Get profiles excluding current user, deleted profiles, and already liked profiles
+  let query = supabase
     .from("profiles")
     .select("*")
     .neq("user_id", currentUser.user_id) // Exclude current user's profile
-    .is("deleted_at", null) // Exclude soft-deleted profiles
-    .limit(20);
+    .is("deleted_at", null); // Exclude soft-deleted profiles
+
+  // Exclude already liked profiles if there are any
+  if (likedIds.length > 0) {
+    query = query.not("user_id", "in", `(${likedIds.join(",")})`);
+  }
+
+  const { data: profiles, error } = await query.limit(20); // batch fetching
 
   if (error) {
     throw error;
