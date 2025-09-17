@@ -68,14 +68,18 @@ export default function OnboardingComponent() {
 
   return (
     <section className="section-height section-padding bg-(--charcoal-black) text-(--mist-white)">
-      <h1 className="heading-5">Welcome to Mamun Cofoundr Matching!</h1>
-      <p className="heading-6 text-gray-500">
-        To get started, tell us more about yourself
-      </p>
+      <div className="mx-auto max-w-4xl">
+        <h1 className="mb-4 text-2xl font-bold sm:text-3xl md:text-4xl lg:text-5xl">
+          Welcome to Mamun Cofoundr Matching!
+        </h1>
+        <p className="mb-8 text-lg text-gray-500 sm:text-xl md:text-2xl">
+          To get started, tell us more about yourself
+        </p>
 
-      {error && <p className="text-red-500">{error}</p>}
+        {error && <p className="mb-4 text-red-500">{error}</p>}
 
-      <CreateProfile onSubmit={handleSubmit} onError={(e) => setError(e)} />
+        <CreateProfile onSubmit={handleSubmit} onError={(e) => setError(e)} />
+      </div>
     </section>
   );
 }

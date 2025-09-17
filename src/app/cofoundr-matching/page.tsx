@@ -9,11 +9,17 @@ import { ImCross } from "react-icons/im";
 import { TbMessageCircleFilled } from "react-icons/tb";
 import { motion, AnimatePresence } from "motion/react";
 import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 import BatteryLevel from "@/components/BatteryLevel";
 import PreferencesPanel from "@/app/cofoundr-matching/PreferencesPanel";
 import InformationTooltipButton from "@/components/ui/InformationTooltipButton";
 import { useGetProfiles, useUserProfile } from "@/features/profile/useProfile";
+import {
+  useToggleLike,
+  useLikeStatus,
+  useMutualLikes,
+} from "@/features/likes/useLikes";
 import CofoundrShowMore from "./CofoundrShowMore";
 
 function CofoundrMatching() {
@@ -23,6 +29,12 @@ function CofoundrMatching() {
 
   const { data: profiles } = useGetProfiles();
   const { data: currentUserProfile } = useUserProfile();
+  const { toggleLike, isLoading: isLikeLoading } = useToggleLike();
+  const { data: mutualLikes } = useMutualLikes();
+
+  // Get current profile and like status
+  const curProfile = profiles?.[curProfileIdx];
+  const { data: likeStatus } = useLikeStatus(curProfile?.user_id);
 
   const onPreferencesChange = () => {
     // Invalidate profiles query to refetch with new preferences
@@ -96,16 +108,76 @@ function CofoundrMatching() {
     );
   }
 
-  const curProfile = profiles[curProfileIdx];
+  // Early return if no current profile
+  if (!curProfile) {
+    return null;
+  }
 
   const handleNextProfile = () => {
     if (!profiles || profiles.length === 0) return;
     setCurProfileIdx((prev) => (prev + 1 < profiles.length ? prev + 1 : 0));
   };
 
-  const handleLike = () => {
-    // Handle like functionality
-    console.log("Liked profile:", curProfile);
+  const handleSkip = () => {
+    if (curProfile) {
+      toast(`Skipped ${curProfile.firstName}`, {
+        duration: 2000,
+        position: "bottom-right",
+        icon: "👋",
+      });
+    }
+    handleNextProfile();
+  };
+
+  const handleLike = async () => {
+    if (!curProfile?.user_id) return;
+
+    try {
+      const isCurrentlyLiked = likeStatus?.isLiked || false;
+      await toggleLike(curProfile.user_id, isCurrentlyLiked);
+
+      // Show toast notification
+      if (!isCurrentlyLiked) {
+        // Check if this creates a mutual match
+        const isMutualMatch = mutualLikes?.matches?.includes(
+          curProfile.user_id,
+        );
+
+        if (isMutualMatch) {
+          toast.success(
+            `🎉 It's a match! You and ${curProfile.firstName} liked each other!`,
+            {
+              duration: 5000,
+              position: "bottom-right",
+              style: {
+                background: "#10B981",
+                color: "white",
+                fontWeight: "bold",
+              },
+            },
+          );
+        } else {
+          toast.success(`You liked ${curProfile.firstName}! 💖`, {
+            duration: 3000,
+            position: "bottom-right",
+          });
+        }
+      } else {
+        toast.success(`You unliked ${curProfile.firstName}`, {
+          duration: 2000,
+          position: "bottom-right",
+        });
+      }
+
+      // Move to next profile after liking
+      handleNextProfile();
+    } catch (error) {
+      console.error("Error liking profile:", error);
+      toast.error("Failed to like profile. Please try again.", {
+        duration: 3000,
+        position: "bottom-right",
+      });
+    }
   };
 
   const handleMessage = () => {
@@ -118,16 +190,16 @@ function CofoundrMatching() {
       <div className="min-h-screen bg-(--charcoal-black) text-(--mist-white)">
         {/* Header Section */}
         <motion.header
-          className="px-6 py-8 sm:px-8 lg:px-12"
+          className="px-4 py-6 sm:px-6 sm:py-8 md:px-8 lg:px-12"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <div className="mx-auto max-w-7xl">
-            <h1 className="heading-4 mb-2 text-center">
+            <h1 className="mb-2 text-center text-2xl font-bold sm:text-3xl md:text-4xl lg:text-5xl">
               Muslim Co-Foundr Matching
             </h1>
-            <p className="text-center text-gray-300">
+            <p className="text-center text-sm text-gray-300 sm:text-base md:text-lg">
               Discover your perfect co-founder match
             </p>
           </div>
@@ -135,12 +207,12 @@ function CofoundrMatching() {
 
         {/* Main Profile Card */}
         <motion.section
-          className="px-6 pb-20 sm:px-8 lg:px-12"
+          className="px-4 pb-20 sm:px-6 sm:pb-24 md:px-8 lg:px-12"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
         >
-          <div className="mx-auto max-w-4xl">
+          <div className="mx-auto max-w-5xl">
             {/* Preferences Panel */}
             <PreferencesPanel
               currentPreferences={{
@@ -150,8 +222,8 @@ function CofoundrMatching() {
               onPreferencesChange={onPreferencesChange}
             />
             <div className="overflow-hidden rounded-2xl border border-gray-800/50 bg-gray-900/50 shadow-2xl backdrop-blur-sm">
-              <div className="p-8 lg:p-12">
-                <div className="flex flex-col items-center space-y-8">
+              <div className="p-4 sm:p-6 md:p-8 lg:p-12">
+                <div className="flex flex-col items-center space-y-6 sm:space-y-8">
                   {/* Profile Image Section - Centered on Top */}
                   <motion.div
                     className="relative flex justify-center"
@@ -159,7 +231,7 @@ function CofoundrMatching() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
                   >
-                    <div className="relative h-96 w-80">
+                    <div className="relative h-64 w-48 sm:h-80 sm:w-64 md:h-96 md:w-80">
                       {/* Decorative Arch */}
                       <Image
                         src="/img/arch1.svg"
@@ -169,7 +241,7 @@ function CofoundrMatching() {
                       />
 
                       {/* Profile Image */}
-                      <div className="absolute top-12 left-16 -z-20 h-80 w-48 overflow-hidden rounded-t-full">
+                      <div className="absolute top-8 left-8 -z-20 h-48 w-32 overflow-hidden rounded-t-full sm:top-12 sm:left-16 sm:h-80 sm:w-48">
                         {curProfile?.pfp_url ? (
                           <Image
                             src={curProfile.pfp_url}
@@ -188,18 +260,18 @@ function CofoundrMatching() {
 
                   {/* Profile Information - Below Image */}
                   <motion.div
-                    className="w-full max-w-2xl space-y-6 text-center"
+                    className="w-full max-w-3xl space-y-4 text-center sm:space-y-6"
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
                   >
                     {/* Name and Battery */}
-                    <div className="flex flex-col items-center space-y-4">
+                    <div className="flex flex-col items-center space-y-3 sm:space-y-4">
                       <div className="text-center">
-                        <h2 className="heading-5 mb-2 text-yellow-300">
+                        <h2 className="mb-2 text-xl font-bold text-yellow-300 sm:text-2xl md:text-3xl lg:text-4xl">
                           {curProfile.firstName} {curProfile.lastName}
                         </h2>
-                        <p className="text-xl text-gray-300">
+                        <p className="text-base text-gray-300 sm:text-lg md:text-xl">
                           {curProfile.title}
                         </p>
                       </div>
@@ -228,7 +300,7 @@ function CofoundrMatching() {
                     </div>
 
                     {/* Location and COS */}
-                    <div className="flex flex-col items-center justify-center space-y-3 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-8">
+                    <div className="flex flex-col items-center justify-center space-y-2 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-6 md:space-x-8">
                       <div className="flex items-center text-gray-300">
                         <FaLocationDot className="mr-2 text-yellow-300" />
                         <span>
@@ -262,62 +334,68 @@ function CofoundrMatching() {
 
                     {/* Bio */}
                     <div>
-                      <h3 className="heading-6 mb-3 font-bold text-yellow-300">
+                      <h3 className="mb-2 text-lg font-bold text-yellow-300 sm:mb-3 sm:text-xl">
                         Bio
                       </h3>
-                      <p className="leading-relaxed text-gray-300">
+                      <p className="text-sm leading-relaxed text-gray-300 sm:text-base">
                         {curProfile.personalIntro}
                       </p>
                     </div>
 
                     {/* Key Information Grid */}
-                    <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
                       <div>
-                        <h3 className="heading-6 mb-2 font-bold text-yellow-300">
+                        <h3 className="mb-1 text-base font-bold text-yellow-300 sm:mb-2 sm:text-lg">
                           Technical
                         </h3>
-                        <p className="text-gray-300">
+                        <p className="text-sm text-gray-300 sm:text-base">
                           {curProfile.isTechnical ? "Yes" : "No"}
                         </p>
                       </div>
                       <div>
-                        <h3 className="heading-6 mb-2 font-bold text-yellow-300">
+                        <h3 className="mb-1 text-base font-bold text-yellow-300 sm:mb-2 sm:text-lg">
                           Education
                         </h3>
-                        <p className="text-gray-300">{curProfile.education}</p>
+                        <p className="text-sm text-gray-300 sm:text-base">
+                          {curProfile.education}
+                        </p>
                       </div>
                     </div>
 
                     {/* Accomplishments */}
                     <div>
-                      <h3 className="heading-6 mb-3 font-bold text-yellow-300">
+                      <h3 className="mb-2 text-base font-bold text-yellow-300 sm:mb-3 sm:text-lg">
                         Key Accomplishments
                       </h3>
-                      <p className="text-gray-300">
+                      <p className="text-sm text-gray-300 sm:text-base">
                         {curProfile.accomplishments}
                       </p>
                     </div>
 
                     {/* Work Experience */}
                     <div>
-                      <h3 className="heading-6 mb-3 font-bold text-yellow-300">
+                      <h3 className="mb-2 text-base font-bold text-yellow-300 sm:mb-3 sm:text-lg">
                         Work Experience
                       </h3>
-                      <p className="text-gray-300">{curProfile.experience}</p>
+                      <p className="text-sm text-gray-300 sm:text-base">
+                        {curProfile.experience}
+                      </p>
                     </div>
 
                     {/* Ummah Vision */}
                     <div>
-                      <h3 className="heading-6 mb-3 font-bold text-yellow-300">
+                      <h3 className="mb-2 text-base font-bold text-yellow-300 sm:mb-3 sm:text-lg">
                         Civilizational Engineering for the Ummah
                       </h3>
-                      <p className="text-gray-300">{curProfile.ummah}</p>
+                      <p className="text-sm text-gray-300 sm:text-base">
+                        {curProfile.ummah}
+                      </p>
                     </div>
 
                     {/* Show More Button */}
-                    <div className="pt-4 text-center">
+                    <div className="pt-3 text-center sm:pt-4">
                       <motion.button
-                        className="rounded-lg border border-gray-700/50 bg-gray-800/50 px-6 py-3 text-gray-300 transition-all duration-200 hover:bg-gray-700/50"
+                        className="rounded-lg border border-gray-700/50 bg-gray-800/50 px-4 py-2 text-sm text-gray-300 transition-all duration-200 hover:bg-gray-700/50 sm:px-6 sm:py-3 sm:text-base"
                         onClick={() => setShowMore((prev) => !prev)}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -338,9 +416,9 @@ function CofoundrMatching() {
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="mt-8"
+                  className="mt-6 sm:mt-8"
                 >
-                  <div className="overflow-hidden rounded-2xl border border-gray-800/30 bg-gray-900/30 p-8 backdrop-blur-sm">
+                  <div className="overflow-hidden rounded-2xl border border-gray-800/30 bg-gray-900/30 p-4 backdrop-blur-sm sm:p-6 md:p-8">
                     <CofoundrShowMore curProfile={curProfile} />
                   </div>
                 </motion.div>
@@ -351,37 +429,46 @@ function CofoundrMatching() {
 
         {/* Fixed Action Buttons - Bottom Middle */}
         <motion.div
-          className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2"
+          className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 sm:bottom-6 md:bottom-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
         >
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4 sm:gap-6">
             <motion.button
-              className="group flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-red-500/20 text-red-400 shadow-2xl backdrop-blur-sm transition-all duration-200 hover:bg-red-500/30 hover:shadow-red-500/25"
-              onClick={handleNextProfile}
+              className="group flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-red-500/20 text-red-400 shadow-2xl backdrop-blur-sm transition-all duration-200 hover:bg-red-500/30 hover:shadow-red-500/25 sm:h-14 sm:w-14 md:h-16 md:w-16"
+              onClick={handleSkip}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
             >
-              <ImCross className="size-7 transition-transform group-hover:scale-110" />
+              <ImCross className="size-5 transition-transform group-hover:scale-110 sm:size-6 md:size-7" />
             </motion.button>
 
             <motion.button
-              className="group flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-pink-500/20 text-pink-400 shadow-2xl backdrop-blur-sm transition-all duration-200 hover:bg-pink-500/30 hover:shadow-pink-500/25"
+              className={`group flex h-14 w-14 cursor-pointer items-center justify-center rounded-full shadow-2xl backdrop-blur-sm transition-all duration-200 sm:h-16 sm:w-16 md:h-20 md:w-20 ${
+                likeStatus?.isLiked
+                  ? "bg-pink-500/40 text-pink-300 hover:bg-pink-500/50 hover:shadow-pink-500/25"
+                  : "bg-pink-500/20 text-pink-400 hover:bg-pink-500/30 hover:shadow-pink-500/25"
+              } ${isLikeLoading ? "cursor-not-allowed opacity-50" : ""}`}
               onClick={handleLike}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+              disabled={isLikeLoading}
+              whileHover={!isLikeLoading ? { scale: 1.1 } : {}}
+              whileTap={!isLikeLoading ? { scale: 0.95 } : {}}
             >
-              <FaHeart className="size-8 transition-transform group-hover:scale-110" />
+              <FaHeart
+                className={`size-6 transition-transform sm:size-7 md:size-8 ${
+                  likeStatus?.isLiked ? "fill-current" : ""
+                } ${!isLikeLoading ? "group-hover:scale-110" : ""}`}
+              />
             </motion.button>
 
             <motion.button
-              className="group flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-blue-500/20 text-blue-400 shadow-2xl backdrop-blur-sm transition-all duration-200 hover:bg-blue-500/30 hover:shadow-blue-500/25"
+              className="group flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-blue-500/20 text-blue-400 shadow-2xl backdrop-blur-sm transition-all duration-200 hover:bg-blue-500/30 hover:shadow-blue-500/25 sm:h-14 sm:w-14 md:h-16 md:w-16"
               onClick={handleMessage}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
             >
-              <TbMessageCircleFilled className="size-7 transition-transform group-hover:scale-110" />
+              <TbMessageCircleFilled className="size-5 transition-transform group-hover:scale-110 sm:size-6 md:size-7" />
             </motion.button>
           </div>
         </motion.div>

@@ -67,7 +67,7 @@ export function mapOnboardingDatatoProfileDB(data: OnboardingData) {
     birthdate: data.birthdate ? new Date(data.birthdate) : null,
     pfp_url: data.pfp_url,
 
-    personal_intro: data.personalIntro || null,
+    personal_intro: data.personalIntro || "",
     accomplishments: data.accomplishments || null,
     ummah: data.ummah || null,
     education: data.education || null,
