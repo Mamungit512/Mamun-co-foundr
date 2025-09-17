@@ -36,16 +36,23 @@ function IntroAccomplishments({
 
       {/* Personal Intro */}
       <div className="flex flex-col gap-y-2">
-        <label htmlFor="personalIntro">Personal Introduction</label>
+        <label htmlFor="personalIntro">Personal Introduction *</label>
         <textarea
           id="personalIntro"
-          {...register("personalIntro", { required: true })}
+          {...register("personalIntro", {
+            required:
+              "Your bio/introduction cannot be empty. Please write a short paragraph introducing yourself.",
+            minLength: {
+              value: 10,
+              message: "Your bio must be at least 10 characters long.",
+            },
+          })}
           className="rounded-sm border border-gray-400 bg-gray-700 px-2 py-1 text-white"
           rows={4}
           placeholder="Write a short paragraph or two introducing yourself..."
         />
         {errors.personalIntro && (
-          <p className="text-sm text-red-500">Intro is required</p>
+          <p className="text-sm text-red-500">{errors.personalIntro.message}</p>
         )}
       </div>
 

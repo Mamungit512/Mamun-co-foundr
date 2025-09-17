@@ -262,7 +262,12 @@ export default function EditProfile() {
                   rows={4}
                   placeholder="Write a short paragraph or two introducing yourself..."
                   {...register("personalIntro", {
-                    required: "Personal intro is required",
+                    required:
+                      "Your bio/introduction cannot be empty. Please write a short paragraph introducing yourself.",
+                    minLength: {
+                      value: 10,
+                      message: "Your bio must be at least 10 characters long.",
+                    },
                   })}
                   className="w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                 />

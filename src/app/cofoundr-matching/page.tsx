@@ -9,11 +9,17 @@ import { ImCross } from "react-icons/im";
 import { TbMessageCircleFilled } from "react-icons/tb";
 import { motion, AnimatePresence } from "motion/react";
 import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 import BatteryLevel from "@/components/BatteryLevel";
 import PreferencesPanel from "@/app/cofoundr-matching/PreferencesPanel";
 import InformationTooltipButton from "@/components/ui/InformationTooltipButton";
 import { useGetProfiles, useUserProfile } from "@/features/profile/useProfile";
+import {
+  useToggleLike,
+  useLikeStatus,
+  useMutualLikes,
+} from "@/features/likes/useLikes";
 import CofoundrShowMore from "./CofoundrShowMore";
 
 function CofoundrMatching() {
@@ -23,6 +29,12 @@ function CofoundrMatching() {
 
   const { data: profiles } = useGetProfiles();
   const { data: currentUserProfile } = useUserProfile();
+  const { toggleLike, isLoading: isLikeLoading } = useToggleLike();
+  const { data: mutualLikes } = useMutualLikes();
+
+  // Get current profile and like status
+  const curProfile = profiles?.[curProfileIdx];
+  const { data: likeStatus } = useLikeStatus(curProfile?.user_id);
 
   const onPreferencesChange = () => {
     // Invalidate profiles query to refetch with new preferences
@@ -96,16 +108,76 @@ function CofoundrMatching() {
     );
   }
 
-  const curProfile = profiles[curProfileIdx];
+  // Early return if no current profile
+  if (!curProfile) {
+    return null;
+  }
 
   const handleNextProfile = () => {
     if (!profiles || profiles.length === 0) return;
     setCurProfileIdx((prev) => (prev + 1 < profiles.length ? prev + 1 : 0));
   };
 
-  const handleLike = () => {
-    // Handle like functionality
-    console.log("Liked profile:", curProfile);
+  const handleSkip = () => {
+    if (curProfile) {
+      toast(`Skipped ${curProfile.firstName}`, {
+        duration: 2000,
+        position: "bottom-right",
+        icon: "👋",
+      });
+    }
+    handleNextProfile();
+  };
+
+  const handleLike = async () => {
+    if (!curProfile?.user_id) return;
+
+    try {
+      const isCurrentlyLiked = likeStatus?.isLiked || false;
+      await toggleLike(curProfile.user_id, isCurrentlyLiked);
+
+      // Show toast notification
+      if (!isCurrentlyLiked) {
+        // Check if this creates a mutual match
+        const isMutualMatch = mutualLikes?.matches?.includes(
+          curProfile.user_id,
+        );
+
+        if (isMutualMatch) {
+          toast.success(
+            `🎉 It's a match! You and ${curProfile.firstName} liked each other!`,
+            {
+              duration: 5000,
+              position: "bottom-right",
+              style: {
+                background: "#10B981",
+                color: "white",
+                fontWeight: "bold",
+              },
+            },
+          );
+        } else {
+          toast.success(`You liked ${curProfile.firstName}! 💖`, {
+            duration: 3000,
+            position: "bottom-right",
+          });
+        }
+      } else {
+        toast.success(`You unliked ${curProfile.firstName}`, {
+          duration: 2000,
+          position: "bottom-right",
+        });
+      }
+
+      // Move to next profile after liking
+      handleNextProfile();
+    } catch (error) {
+      console.error("Error liking profile:", error);
+      toast.error("Failed to like profile. Please try again.", {
+        duration: 3000,
+        position: "bottom-right",
+      });
+    }
   };
 
   const handleMessage = () => {
@@ -359,7 +431,7 @@ function CofoundrMatching() {
           <div className="flex items-center gap-6">
             <motion.button
               className="group flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-red-500/20 text-red-400 shadow-2xl backdrop-blur-sm transition-all duration-200 hover:bg-red-500/30 hover:shadow-red-500/25"
-              onClick={handleNextProfile}
+              onClick={handleSkip}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -367,12 +439,21 @@ function CofoundrMatching() {
             </motion.button>
 
             <motion.button
-              className="group flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-pink-500/20 text-pink-400 shadow-2xl backdrop-blur-sm transition-all duration-200 hover:bg-pink-500/30 hover:shadow-pink-500/25"
+              className={`group flex h-20 w-20 cursor-pointer items-center justify-center rounded-full shadow-2xl backdrop-blur-sm transition-all duration-200 ${
+                likeStatus?.isLiked
+                  ? "bg-pink-500/40 text-pink-300 hover:bg-pink-500/50 hover:shadow-pink-500/25"
+                  : "bg-pink-500/20 text-pink-400 hover:bg-pink-500/30 hover:shadow-pink-500/25"
+              } ${isLikeLoading ? "cursor-not-allowed opacity-50" : ""}`}
               onClick={handleLike}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+              disabled={isLikeLoading}
+              whileHover={!isLikeLoading ? { scale: 1.1 } : {}}
+              whileTap={!isLikeLoading ? { scale: 0.95 } : {}}
             >
-              <FaHeart className="size-8 transition-transform group-hover:scale-110" />
+              <FaHeart
+                className={`size-8 transition-transform ${
+                  likeStatus?.isLiked ? "fill-current" : ""
+                } ${!isLikeLoading ? "group-hover:scale-110" : ""}`}
+              />
             </motion.button>
 
             <motion.button
