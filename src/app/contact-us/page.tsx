@@ -39,17 +39,22 @@ function ContactPage() {
   };
   return (
     <ReactLenis root>
-      <section className="section-padding section-height bg-[var(--charcoal-black)] pt-8 pb-20 text-[var(--mist-white)]">
-        <div className="mx-auto max-w-3xl space-y-10">
-          <div className="space-y-2">
-            <h2 className="heading-5">How Can We Help?</h2>
-            <p className="text-white/70">
-              We will usually reply within 1–3 business days, insha’Allah.
+      <section className="section-padding section-height bg-[var(--charcoal-black)] pt-6 pb-16 text-[var(--mist-white)] sm:pt-8 sm:pb-20">
+        <div className="mx-auto max-w-4xl space-y-8 sm:space-y-10">
+          <div className="space-y-2 text-center sm:text-left">
+            <h2 className="text-2xl font-bold sm:text-3xl md:text-4xl lg:text-5xl">
+              How Can We Help?
+            </h2>
+            <p className="text-sm text-white/70 sm:text-base md:text-lg">
+              We will usually reply within 1–3 business days, insha&apos;Allah.
             </p>
           </div>
 
-          <form className="space-y-8" onSubmit={handleSubmit(onSubmit)}>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <form
+            className="space-y-6 sm:space-y-8"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
               <FormInput
                 {...register("firstName", {
                   required: "First name is required",
@@ -88,7 +93,7 @@ function ContactPage() {
             </div>
 
             <div>
-              <label className="mb-3 block font-medium">
+              <label className="mb-3 block text-sm font-medium sm:text-base">
                 How can we help you?
               </label>
               <div className="space-y-2">
@@ -114,7 +119,7 @@ function ContactPage() {
             </div>
 
             <div>
-              <label className="mb-3 block font-medium">
+              <label className="mb-3 block text-sm font-medium sm:text-base">
                 How did you hear about us?
               </label>
               <div className="space-y-2">
@@ -134,7 +139,7 @@ function ContactPage() {
 
             <button
               type="submit"
-              className="mt-6 cursor-pointer rounded-xl bg-white px-6 py-3 font-medium text-[var(--charcoal-black)] transition hover:bg-white/90"
+              className="mt-6 w-full cursor-pointer rounded-xl bg-white px-4 py-3 text-sm font-medium text-[var(--charcoal-black)] transition hover:bg-white/90 sm:w-auto sm:px-6 sm:text-base"
             >
               {isSubmitting ? "Sending..." : "Send Message"}
             </button>
@@ -149,14 +154,14 @@ function ContactPage() {
               </p>
             )}
           </form>
-          <div className="mt-12 border-t border-white/10 pt-8 text-sm text-white/60">
-            <h3 className="mb-1 text-base font-medium text-white">
+          <div className="mt-8 border-t border-white/10 pt-6 text-center sm:mt-12 sm:pt-8 sm:text-left">
+            <h3 className="mb-2 text-sm font-medium text-white sm:text-base">
               Press & Collaboration
             </h3>
-            <p className="mb-1">
+            <p className="mb-2 text-xs text-white/60 sm:text-sm">
               Include your organization name, media outlet, or event proposal.
             </p>
-            <p>
+            <p className="text-xs text-white/60 sm:text-sm">
               Email:{" "}
               <a
                 href="mailto:Press@mamuncofoundr.com"

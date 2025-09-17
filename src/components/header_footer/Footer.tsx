@@ -4,10 +4,10 @@ import React from "react";
 
 function Footer() {
   return (
-    <footer className="flex w-full items-center justify-center gap-x-5 bg-(--charcoal-black) pt-16 pb-30 text-(--mist-white)">
+    <footer className="flex w-full flex-col items-center justify-center gap-y-4 bg-(--charcoal-black) pt-12 pb-20 text-(--mist-white) sm:flex-row sm:gap-x-5 sm:gap-y-0 sm:pt-16 sm:pb-30">
       <Link
         href="/careers"
-        className="translate-y hover:underline hover:underline-offset-4"
+        className="translate-y text-sm hover:underline hover:underline-offset-4 sm:text-base"
       >
         Careers
       </Link>
@@ -16,13 +16,13 @@ function Footer() {
           src="/img/mamun-transparent-logo.png"
           width={100}
           height={100}
-          className="translate-y translate-y-1"
+          className="translate-y h-12 w-auto sm:h-16 md:h-20"
           alt="Mamun Logo. Circle with a line through it next to Mamun in all capital letters"
         />
       </Link>
       <Link
         href="/contact-us"
-        className="translate-y hover:underline hover:underline-offset-4"
+        className="translate-y text-sm hover:underline hover:underline-offset-4 sm:text-base"
       >
         Contact Us
       </Link>

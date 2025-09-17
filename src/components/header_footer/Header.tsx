@@ -28,17 +28,17 @@ function Header() {
           width={140}
           height={100}
           alt="Mamun Logo. Circle with a line through it next to Mamun in all capital letters"
-          className="translate-y"
+          className="translate-y h-12 w-auto sm:h-16 md:h-20"
         />
       </Link>
 
       <div>
-        <ul className="flex items-center justify-between gap-x-6">
-          <li className="translate-y font-semibold">
+        <ul className="flex items-center justify-between gap-x-3 sm:gap-x-4 md:gap-x-6">
+          <li className="translate-y text-sm font-semibold sm:text-base">
             <Link href="/cofoundr-matching">Co-Foundr Matching</Link>
           </li>
 
-          <li className="translate-y font-semibold">
+          <li className="translate-y text-sm font-semibold sm:text-base">
             <Link href="/contact-us">Contact Us</Link>
           </li>
 
@@ -46,12 +46,12 @@ function Header() {
             <li>
               <button
                 onClick={() => setIsLikedProfilesOpen(true)}
-                className="group relative cursor-pointer rounded-full p-3 text-gray-300 transition-all duration-200 hover:bg-pink-500/20 hover:text-pink-400"
+                className="group relative cursor-pointer rounded-full p-2 text-gray-300 transition-all duration-200 hover:bg-pink-500/20 hover:text-pink-400 sm:p-3"
                 title="View Liked Profiles"
               >
-                <FaHeart className="h-5 w-5 transition-transform group-hover:scale-110" />
+                <FaHeart className="h-4 w-4 transition-transform group-hover:scale-110 sm:h-5 sm:w-5" />
                 {likedCount > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-pink-500 text-xs font-bold text-white">
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-pink-500 text-xs font-bold text-white sm:h-5 sm:w-5">
                     {likedCount > 99 ? "99+" : likedCount}
                   </span>
                 )}

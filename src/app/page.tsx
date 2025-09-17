@@ -28,7 +28,7 @@ function page() {
 
   return (
     <ReactLenis root>
-      <main className="section-height flex flex-col items-center justify-center bg-(--charcoal-black) px-5 pt-12 pb-40 text-center text-(--mist-white) sm:px-10 lg:px-40">
+      <main className="section-height flex flex-col items-center justify-center bg-(--charcoal-black) px-4 pt-8 pb-20 text-center text-(--mist-white) sm:px-6 sm:pt-12 sm:pb-32 md:px-8 lg:px-12 xl:px-20 2xl:px-40">
         {/* -- Hero Section -- */}
         <section>
           <motion.div
@@ -38,7 +38,7 @@ function page() {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <motion.h1
-              className="heading-4 font-bold"
+              className="text-4xl font-bold sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
@@ -46,7 +46,7 @@ function page() {
               MAMUN
             </motion.h1>
             <motion.p
-              className="heading-6 lg:heading-5"
+              className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
@@ -57,7 +57,7 @@ function page() {
 
           <div className="flex flex-col items-center">
             <motion.p
-              className="lg:heading-6 mb-8 px-1 font-semibold"
+              className="mb-6 px-1 text-base font-semibold sm:mb-8 sm:text-lg md:text-xl lg:text-2xl"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
@@ -131,12 +131,12 @@ function page() {
             </motion.div>
 
             <motion.div
-              className="relative mt-6"
+              className="relative mt-4 sm:mt-6"
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.8, ease: "easeOut" }}
             >
-              <div className="md:absolute md:left-20">
+              <div className="flex flex-col items-center">
                 <SignInButton>
                   <motion.button
                     className="cursor-pointer"
@@ -144,8 +144,10 @@ function page() {
                     whileTap={{ scale: 0.95 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <div className="translate-y flex cursor-pointer items-center rounded-md bg-(--mist-white) px-4 py-2 font-semibold text-nowrap text-(--charcoal-black) md:px-5 md:py-3">
-                      <p>Login to Co-foundr Matching</p>
+                    <div className="translate-y flex cursor-pointer items-center rounded-md bg-(--mist-white) px-3 py-2 font-semibold text-nowrap text-(--charcoal-black) sm:px-4 sm:py-2 md:px-5 md:py-3">
+                      <p className="text-sm sm:text-base">
+                        Login to Co-foundr Matching
+                      </p>
                       <motion.div
                         className="flex items-center"
                         animate={{ x: [0, 5, 0] }}
@@ -155,14 +157,14 @@ function page() {
                           ease: "easeInOut",
                         }}
                       >
-                        <MdKeyboardArrowRight className="size-7" />
+                        <MdKeyboardArrowRight className="size-5 sm:size-6 md:size-7" />
                       </motion.div>
                     </div>
                   </motion.button>
                 </SignInButton>
 
                 <motion.p
-                  className="mt-4 line-clamp-2 text-sm"
+                  className="mt-3 text-center text-xs text-gray-400 sm:mt-4 sm:text-sm"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.8, delay: 2.0, ease: "easeOut" }}
@@ -175,22 +177,24 @@ function page() {
         </section>
 
         {/* How It Works Section */}
-        <section className="px-6 py-20 pt-60 sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-4xl">
+        <section className="px-4 py-16 pt-32 sm:px-6 sm:py-20 sm:pt-48 md:px-8 lg:px-12 xl:px-20 2xl:px-40">
+          <div className="mx-auto max-w-6xl">
             <motion.div
-              className="mb-16 text-center"
+              className="mb-12 text-center sm:mb-16"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <h2 className="heading-5 mb-4">How It Works</h2>
-              <p className="text-lg text-gray-300">
+              <h2 className="mb-4 text-2xl font-bold sm:text-3xl md:text-4xl lg:text-5xl">
+                How It Works
+              </h2>
+              <p className="text-base text-gray-300 sm:text-lg md:text-xl">
                 Three simple steps to find your perfect co-founder
               </p>
             </motion.div>
 
-            <div className="grid gap-12 md:grid-cols-3">
+            <div className="grid gap-8 sm:gap-12 md:grid-cols-3">
               {/* Step 1 */}
               <motion.div
                 className="text-center"
@@ -200,19 +204,21 @@ function page() {
                 transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
               >
                 <motion.div
-                  className="mb-6 flex items-center justify-center"
+                  className="mb-4 flex items-center justify-center sm:mb-6"
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-300 text-(--charcoal-black)">
-                    <span className="font-bold">01</span>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-300 text-(--charcoal-black) sm:h-12 sm:w-12">
+                    <span className="text-sm font-bold sm:text-base">01</span>
                   </div>
                 </motion.div>
-                <h3 className="heading-6 mb-4 font-bold">Discover</h3>
-                <h4 className="mb-4 text-xl font-semibold text-gray-300">
+                <h3 className="mb-3 text-lg font-bold sm:mb-4 sm:text-xl md:text-2xl">
+                  Discover
+                </h3>
+                <h4 className="mb-3 text-lg font-semibold text-gray-300 sm:mb-4 sm:text-xl">
                   Connect
                 </h4>
-                <p className="leading-relaxed text-gray-400">
+                <p className="text-sm leading-relaxed text-gray-400 sm:text-base">
                   Create a profile and tell us about yourself. Our matching
                   engine shows you profiles that fit your preferences.
                 </p>
@@ -227,19 +233,21 @@ function page() {
                 transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
               >
                 <motion.div
-                  className="mb-6 flex items-center justify-center"
+                  className="mb-4 flex items-center justify-center sm:mb-6"
                   whileHover={{ scale: 1.1, rotate: -5 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-300 text-(--charcoal-black)">
-                    <span className="font-bold">02</span>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-300 text-(--charcoal-black) sm:h-12 sm:w-12">
+                    <span className="text-sm font-bold sm:text-base">02</span>
                   </div>
                 </motion.div>
-                <h3 className="heading-6 mb-4 font-bold">Engage</h3>
-                <h4 className="mb-4 text-xl font-semibold text-gray-300">
+                <h3 className="mb-3 text-lg font-bold sm:mb-4 sm:text-xl md:text-2xl">
+                  Engage
+                </h3>
+                <h4 className="mb-3 text-lg font-semibold text-gray-300 sm:mb-4 sm:text-xl">
                   Match
                 </h4>
-                <p className="leading-relaxed text-gray-400">
+                <p className="text-sm leading-relaxed text-gray-400 sm:text-base">
                   If a profile piques your interest, invite them to connect. If
                   they accept your invite, that&apos;s a match!
                 </p>
@@ -254,19 +262,21 @@ function page() {
                 transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
               >
                 <motion.div
-                  className="mb-6 flex items-center justify-center"
+                  className="mb-4 flex items-center justify-center sm:mb-6"
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-300 text-(--charcoal-black)">
-                    <span className="font-bold">03</span>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-300 text-(--charcoal-black) sm:h-12 sm:w-12">
+                    <span className="text-sm font-bold sm:text-base">03</span>
                   </div>
                 </motion.div>
-                <h3 className="heading-6 mb-4 font-bold">Start</h3>
-                <h4 className="mb-4 text-xl font-semibold text-gray-300">
+                <h3 className="mb-3 text-lg font-bold sm:mb-4 sm:text-xl md:text-2xl">
+                  Start
+                </h3>
+                <h4 className="mb-3 text-lg font-semibold text-gray-300 sm:mb-4 sm:text-xl">
                   Conversation
                 </h4>
-                <p className="leading-relaxed text-gray-400">
+                <p className="text-sm leading-relaxed text-gray-400 sm:text-base">
                   Find a time to start the conversation. Let Mamun co-foundr
                   help you connect with like-minded individuals.
                 </p>

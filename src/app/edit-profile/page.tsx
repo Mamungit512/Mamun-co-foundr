@@ -35,22 +35,27 @@ export default function EditProfile() {
   if (isError) return <p>Error loading profile: {error?.message}</p>;
 
   return (
-    <section className="min-h-screen bg-(--charcoal-black) py-8">
-      <div className="mx-auto max-w-4xl px-4">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-white">Edit Your Profile</h1>
-          <p className="mt-2 text-gray-400">
+    <section className="min-h-screen bg-(--charcoal-black) py-4 sm:py-6 md:py-8">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 md:px-8">
+        <div className="mb-6 text-center sm:mb-8">
+          <h1 className="text-2xl font-bold text-white sm:text-3xl md:text-4xl">
+            Edit Your Profile
+          </h1>
+          <p className="mt-2 text-sm text-gray-400 sm:text-base">
             Update your information to help others find you
           </p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-6 sm:space-y-8"
+        >
           {/* Basic Information Section */}
-          <div className="rounded-lg bg-gray-800 p-6">
-            <h2 className="mb-6 text-xl font-semibold text-white">
+          <div className="rounded-lg bg-gray-800 p-4 sm:p-6">
+            <h2 className="mb-4 text-lg font-semibold text-white sm:mb-6 sm:text-xl">
               Basic Information
             </h2>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-300">
                   First Name *
