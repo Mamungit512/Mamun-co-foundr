@@ -9,6 +9,8 @@ import {
   getLikers,
   getMutualLikes,
 } from "./likesService";
+import { createSupabaseClientWithToken } from "../../lib/supabaseClient";
+import { mapProfileToOnboardingData } from "../../lib/mapProfileToFromDBFormat";
 
 // Hook to like/unlike a profile
 export function useLikeProfile() {
@@ -39,6 +41,7 @@ export function useLikeProfile() {
       // Invalidate related queries to refresh data
       queryClient.invalidateQueries({ queryKey: ["likes"] });
       queryClient.invalidateQueries({ queryKey: ["liked-profiles"] });
+      queryClient.invalidateQueries({ queryKey: ["liked-profiles-data"] }); // Refresh liked profiles data
       queryClient.invalidateQueries({ queryKey: ["mutual-likes"] });
       queryClient.invalidateQueries({ queryKey: ["profiles"] }); // Refresh profiles to remove liked profiles
       queryClient.invalidateQueries({
@@ -76,7 +79,7 @@ export function useLikeStatus(likedId: string | undefined) {
   });
 }
 
-// Hook to get all profiles liked by the current user
+// Hook to get all profiles liked by the current user (returns IDs only)
 export function useLikedProfiles() {
   const { session } = useSession();
 
@@ -90,6 +93,54 @@ export function useLikedProfiles() {
       if (!userId) throw new Error("No user ID");
 
       return await getLikedProfiles({ likerId: userId, token });
+    },
+    enabled: !!session,
+  });
+}
+
+// Hook to get full profile data for liked profiles
+export function useLikedProfilesData() {
+  const { session } = useSession();
+
+  return useQuery({
+    queryKey: ["liked-profiles-data"],
+    queryFn: async () => {
+      const token = await session?.getToken();
+      if (!token) throw new Error("No authentication token");
+
+      const userId = session?.user?.id;
+      if (!userId) throw new Error("No user ID");
+
+      // Get liked profile IDs
+      const { profiles: likedIds, error: likedError } = await getLikedProfiles({
+        likerId: userId,
+        token,
+      });
+
+      if (likedError) {
+        throw new Error("Failed to fetch liked profiles");
+      }
+
+      if (!likedIds || likedIds.length === 0) {
+        return { profiles: [], error: null };
+      }
+
+      // Get full profile data for liked profiles
+      const supabase = createSupabaseClientWithToken(token);
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("*")
+        .in("user_id", likedIds)
+        .is("deleted_at", null);
+
+      if (profilesError) {
+        throw new Error("Failed to fetch profile data");
+      }
+
+      // Map to OnboardingData format
+      const mappedProfiles = profiles?.map(mapProfileToOnboardingData) || [];
+
+      return { profiles: mappedProfiles, error: null };
     },
     enabled: !!session,
   });

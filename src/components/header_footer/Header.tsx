@@ -9,10 +9,16 @@ import {
 } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import { FaPassport, FaTrash } from "react-icons/fa6";
+import { useState } from "react";
+import { FaPassport, FaTrash, FaHeart } from "react-icons/fa6";
+import LikedProfilesModal from "@/components/LikedProfilesModal";
+import { useLikedProfilesData } from "@/features/likes/useLikes";
 
 function Header() {
   const { signOut } = useClerk();
+  const [isLikedProfilesOpen, setIsLikedProfilesOpen] = useState(false);
+  const { data: likedProfilesData } = useLikedProfilesData();
+  const likedCount = likedProfilesData?.profiles?.length || 0;
 
   return (
     <header className="section-padding flex items-center justify-between bg-(--charcoal-black) text-(--mist-white)">
@@ -37,6 +43,20 @@ function Header() {
           </li>
 
           <SignedIn>
+            <li>
+              <button
+                onClick={() => setIsLikedProfilesOpen(true)}
+                className="group relative cursor-pointer rounded-full p-3 text-gray-300 transition-all duration-200 hover:bg-pink-500/20 hover:text-pink-400"
+                title="View Liked Profiles"
+              >
+                <FaHeart className="h-5 w-5 transition-transform group-hover:scale-110" />
+                {likedCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-pink-500 text-xs font-bold text-white">
+                    {likedCount > 99 ? "99+" : likedCount}
+                  </span>
+                )}
+              </button>
+            </li>
             <li>
               <UserButton
                 appearance={{
@@ -104,6 +124,12 @@ function Header() {
           </SignedOut>
         </ul>
       </div>
+
+      {/* Liked Profiles Modal */}
+      <LikedProfilesModal
+        isOpen={isLikedProfilesOpen}
+        onClose={() => setIsLikedProfilesOpen(false)}
+      />
     </header>
   );
 }
