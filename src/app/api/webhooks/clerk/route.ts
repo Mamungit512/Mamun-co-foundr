@@ -1,13 +1,41 @@
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 
 export async function POST(req: NextRequest) {
   try {
     const evt = await verifyWebhook(req);
 
     // Do something with payload
-    const { id } = evt.data;
     const eventType = evt.type;
+    const id = evt.data.id;
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        cookies: {
+          getAll: () => [],
+          setAll: () => {},
+        },
+      },
+    );
+
+    // 🔹 Handle user reactivation on login
+    if (eventType === "session.created") {
+      const userId = evt.data.user_id;
+
+      // Clear deleted_at if it was set
+      const { error } = await supabase
+        .from("profiles")
+        .update({ deleted_at: null, permanent_delete_at: null })
+        .eq("user_id", userId) // assuming profiles.user_id stores Clerk id
+        .not("deleted_at", "is", null); // matches only rows where deleted_at IS NOT NULL
+
+      if (error) {
+        console.error("Error clearing deleted_at:", error.message);
+      }
+    }
 
     // Call sync-profile-pic endpoint when user updates their data
     if (eventType === "user.updated") {
