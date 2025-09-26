@@ -8,6 +8,7 @@ import { FaTimes } from "react-icons/fa";
 import { TbMessageCircleFilled } from "react-icons/tb";
 import { CiCircleInfo } from "react-icons/ci";
 import { useLikedProfilesData } from "@/features/likes/useLikes";
+import { useSession } from "@clerk/nextjs";
 import BatteryLevel from "@/components/BatteryLevel";
 import InformationTooltipButton from "@/components/ui/InformationTooltipButton";
 
@@ -20,14 +21,33 @@ export default function LikedProfilesModal({
   isOpen,
   onClose,
 }: LikedProfilesModalProps) {
+  const { session } = useSession();
   const { data: likedProfilesData, isLoading } = useLikedProfilesData();
   const [selectedProfile, setSelectedProfile] = useState<OnboardingData | null>(
     null,
   );
+  const [isStartingConversation, setIsStartingConversation] = useState(false);
   const scrollableRef = useRef<HTMLDivElement>(null);
   const detailScrollableRef = useRef<HTMLDivElement>(null);
 
   const likedProfiles = likedProfilesData?.profiles || [];
+
+  const handleStartConversation = async (profile: OnboardingData) => {
+    if (!session?.user?.id || !profile.user_id) return;
+
+    setIsStartingConversation(true);
+    try {
+      // TODO: Implement conversation creation
+      console.log("Starting conversation with:", profile.user_id);
+
+      // For now, just show an alert
+      alert("Conversation feature will be implemented soon!");
+    } catch (error) {
+      console.error("Failed to start conversation:", error);
+    } finally {
+      setIsStartingConversation(false);
+    }
+  };
 
   // Focus the scrollable area when modal opens
   useEffect(() => {
@@ -192,14 +212,21 @@ export default function LikedProfilesModal({
                       {/* Message Button */}
                       <div className="mt-4 flex justify-center">
                         <button
-                          onClick={() => {
-                            // TODO: Implement messaging functionality
-                            console.log("Message profile:", profile);
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStartConversation(profile);
                           }}
-                          className="group flex cursor-pointer items-center gap-2 rounded-lg bg-blue-500/20 px-4 py-2 text-blue-400 transition-all duration-200 hover:bg-blue-500/30 hover:text-blue-300"
+                          disabled={isStartingConversation}
+                          className="group flex cursor-pointer items-center gap-2 rounded-lg bg-blue-500/20 px-4 py-2 text-blue-400 transition-all duration-200 hover:bg-blue-500/30 hover:text-blue-300 disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                          <TbMessageCircleFilled className="h-4 w-4 transition-transform group-hover:scale-110" />
-                          <span className="text-sm font-medium">Message</span>
+                          {isStartingConversation ? (
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-400 border-t-transparent"></div>
+                          ) : (
+                            <TbMessageCircleFilled className="h-4 w-4 transition-transform group-hover:scale-110" />
+                          )}
+                          <span className="text-sm font-medium">
+                            {isStartingConversation ? "Starting..." : "Message"}
+                          </span>
                         </button>
                       </div>
                     </div>
@@ -297,14 +324,20 @@ export default function LikedProfilesModal({
                     {/* Message Button */}
                     <div className="pt-4">
                       <button
-                        onClick={() => {
-                          // TODO: Implement messaging functionality
-                          console.log("Message profile:", selectedProfile);
-                        }}
-                        className="group flex w-full items-center justify-center gap-2 rounded-lg bg-blue-500/20 px-6 py-3 text-blue-400 transition-all duration-200 hover:bg-blue-500/30 hover:text-blue-300"
+                        onClick={() => handleStartConversation(selectedProfile)}
+                        disabled={isStartingConversation}
+                        className="group flex w-full items-center justify-center gap-2 rounded-lg bg-blue-500/20 px-6 py-3 text-blue-400 transition-all duration-200 hover:bg-blue-500/30 hover:text-blue-300 disabled:cursor-not-allowed disabled:opacity-50"
                       >
-                        <TbMessageCircleFilled className="h-5 w-5 transition-transform group-hover:scale-110" />
-                        <span className="font-medium">Send Message</span>
+                        {isStartingConversation ? (
+                          <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-400 border-t-transparent"></div>
+                        ) : (
+                          <TbMessageCircleFilled className="h-5 w-5 transition-transform group-hover:scale-110" />
+                        )}
+                        <span className="font-medium">
+                          {isStartingConversation
+                            ? "Starting..."
+                            : "Send Message"}
+                        </span>
                       </button>
                     </div>
                   </div>
