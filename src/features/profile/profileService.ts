@@ -5,12 +5,111 @@ import {
 import { createSupabaseClientWithToken } from "../../lib/supabaseClient";
 import { sortProfiles } from "../matching/matchingService";
 
-// Fetch profile by userId
+// Fetch profile by userId - with authorization check
 export async function getProfileByUserId(
   userId: string,
   token: string,
+  requestingUserId?: string,
 ): Promise<OnboardingData> {
   const supabase = createSupabaseClientWithToken(token);
+
+  // Get the requesting user's ID if not provided
+  if (!requestingUserId) {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+    if (userError) throw userError;
+    requestingUserId = user?.id;
+  }
+
+  // Authorization check: Only allow if:
+  // 1. User is requesting their own profile, OR
+  // 2. Users are in a conversation together, OR
+  // 3. Users have liked each other (mutual match)
+  const isOwnProfile = requestingUserId === userId;
+
+  if (!isOwnProfile) {
+    // Check if users are in a conversation together
+    // First get conversations for the target user
+    const { data: targetUserConversations } = await supabase
+      .from("conversation_participants")
+      .select("conversation_id")
+      .eq("user_id", userId);
+
+    if (targetUserConversations && targetUserConversations.length > 0) {
+      const conversationIds = targetUserConversations.map(
+        (cp) => cp.conversation_id,
+      );
+
+      // Check if requesting user is in any of these conversations
+      const { data: conversationCheck } = await supabase
+        .from("conversation_participants")
+        .select("conversation_id")
+        .eq("user_id", requestingUserId)
+        .in("conversation_id", conversationIds);
+
+      const hasConversation = conversationCheck && conversationCheck.length > 0;
+
+      if (hasConversation) {
+        // User has conversation access, allow profile view
+      } else {
+        // Check if users have mutual likes
+        const { data: mutualLikesCheck } = await supabase
+          .from("user_profile_actions")
+          .select("profile_id")
+          .eq("user_id", requestingUserId)
+          .eq("action_type", "like")
+          .eq("profile_id", userId);
+
+        const { data: reverseLikesCheck } = await supabase
+          .from("user_profile_actions")
+          .select("profile_id")
+          .eq("user_id", userId)
+          .eq("action_type", "like")
+          .eq("profile_id", requestingUserId);
+
+        const hasMutualLikes =
+          mutualLikesCheck &&
+          reverseLikesCheck &&
+          mutualLikesCheck.length > 0 &&
+          reverseLikesCheck.length > 0;
+
+        if (!hasMutualLikes) {
+          throw new Error(
+            "Unauthorized: You can only view profiles of users you have a relationship with",
+          );
+        }
+      }
+    } else {
+      // Target user has no conversations, check for mutual likes
+      const { data: mutualLikesCheck } = await supabase
+        .from("user_profile_actions")
+        .select("profile_id")
+        .eq("user_id", requestingUserId)
+        .eq("action_type", "like")
+        .eq("profile_id", userId);
+
+      const { data: reverseLikesCheck } = await supabase
+        .from("user_profile_actions")
+        .select("profile_id")
+        .eq("user_id", userId)
+        .eq("action_type", "like")
+        .eq("profile_id", requestingUserId);
+
+      const hasMutualLikes =
+        mutualLikesCheck &&
+        reverseLikesCheck &&
+        mutualLikesCheck.length > 0 &&
+        reverseLikesCheck.length > 0;
+
+      if (!hasMutualLikes) {
+        throw new Error(
+          "Unauthorized: You can only view profiles of users you have a relationship with",
+        );
+      }
+    }
+  }
 
   const { data, error } = await supabase
     .from("profiles")
@@ -19,9 +118,17 @@ export async function getProfileByUserId(
     .is("deleted_at", null) // Exclude soft-deleted profiles
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error("Error fetching profile for user:", userId, error);
+    throw error;
+  }
 
-  if (!data) throw new Error("No profile found");
+  if (!data) {
+    console.error("No profile found for user:", userId);
+    throw new Error("No profile found");
+  }
+
+  console.log("Successfully fetched profile for user:", userId);
   return mapProfileToOnboardingData(data) as OnboardingData;
 }
 

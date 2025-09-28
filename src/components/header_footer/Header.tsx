@@ -9,6 +9,7 @@ import {
 } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import {
   FaPassport,
@@ -25,6 +26,7 @@ import { useLikedProfilesData } from "@/features/likes/useLikes";
 
 function Header() {
   const { signOut } = useClerk();
+  const router = useRouter();
   const [isLikedProfilesOpen, setIsLikedProfilesOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { data: likedProfilesData } = useLikedProfilesData();
@@ -87,6 +89,15 @@ function Header() {
                     {likedCount > 99 ? "99+" : likedCount}
                   </span>
                 )}
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => router.push("/messages")}
+                className="group relative cursor-pointer rounded-full p-3 text-gray-300 transition-all duration-200 hover:bg-blue-500/20 hover:text-blue-400"
+                title="Messages"
+              >
+                <FaEnvelope className="h-5 w-5 transition-transform group-hover:scale-110" />
               </button>
             </li>
             <li>
@@ -172,6 +183,13 @@ function Header() {
               </span>
             )}
           </button>
+          <button
+            onClick={() => router.push("/messages")}
+            className="group relative cursor-pointer rounded-full p-2 text-gray-300 transition-all duration-200 hover:bg-blue-500/20 hover:text-blue-400"
+            title="Messages"
+          >
+            <FaEnvelope className="h-4 w-4 transition-transform group-hover:scale-110" />
+          </button>
         </SignedIn>
 
         <button
@@ -218,11 +236,34 @@ function Header() {
 
                 <li>
                   <Link
-                    href="/contact-us"
+                    href="/messages"
                     className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <FaEnvelope className="h-4 w-4" />
+                    Messages
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
+                    href="/contact-us"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
                     Contact Us
                   </Link>
                 </li>

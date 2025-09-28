@@ -20,17 +20,22 @@ import {
   useLikeStatus,
   useMutualLikes,
 } from "@/features/likes/useLikes";
+import { useCreateConversation } from "@/hooks/useConversations";
+import { useRouter } from "next/navigation";
 import CofoundrShowMore from "./CofoundrShowMore";
 
 function CofoundrMatching() {
   const [curProfileIdx, setCurProfileIdx] = useState(0);
   const [showMore, setShowMore] = useState(false);
+  const [isStartingConversation, setIsStartingConversation] = useState(false);
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const { data: profiles } = useGetProfiles();
   const { data: currentUserProfile } = useUserProfile();
   const { toggleLike, isLoading: isLikeLoading } = useToggleLike();
   const { data: mutualLikes } = useMutualLikes();
+  const createConversationMutation = useCreateConversation();
 
   // Get current profile and like status
   const curProfile = profiles?.[curProfileIdx];
@@ -180,9 +185,25 @@ function CofoundrMatching() {
     }
   };
 
-  const handleMessage = () => {
-    // Handle message functionality
-    console.log("Message profile:", curProfile);
+  const handleMessage = async () => {
+    if (!curProfile?.user_id) return;
+
+    setIsStartingConversation(true);
+    try {
+      const result = await createConversationMutation.mutateAsync({
+        otherUserId: curProfile.user_id,
+      });
+
+      if (result.success) {
+        // Navigate to the conversation
+        router.push(`/messages/${result.conversation.id}`);
+      }
+    } catch (error) {
+      console.error("Failed to start conversation:", error);
+      toast.error("Failed to start conversation. Please try again.");
+    } finally {
+      setIsStartingConversation(false);
+    }
   };
 
   return (
@@ -463,12 +484,21 @@ function CofoundrMatching() {
             </motion.button>
 
             <motion.button
-              className="group flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-blue-500/20 text-blue-400 shadow-2xl backdrop-blur-sm transition-all duration-200 hover:bg-blue-500/30 hover:shadow-blue-500/25 sm:h-14 sm:w-14 md:h-16 md:w-16"
+              className={`group flex h-12 w-12 cursor-pointer items-center justify-center rounded-full shadow-2xl backdrop-blur-sm transition-all duration-200 hover:bg-blue-500/30 hover:shadow-blue-500/25 sm:h-14 sm:w-14 md:h-16 md:w-16 ${
+                isStartingConversation
+                  ? "cursor-not-allowed opacity-50"
+                  : "bg-blue-500/20 text-blue-400"
+              }`}
               onClick={handleMessage}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+              disabled={isStartingConversation}
+              whileHover={!isStartingConversation ? { scale: 1.1 } : {}}
+              whileTap={!isStartingConversation ? { scale: 0.95 } : {}}
             >
-              <TbMessageCircleFilled className="size-5 transition-transform group-hover:scale-110 sm:size-6 md:size-7" />
+              {isStartingConversation ? (
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-400 border-t-transparent sm:h-6 sm:w-6 md:h-7 md:w-7" />
+              ) : (
+                <TbMessageCircleFilled className="size-5 transition-transform group-hover:scale-110 sm:size-6 md:size-7" />
+              )}
             </motion.button>
           </div>
         </motion.div>
