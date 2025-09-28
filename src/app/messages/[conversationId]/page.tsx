@@ -1,11 +1,13 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { FaArrowLeft, FaEnvelope } from "react-icons/fa6";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@clerk/nextjs";
 import { useMessages } from "@/hooks/useMessages";
+import { useConversation } from "@/hooks/useConversations";
 import MessageItem from "@/components/MessageItem";
 import { Message } from "@/features/messages/messagesService";
 
@@ -33,6 +35,8 @@ function ConversationPage({ params }: ConversationPageProps) {
 
   const { messages, isLoading, error, sendMessage } =
     useMessages(conversationId);
+  const { data: conversation, isLoading: isConversationLoading } =
+    useConversation(conversationId);
   const currentUserId = session?.user?.id;
 
   // Auto-scroll to bottom when new messages arrive
@@ -94,14 +98,42 @@ function ConversationPage({ params }: ConversationPageProps) {
 
           <div className="flex items-center gap-3">
             <div className="relative h-10 w-10 overflow-hidden rounded-full">
-              <div className="flex h-full w-full items-center justify-center bg-blue-500/20 text-blue-400">
-                <FaEnvelope className="h-5 w-5" />
-              </div>
+              {isConversationLoading ? (
+                <div className="flex h-full w-full items-center justify-center bg-blue-500/20 text-blue-400">
+                  <FaEnvelope className="h-5 w-5" />
+                </div>
+              ) : conversation?.otherParticipant?.pfp_url ? (
+                <Image
+                  src={conversation.otherParticipant.pfp_url}
+                  alt={`${conversation.otherParticipant.first_name || ""} ${
+                    conversation.otherParticipant.last_name || ""
+                  }`.trim()}
+                  width={40}
+                  height={40}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-blue-500/20 text-blue-400">
+                  <FaEnvelope className="h-5 w-5" />
+                </div>
+              )}
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">Conversation</h1>
+              <h1 className="text-xl font-bold text-white">
+                {isConversationLoading
+                  ? "Loading..."
+                  : conversation?.otherParticipant
+                    ? `${conversation.otherParticipant.first_name || ""} ${
+                        conversation.otherParticipant.last_name || ""
+                      }`.trim() || "Conversation"
+                    : "Conversation"}
+              </h1>
               <p className="text-sm text-gray-400">
-                Individual conversation view
+                {isConversationLoading
+                  ? "Loading conversation details..."
+                  : conversation?.otherParticipant
+                    ? `Chatting with ${conversation.otherParticipant.first_name || "this person"}`
+                    : "Individual conversation view"}
               </p>
               <p className="text-xs text-gray-500">
                 {messages.length}/20 messages

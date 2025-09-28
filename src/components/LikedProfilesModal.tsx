@@ -9,6 +9,8 @@ import { TbMessageCircleFilled } from "react-icons/tb";
 import { CiCircleInfo } from "react-icons/ci";
 import { useLikedProfilesData } from "@/features/likes/useLikes";
 import { useSession } from "@clerk/nextjs";
+import { useCreateConversation } from "@/hooks/useConversations";
+import { useRouter } from "next/navigation";
 import BatteryLevel from "@/components/BatteryLevel";
 import InformationTooltipButton from "@/components/ui/InformationTooltipButton";
 
@@ -22,7 +24,9 @@ export default function LikedProfilesModal({
   onClose,
 }: LikedProfilesModalProps) {
   const { session } = useSession();
+  const router = useRouter();
   const { data: likedProfilesData, isLoading } = useLikedProfilesData();
+  const createConversationMutation = useCreateConversation();
   const [selectedProfile, setSelectedProfile] = useState<OnboardingData | null>(
     null,
   );
@@ -37,13 +41,18 @@ export default function LikedProfilesModal({
 
     setIsStartingConversation(true);
     try {
-      // TODO: Implement conversation creation
-      console.log("Starting conversation with:", profile.user_id);
+      const result = await createConversationMutation.mutateAsync({
+        otherUserId: profile.user_id,
+      });
 
-      // For now, just show an alert
-      alert("Conversation feature will be implemented soon!");
+      if (result.success) {
+        // Navigate to the conversation
+        router.push(`/messages/${result.conversation.id}`);
+        onClose(); // Close the modal
+      }
     } catch (error) {
       console.error("Failed to start conversation:", error);
+      // You could add a toast notification here
     } finally {
       setIsStartingConversation(false);
     }
