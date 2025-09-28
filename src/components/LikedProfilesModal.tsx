@@ -7,7 +7,7 @@ import { FaHeart, FaLocationDot } from "react-icons/fa6";
 import { FaTimes } from "react-icons/fa";
 import { TbMessageCircleFilled } from "react-icons/tb";
 import { CiCircleInfo } from "react-icons/ci";
-import { useLikedProfilesData } from "@/features/likes/useLikes";
+import { useLikedProfilesData, useToggleLike } from "@/features/likes/useLikes";
 import { useSession } from "@clerk/nextjs";
 import { useCreateConversation } from "@/hooks/useConversations";
 import { useRouter } from "next/navigation";
@@ -27,6 +27,7 @@ export default function LikedProfilesModal({
   const router = useRouter();
   const { data: likedProfilesData, isLoading } = useLikedProfilesData();
   const createConversationMutation = useCreateConversation();
+  const { toggleLike, isLoading: isLikeLoading } = useToggleLike();
   const [selectedProfile, setSelectedProfile] = useState<OnboardingData | null>(
     null,
   );
@@ -55,6 +56,17 @@ export default function LikedProfilesModal({
       // You could add a toast notification here
     } finally {
       setIsStartingConversation(false);
+    }
+  };
+
+  const handleRemoveFromLiked = async (profile: OnboardingData) => {
+    if (!session?.user?.id || !profile.user_id) return;
+
+    try {
+      await toggleLike(profile.user_id, true); // true means it's currently liked, so this will unlike it
+    } catch (error) {
+      console.error("Failed to remove from liked profiles:", error);
+      // You could add a toast notification here
     }
   };
 
@@ -218,8 +230,8 @@ export default function LikedProfilesModal({
                         {profile.personalIntro}
                       </p>
 
-                      {/* Message Button */}
-                      <div className="mt-4 flex justify-center">
+                      {/* Action Buttons */}
+                      <div className="mt-4 flex justify-center gap-2">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -235,6 +247,24 @@ export default function LikedProfilesModal({
                           )}
                           <span className="text-sm font-medium">
                             {isStartingConversation ? "Starting..." : "Message"}
+                          </span>
+                        </button>
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveFromLiked(profile);
+                          }}
+                          disabled={isLikeLoading}
+                          className="group flex cursor-pointer items-center gap-2 rounded-lg bg-red-500/20 px-4 py-2 text-red-400 transition-all duration-200 hover:bg-red-500/30 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {isLikeLoading ? (
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-400 border-t-transparent"></div>
+                          ) : (
+                            <FaTimes className="h-4 w-4 transition-transform group-hover:scale-110" />
+                          )}
+                          <span className="text-sm font-medium">
+                            {isLikeLoading ? "Removing..." : "Remove"}
                           </span>
                         </button>
                       </div>
@@ -330,8 +360,8 @@ export default function LikedProfilesModal({
                       </div>
                     )}
 
-                    {/* Message Button */}
-                    <div className="pt-4">
+                    {/* Action Buttons */}
+                    <div className="space-y-3 pt-4">
                       <button
                         onClick={() => handleStartConversation(selectedProfile)}
                         disabled={isStartingConversation}
@@ -346,6 +376,21 @@ export default function LikedProfilesModal({
                           {isStartingConversation
                             ? "Starting..."
                             : "Send Message"}
+                        </span>
+                      </button>
+
+                      <button
+                        onClick={() => handleRemoveFromLiked(selectedProfile)}
+                        disabled={isLikeLoading}
+                        className="group flex w-full items-center justify-center gap-2 rounded-lg bg-red-500/20 px-6 py-3 text-red-400 transition-all duration-200 hover:bg-red-500/30 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {isLikeLoading ? (
+                          <div className="h-5 w-5 animate-spin rounded-full border-2 border-red-400 border-t-transparent"></div>
+                        ) : (
+                          <FaTimes className="h-5 w-5 transition-transform group-hover:scale-110" />
+                        )}
+                        <span className="font-medium">
+                          {isLikeLoading ? "Removing..." : "Remove from Liked"}
                         </span>
                       </button>
                     </div>

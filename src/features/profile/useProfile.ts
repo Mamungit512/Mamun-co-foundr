@@ -1,10 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth, useSession } from "@clerk/nextjs";
-import {
-  getProfileByUserId,
-  getProfiles,
-  upsertUserProfile,
-} from "./profileService";
 import toast from "react-hot-toast";
 
 export function useGetProfiles() {
@@ -29,8 +24,19 @@ export function useGetProfiles() {
       }
 
       try {
-        const currentUser = await getProfileByUserId(userId?.toString(), token);
-        return await getProfiles({ token }, currentUser);
+        const response = await fetch("/api/profiles", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw { message: errorData.error || "Failed to load profiles" };
+        }
+
+        const data = await response.json();
+        return data.profiles;
       } catch (error) {
         throw {
           message: "Failed to load user profiles. Please try again later",
@@ -61,7 +67,19 @@ export function useUserProfile() {
       }
 
       try {
-        return await getProfileByUserId(userId, token);
+        const response = await fetch("/api/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw { message: errorData.error || "Failed to load profile" };
+        }
+
+        const data = await response.json();
+        return data.profile;
       } catch (error) {
         throw {
           message: "Failed to load profile. Please try again later.",
@@ -91,7 +109,19 @@ export function useProfileByUserId(userId: string, enabled: boolean = true) {
       }
 
       try {
-        return await getProfileByUserId(userId, token, requestingUserId);
+        const response = await fetch(`/api/profile/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw { message: errorData.error || "Failed to load profile" };
+        }
+
+        const data = await response.json();
+        return data.profile;
       } catch (error) {
         throw {
           message: "Failed to load profile. Please try again later.",
@@ -118,7 +148,21 @@ export function useProfileUpsert() {
       }
 
       try {
-        return await upsertUserProfile({ userId, token, formData });
+        const response = await fetch("/api/profile", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to update profile");
+        }
+
+        return await response.json();
       } catch (error) {
         console.error(error);
         throw new Error("Error upserting profile information to database");

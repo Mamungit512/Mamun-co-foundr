@@ -118,9 +118,17 @@ export async function getProfileByUserId(
     .is("deleted_at", null) // Exclude soft-deleted profiles
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error("Error fetching profile for user:", userId, error);
+    throw error;
+  }
 
-  if (!data) throw new Error("No profile found");
+  if (!data) {
+    console.error("No profile found for user:", userId);
+    throw new Error("No profile found");
+  }
+
+  console.log("Successfully fetched profile for user:", userId);
   return mapProfileToOnboardingData(data) as OnboardingData;
 }
 
