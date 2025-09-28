@@ -28,6 +28,68 @@ async function fetchMessages(
   return data.messages || [];
 }
 
+async function sendMessage(
+  conversationId: string,
+  content: string,
+  token: string,
+): Promise<Message> {
+  const response = await fetch(`/api/messages/${conversationId}/send`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ content }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+
+    // Handle message limit error specifically
+    if (response.status === 429 && errorData.limit) {
+      const error = new Error(errorData.error || "Message limit reached");
+      (
+        error as Error & {
+          isLimitReached: boolean;
+          messageCount: number;
+          limit: number;
+          suggestion: string;
+        }
+      ).isLimitReached = true;
+      (
+        error as Error & {
+          isLimitReached: boolean;
+          messageCount: number;
+          limit: number;
+          suggestion: string;
+        }
+      ).messageCount = errorData.messageCount;
+      (
+        error as Error & {
+          isLimitReached: boolean;
+          messageCount: number;
+          limit: number;
+          suggestion: string;
+        }
+      ).limit = errorData.limit;
+      (
+        error as Error & {
+          isLimitReached: boolean;
+          messageCount: number;
+          limit: number;
+          suggestion: string;
+        }
+      ).suggestion = errorData.suggestion;
+      throw error;
+    }
+
+    throw new Error(errorData.error || "Failed to send message");
+  }
+
+  const data = await response.json();
+  return data.message;
+}
+
 export function useMessages(conversationId: string) {
   const { session } = useSession();
   const [isClient, setIsClient] = useState(false);
@@ -102,11 +164,24 @@ export function useMessages(conversationId: string) {
     return `${seconds}s`;
   };
 
+  // Send message function
+  const sendMessageHandler = async (content: string): Promise<void> => {
+    if (!session) throw new Error("No session");
+
+    const token = await session.getToken();
+    if (!token) throw new Error("No authentication token");
+
+    await sendMessage(conversationId, content, token);
+    // Trigger a refetch to get the new message
+    refetch();
+  };
+
   return {
     messages,
     isLoading,
     error: error as Error | null,
     refetch,
+    sendMessage: sendMessageHandler,
     isUsingCachedData: false, // Always using fresh data with polling
     canFetch: !!session && !!conversationId && isClient && POLLING_ENABLED,
     timeUntilNextFetch: getTimeUntilNextFetch(),
