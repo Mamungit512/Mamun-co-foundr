@@ -111,12 +111,6 @@ export default function LikedProfilesModal({
                 {likedProfiles.length}
               </span>
             </div>
-            <button
-              onClick={onClose}
-              className="cursor-pointer rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-700 hover:text-white"
-            >
-              <FaTimes className="h-5 w-5 cursor-pointer" />
-            </button>
           </div>
 
           {/* Content */}
