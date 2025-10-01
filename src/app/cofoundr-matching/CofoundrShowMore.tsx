@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "motion/react";
+import Link from "next/link";
 
 function CofoundrShowMore({ curProfile }: { curProfile: OnboardingData }) {
   return (
@@ -60,8 +61,9 @@ function CofoundrShowMore({ curProfile }: { curProfile: OnboardingData }) {
                   Equity Expectation (%)
                 </h3>
                 <p className="text-gray-300">
-                  {curProfile?.equityExpectation &&
-                    `{curProfile.equityExpectation}%`}
+                  {typeof curProfile?.equityExpectation === "number"
+                    ? `${curProfile.equityExpectation}%`
+                    : "Not provided"}
                 </p>
               </div>
             </div>
@@ -107,45 +109,99 @@ function CofoundrShowMore({ curProfile }: { curProfile: OnboardingData }) {
       >
         <h2 className="heading-5 mb-6 text-center text-yellow-300">Socials</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="flex items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3">
-            <span className="text-blue-400">💼</span>
-            <div>
-              <h3 className="font-semibold text-gray-300">LinkedIn</h3>
-              <p className="text-sm text-gray-400">
-                {curProfile.linkedin || "Not provided"}
-              </p>
+          {curProfile?.linkedin ? (
+            <Link
+              href={curProfile.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex cursor-pointer items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3 hover:border-gray-600 hover:bg-gray-800/50"
+            >
+              <span className="text-blue-400">💼</span>
+              <div>
+                <h3 className="font-semibold text-gray-300">LinkedIn</h3>
+                <p className="text-sm text-gray-400">{curProfile.linkedin}</p>
+              </div>
+            </Link>
+          ) : (
+            <div className="flex items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3">
+              <span className="text-blue-400">💼</span>
+              <div>
+                <h3 className="font-semibold text-gray-300">LinkedIn</h3>
+                <p className="text-sm text-gray-400">Not provided</p>
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className="flex items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3">
-            <span className="text-blue-400">🐦</span>
-            <div>
-              <h3 className="font-semibold text-gray-300">Twitter</h3>
-              <p className="text-sm text-gray-400">
-                {curProfile.twitter || "Not provided"}
-              </p>
+          {curProfile?.twitter ? (
+            <Link
+              href={curProfile.twitter}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex cursor-pointer items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3 hover:border-gray-600 hover:bg-gray-800/50"
+            >
+              <span className="text-blue-400">🐦</span>
+              <div>
+                <h3 className="font-semibold text-gray-300">Twitter</h3>
+                <p className="text-sm text-gray-400">{curProfile.twitter}</p>
+              </div>
+            </Link>
+          ) : (
+            <div className="flex items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3">
+              <span className="text-blue-400">🐦</span>
+              <div>
+                <h3 className="font-semibold text-gray-300">Twitter</h3>
+                <p className="text-sm text-gray-400">Not provided</p>
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className="flex items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3">
-            <span className="text-green-400">📝</span>
-            <div>
-              <h3 className="font-semibold text-gray-300">Git</h3>
-              <p className="text-sm text-gray-400">
-                {curProfile.git || "Not provided"}
-              </p>
+          {curProfile?.git ? (
+            <Link
+              href={curProfile.git}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex cursor-pointer items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3 hover:border-gray-600 hover:bg-gray-800/50"
+            >
+              <span className="text-green-400">📝</span>
+              <div>
+                <h3 className="font-semibold text-gray-300">Git</h3>
+                <p className="text-sm text-gray-400">{curProfile.git}</p>
+              </div>
+            </Link>
+          ) : (
+            <div className="flex items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3">
+              <span className="text-green-400">📝</span>
+              <div>
+                <h3 className="font-semibold text-gray-300">Git</h3>
+                <p className="text-sm text-gray-400">Not provided</p>
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className="flex items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3">
-            <span className="text-purple-400">🌐</span>
-            <div>
-              <h3 className="font-semibold text-gray-300">Website</h3>
-              <p className="text-sm text-gray-400">
-                {curProfile.personalWebsite || "Not provided"}
-              </p>
+          {curProfile?.personalWebsite ? (
+            <Link
+              href={curProfile.personalWebsite}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex cursor-pointer items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3 hover:border-gray-600 hover:bg-gray-800/50"
+            >
+              <span className="text-purple-400">🌐</span>
+              <div>
+                <h3 className="font-semibold text-gray-300">Website</h3>
+                <p className="text-sm text-gray-400">
+                  {curProfile.personalWebsite}
+                </p>
+              </div>
+            </Link>
+          ) : (
+            <div className="flex items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3">
+              <span className="text-purple-400">🌐</span>
+              <div>
+                <h3 className="font-semibold text-gray-300">Website</h3>
+                <p className="text-sm text-gray-400">Not provided</p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </motion.div>
     </div>
