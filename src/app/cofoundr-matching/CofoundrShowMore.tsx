@@ -35,7 +35,6 @@ function CofoundrShowMore({ curProfile }: { curProfile: OnboardingData }) {
                 </h3>
                 <p className="text-gray-300">{curProfile.startupName}</p>
               </div>
-
               <div>
                 <h3 className="heading-6 mb-2 font-bold text-yellow-300">
                   Description
@@ -44,19 +43,26 @@ function CofoundrShowMore({ curProfile }: { curProfile: OnboardingData }) {
                   {curProfile.startupDescription}
                 </p>
               </div>
-
               <div>
                 <h3 className="heading-6 mb-2 font-bold text-yellow-300">
                   Time Investment
                 </h3>
                 <p className="text-gray-300">{curProfile.startupTimeSpent}</p>
               </div>
-
               <div>
                 <h3 className="heading-6 mb-2 font-bold text-yellow-300">
                   Current Funding
                 </h3>
                 <p className="text-gray-300">{curProfile.startupFunding}</p>
+              </div>
+              <div>
+                <h3 className="heading-6 mb-2 font-bold text-yellow-300">
+                  Equity Expectation (%)
+                </h3>
+                <p className="text-gray-300">
+                  {curProfile?.equityExpectation &&
+                    `{curProfile.equityExpectation}%`}
+                </p>
               </div>
             </div>
           )}
