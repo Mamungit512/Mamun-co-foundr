@@ -342,7 +342,6 @@ export default function LikedProfilesModal({
                         {selectedProfile.experience}
                       </p>
                     </div>
-
                     {selectedProfile.accomplishments && (
                       <div>
                         <h4 className="font-semibold text-yellow-300">

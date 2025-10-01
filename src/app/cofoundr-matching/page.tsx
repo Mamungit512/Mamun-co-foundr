@@ -406,7 +406,7 @@ function CofoundrMatching() {
                     {/* Ummah Vision */}
                     <div>
                       <h3 className="mb-2 text-base font-bold text-yellow-300 sm:mb-3 sm:text-lg">
-                        Civilizational Engineering for the Ummah
+                        What impact will you leave on the ummah or world?
                       </h3>
                       <p className="text-sm text-gray-300 sm:text-base">
                         {curProfile.ummah}
