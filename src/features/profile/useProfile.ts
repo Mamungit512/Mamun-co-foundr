@@ -165,6 +165,7 @@ export function useProfileUpsert() {
         return await response.json();
       } catch (error) {
         console.error(error);
+        console.log(error);
         throw new Error("Error upserting profile information to database");
       }
     },

@@ -2,9 +2,6 @@ import FormInput from "@/components/ui/FormInput";
 import React from "react";
 import { useForm } from "react-hook-form";
 
-
-
-
 function OnboardingSocialsForm({
   onBack,
   onNext,
@@ -74,11 +71,14 @@ function OnboardingSocialsForm({
         <button
           type="button"
           onClick={onBack}
-          className="rounded border border-white px-4 py-2 text-white"
+          className="cursor-pointer rounded border border-white px-4 py-2 text-white"
         >
           Back
         </button>
-        <button type="submit" className="rounded bg-white px-4 py-2 text-black">
+        <button
+          type="submit"
+          className="cursor-pointer rounded bg-white px-4 py-2 text-black"
+        >
           Next
         </button>
       </div>

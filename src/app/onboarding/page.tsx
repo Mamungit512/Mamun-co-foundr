@@ -56,7 +56,7 @@ export default function OnboardingComponent() {
 
         await user?.reload();
 
-        router.push("/cofoundr-matching");
+        router.push("/onboarding/plan");
       }
     } catch (err) {
       console.error(err);

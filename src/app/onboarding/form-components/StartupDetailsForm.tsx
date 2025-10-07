@@ -45,7 +45,7 @@ function StartupDetailsForm({
 
       {/* Yes/No question */}
       <div className="flex flex-col gap-y-2">
-        <label>Do you already have a startup or idea?</label>
+        <label>Do you already have a startup or idea? *</label>
         <div className="flex gap-x-4">
           <label>
             <input
@@ -86,7 +86,7 @@ function StartupDetailsForm({
             <textarea
               rows={3}
               placeholder="Tell us what it's about in 1–2 sentences"
-              className="rounded-sm border border-gray-400 bg-gray-700 px-2 py-1 text-white"
+              className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white placeholder-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none"
               {...register("startupDescription")}
             />
           </div>
@@ -170,11 +170,14 @@ function StartupDetailsForm({
         <button
           type="button"
           onClick={onBack}
-          className="rounded border border-white px-4 py-2 text-white"
+          className="cursor-pointer rounded border border-white px-4 py-2 text-white"
         >
           Back
         </button>
-        <button type="submit" className="rounded bg-white px-4 py-2 text-black">
+        <button
+          type="submit"
+          className="cursor-pointer rounded bg-white px-4 py-2 text-black"
+        >
           Next
         </button>
       </div>

@@ -39,7 +39,7 @@ function WhoYouAreForm({
         <div className="flex gap-x-6">
           {/* First Name */}
           <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
-            <label>First Name</label>
+            <label>First Name *</label>
             <FormInput
               type="text"
               placeholder="e.g. Teslim"
@@ -52,7 +52,7 @@ function WhoYouAreForm({
 
           {/* Last Name */}
           <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
-            <label htmlFor="lastName">Last Name</label>
+            <label htmlFor="lastName">Last Name *</label>
             <FormInput
               type="text"
               placeholder="e.g. Deen"
@@ -65,7 +65,7 @@ function WhoYouAreForm({
         </div>
 
         <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
-          <label htmlFor="lastName">Job Title</label>
+          <label htmlFor="lastName">Job Title *</label>
           <FormInput
             type="text"
             placeholder="e.g. UX Designer, Software Engineer, etc"
@@ -78,7 +78,7 @@ function WhoYouAreForm({
 
         {/* City */}
         <div className="flex w-full flex-col gap-x-20 gap-y-2">
-          <label htmlFor="city">City</label>
+          <label htmlFor="city">City *</label>
           <FormInput
             type="text"
             placeholder="e.g. Austin"
@@ -91,7 +91,7 @@ function WhoYouAreForm({
 
         {/* Country */}
         <div className="flex w-full flex-col gap-x-20 gap-y-2">
-          <label htmlFor="country">Country</label>
+          <label htmlFor="country">Country *</label>
           <FormInput
             type="text"
             placeholder="e.g. United States"
@@ -104,7 +104,9 @@ function WhoYouAreForm({
 
         {/* Current Occupation Satisfaction */}
         <div className="flex w-full flex-col gap-x-20 gap-y-2">
-          <label htmlFor="satisfaction">Current Occupation Satisfaction</label>
+          <label htmlFor="satisfaction">
+            Current Occupation Satisfaction *
+          </label>
           <div className="flex flex-col gap-y-2">
             {["Happy", "Content", "Browsing", "Unhappy"].map((option) => (
               <label key={option} className="flex items-center gap-x-2">
@@ -125,10 +127,9 @@ function WhoYouAreForm({
           )}
         </div>
 
-
         {/* Battery Level */}
         <div className="flex w-full flex-col gap-x-20 gap-y-2">
-          <label htmlFor="batteryLevel">Founder&apos;s Battery Level</label>
+          <label htmlFor="batteryLevel">Founder&apos;s Battery Level *</label>
           <div className="flex flex-col gap-y-2">
             {["Energized", "Content", "Burnt out"].map((option) => (
               <label key={option} className="flex items-center gap-x-2">

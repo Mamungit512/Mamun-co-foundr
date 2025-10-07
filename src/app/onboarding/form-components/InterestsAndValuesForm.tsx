@@ -114,7 +114,7 @@ function InterestsAndValuesForm({
             <input
               type="text"
               placeholder="Please specify"
-              className="rounded-sm border border-gray-400 bg-gray-700 px-2 py-1 text-white"
+              className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white placeholder-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none"
               value={otherPriority}
               onChange={(e) => setOtherPriority(e.target.value)}
             />
@@ -128,7 +128,7 @@ function InterestsAndValuesForm({
         <textarea
           rows={2}
           placeholder="e.g. Rock climbing, journaling, strategy games"
-          className="rounded-sm border border-gray-400 bg-gray-700 px-2 py-1 text-white"
+          className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white placeholder-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none"
           {...register("hobbies")}
         />
       </div>
@@ -138,11 +138,14 @@ function InterestsAndValuesForm({
         <button
           type="button"
           onClick={onBack}
-          className="rounded border border-white px-4 py-2 text-white"
+          className="cursor-pointer rounded border border-white px-4 py-2 text-white"
         >
           Back
         </button>
-        <button type="submit" className="rounded bg-white px-4 py-2 text-black">
+        <button
+          type="submit"
+          className="cursor-pointer rounded bg-white px-4 py-2 text-black"
+        >
           Finish
         </button>
       </div>

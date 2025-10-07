@@ -47,7 +47,7 @@ function IntroAccomplishments({
               message: "Your bio must be at least 10 characters long.",
             },
           })}
-          className="rounded-sm border border-gray-400 bg-gray-700 px-2 py-1 text-white"
+          className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white placeholder-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none"
           rows={4}
           placeholder="Write a short paragraph or two introducing yourself..."
         />
@@ -62,7 +62,7 @@ function IntroAccomplishments({
         <textarea
           id="accomplishments"
           {...register("accomplishments")}
-          className="rounded-sm border border-gray-400 bg-gray-700 px-2 py-1 text-white"
+          className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white placeholder-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none"
           rows={4}
           placeholder={`Built an app used by 10k+ users\nLaunched a startup\nTop 5% LeetCode`}
         />
@@ -73,7 +73,7 @@ function IntroAccomplishments({
       <div className="flex flex-col gap-y-2">
         <label htmlFor="ummah">
           If you were a civilizational engineer for the Ummah, what idea would
-          you bring?
+          you bring? *
         </label>
         <FormInput
           {...register("ummah", { required: true })}
@@ -89,11 +89,11 @@ function IntroAccomplishments({
 
       {/* Education */}
       <div className="flex flex-col gap-y-2">
-        <label htmlFor="education">Education</label>
+        <label htmlFor="education">Education *</label>
         <textarea
           id="education"
           {...register("education", { required: true })}
-          className="rounded-sm border border-gray-400 bg-gray-700 px-2 py-1 text-white"
+          className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white placeholder-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none"
           rows={3}
           placeholder="Your degree, school, etc."
         />
@@ -104,11 +104,11 @@ function IntroAccomplishments({
 
       {/* Experience */}
       <div className="flex flex-col gap-y-2">
-        <label htmlFor="experience">Work Experience</label>
+        <label htmlFor="experience">Work Experience *</label>
         <textarea
           id="experience"
           {...register("experience", { required: true })}
-          className="rounded-sm border border-gray-400 bg-gray-700 px-2 py-1 text-white"
+          className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white placeholder-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none"
           rows={3}
           placeholder="Current/previous job title(s)"
         />
@@ -119,7 +119,7 @@ function IntroAccomplishments({
 
       {/* Technical Yes/No */}
       <div className="flex flex-col gap-y-2">
-        <label>Do you have a technical background?</label>
+        <label>Do you have a technical background? *</label>
         <div className="flex gap-x-4">
           <label>
             <input
@@ -162,11 +162,14 @@ function IntroAccomplishments({
         <button
           type="button"
           onClick={onBack}
-          className="rounded border border-white px-4 py-2 text-white"
+          className="cursor-pointer rounded border border-white px-4 py-2 text-white"
         >
           Back
         </button>
-        <button type="submit" className="rounded bg-white px-4 py-2 text-black">
+        <button
+          type="submit"
+          className="cursor-pointer rounded bg-white px-4 py-2 text-black"
+        >
           Next
         </button>
       </div>

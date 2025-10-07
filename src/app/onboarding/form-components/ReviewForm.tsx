@@ -126,7 +126,7 @@ export default function ReviewForm({
 
       <div className="flex justify-between pt-6">
         <button
-          className="rounded bg-gray-600 px-4 py-2 text-white"
+          className="cursor-pointer rounded bg-gray-600 px-4 py-2 text-white"
           onClick={onBack}
         >
           Back

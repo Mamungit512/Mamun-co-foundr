@@ -26,11 +26,13 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   // Catch users who do not have `onboardingComplete: true` in their publicMetadata
   // Redirect them to the /onboarding route to complete onboarding
   if (userId && !sessionClaims?.metadata?.onboardingComplete) {
-    if (isPublicRoute(req)) {
-      return NextResponse.next(); // Allow public routes even without onboardingComplete
+    // Allow public routes and API requests to proceed so form submits don't break
+    const isApiRoute = req.nextUrl.pathname.startsWith("/api/");
+    if (isPublicRoute(req) || isApiRoute) {
+      return NextResponse.next();
     }
 
-    // For private routes, user will be redirected to /onboarding page
+    // For private, non-API routes, redirect to /onboarding page
     const onboardingUrl = new URL("/onboarding", req.url);
     return NextResponse.redirect(onboardingUrl);
   }
