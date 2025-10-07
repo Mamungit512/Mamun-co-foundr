@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import BatteryLevel from "@/components/BatteryLevel";
 import PreferencesPanel from "@/app/cofoundr-matching/PreferencesPanel";
 import InformationTooltipButton from "@/components/ui/InformationTooltipButton";
+import HiringBadge from "@/components/HiringBadge";
 import { useGetProfiles, useUserProfile } from "@/features/profile/useProfile";
 import {
   useToggleLike,
@@ -289,9 +290,17 @@ function CofoundrMatching() {
                     {/* Name and Battery */}
                     <div className="flex flex-col items-center space-y-3 sm:space-y-4">
                       <div className="text-center">
-                        <h2 className="mb-2 text-xl font-bold text-yellow-300 sm:text-2xl md:text-3xl lg:text-4xl">
-                          {curProfile.firstName} {curProfile.lastName}
-                        </h2>
+                        <div className="mb-2 flex items-center justify-center gap-3">
+                          <h2 className="text-xl font-bold text-yellow-300 sm:text-2xl md:text-3xl lg:text-4xl">
+                            {curProfile.firstName} {curProfile.lastName}
+                          </h2>
+                          {curProfile.isHiring && curProfile.hiringEmail && (
+                            <HiringBadge
+                              hiringEmail={curProfile.hiringEmail}
+                              companyName={curProfile.startupName}
+                            />
+                          )}
+                        </div>
                         <p className="text-base text-gray-300 sm:text-lg md:text-xl">
                           {curProfile.title}
                         </p>

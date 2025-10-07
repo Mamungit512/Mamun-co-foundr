@@ -50,6 +50,9 @@ declare global {
     updated_at: string;
     user_id: string;
     ummah: string;
+    // Hiring feature fields
+    is_hiring: boolean;
+    hiring_email: string | null;
   };
 
   // Combine all individual form step types
@@ -59,7 +62,8 @@ declare global {
       OnboardingSocialsFormData &
       StartupDetailsFormData &
       InterestsAndValuesFormData &
-      Preferences
+      Preferences &
+      HiringSettingsFormData
   >;
 
   type WhoYouAreFormData = {
@@ -114,5 +118,10 @@ declare global {
   type Preferences = {
     lookingFor: "technical" | "non-technical" | "either";
     preferredLocation: "same-city" | "same-country" | "remote";
+  };
+
+  type HiringSettingsFormData = {
+    isHiring: boolean;
+    hiringEmail?: string;
   };
 }

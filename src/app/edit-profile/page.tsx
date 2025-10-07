@@ -7,6 +7,7 @@ import {
   useUserProfile,
 } from "@/features/profile/useProfile";
 import FormInput from "@/components/ui/FormInput";
+import HiringSettings from "@/components/HiringSettings";
 
 export default function EditProfile() {
   const { data: profileData, isLoading, isError, error } = useUserProfile();
@@ -541,6 +542,19 @@ export default function EditProfile() {
               </div>
             </div>
           </div>
+
+          {/* Hiring Settings Section */}
+          <HiringSettings
+            isHiring={profileData?.isHiring || false}
+            hiringEmail={profileData?.hiringEmail}
+            onUpdate={async (hiringData) => {
+              const updatedData = {
+                ...profileData,
+                ...hiringData,
+              };
+              await upsertProfileMutationFn(updatedData);
+            }}
+          />
 
           {/* Submit Button */}
           <div className="flex justify-end">
