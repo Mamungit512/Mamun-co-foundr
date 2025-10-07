@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth} from "@clerk/nextjs";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -22,7 +22,7 @@ export default function HiringSettings({
   hiringEmail,
   onUpdate,
 }: HiringSettingsProps) {
-  const { has } = useAuth();
+  const { has} = useAuth();
   const router = useRouter();
 
   const {
