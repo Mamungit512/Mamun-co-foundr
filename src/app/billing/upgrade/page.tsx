@@ -2,29 +2,37 @@
 
 import React from "react";
 import { motion } from "motion/react";
-import { FaCheck, FaStar } from "react-icons/fa";
+import { FaCheck, FaUsers, FaEnvelope, FaEye } from "react-icons/fa";
+import { PricingTable } from "@clerk/nextjs";
 
 export default function BillingUpgradePage() {
-  const features = [
-    "We're Hiring badge on your profile",
-    "Direct email inquiries from potential candidates",
-    "File upload capability for resumes",
-    "Unlimited profile views",
+  const valueProps = [
+    {
+      icon: FaUsers,
+      title: "Attract Top Talent",
+      description:
+        "Stand out from the crowd with a professional hiring badge that catches the eye of potential co-founders and employees.",
+    },
+    {
+      icon: FaEnvelope,
+      title: "Direct Communication",
+      description:
+        "Skip the middleman - candidates can reach out directly to your hiring email with inquiries and applications.",
+    },
+    {
+      icon: FaEye,
+      title: "Increased Visibility",
+      description:
+        "Get noticed by more potential candidates as your profile becomes more prominent in search results.",
+    },
   ];
-
-  const handleUpgrade = () => {
-    // In a real implementation, this would redirect to Clerk's billing page
-    // For now, we'll show a success message
-    alert("Redirecting to Clerk billing page...");
-    // window.location.href = "/billing/checkout";
-  };
 
   return (
     <div className="min-h-screen bg-(--charcoal-black) text-(--mist-white)">
-      <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
-          className="mb-12 text-center"
+          className="mb-16 text-center"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
@@ -37,88 +45,97 @@ export default function BillingUpgradePage() {
           </p>
         </motion.div>
 
-        {/* Pricing Card */}
+        {/* Value Propositions */}
         <motion.div
-          className="relative"
+          className="mb-16 grid gap-8 md:grid-cols-3"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
         >
-          <div className="relative rounded-2xl border border-yellow-500/30 bg-gradient-to-br from-yellow-500/10 to-transparent p-8 shadow-2xl">
-            {/* Popular Badge */}
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-              <div className="flex items-center gap-2 rounded-full bg-yellow-500 px-4 py-2 text-sm font-semibold text-black">
-                <FaStar className="h-4 w-4" />
-                Most Popular
+          {valueProps.map((prop, index) => (
+            <motion.div
+              key={prop.title}
+              className="rounded-lg bg-gray-800/50 p-6 text-center"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
+            >
+              <div className="mb-4 flex justify-center">
+                <div className="rounded-full bg-yellow-500/20 p-4">
+                  <prop.icon className="h-8 w-8 text-yellow-300" />
+                </div>
               </div>
-            </div>
+              <h3 className="mb-3 text-lg font-semibold text-white">
+                {prop.title}
+              </h3>
+              <p className="text-gray-300">{prop.description}</p>
+            </motion.div>
+          ))}
+        </motion.div>
 
-            <div className="mb-8 text-center">
-              <h2 className="mb-2 text-3xl font-bold text-white">
-                Collab Tier
+        {/* Pricing Table */}
+        <motion.div
+          className="mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+        >
+          <div className="rounded-2xl border border-gray-700 bg-gray-800/30 p-8">
+            <div className="mb-6 text-center">
+              <h2 className="mb-2 text-2xl font-bold text-white">
+                Choose Your Plan
               </h2>
-              <div className="mb-4 flex items-center justify-center gap-2">
-                <span className="text-5xl font-bold text-yellow-300">
-                  $3.99
-                </span>
-                <span className="text-gray-300">/month</span>
-              </div>
-              <p className="text-gray-400">
-                Perfect for founders looking to hire top talent
+              <p className="text-gray-300">
+                Select the plan that works best for your startup journey
               </p>
             </div>
-
-            {/* Features List */}
-            <div className="mb-8 space-y-4">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={feature}
-                  className="flex items-center gap-3"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
-                >
-                  <div className="flex-shrink-0">
-                    <FaCheck className="h-5 w-5 text-green-400" />
-                  </div>
-                  <span className="text-gray-300">{feature}</span>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* CTA Button */}
-            <motion.button
-              onClick={handleUpgrade}
-              className="w-full rounded-lg bg-yellow-600 px-8 py-4 text-lg font-semibold text-black transition hover:bg-yellow-700 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:outline-none"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              Upgrade Now
-            </motion.button>
-
-            <p className="mt-4 text-center text-sm text-gray-400">
-              Cancel anytime. No long-term commitments.
-            </p>
+            <PricingTable />
           </div>
         </motion.div>
 
-        {/* Additional Info */}
+        {/* Additional Benefits */}
         <motion.div
-          className="mt-12 text-center"
+          className="text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <div className="rounded-lg bg-gray-800/50 p-6">
-            <h3 className="mb-2 text-lg font-semibold text-white">
+          <div className="rounded-lg bg-gray-800/50 p-8">
+            <h3 className="mb-4 text-xl font-semibold text-white">
               Why Choose Collab Tier?
             </h3>
-            <p className="text-gray-300">
-              Stand out from the crowd and attract the best co-founders and
-              employees for your startup. Our hiring badge increases your
-              visibility and makes it easy for potential candidates to reach out
-              directly.
+            <p className="mb-6 text-gray-300">
+              For just $3.99/month, transform your profile into a talent magnet.
+              The hiring badge isn&apos;t just a visual indicator - it&apos;s
+              your gateway to connecting with passionate co-founders and skilled
+              employees who are ready to build something amazing with you.
             </p>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="flex items-center gap-3">
+                <FaCheck className="h-5 w-5 text-green-400" />
+                <span className="text-gray-300">
+                  Cancel anytime, no long-term commitments
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <FaCheck className="h-5 w-5 text-green-400" />
+                <span className="text-gray-300">
+                  Instant activation of hiring features
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <FaCheck className="h-5 w-5 text-green-400" />
+                <span className="text-gray-300">
+                  Professional hiring badge on your profile
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <FaCheck className="h-5 w-5 text-green-400" />
+                <span className="text-gray-300">
+                  Direct email inquiries from candidates
+                </span>
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>
