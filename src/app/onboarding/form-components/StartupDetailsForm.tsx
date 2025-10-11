@@ -3,26 +3,35 @@
 import React from "react";
 import { useForm, useWatch } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
+import AIWriter from "@/components/ui/AIWriter";
 
 function StartupDetailsForm({
   onNext,
   onBack,
-  defaultValues, // Add this prop
+  defaultValues,
 }: {
   onNext: (data: StartupDetailsFormData) => void;
   onBack: () => void;
-  defaultValues?: Partial<StartupDetailsFormData>; // optional
+  defaultValues?: Partial<StartupDetailsFormData>;
 }) {
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
+    watch,
+    setValue,
   } = useForm<StartupDetailsFormData>({
-    defaultValues, // Pass it here
+    defaultValues,
   });
 
   const hasStartup = useWatch({ control, name: "hasStartup" });
+
+  const startupDescriptionValue = watch("startupDescription") || "";
+  const startupTimeSpentValue = watch("startupTimeSpent") || "";
+  const startupFundingValue = watch("startupFunding") || "";
+  const coFounderStatusValue = watch("coFounderStatus") || "";
+  const fullTimeTimelineValue = watch("fullTimeTimeline") || "";
 
   const onSubmit = (data: StartupDetailsFormData) => {
     onNext(data);
@@ -83,6 +92,13 @@ function StartupDetailsForm({
 
           <div className="flex flex-col gap-y-2">
             <label>Brief Description</label>
+            <AIWriter
+              text={startupDescriptionValue}
+              fieldType="startupDescription"
+              onAccept={(suggestion) =>
+                setValue("startupDescription", suggestion)
+              }
+            />
             <textarea
               rows={3}
               placeholder="Tell us what it's about in 1–2 sentences"
@@ -93,6 +109,11 @@ function StartupDetailsForm({
 
           <div className="flex flex-col gap-y-2">
             <label>Time Spent & Progress</label>
+            <AIWriter
+              text={startupTimeSpentValue}
+              fieldType="startupTimeSpent"
+              onAccept={(suggestion) => setValue("startupTimeSpent", suggestion)}
+            />
             <FormInput
               type="text"
               placeholder="e.g. 3 months in, MVP built and 5 users"
@@ -102,6 +123,11 @@ function StartupDetailsForm({
 
           <div className="flex flex-col gap-y-2">
             <label>Funding Info (if applicable)</label>
+            <AIWriter
+              text={startupFundingValue}
+              fieldType="startupFunding"
+              onAccept={(suggestion) => setValue("startupFunding", suggestion)}
+            />
             <FormInput
               type="text"
               placeholder="e.g. Bootstrapped, Pre-seed, $20k grant"
@@ -110,7 +136,14 @@ function StartupDetailsForm({
           </div>
 
           <div className="flex flex-col gap-y-2">
-            <label>Co-Founder Status</label>
+            <label>Co-founder Status</label>
+            <AIWriter
+              text={coFounderStatusValue}
+              fieldType="coFounderStatus"
+              onAccept={(suggestion) =>
+                setValue("coFounderStatus", suggestion)
+              }
+            />
             <FormInput
               type="text"
               placeholder="e.g. Solo founder, Seeking co-founder, Already partnered"
@@ -120,6 +153,13 @@ function StartupDetailsForm({
 
           <div className="flex flex-col gap-y-2">
             <label>Timeline for Going Full-Time</label>
+            <AIWriter
+              text={fullTimeTimelineValue}
+              fieldType="fullTimeTimeline"
+              onAccept={(suggestion) =>
+                setValue("fullTimeTimeline", suggestion)
+              }
+            />
             <FormInput
               type="text"
               placeholder="e.g. Within 3 months, Already full-time"
@@ -140,11 +180,6 @@ function StartupDetailsForm({
                 max: { value: 100, message: "Equity cannot exceed 100%" },
               })}
             />
-            {errors.equityExpectation && (
-              <p className="text-sm text-red-500">
-                {errors.equityExpectation.message}
-              </p>
-            )}
           </div>
 
           <div className="flex flex-col gap-y-2">

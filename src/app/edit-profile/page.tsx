@@ -7,6 +7,7 @@ import {
   useUserProfile,
 } from "@/features/profile/useProfile";
 import FormInput from "@/components/ui/FormInput";
+import AIWriter from "@/components/ui/AIWriter";
 import HiringSettings from "@/components/HiringSettings";
 
 export default function EditProfile() {
@@ -18,17 +19,32 @@ export default function EditProfile() {
     handleSubmit,
     reset,
     control,
+    watch,
+    setValue,
     formState: { isSubmitting, errors },
   } = useForm<Partial<OnboardingData>>({
     defaultValues: profileData,
   });
+
+  // Watch values for AI Writer
+  const titleValue = watch("title") || "";
+  const educationValue = watch("education") || "";
+  const experienceValue = watch("experience") || "";
+  const personalIntroValue = watch("personalIntro") || "";
+  const accomplishmentsValue = watch("accomplishments") || "";
+  const ummahValue = watch("ummah") || "";
+  const interestsValue = watch("interests") || "";
+  const hobbiesValue = watch("hobbies") || "";
+  const startupTimeSpentValue = watch("startupTimeSpent") || "";
+  const startupFundingValue = watch("startupFunding") || "";
+  const coFounderStatusValue = watch("coFounderStatus") || "";
+  const fullTimeTimelineValue = watch("fullTimeTimeline") || "";
 
   useEffect(() => {
     if (profileData) reset(profileData);
   }, [profileData, reset]);
 
   const onSubmit = async (formData: Partial<OnboardingData>) => {
-    // -- Upsert editted profile data into DB --
     await upsertProfileMutationFn(formData);
   };
 
@@ -123,6 +139,11 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Title *
                 </label>
+                <AIWriter
+                  text={titleValue}
+                  fieldType="title"
+                  onAccept={(suggestion) => setValue("title", suggestion)}
+                />
                 <FormInput
                   placeholder="Title: (Ex. Software Engineer)"
                   {...register("title", { required: "Title is required" })}
@@ -194,6 +215,11 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Education *
                 </label>
+                <AIWriter
+                  text={educationValue}
+                  fieldType="education"
+                  onAccept={(suggestion) => setValue("education", suggestion)}
+                />
                 <textarea
                   rows={3}
                   placeholder="Your degree, school, etc."
@@ -213,6 +239,11 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Experience *
                 </label>
+                <AIWriter
+                  text={experienceValue}
+                  fieldType="experience"
+                  onAccept={(suggestion) => setValue("experience", suggestion)}
+                />
                 <textarea
                   rows={3}
                   placeholder="Current/previous job title(s)"
@@ -292,6 +323,11 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Personal Introduction *
                 </label>
+                <AIWriter
+                  text={personalIntroValue}
+                  fieldType="personalIntro"
+                  onAccept={(suggestion) => setValue("personalIntro", suggestion)}
+                />
                 <textarea
                   rows={4}
                   placeholder="Write a short paragraph or two introducing yourself..."
@@ -316,6 +352,11 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Accomplishments
                 </label>
+                <AIWriter
+                  text={accomplishmentsValue}
+                  fieldType="accomplishments"
+                  onAccept={(suggestion) => setValue("accomplishments", suggestion)}
+                />
                 <textarea
                   rows={3}
                   placeholder="Built an app used by 10k+ users, Launched a startup, Top 5% LeetCode"
@@ -329,6 +370,11 @@ export default function EditProfile() {
                   If you were a civilizational engineer for the Ummah, what idea
                   would you bring?
                 </label>
+                <AIWriter
+                  text={ummahValue}
+                  fieldType="ummah"
+                  onAccept={(suggestion) => setValue("ummah", suggestion)}
+                />
                 <textarea
                   rows={3}
                   placeholder="Your idea here"
@@ -422,6 +468,11 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Time Spent on Startup
                 </label>
+                <AIWriter
+                  text={startupTimeSpentValue}
+                  fieldType="startupTimeSpent"
+                  onAccept={(suggestion) => setValue("startupTimeSpent", suggestion)}
+                />
                 <FormInput
                   placeholder="e.g. 3 months in, MVP built"
                   {...register("startupTimeSpent")}
@@ -432,6 +483,11 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Startup Funding
                 </label>
+                <AIWriter
+                  text={startupFundingValue}
+                  fieldType="startupFunding"
+                  onAccept={(suggestion) => setValue("startupFunding", suggestion)}
+                />
                 <FormInput
                   placeholder="e.g. Bootstrapped, Pre-seed, $20k grant"
                   {...register("startupFunding")}
@@ -442,6 +498,11 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Co-founder Status
                 </label>
+                <AIWriter
+                  text={coFounderStatusValue}
+                  fieldType="coFounderStatus"
+                  onAccept={(suggestion) => setValue("coFounderStatus", suggestion)}
+                />
                 <FormInput
                   placeholder="e.g. Solo founder, Seeking co-founder"
                   {...register("coFounderStatus")}
@@ -452,6 +513,11 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Full-time Timeline
                 </label>
+                <AIWriter
+                  text={fullTimeTimelineValue}
+                  fieldType="fullTimeTimeline"
+                  onAccept={(suggestion) => setValue("fullTimeTimeline", suggestion)}
+                />
                 <FormInput
                   placeholder="e.g. Within 3 months, Already full-time"
                   {...register("fullTimeTimeline")}
@@ -549,6 +615,11 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Interests
                 </label>
+                <AIWriter
+                  text={interestsValue}
+                  fieldType="interests"
+                  onAccept={(suggestion) => setValue("interests", suggestion)}
+                />
                 <textarea
                   rows={3}
                   placeholder="Your interests and passions"
@@ -561,6 +632,11 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Hobbies
                 </label>
+                <AIWriter
+                  text={hobbiesValue}
+                  fieldType="hobbies"
+                  onAccept={(suggestion) => setValue("hobbies", suggestion)}
+                />
                 <textarea
                   rows={3}
                   placeholder="Your hobbies and activities"
