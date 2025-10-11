@@ -1,14 +1,13 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
 import { SignInButton } from "@clerk/nextjs";
 import ReactLenis from "lenis/react";
 import Image from "next/image";
-import React, { useState } from "react";
+import React from "react";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { motion } from "motion/react";
 
-import AccessCodeForm from "@/components/home/AccessCodeForm";
+// import AccessCodeForm from "@/components/home/AccessCodeForm";
 import CTA from "@/components/home/CTA";
 import FAQ from "@/components/home/faq";
 import Vision from "@/components/home/Vision";
@@ -20,11 +19,11 @@ Page the user first sees when navigating to the root url of the site
 ------ */
 
 function page() {
-  const [accessGranted, setAccessGranted] = useState(false);
+  // const [accessGranted, setAccessGranted] = useState(false);
 
-  if (!accessGranted) {
-    return <AccessCodeForm onSuccess={() => setAccessGranted(true)} />;
-  }
+  // if (!accessGranted) {
+  //   return <AccessCodeForm onSuccess={() => setAccessGranted(true)} />;
+  // }
 
   return (
     <ReactLenis root>

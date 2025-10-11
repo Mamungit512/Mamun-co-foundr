@@ -50,6 +50,10 @@ export function mapProfileToOnboardingData(
     // Preferences
     lookingFor: profile.looking_for ?? undefined,
     preferredLocation: profile.preferred_location ?? undefined,
+
+    // Hiring Settings
+    isHiring: profile.is_hiring ?? false,
+    hiringEmail: profile.hiring_email ?? undefined,
   };
 }
 
@@ -94,6 +98,10 @@ export function mapOnboardingDatatoProfileDB(data: OnboardingData) {
     hobbies: data.hobbies || null,
     looking_for: data.lookingFor || null,
     preferred_location: data.preferredLocation || null,
+
+    // Hiring Settings
+    is_hiring: data.isHiring || false,
+    hiring_email: data.hiringEmail || null,
 
     onboarding_complete: true,
   };

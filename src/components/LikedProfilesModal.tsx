@@ -13,6 +13,7 @@ import { useCreateConversation } from "@/hooks/useConversations";
 import { useRouter } from "next/navigation";
 import BatteryLevel from "@/components/BatteryLevel";
 import InformationTooltipButton from "@/components/ui/InformationTooltipButton";
+import HiringBadge from "@/components/HiringBadge";
 
 interface LikedProfilesModalProps {
   isOpen: boolean;
@@ -174,9 +175,18 @@ export default function LikedProfilesModal({
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                       <div className="absolute right-4 bottom-4 left-4">
-                        <h3 className="text-lg font-bold text-white">
-                          {profile.firstName} {profile.lastName}
-                        </h3>
+                        <div className="mb-1 flex items-center gap-2">
+                          <h3 className="text-lg font-bold text-white">
+                            {profile.firstName} {profile.lastName}
+                          </h3>
+                          {profile.isHiring && profile.hiringEmail && (
+                            <HiringBadge
+                              hiringEmail={profile.hiringEmail}
+                              companyName={profile.startupName}
+                              className="px-2 py-0.5 text-xs"
+                            />
+                          )}
+                        </div>
                         <p className="text-sm text-gray-200">{profile.title}</p>
                       </div>
                     </div>
