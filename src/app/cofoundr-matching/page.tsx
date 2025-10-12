@@ -24,6 +24,9 @@ import {
 import { useCreateConversation } from "@/hooks/useConversations";
 import { useRouter } from "next/navigation";
 import CofoundrShowMore from "./CofoundrShowMore";
+import { useSkipProfile } from "@/features/user-actions/useUserActions";
+import { useSwipeLimit } from "@/features/swipes/useSwipes";
+import SwipeLimit from "@/components/SwipeLimit";
 
 function CofoundrMatching() {
   const [curProfileIdx, setCurProfileIdx] = useState(0);
@@ -37,6 +40,8 @@ function CofoundrMatching() {
   const { toggleLike, isLoading: isLikeLoading } = useToggleLike();
   const { data: mutualLikes } = useMutualLikes();
   const createConversationMutation = useCreateConversation();
+  const skipProfileMutation = useSkipProfile();
+  const { data: swipeLimitData } = useSwipeLimit();
 
   // Get current profile and like status
   const curProfile = profiles?.[curProfileIdx];
@@ -124,19 +129,56 @@ function CofoundrMatching() {
     setCurProfileIdx((prev) => (prev + 1 < profiles.length ? prev + 1 : 0));
   };
 
-  const handleSkip = () => {
-    if (curProfile) {
+  const handleSkip = async () => {
+    if (!curProfile?.user_id) return;
+
+    // Check if user has reached swipe limit
+    if (swipeLimitData?.hasReachedLimit) {
+      toast.error(
+        "You've reached your daily swipe limit. Upgrade to continue!",
+        {
+          duration: 3000,
+          position: "bottom-right",
+        },
+      );
+      return;
+    }
+
+    try {
+      await skipProfileMutation.mutateAsync({
+        skippedProfileId: curProfile.user_id,
+      });
+
       toast(`Skipped ${curProfile.firstName}`, {
         duration: 2000,
         position: "bottom-right",
         icon: "👋",
       });
+
+      handleNextProfile();
+    } catch (error) {
+      console.error("Error skipping profile:", error);
+      toast.error("Failed to skip profile. Please try again.", {
+        duration: 3000,
+        position: "bottom-right",
+      });
     }
-    handleNextProfile();
   };
 
   const handleLike = async () => {
     if (!curProfile?.user_id) return;
+
+    // Check if user has reached swipe limit
+    if (swipeLimitData?.hasReachedLimit) {
+      toast.error(
+        "You've reached your daily swipe limit. Upgrade to continue!",
+        {
+          duration: 3000,
+          position: "bottom-right",
+        },
+      );
+      return;
+    }
 
     try {
       const isCurrentlyLiked = likeStatus?.isLiked || false;
@@ -243,6 +285,16 @@ function CofoundrMatching() {
               }}
               onPreferencesChange={onPreferencesChange}
             />
+
+            {/* Swipe Limit Display */}
+            {swipeLimitData && (
+              <SwipeLimit
+                currentCount={swipeLimitData.currentCount}
+                limit={swipeLimitData.limit}
+                hasReachedLimit={swipeLimitData.hasReachedLimit}
+              />
+            )}
+
             <div className="overflow-hidden rounded-2xl border border-gray-800/50 bg-gray-900/50 shadow-2xl backdrop-blur-sm">
               <div className="p-4 sm:p-6 md:p-8 lg:p-12">
                 <div className="flex flex-col items-center space-y-6 sm:space-y-8">
@@ -466,12 +518,33 @@ function CofoundrMatching() {
         >
           <div className="flex items-center gap-4 sm:gap-6">
             <motion.button
-              className="group flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-red-500/20 text-red-400 shadow-2xl backdrop-blur-sm transition-all duration-200 hover:bg-red-500/30 hover:shadow-red-500/25 sm:h-14 sm:w-14 md:h-16 md:w-16"
+              className={`group flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-red-500/20 text-red-400 shadow-2xl backdrop-blur-sm transition-all duration-200 hover:bg-red-500/30 hover:shadow-red-500/25 sm:h-14 sm:w-14 md:h-16 md:w-16 ${
+                skipProfileMutation.isPending || swipeLimitData?.hasReachedLimit
+                  ? "cursor-not-allowed opacity-50"
+                  : ""
+              }`}
               onClick={handleSkip}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+              disabled={
+                skipProfileMutation.isPending || swipeLimitData?.hasReachedLimit
+              }
+              whileHover={
+                !skipProfileMutation.isPending &&
+                !swipeLimitData?.hasReachedLimit
+                  ? { scale: 1.1 }
+                  : {}
+              }
+              whileTap={
+                !skipProfileMutation.isPending &&
+                !swipeLimitData?.hasReachedLimit
+                  ? { scale: 0.95 }
+                  : {}
+              }
             >
-              <ImCross className="size-5 transition-transform group-hover:scale-110 sm:size-6 md:size-7" />
+              {skipProfileMutation.isPending ? (
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-red-400 border-t-transparent sm:h-6 sm:w-6 md:h-7 md:w-7" />
+              ) : (
+                <ImCross className="size-5 transition-transform group-hover:scale-110 sm:size-6 md:size-7" />
+              )}
             </motion.button>
 
             <motion.button
@@ -479,17 +552,29 @@ function CofoundrMatching() {
                 likeStatus?.isLiked
                   ? "bg-pink-500/40 text-pink-300 hover:bg-pink-500/50 hover:shadow-pink-500/25"
                   : "bg-pink-500/20 text-pink-400 hover:bg-pink-500/30 hover:shadow-pink-500/25"
-              } ${isLikeLoading ? "cursor-not-allowed opacity-50" : ""}`}
+              } ${isLikeLoading || swipeLimitData?.hasReachedLimit ? "cursor-not-allowed opacity-50" : ""}`}
               onClick={handleLike}
-              disabled={isLikeLoading}
-              whileHover={!isLikeLoading ? { scale: 1.1 } : {}}
-              whileTap={!isLikeLoading ? { scale: 0.95 } : {}}
+              disabled={isLikeLoading || swipeLimitData?.hasReachedLimit}
+              whileHover={
+                !isLikeLoading && !swipeLimitData?.hasReachedLimit
+                  ? { scale: 1.1 }
+                  : {}
+              }
+              whileTap={
+                !isLikeLoading && !swipeLimitData?.hasReachedLimit
+                  ? { scale: 0.95 }
+                  : {}
+              }
             >
-              <FaHeart
-                className={`size-6 transition-transform sm:size-7 md:size-8 ${
-                  likeStatus?.isLiked ? "fill-current" : ""
-                } ${!isLikeLoading ? "group-hover:scale-110" : ""}`}
-              />
+              {isLikeLoading ? (
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-pink-400 border-t-transparent sm:h-7 sm:w-7 md:h-8 md:w-8" />
+              ) : (
+                <FaHeart
+                  className={`size-6 transition-transform sm:size-7 md:size-8 ${
+                    likeStatus?.isLiked ? "fill-current" : ""
+                  } ${!isLikeLoading && !swipeLimitData?.hasReachedLimit ? "group-hover:scale-110" : ""}`}
+                />
+              )}
             </motion.button>
 
             <motion.button
