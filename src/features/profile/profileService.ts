@@ -57,17 +57,17 @@ export async function getProfileByUserId(
         // Check if users have mutual likes
         const { data: mutualLikesCheck } = await supabase
           .from("user_profile_actions")
-          .select("profile_id")
+          .select("other_profile_id")
           .eq("user_id", requestingUserId)
           .eq("action_type", "like")
-          .eq("profile_id", userId);
+          .eq("other_profile_id", userId);
 
         const { data: reverseLikesCheck } = await supabase
           .from("user_profile_actions")
-          .select("profile_id")
+          .select("other_profile_id")
           .eq("user_id", userId)
           .eq("action_type", "like")
-          .eq("profile_id", requestingUserId);
+          .eq("other_profile_id", requestingUserId);
 
         const hasMutualLikes =
           mutualLikesCheck &&
@@ -85,17 +85,17 @@ export async function getProfileByUserId(
       // Target user has no conversations, check for mutual likes
       const { data: mutualLikesCheck } = await supabase
         .from("user_profile_actions")
-        .select("profile_id")
+        .select("other_profile_id")
         .eq("user_id", requestingUserId)
         .eq("action_type", "like")
-        .eq("profile_id", userId);
+        .eq("other_profile_id", userId);
 
       const { data: reverseLikesCheck } = await supabase
         .from("user_profile_actions")
-        .select("profile_id")
+        .select("other_profile_id")
         .eq("user_id", userId)
         .eq("action_type", "like")
-        .eq("profile_id", requestingUserId);
+        .eq("other_profile_id", requestingUserId);
 
       const hasMutualLikes =
         mutualLikesCheck &&
@@ -207,7 +207,7 @@ export async function getProfilesNoSkipped({ token }: { token: string }) {
       "in",
       supabase
         .from("user_profile_actions")
-        .select("profile_id")
+        .select("other_profile_id")
         .eq("user_id", currentUserId)
         .eq("action_type", "skip"),
     )

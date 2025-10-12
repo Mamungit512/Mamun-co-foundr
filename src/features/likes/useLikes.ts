@@ -47,6 +47,9 @@ export function useLikeProfile() {
       queryClient.invalidateQueries({
         queryKey: ["like-status", variables.likedId],
       });
+      // Invalidate swipe count queries to update daily limit tracking
+      queryClient.invalidateQueries({ queryKey: ["today-swipe-count"] });
+      queryClient.invalidateQueries({ queryKey: ["swipe-limit"] });
     },
     onError: (error) => {
       console.error("Error with like operation:", error);

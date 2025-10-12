@@ -7,6 +7,7 @@ import {
   useUserProfile,
 } from "@/features/profile/useProfile";
 import FormInput from "@/components/ui/FormInput";
+import HiringSettings from "@/components/HiringSettings";
 
 export default function EditProfile() {
   const { data: profileData, isLoading, isError, error } = useUserProfile();
@@ -44,6 +45,34 @@ export default function EditProfile() {
           <p className="mt-2 text-sm text-gray-400 sm:text-base">
             Update your information to help others find you
           </p>
+        </div>
+
+        {/* Hiring Settings Section */}
+        <div className="mb-8 rounded-lg border border-yellow-500/20 bg-gradient-to-br from-yellow-500/10 to-transparent p-6">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="rounded-full bg-yellow-500/20 p-2">
+              <span className="text-lg text-yellow-300">💼</span>
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-white">
+                Hiring Settings
+              </h2>
+              <p className="text-sm text-gray-400">
+                Attract top talent with a professional hiring badge
+              </p>
+            </div>
+          </div>
+          <HiringSettings
+            isHiring={profileData?.isHiring || false}
+            hiringEmail={profileData?.hiringEmail}
+            onUpdate={async (hiringData) => {
+              const updatedData = {
+                ...profileData,
+                ...hiringData,
+              };
+              await upsertProfileMutationFn(updatedData);
+            }}
+          />
         </div>
 
         <form
