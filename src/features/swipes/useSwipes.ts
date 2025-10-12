@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useSession } from "@clerk/nextjs";
+import { useSession, useAuth } from "@clerk/nextjs";
 import { getTodaySwipeCount, hasReachedSwipeLimit } from "./swipeService";
 
 // Hook to get today's swipe count
@@ -25,11 +25,24 @@ export function useTodaySwipeCount() {
 // Hook to check if user has reached swipe limit
 export function useSwipeLimit() {
   const { session } = useSession();
+  const { has } = useAuth();
+
+  // Check if user has unlimited swipes feature (Collab tier)
+  const hasUnlimitedSwipes = has?.({ feature: "unlimited_swipes" });
 
   return useQuery({
     queryKey: ["swipe-limit"],
     queryFn: async () => {
       if (!session?.user?.id) throw new Error("No user ID");
+
+      // If user has unlimited swipes, return unlimited limit
+      if (hasUnlimitedSwipes) {
+        return {
+          hasReachedLimit: false,
+          currentCount: 0,
+          limit: Infinity,
+        };
+      }
 
       const token = await session.getToken();
       if (!token) throw new Error("No authentication token");
@@ -41,4 +54,3 @@ export function useSwipeLimit() {
     refetchOnWindowFocus: true,
   });
 }
-

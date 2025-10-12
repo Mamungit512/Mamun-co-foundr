@@ -22,9 +22,11 @@ export default function SwipeLimit({
 
   // Check if user has the 10_swipes feature (free plan)
   const isOnFreePlan = has?.({ feature: "10_swipes" });
+  // Check if user has unlimited swipes (Collab tier or higher)
+  const hasUnlimitedSwipes = has?.({ feature: "unlimited_swipes" });
 
-  // If user is not on free plan, don't show limit
-  if (!isOnFreePlan) {
+  // If user has unlimited swipes or is not on free plan, don't show limit
+  if (!isOnFreePlan || hasUnlimitedSwipes || limit === Infinity) {
     return null;
   }
 
@@ -52,7 +54,7 @@ export default function SwipeLimit({
           Daily Swipe Limit Reached
         </h3>
         <p className="mb-4 text-sm text-red-200">
-          You've used all {limit} of your daily swipes. Upgrade to continue
+          You&apos;ve used all {limit} of your daily swipes. Upgrade to continue
           discovering amazing co-founders!
         </p>
         <button
@@ -114,4 +116,3 @@ export default function SwipeLimit({
     </motion.div>
   );
 }
-
