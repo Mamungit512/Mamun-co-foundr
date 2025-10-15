@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
+import { Resend } from "resend";
+import { MessageDigestEmail } from "@/lib/email-templates/MessageDigestEmail";
+import { render } from "@react-email/render";
+import {
+  shouldSendEmailNotification,
+  updateLastEmailSent,
+  getUnreadMessagesSinceLastEmail,
+} from "@/lib/emailBatching";
 
 export async function POST(
   request: NextRequest,
@@ -108,6 +116,74 @@ export async function POST(
         { error: "Failed to send message" },
         { status: 500 },
       );
+    }
+
+    // Send email notification to recipient (daily digest batching)
+    try {
+      const { data: participants, error: participantsError } = await supabase
+        .from("conversation_participants")
+        .select("user_id")
+        .eq("conversation_id", conversationId);
+
+      if (!participantsError && participants) {
+        const recipient = participants.find((p) => p.user_id !== userId);
+
+        if (recipient) {
+          const shouldSend = await shouldSendEmailNotification(
+            recipient.user_id,
+          );
+
+          if (shouldSend) {
+            const clerk = await clerkClient();
+            const recipientUser = await clerk.users.getUser(recipient.user_id);
+            const recipientEmail =
+              recipientUser.emailAddresses[0]?.emailAddress;
+
+            const { data: recipientProfile } = await supabase
+              .from("profiles")
+              .select("first_name, last_name")
+              .eq("user_id", recipient.user_id)
+              .single();
+
+            if (recipientEmail && recipientProfile) {
+              const unreadMessages = await getUnreadMessagesSinceLastEmail(
+                recipient.user_id,
+              );
+
+              if (unreadMessages.length > 0) {
+                const recipientName = `${recipientProfile.first_name} ${recipientProfile.last_name}`;
+                const appUrl =
+                  process.env.NEXT_PUBLIC_APP_URL ||
+                  "https://mamuncofoundr.com";
+
+                const emailHtml = await render(
+                  MessageDigestEmail({
+                    recipientName,
+                    messages: unreadMessages,
+                    totalUnreadCount: unreadMessages.length,
+                    appUrl,
+                  }),
+                );
+
+                if (process.env.RESEND_API_KEY) {
+                  const resend = new Resend(process.env.RESEND_API_KEY);
+
+                  await resend.emails.send({
+                    from: "Mamun Co-Foundr <mamun@mamuncofoundr.com>",
+                    to: recipientEmail,
+                    subject: `You have ${unreadMessages.length} new ${unreadMessages.length === 1 ? "message" : "messages"}`,
+                    html: emailHtml,
+                  });
+
+                  await updateLastEmailSent(recipient.user_id);
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch (emailError) {
+      console.error("Error sending email notification:", emailError);
     }
 
     return NextResponse.json({
