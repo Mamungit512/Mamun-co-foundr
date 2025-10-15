@@ -11,6 +11,12 @@ function Footer() {
       >
         Careers
       </Link>
+      <Link
+        href="/privacy-policy"
+        className="translate-y text-sm hover:underline hover:underline-offset-4 sm:text-base"
+      >
+        Privacy Policy
+      </Link>
       <Link href="/">
         <Image
           src="/img/mamun-transparent-logo.png"
