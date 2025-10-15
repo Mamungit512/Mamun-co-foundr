@@ -32,6 +32,14 @@ function Footer() {
       >
         Contact Us
       </Link>
+      <a
+        href="https://mamun-cofoundr.kit.com/d7eb029da2"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="translate-y text-sm hover:underline hover:underline-offset-4 sm:text-base"
+      >
+        Newsletter
+      </a>
     </footer>
   );
 }
