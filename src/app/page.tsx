@@ -10,6 +10,7 @@ import { motion } from "motion/react";
 // import AccessCodeForm from "@/components/home/AccessCodeForm";
 import CTA from "@/components/home/CTA";
 import FAQ from "@/components/home/faq";
+import NewsletterCTA from "@/components/home/NewsletterCTA";
 import Vision from "@/components/home/Vision";
 
 /* ------
@@ -292,6 +293,16 @@ function page() {
           transition={{ duration: 1, ease: "easeOut" }}
         >
           <Vision />
+        </motion.div>
+
+        {/* Newsletter CTA Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 1, ease: "easeOut" }}
+        >
+          <NewsletterCTA />
         </motion.div>
 
         {/* FAQ Section */}
