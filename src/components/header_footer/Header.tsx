@@ -245,17 +245,6 @@ function Header() {
 
                 <li>
                   <Link
-                    href="/messages"
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <FaEnvelope className="h-4 w-4" />
-                    Messages
-                  </Link>
-                </li>
-
-                <li>
-                  <Link
                     href="/contact-us"
                     className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
                     onClick={() => setIsMobileMenuOpen(false)}
@@ -278,6 +267,18 @@ function Header() {
                 </li>
 
                 <SignedIn>
+                  <li>
+                    <button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        openUserProfile();
+                      }}
+                      className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
+                    >
+                      <FaCreditCard className="h-4 w-4" />
+                      Account and Billings
+                    </button>
+                  </li>
                   <li>
                     <Link
                       href="/edit-profile"
