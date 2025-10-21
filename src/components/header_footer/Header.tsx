@@ -18,6 +18,7 @@ import {
   FaBars,
   FaUsers,
   FaEnvelope,
+  FaCreditCard,
 } from "react-icons/fa6";
 import { FaTimes } from "react-icons/fa";
 import { motion, AnimatePresence } from "motion/react";
@@ -25,7 +26,7 @@ import LikedProfilesModal from "@/components/LikedProfilesModal";
 import { useLikedProfilesData } from "@/features/likes/useLikes";
 
 function Header() {
-  const { signOut } = useClerk();
+  const { signOut, openUserProfile } = useClerk();
   const router = useRouter();
   const [isLikedProfilesOpen, setIsLikedProfilesOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -105,10 +106,18 @@ function Header() {
                 appearance={{
                   elements: {
                     userButtonAvatarBox: { width: "48px", height: "48px" },
+                    userButtonPopoverActionButton__manageAccount: {
+                      display: "none",
+                    },
                   },
                 }}
               >
                 <UserButton.MenuItems>
+                  <UserButton.Action
+                    label="Account and Billings"
+                    labelIcon={<FaCreditCard />}
+                    onClick={() => openUserProfile()}
+                  />
                   <UserButton.Link
                     label="Edit your ummatic passport"
                     href="/edit-profile"
@@ -116,7 +125,7 @@ function Header() {
                   />
                   <UserButton.Action
                     label="Delete Account"
-                    labelIcon={<FaTrash />}
+                    labelIcon={<FaTrash className="text-red-500" />}
                     onClick={async () => {
                       const confirmed = confirm(
                         "Are you sure you want to delete your account? It will be permanently removed after 3 months. Reactivate your account by logging back in before the permanent deletion date.",
