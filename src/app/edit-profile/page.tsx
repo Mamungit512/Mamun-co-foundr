@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   useProfileUpsert,
   useUserProfile,
@@ -17,7 +17,6 @@ export default function EditProfile() {
     register,
     handleSubmit,
     reset,
-    control,
     formState: { isSubmitting, errors },
   } = useForm<Partial<OnboardingData>>({
     defaultValues: profileData,
@@ -418,44 +417,81 @@ export default function EditProfile() {
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <label className="block text-sm font-medium text-gray-300">
                   Time Spent on Startup
                 </label>
-                <FormInput
-                  placeholder="e.g. 3 months in, MVP built"
+                <select
                   {...register("startupTimeSpent")}
-                />
+                  className="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2.5 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                >
+                  <option value="">Select time spent...</option>
+                  <option value="Just started">Just started</option>
+                  <option value="1-3 months">1-3 months</option>
+                  <option value="3-6 months">3-6 months</option>
+                  <option value="6-12 months">6-12 months</option>
+                  <option value="1-2 years">1-2 years</option>
+                  <option value="2+ years">2+ years</option>
+                </select>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <label className="block text-sm font-medium text-gray-300">
                   Startup Funding
                 </label>
-                <FormInput
-                  placeholder="e.g. Bootstrapped, Pre-seed, $20k grant"
+                <select
                   {...register("startupFunding")}
-                />
+                  className="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2.5 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                >
+                  <option value="">Select funding status...</option>
+                  <option value="Bootstrapped">Bootstrapped</option>
+                  <option value="Pre-seed">Pre-seed</option>
+                  <option value="Seed">Seed</option>
+                  <option value="Series A+">Series A+</option>
+                  <option value="Grant funded">Grant funded</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <label className="block text-sm font-medium text-gray-300">
                   Co-founder Status
                 </label>
-                <FormInput
-                  placeholder="e.g. Solo founder, Seeking co-founder"
-                  {...register("coFounderStatus")}
-                />
+                <div className="flex flex-wrap gap-4">
+                  {[
+                    "Solo founder",
+                    "Have co-founder(s)",
+                    "Seeking co-founder",
+                  ].map((option) => (
+                    <label key={option} className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        value={option}
+                        {...register("coFounderStatus")}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-300">{option}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <label className="block text-sm font-medium text-gray-300">
                   Full-time Timeline
                 </label>
-                <FormInput
-                  placeholder="e.g. Within 3 months, Already full-time"
+                <select
                   {...register("fullTimeTimeline")}
-                />
+                  className="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2.5 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                >
+                  <option value="">Select timeline...</option>
+                  <option value="Already full-time">Already full-time</option>
+                  <option value="Within 1 month">Within 1 month</option>
+                  <option value="Within 3 months">Within 3 months</option>
+                  <option value="Within 6 months">Within 6 months</option>
+                  <option value="Within 1 year">Within 1 year</option>
+                  <option value="Unsure">Unsure</option>
+                </select>
               </div>
 
               <div className="space-y-2">
@@ -488,61 +524,53 @@ export default function EditProfile() {
               Interests & Values
             </h2>
             <div className="space-y-6">
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <label className="block text-sm font-medium text-gray-300">
-                  Responsibilities (comma separated)
+                  Responsibility Areas
                 </label>
-                <Controller
-                  control={control}
-                  name="responsibilities"
-                  render={({ field }) => {
-                    const value = Array.isArray(field.value)
-                      ? field.value.join(", ")
-                      : "";
-                    return (
-                      <FormInput
-                        type="text"
-                        value={value}
-                        onChange={(e) => {
-                          const arr = e.target.value
-                            .split(",")
-                            .map((s) => s.trim())
-                            .filter(Boolean);
-                          field.onChange(arr);
-                        }}
-                        placeholder="e.g. Engineering, Product, Sales"
-                      />
-                    );
-                  }}
-                />
+                <div className="flex flex-wrap gap-4">
+                  {["Ops", "Sales", "Design", "Engineering", "Product"].map(
+                    (area) => (
+                      <label key={area} className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          value={area}
+                          {...register("responsibilities")}
+                          className="h-4 w-4 rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-sm text-gray-300">{area}</span>
+                      </label>
+                    ),
+                  )}
+                </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <label className="block text-sm font-medium text-gray-300">
-                  Priority Areas (comma separated)
+                  Priority Areas
                 </label>
-                <Controller
-                  control={control}
-                  name="priorityAreas"
-                  render={({ field }) => {
-                    const value = Array.isArray(field.value)
-                      ? field.value.join(", ")
-                      : "";
-                    return (
-                      <FormInput
-                        value={value}
-                        onChange={(e) => {
-                          const arr = e.target.value
-                            .split(",")
-                            .map((s) => s.trim())
-                            .filter(Boolean);
-                          field.onChange(arr);
-                        }}
-                        placeholder="e.g. AI, Healthcare, Fintech"
+                <div className="flex flex-wrap gap-4">
+                  {[
+                    "Emerging Tech",
+                    "AI",
+                    "Healthcare",
+                    "Fintech",
+                    "Circular Economy",
+                    "Climate",
+                    "Education",
+                    "Consumer",
+                  ].map((area) => (
+                    <label key={area} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        value={area}
+                        {...register("priorityAreas")}
+                        className="h-4 w-4 rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500"
                       />
-                    );
-                  }}
-                />
+                      <span className="text-sm text-gray-300">{area}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
 
               <div className="space-y-2">
