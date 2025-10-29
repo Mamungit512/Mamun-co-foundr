@@ -105,14 +105,17 @@ function ContactPage() {
                   "Mental Wellness or Burnout Support",
                   "Other",
                 ].map((option) => (
-                  <label key={option} className="flex items-center gap-2">
+                  <label
+                    key={option}
+                    className="flex cursor-pointer items-center gap-2"
+                  >
                     <input
                       type="checkbox"
                       {...register("helpTopics")}
                       value={option.toLowerCase().replace(/\s+/g, "-")}
-                      className="accent-white"
+                      className="h-4 w-4 cursor-pointer rounded border-white/30 bg-white/10 text-[var(--charcoal-black)] checked:bg-white focus:ring-2 focus:ring-white/30 focus:ring-offset-0"
                     />
-                    <span>{option}</span>
+                    <span className="text-sm sm:text-base">{option}</span>
                   </label>
                 ))}
               </div>
@@ -124,14 +127,17 @@ function ContactPage() {
               </label>
               <div className="space-y-2">
                 {["Friends", "Social Media", "Other"].map((option) => (
-                  <label key={option} className="flex items-center gap-2">
+                  <label
+                    key={option}
+                    className="flex cursor-pointer items-center gap-2"
+                  >
                     <input
                       type="checkbox"
                       {...register("heardAboutUs")}
                       value={option.toLowerCase()}
-                      className="accent-white"
+                      className="h-4 w-4 cursor-pointer rounded border-white/30 bg-white/10 text-[var(--charcoal-black)] checked:bg-white focus:ring-2 focus:ring-white/30 focus:ring-offset-0"
                     />
-                    <span>{option}</span>
+                    <span className="text-sm sm:text-base">{option}</span>
                   </label>
                 ))}
               </div>
