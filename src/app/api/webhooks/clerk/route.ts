@@ -1,35 +1,19 @@
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { NextRequest } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { WebhookEvent } from "@clerk/nextjs/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const evt = await verifyWebhook(req);
+    const evt = (await verifyWebhook(req)) as WebhookEvent;
 
     // Do something with payload
     const eventType = evt.type;
     const id = evt.data.id;
 
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    );
+    // Supabase client instantiation removed as it was unused
 
-    // 🔹 Handle user reactivation on login
-    if (eventType === "session.created") {
-      const userId = evt.data.user_id;
-
-      // Clear deleted_at if it was set
-      const { error } = await supabase
-        .from("profiles")
-        .update({ deleted_at: null, permanent_delete_at: null })
-        .eq("user_id", userId) // assuming profiles.user_id stores Clerk id
-        .not("deleted_at", "is", null); // matches only rows where deleted_at IS NOT NULL
-
-      if (error) {
-        console.error("Error clearing deleted_at:", error.message);
-      }
-    }
+    // Note: Removed reactivation logic since we now use hard deletes
+    // Deleted users cannot be reactivated
 
     // Call sync-profile-pic endpoint when user updates their data
     if (eventType === "user.updated") {

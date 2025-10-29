@@ -128,7 +128,7 @@ function Header() {
                     labelIcon={<FaTrash className="text-red-500" />}
                     onClick={async () => {
                       const confirmed = confirm(
-                        "Are you sure you want to delete your account? It will be permanently removed after 3 months. Reactivate your account by logging back in before the permanent deletion date.",
+                        "Are you sure you want to delete your account? This action is PERMANENT and CANNOT be undone. All your data will be immediately deleted.",
                       );
                       if (confirmed) {
                         try {
@@ -138,9 +138,7 @@ function Header() {
                           });
 
                           if (response.ok) {
-                            alert(
-                              "Your account has been marked for deletion. You will now be signed out.",
-                            );
+                            alert("Your account has been permanently deleted.");
                             // Sign out the user after successful deletion
                             signOut({ redirectUrl: "/" });
                           } else {
@@ -318,7 +316,7 @@ function Header() {
                       onClick={async () => {
                         setIsMobileMenuOpen(false);
                         const confirmed = confirm(
-                          "Are you sure you want to delete your account? It will be permanently removed after 3 months. Reactivate your account by logging back in before the permanent deletion date.",
+                          "Are you sure you want to delete your account? This action is PERMANENT and CANNOT be undone. All your data will be immediately deleted.",
                         );
                         if (confirmed) {
                           try {
@@ -332,7 +330,7 @@ function Header() {
 
                             if (response.ok) {
                               alert(
-                                "Your account has been marked for deletion. You will now be signed out.",
+                                "Your account has been permanently deleted.",
                               );
                               signOut({ redirectUrl: "/" });
                             } else {
