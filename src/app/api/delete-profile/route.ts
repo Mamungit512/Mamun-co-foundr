@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 
 export async function POST() {
@@ -17,26 +17,21 @@ export async function POST() {
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
-    // Perform soft delete by updating the profile with deleted_at timestamp
-    const { error: updateError } = await supabase
+    // Get the internal profile ID before deleting
+    const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .update({
-        deleted_at: new Date().toISOString(),
-        permanent_delete_at: new Date(
-          Date.now() + 3 * 30 * 24 * 60 * 60 * 1000,
-        ).toISOString(),
-      })
-      .eq("user_id", userId);
+      .select("id")
+      .eq("user_id", userId)
+      .single();
 
-    if (updateError) {
-      console.error("Error soft deleting profile:", updateError);
-      return NextResponse.json(
-        { error: "Failed to delete profile" },
-        { status: 500 },
-      );
+    if (profileError || !profile) {
+      console.error("Error fetching profile:", profileError);
+      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
-    // Also clean up profile pictures from storage
+    const internalProfileId = profile.id;
+
+    // 1. Delete profile pictures from storage
     try {
       const { data: oldFiles, error: listError } = await supabase.storage
         .from("profile-pic")
@@ -51,16 +46,83 @@ export async function POST() {
 
         if (deleteError) {
           console.error("Error deleting profile pictures:", deleteError);
-          // Don't fail the request if profile pic deletion fails
         }
       }
     } catch (storageError) {
       console.error("Error during profile picture cleanup:", storageError);
-      // Don't fail the request if storage cleanup fails
+    }
+
+    // 2. Delete messages sent by the user
+    const { error: messagesError } = await supabase
+      .from("messages")
+      .delete()
+      .eq("sender_id", userId);
+
+    if (messagesError) {
+      console.error("Error deleting messages:", messagesError);
+    }
+
+    // 3. Delete conversation participants records
+    const { error: participantsError } = await supabase
+      .from("conversation_participants")
+      .delete()
+      .eq("user_id", userId);
+
+    if (participantsError) {
+      console.error(
+        "Error deleting conversation participants:",
+        participantsError,
+      );
+    }
+
+    // 4. Delete likes where user is the liker or liked
+    const { error: likesError } = await supabase
+      .from("likes")
+      .delete()
+      .or(`liker_id.eq.${userId},liked_id.eq.${userId}`);
+
+    if (likesError) {
+      console.error("Error deleting likes:", likesError);
+    }
+
+    // 5. Delete user profile actions (skips, etc.) using internal profile ID
+    const { error: actionsError } = await supabase
+      .from("user_profile_actions")
+      .delete()
+      .or(
+        `user_id.eq.${internalProfileId},other_profile_id.eq.${internalProfileId}`,
+      );
+
+    if (actionsError) {
+      console.error("Error deleting user profile actions:", actionsError);
+    }
+
+    // 6. Delete the profile from Supabase
+    const { error: deleteProfileError } = await supabase
+      .from("profiles")
+      .delete()
+      .eq("user_id", userId);
+
+    if (deleteProfileError) {
+      console.error("Error deleting profile:", deleteProfileError);
+      return NextResponse.json(
+        { error: "Failed to delete profile from database" },
+        { status: 500 },
+      );
+    }
+
+    // 7. Delete the user from Clerk
+    try {
+      const client = await clerkClient();
+      await client.users.deleteUser(userId);
+    } catch (clerkError) {
+      console.error("Error deleting user from Clerk:", clerkError);
+      // Don't fail the request if Clerk deletion fails
+      // The Supabase data is already deleted
     }
 
     return NextResponse.json(
-      { message: "Profile marked for deletion successfully" },
+      { message: "Account deleted successfully" },
       { status: 200 },
     );
   } catch (error) {
