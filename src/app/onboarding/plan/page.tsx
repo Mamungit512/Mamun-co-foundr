@@ -1,17 +1,92 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { PricingTable, useUser } from "@clerk/nextjs";
+import { PricingTable, useUser, useSession } from "@clerk/nextjs";
+import { useUserProfile } from "@/features/profile/useProfile";
+import toast from "react-hot-toast";
 
 export default function OnboardingNextPage() {
   const router = useRouter();
-  const { isLoaded } = useUser();
+  const { isLoaded, user } = useUser();
+  const { session } = useSession();
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  // Check if user has completed the onboarding form
+  const { data: profile, isLoading: isProfileLoading } = useUserProfile();
 
   useEffect(() => {
     if (!isLoaded) return;
     // optionally perform any side effects or analytics here
   }, [isLoaded]);
+
+  const handleContinueToMatching = async () => {
+    setIsNavigating(true);
+
+    try {
+      // Check if profile exists
+      if (!profile) {
+        // Check if user has onboarding data in Clerk metadata
+        const onboardingComplete = user?.publicMetadata?.onboardingComplete;
+
+        if (!onboardingComplete) {
+          toast.error("Please complete your profile first", {
+            duration: 4000,
+            position: "bottom-right",
+          });
+          setIsNavigating(false);
+          router.push("/onboarding");
+          return;
+        }
+
+        // User completed form but profile wasn't created - try to create it now
+        try {
+          const token = await session?.getToken();
+          if (!token || !user?.id) {
+            throw new Error("No authentication token or user ID");
+          }
+
+          // Create minimal profile to unblock the user
+          const response = await fetch("/api/profile", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(user.publicMetadata),
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to create profile");
+          }
+
+          toast.success("Profile setup complete!", {
+            duration: 2000,
+            position: "bottom-right",
+          });
+        } catch {
+          toast.error(
+            "There was an issue setting up your profile. Please try again.",
+            {
+              duration: 4000,
+              position: "bottom-right",
+            },
+          );
+          setIsNavigating(false);
+          router.push("/onboarding");
+          return;
+        }
+      }
+
+      // Profile exists (or was just created), proceed to matching
+      router.push("/cofoundr-matching");
+    } catch {
+      toast.error("Something went wrong. Please try again.", {
+        duration: 3000,
+        position: "bottom-right",
+      });
+      setIsNavigating(false);
+    }
+  };
 
   return (
     <section className="section-height section-padding bg-(--charcoal-black) text-(--mist-white)">
@@ -34,10 +109,11 @@ export default function OnboardingNextPage() {
         {/* Action Buttons */}
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-end">
           <button
-            className="translate-y flex cursor-pointer items-center rounded-md bg-(--mist-white) px-6 py-3 font-semibold text-(--charcoal-black) transition-all duration-300 hover:bg-white hover:shadow-lg sm:px-8 sm:py-4"
-            onClick={() => router.push("/cofoundr-matching")}
+            className="translate-y flex cursor-pointer items-center rounded-md bg-(--mist-white) px-6 py-3 font-semibold text-(--charcoal-black) transition-all duration-300 hover:bg-white hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 sm:px-8 sm:py-4"
+            onClick={handleContinueToMatching}
+            disabled={isNavigating || isProfileLoading}
           >
-            Continue to Matching
+            {isNavigating ? "Loading..." : "Continue to Matching"}
           </button>
         </div>
 
