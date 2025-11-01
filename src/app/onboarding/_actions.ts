@@ -5,7 +5,8 @@
 
 import { auth, clerkClient } from "@clerk/nextjs/server";
 
-export const completeOnboarding = async (formData: OnboardingData) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const completeOnboarding = async (_formData: OnboardingData) => {
   const { userId } = await auth();
 
   if (!userId) {

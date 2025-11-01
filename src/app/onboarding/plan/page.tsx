@@ -2,14 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { PricingTable, useUser, useSession } from "@clerk/nextjs";
+import { PricingTable, useUser } from "@clerk/nextjs";
 import { useUserProfile } from "@/features/profile/useProfile";
 import toast from "react-hot-toast";
 
 export default function OnboardingNextPage() {
   const router = useRouter();
   const { isLoaded, user } = useUser();
-  const { session } = useSession();
   const [isNavigating, setIsNavigating] = useState(false);
 
   // Check if user has completed the onboarding form
