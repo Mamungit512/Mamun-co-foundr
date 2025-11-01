@@ -2,14 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { PricingTable, useUser, useSession } from "@clerk/nextjs";
+import { PricingTable, useUser } from "@clerk/nextjs";
 import { useUserProfile } from "@/features/profile/useProfile";
 import toast from "react-hot-toast";
 
 export default function OnboardingNextPage() {
   const router = useRouter();
   const { isLoaded, user } = useUser();
-  const { session } = useSession();
   const [isNavigating, setIsNavigating] = useState(false);
 
   // Check if user has completed the onboarding form
@@ -39,45 +38,21 @@ export default function OnboardingNextPage() {
           return;
         }
 
-        // User completed form but profile wasn't created - try to create it now
-        try {
-          const token = await session?.getToken();
-          if (!token || !user?.id) {
-            throw new Error("No authentication token or user ID");
-          }
-
-          // Create minimal profile to unblock the user
-          const response = await fetch("/api/profile", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(user.publicMetadata),
-          });
-
-          if (!response.ok) {
-            throw new Error("Failed to create profile");
-          }
-
-          toast.success("Profile setup complete!", {
-            duration: 2000,
+        // Profile wasn't created properly - redirect back to onboarding
+        // Note: We no longer store full profile data in Clerk metadata to prevent JWT overflow
+        toast.error(
+          "Profile incomplete. Please complete your profile again.",
+          {
+            duration: 4000,
             position: "bottom-right",
-          });
-        } catch {
-          toast.error(
-            "There was an issue setting up your profile. Please try again.",
-            {
-              duration: 4000,
-              position: "bottom-right",
-            },
-          );
-          setIsNavigating(false);
-          router.push("/onboarding");
-          return;
-        }
+          },
+        );
+        setIsNavigating(false);
+        router.push("/onboarding");
+        return;
       }
 
-      // Profile exists (or was just created), proceed to matching
+      // Profile exists, proceed to matching
       router.push("/cofoundr-matching");
     } catch {
       toast.error("Something went wrong. Please try again.", {
