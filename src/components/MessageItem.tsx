@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "motion/react";
+import { FaUser } from "react-icons/fa6";
 import { Message } from "@/features/messages/messagesService";
 import Image from "next/image";
 
@@ -13,6 +14,15 @@ function MessageItem({ message, isOwnMessage }: MessageItemProps) {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
+
+  // Debug logging
+  if (!isOwnMessage) {
+    console.log('💬 MessageItem received:', {
+      sender_id: message.sender_id,
+      sender: message.sender,
+      pfp_url: message.sender.pfp_url,
+    });
+  }
 
   return (
     <motion.div
@@ -37,8 +47,8 @@ function MessageItem({ message, isOwnMessage }: MessageItemProps) {
                   sizes="32px"
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-blue-500/20 text-xs font-medium text-blue-400">
-                  {message.sender.first_name?.[0] || "?"}
+                <div className="flex h-full w-full items-center justify-center bg-blue-500/20 text-blue-400">
+                  <FaUser className="h-4 w-4" />
                 </div>
               )}
             </div>

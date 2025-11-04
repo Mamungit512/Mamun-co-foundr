@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { FaArrowLeft, FaEnvelope } from "react-icons/fa6";
+import { FaArrowLeft, FaEnvelope, FaUser } from "react-icons/fa6";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@clerk/nextjs";
@@ -100,7 +100,7 @@ function ConversationPage({ params }: ConversationPageProps) {
             <div className="relative h-10 w-10 overflow-hidden rounded-full">
               {isConversationLoading ? (
                 <div className="flex h-full w-full items-center justify-center bg-blue-500/20 text-blue-400">
-                  <FaEnvelope className="h-5 w-5" />
+                  <FaUser className="h-5 w-5" />
                 </div>
               ) : conversation?.otherParticipant?.pfp_url ? (
                 <Image
@@ -114,7 +114,7 @@ function ConversationPage({ params }: ConversationPageProps) {
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-blue-500/20 text-blue-400">
-                  <FaEnvelope className="h-5 w-5" />
+                  <FaUser className="h-5 w-5" />
                 </div>
               )}
             </div>
