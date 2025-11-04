@@ -136,6 +136,15 @@ export default function BillingUpgradePage() {
                 </span>
               </div>
             </div>
+            <p className="mt-6 text-sm text-gray-500">
+              View our{" "}
+              <a
+                href="/refund-policy"
+                className="text-yellow-300 hover:underline"
+              >
+                Refund Policy
+              </a>
+            </p>
           </div>
         </motion.div>
       </div>

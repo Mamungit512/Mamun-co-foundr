@@ -98,6 +98,15 @@ export default function OnboardingNextPage() {
             Need help choosing? Contact our support team for personalized
             recommendations.
           </p>
+          <p className="mt-2 text-sm text-gray-500">
+            View our{" "}
+            <a
+              href="/refund-policy"
+              className="text-yellow-300 hover:underline"
+            >
+              Refund Policy
+            </a>
+          </p>
         </div>
       </div>
     </section>
