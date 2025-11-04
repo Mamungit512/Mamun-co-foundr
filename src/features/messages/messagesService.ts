@@ -28,7 +28,7 @@ type SupabaseMessageResponse = {
         first_name: string | null;
         last_name: string | null;
         pfp_url: string | null;
-      }[]
+      }
     | null;
 };
 
@@ -97,10 +97,10 @@ export async function getMessagesByConversationId(
         content: message.content,
         created_at: message.created_at,
         sender: {
-          id: message.profiles?.[0]?.user_id || "",
-          first_name: message.profiles?.[0]?.first_name || null,
-          last_name: message.profiles?.[0]?.last_name || null,
-          pfp_url: message.profiles?.[0]?.pfp_url || null,
+          id: message.profiles?.user_id || message.sender_id,
+          first_name: message.profiles?.first_name || null,
+          last_name: message.profiles?.last_name || null,
+          pfp_url: message.profiles?.pfp_url || null,
         },
       }),
     );
