@@ -137,7 +137,7 @@ function page() {
               transition={{ duration: 0.8, delay: 1.8, ease: "easeOut" }}
             >
               <div className="flex flex-col items-center">
-                <SignInButton>
+                <SignInButton forceRedirectUrl="/cofoundr-matching">
                   <motion.button
                     className="cursor-pointer"
                     whileHover={{ scale: 1.05 }}
@@ -146,7 +146,7 @@ function page() {
                   >
                     <div className="translate-y flex cursor-pointer items-center rounded-md bg-(--mist-white) px-3 py-2 font-semibold text-nowrap text-(--charcoal-black) sm:px-4 sm:py-2 md:px-5 md:py-3">
                       <p className="text-sm sm:text-base">
-                        Login to Co-foundr Matching
+                        Find your co-foundr
                       </p>
                       <motion.div
                         className="flex items-center"

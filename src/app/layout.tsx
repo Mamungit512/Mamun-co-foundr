@@ -35,10 +35,16 @@ export default function RootLayout({
           className={`${satoshi.className} scroll-smooth bg-(--charcoal-black) antialiased lg:text-lg`}
         >
           <QueryProvider>
-            <Header />
-            {children}
-            <Socials />
-            <Footer />
+            {/* Beta Banner */}
+            <div className="fixed top-0 left-0 z-50 w-full bg-[var(--charcoal-black)] py-2 text-center font-semibold text-blue-400 shadow-md">
+              Beta
+            </div>
+            <div className="pt-10">
+              <Header />
+              {children}
+              <Socials />
+              <Footer />
+            </div>
           </QueryProvider>
           <Toaster position="bottom-right" />
         </body>
