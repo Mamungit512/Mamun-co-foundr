@@ -137,7 +137,7 @@ function page() {
               transition={{ duration: 0.8, delay: 1.8, ease: "easeOut" }}
             >
               <div className="flex flex-col items-center">
-                <SignInButton forceRedirectUrl="/cofoundr-matching">
+                 <SignInButton forceRedirectUrl="/cofoundr-matching">
                   <motion.button
                     className="cursor-pointer"
                     whileHover={{ scale: 1.05 }}
