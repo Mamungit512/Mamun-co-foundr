@@ -69,6 +69,7 @@ export function mapOnboardingDatatoProfileDB(data: OnboardingData) {
     battery_level: data.batteryLevel ?? null,
     gender: data.gender || null,
     birthdate: data.birthdate ? new Date(data.birthdate) : null,
+    // pfp_url is preserved as-is; validation happens at API layer
     pfp_url: data.pfp_url,
 
     personal_intro: data.personalIntro || "",

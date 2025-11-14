@@ -70,6 +70,14 @@ export default function EditProfile() {
   }, [profileData, reset]);
 
   const onSubmit = async (formData: Partial<OnboardingData>) => {
+    // Validate that user has a profile picture before saving
+    if (!profileData?.pfp_url) {
+      setPhotoError("Please upload a profile picture before saving your profile.");
+      // Scroll to the top where the photo upload section is
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     // -- Upsert editted profile data into DB --
     await upsertProfileMutationFn(formData);
   };
@@ -139,6 +147,35 @@ export default function EditProfile() {
             Update your information to help others find you
           </p>
         </div>
+
+        {/* Warning Banner if no profile picture */}
+        {!profileData?.pfp_url && (
+          <div className="mb-6 rounded-lg border-2 border-red-500 bg-red-500/10 p-4">
+            <div className="flex items-center gap-3">
+              <svg
+                className="h-6 w-6 flex-shrink-0 text-red-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+              <div>
+                <p className="font-semibold text-red-400">
+                  Profile Picture Required
+                </p>
+                <p className="text-sm text-red-300">
+                  You must upload a profile picture before you can save changes to your profile.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Profile Picture Section */}
         <div className="mb-8 rounded-lg border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-transparent p-6">
@@ -773,8 +810,9 @@ export default function EditProfile() {
           <div className="flex justify-end">
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="cursor-pointer rounded-md bg-blue-600 px-8 py-3 text-white transition hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50"
+              disabled={isSubmitting || !profileData?.pfp_url}
+              className="cursor-pointer rounded-md bg-blue-600 px-8 py-3 text-white transition hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              title={!profileData?.pfp_url ? "Please upload a profile picture first" : ""}
             >
               {isSubmitting ? "Saving..." : "Save Changes"}
             </button>

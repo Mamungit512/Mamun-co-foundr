@@ -59,8 +59,16 @@ function ProfilePhotoForm({ onNext, defaultValues }: ProfilePhotoFormProps) {
     e.preventDefault();
 
     if (uploadSuccess) {
+      // Validate that pfp_url exists before proceeding
+      if (!defaultValues?.pfp_url) {
+        setError(
+          "Profile photo URL is missing. Please upload your photo again.",
+        );
+        setUploadSuccess(false);
+        return;
+      }
       // If already uploaded, just proceed to next step
-      onNext({ photoUploaded: true, pfp_url: defaultValues?.pfp_url });
+      onNext({ photoUploaded: true, pfp_url: defaultValues.pfp_url });
       return;
     }
 

@@ -91,6 +91,18 @@ export async function POST(request: NextRequest) {
       dbData.pfp_url = existingProfile.pfp_url;
     }
 
+    // Validate that pfp_url exists (required for all profiles)
+    // Skip validation only if it's an update and pfp_url was already set
+    if (!dbData.pfp_url && !existingProfile?.pfp_url) {
+      return NextResponse.json(
+        {
+          error:
+            "Profile picture is required. Please upload a photo before continuing.",
+        },
+        { status: 400 },
+      );
+    }
+
     // Upsert the profile
     const { error: dbError } = await supabase.from("profiles").upsert(
       {
