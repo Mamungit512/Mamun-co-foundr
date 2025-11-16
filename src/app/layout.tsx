@@ -9,6 +9,7 @@ import Socials from "@/components/Socials";
 import Footer from "@/components/header_footer/Footer";
 import QueryProvider from "./_providers/QueryProvider";
 import { Toaster } from "react-hot-toast";
+import ReferralTracker from "@/components/referrals/referral-tracker";
 
 const satoshi = localFont({
   src: "../../public/fonts/Satoshi-Variable.ttf",
@@ -35,6 +36,7 @@ export default function RootLayout({
           className={`${satoshi.className} scroll-smooth bg-(--charcoal-black) antialiased lg:text-lg`}
         >
           <QueryProvider>
+            <ReferralTracker />
             <Header />
             {children}
             <Socials />
