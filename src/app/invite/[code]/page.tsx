@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import React from "react";
 
-export default function InvitePage({ params }: { params: Promise<{ code: string }> }) {
-  const router = useRouter();
+export default function InvitePage({
+  params,
+}: {
+  params: Promise<{ code: string }>;
+}) {
   const searchParams = useSearchParams();
   const { code } = React.use(params); // mamun-xxxx
 
@@ -24,12 +27,10 @@ export default function InvitePage({ params }: { params: Promise<{ code: string 
     if (referralCode) {
       document.cookie = `mamun_ref=${referralCode}; path=/; max-age=${30 * 24 * 60 * 60}`;
     }
-
-
   }, [code, searchParams]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center">
       <h1 className="text-xl font-semibold">Referral saved</h1>
     </div>
   );

@@ -8,61 +8,53 @@ export async function getReferralStats() {
     const user = await currentUser();
     if (!user) return { ok: false, error: "Unauthorized" };
 
+    // Server-side Supabase (do NOT use NEXT_PUBLIC)
     const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!, 
-      process.env.SUPABASE_SERVICE_ROLE_KEY!, 
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
     const referralCode = `mamun-${user.id.slice(-8)}`;
 
-    // Fetch this user's referrals
     const { data: referrals, error } = await supabase
       .from("referrals")
       .select("*")
       .eq("referrer_code", referralCode);
 
     if (error) {
-      console.error("Supabase error:", error);
       return { ok: false, error: error.message };
     }
 
     const inviteCount = referrals?.length ?? 0;
-    const earnedAmount = inviteCount * 5; // 5$ example
-
-    const { data: counts } = await supabase.rpc("get_referral_counts"); 
-
-    let rank = null;
-    if (Array.isArray(counts)) {
-      const sorted = counts.sort((a, b) => b.count - a.count);
-      rank = sorted.findIndex((u) => u.referrer_code === referralCode) + 1;
-    }
+    const earnedAmount = inviteCount * 5;
 
     return {
       ok: true,
       data: {
         referral_code: referralCode,
-        // referral_url: `https://mamun.co/invite/${referralCode}`,
         referral_url: `http://localhost:3000/invite/${referralCode}`,
-
         invite_count: inviteCount,
         earned_amount: earnedAmount,
-        rank: rank || null,
+        rank: null,
         referrals: referrals ?? [],
       },
     };
-  } catch (err: any) {
-    console.error("getReferralStats error:", err);
-    return { ok: false, error: err?.message || "Unexpected error" };
+  } catch (err: unknown) {
+    const errorMessage =
+      err instanceof Error ? err.message : "Unexpected error";
+
+    return { ok: false, error: errorMessage };
   }
 }
 
 export async function createReferral(
-  referredUserId: string,
-  referrerCode: string,
+  referredUserId: string, // Clerk user ID
+  referrerCode: string, // mamun-xxxx
 ) {
   try {
+    // Server-side Supabase client (correct)
     const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
@@ -78,11 +70,10 @@ export async function createReferral(
       .single();
 
     if (error) {
-      console.error("Create referral error:", error);
       return { ok: false, error: error.message };
     }
 
-    // FirstPromoter — async non-blocking
+    // FirstPromoter API — correct format
     if (process.env.FIRSTPROMOTER_API_KEY) {
       fetch("https://firstpromoter.com/api/v1/track/signup", {
         method: "POST",
@@ -91,15 +82,17 @@ export async function createReferral(
           "x-api-key": process.env.FIRSTPROMOTER_API_KEY,
         },
         body: JSON.stringify({
-          email: referredUserId,
-          promoter_id: referrerCode,
+          uid: referredUserId,
+          tid: referrerCode, // FP 'tid' parametresi
         }),
-      }).catch((fp) => console.error("FP error:", fp));
+      }).catch((err) => console.error("FP Error:", err));
     }
 
     return { ok: true, data };
-  } catch (err: any) {
-    console.error("createReferral error:", err);
-    return { ok: false, error: err?.message || "Unexpected error" };
+  } catch (err: unknown) {
+    const errorMessage =
+      err instanceof Error ? err.message : "Unexpected error";
+
+    return { ok: false, error: errorMessage };
   }
 }
