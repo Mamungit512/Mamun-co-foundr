@@ -76,8 +76,32 @@ export async function POST(request: NextRequest) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
+    // Fetch existing profile to preserve certain fields like pfp_url
+    const { data: existingProfile } = await supabase
+      .from("profiles")
+      .select("pfp_url")
+      .eq("user_id", userId)
+      .single();
+
     // Map the form data to database format
     const dbData = mapOnboardingDatatoProfileDB(formData);
+
+    // Preserve pfp_url if it exists and wasn't provided in the form data
+    if (existingProfile?.pfp_url && !dbData.pfp_url) {
+      dbData.pfp_url = existingProfile.pfp_url;
+    }
+
+    // Validate that pfp_url exists (required for all profiles)
+    // Skip validation only if it's an update and pfp_url was already set
+    if (!dbData.pfp_url && !existingProfile?.pfp_url) {
+      return NextResponse.json(
+        {
+          error:
+            "Profile picture is required. Please upload a photo before continuing.",
+        },
+        { status: 400 },
+      );
+    }
 
     // Upsert the profile
     const { error: dbError } = await supabase.from("profiles").upsert(

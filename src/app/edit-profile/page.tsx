@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import dynamic from "next/dynamic";
+import { useSession } from "@clerk/nextjs";
 import {
   useProfileUpsert,
   useUserProfile,
@@ -9,9 +11,50 @@ import {
 import FormInput from "@/components/ui/FormInput";
 import HiringSettings from "@/components/HiringSettings";
 
+// Dynamically import with SSR disabled (required for face-api.js)
+const FaceDetectionUploader = dynamic(
+  () => import("@/components/FaceDetectionUploader"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex animate-pulse items-center gap-2 text-gray-400">
+        <svg
+          className="h-5 w-5 animate-spin"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+        Loading AI Model...
+      </div>
+    ),
+  },
+);
+
 export default function EditProfile() {
   const { data: profileData, isLoading, isError, error } = useUserProfile();
   const { mutateAsync: upsertProfileMutationFn } = useProfileUpsert();
+  const { session } = useSession();
+
+  const [validatedPhotoFile, setValidatedPhotoFile] = useState<File | null>(
+    null,
+  );
+  const [photoError, setPhotoError] = useState<string | null>(null);
+  const [photoSuccess, setPhotoSuccess] = useState<string | null>(null);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
   const {
     register,
@@ -27,8 +70,67 @@ export default function EditProfile() {
   }, [profileData, reset]);
 
   const onSubmit = async (formData: Partial<OnboardingData>) => {
+    // Validate that user has a profile picture before saving
+    if (!profileData?.pfp_url) {
+      setPhotoError("Please upload a profile picture before saving your profile.");
+      // Scroll to the top where the photo upload section is
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     // -- Upsert editted profile data into DB --
     await upsertProfileMutationFn(formData);
+  };
+
+  const handlePhotoUpload = async () => {
+    if (!validatedPhotoFile) {
+      setPhotoError("Please select a valid photo first");
+      return;
+    }
+
+    setIsUploadingPhoto(true);
+    setPhotoError(null);
+    setPhotoSuccess(null);
+
+    try {
+      const token = await session?.getToken();
+      if (!token) {
+        throw new Error("Authentication required");
+      }
+
+      const formData = new FormData();
+      formData.append("file", validatedPhotoFile);
+
+      const response = await fetch("/api/upload-profile-pic", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Upload failed");
+      }
+
+      setPhotoSuccess("Profile picture updated successfully!");
+      setValidatedPhotoFile(null);
+
+      // Refresh the page after a short delay to show the new image
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    } catch (err) {
+      console.error("Upload error:", err);
+      setPhotoError(
+        err instanceof Error
+          ? err.message
+          : "Failed to upload photo. Please try again.",
+      );
+    } finally {
+      setIsUploadingPhoto(false);
+    }
   };
 
   if (isLoading) return <p>Loading profile...</p>;
@@ -44,6 +146,111 @@ export default function EditProfile() {
           <p className="mt-2 text-sm text-gray-400 sm:text-base">
             Update your information to help others find you
           </p>
+        </div>
+
+        {/* Warning Banner if no profile picture */}
+        {!profileData?.pfp_url && (
+          <div className="mb-6 rounded-lg border-2 border-red-500 bg-red-500/10 p-4">
+            <div className="flex items-center gap-3">
+              <svg
+                className="h-6 w-6 flex-shrink-0 text-red-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+              <div>
+                <p className="font-semibold text-red-400">
+                  Profile Picture Required
+                </p>
+                <p className="text-sm text-red-300">
+                  You must upload a profile picture before you can save changes to your profile.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Profile Picture Section */}
+        <div className="mb-8 rounded-lg border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-transparent p-6">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="rounded-full bg-blue-500/20 p-2">
+              <span className="text-lg">📸</span>
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-white">
+                Profile Picture
+              </h2>
+              <p className="text-sm text-gray-400">
+                Upload a clear photo of yourself. AI will verify it&apos;s a real
+                human face.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {/* Current Profile Picture */}
+            {profileData?.pfp_url && (
+              <div>
+                <p className="mb-2 text-sm text-gray-400">Current Photo:</p>
+                <img
+                  src={profileData.pfp_url}
+                  alt="Current profile"
+                  className="h-32 w-32 rounded-full border-2 border-gray-600 object-cover"
+                />
+              </div>
+            )}
+
+            {/* Face Detection Uploader */}
+            <div>
+              <FaceDetectionUploader
+                onValidationSuccess={(file) => {
+                  console.log("Valid face detected:", file);
+                  setValidatedPhotoFile(file);
+                  setPhotoError(null);
+                  setPhotoSuccess(null);
+                }}
+                onValidationFail={(error) => {
+                  console.warn("Face validation failed:", error);
+                  setValidatedPhotoFile(null);
+                  setPhotoError(error);
+                  setPhotoSuccess(null);
+                }}
+              />
+            </div>
+
+            {/* Upload Button */}
+            {validatedPhotoFile && (
+              <button
+                type="button"
+                onClick={handlePhotoUpload}
+                disabled={isUploadingPhoto}
+                className="rounded-lg bg-blue-600 px-6 py-2.5 text-white transition hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50"
+              >
+                {isUploadingPhoto ? "Uploading..." : "Upload New Photo"}
+              </button>
+            )}
+
+            {/* Error Message */}
+            {photoError && (
+              <div className="rounded-lg border border-red-500 bg-red-500/10 p-3">
+                <p className="text-sm text-red-400">{photoError}</p>
+              </div>
+            )}
+
+            {/* Success Message */}
+            {photoSuccess && (
+              <div className="rounded-lg border border-green-500 bg-green-500/10 p-3">
+                <p className="text-sm text-green-400">{photoSuccess}</p>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Hiring Settings Section */}
@@ -603,8 +810,9 @@ export default function EditProfile() {
           <div className="flex justify-end">
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="cursor-pointer rounded-md bg-blue-600 px-8 py-3 text-white transition hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50"
+              disabled={isSubmitting || !profileData?.pfp_url}
+              className="cursor-pointer rounded-md bg-blue-600 px-8 py-3 text-white transition hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              title={!profileData?.pfp_url ? "Please upload a profile picture first" : ""}
             >
               {isSubmitting ? "Saving..." : "Save Changes"}
             </button>

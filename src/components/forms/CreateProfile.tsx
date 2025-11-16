@@ -1,6 +1,7 @@
 import InterestsAndValuesForm from "@/app/onboarding/form-components/InterestsAndValuesForm";
 import IntroAccomplishments from "@/app/onboarding/form-components/IntroAccomplishments";
 import OnboardingSocialsForm from "@/app/onboarding/form-components/OnboardingSocialsForm";
+import ProfilePhotoForm from "@/app/onboarding/form-components/ProfilePhotoForm";
 import ReviewForm from "@/app/onboarding/form-components/ReviewForm";
 import StartupDetailsForm from "@/app/onboarding/form-components/StartupDetailsForm";
 import WhoYouAreForm from "@/app/onboarding/form-components/WhoYouAreForm";
@@ -41,26 +42,25 @@ function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
   return (
     <>
       {stepNumber === 1 && (
-        <WhoYouAreForm
+        <ProfilePhotoForm
           onNext={(newData) => {
             setFormData((prev) => ({ ...prev, ...newData }));
             setStepNumber(2);
           }}
-          defaultValues={formData} // pass current saved data here to pre-fill form
+          defaultValues={formData}
         />
       )}
       {stepNumber === 2 && (
-        <IntroAccomplishments
-          onBack={handleBack}
+        <WhoYouAreForm
           onNext={(newData) => {
             setFormData((prev) => ({ ...prev, ...newData }));
             setStepNumber(3);
           }}
-          defaultValues={formData}
+          defaultValues={formData} // pass current saved data here to pre-fill form
         />
       )}
       {stepNumber === 3 && (
-        <OnboardingSocialsForm
+        <IntroAccomplishments
           onBack={handleBack}
           onNext={(newData) => {
             setFormData((prev) => ({ ...prev, ...newData }));
@@ -70,7 +70,7 @@ function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
         />
       )}
       {stepNumber === 4 && (
-        <StartupDetailsForm
+        <OnboardingSocialsForm
           onBack={handleBack}
           onNext={(newData) => {
             setFormData((prev) => ({ ...prev, ...newData }));
@@ -80,7 +80,7 @@ function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
         />
       )}
       {stepNumber === 5 && (
-        <InterestsAndValuesForm
+        <StartupDetailsForm
           onBack={handleBack}
           onNext={(newData) => {
             setFormData((prev) => ({ ...prev, ...newData }));
@@ -90,6 +90,16 @@ function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
         />
       )}
       {stepNumber === 6 && (
+        <InterestsAndValuesForm
+          onBack={handleBack}
+          onNext={(newData) => {
+            setFormData((prev) => ({ ...prev, ...newData }));
+            setStepNumber(7);
+          }}
+          defaultValues={formData}
+        />
+      )}
+      {stepNumber === 7 && (
         <ReviewForm
           data={formData}
           onBack={handleBack}
