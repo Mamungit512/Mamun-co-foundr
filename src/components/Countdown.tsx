@@ -36,7 +36,7 @@ export default function Countdown() {
 
   return (
     <div className="inline-flex items-center gap-2 rounded-md px-3 py-1 whitespace-nowrap">
-      <span className="text-white">{timeLeft}</span>
+      <span className="text-lime-500">{timeLeft}</span>
       <span className="text-white">Until ECC Funding</span>
     </div>
   );
