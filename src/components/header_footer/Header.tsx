@@ -24,6 +24,7 @@ import { FaTimes } from "react-icons/fa";
 import { motion, AnimatePresence } from "motion/react";
 import LikedProfilesModal from "@/components/LikedProfilesModal";
 import { useLikedProfilesData } from "@/features/likes/useLikes";
+import Countdown from "../Countdown";
 
 function Header() {
   const { signOut, openUserProfile } = useClerk();
@@ -69,8 +70,14 @@ function Header() {
       {/* Desktop Navigation */}
       <div className="hidden sm:block">
         <ul className="flex items-center justify-between gap-x-4 md:gap-x-6">
-          <li className="translate-y text-sm font-semibold sm:text-base">
-            <Link href="/cofoundr-matching">Co-Foundr Matching</Link>
+          <li className="flex items-center gap-3 font-semibold sm:text-base">
+            <Countdown />
+            <Link
+              href="/cofoundr-matching"
+              className="translate-y text-sm font-semibold sm:text-base"
+            >
+              Co-Foundr Matching
+            </Link>
           </li>
 
           <li className="translate-y text-sm font-semibold sm:text-base">
