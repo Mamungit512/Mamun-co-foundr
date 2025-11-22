@@ -403,8 +403,7 @@ function CofoundrMatching() {
                               <p className="text-gray-300">
                                 A gauge of your overall contentment with your
                                 career path and your motivation for seeking a
-                                new venture. Options: Happy, Content, Browsing,
-                                Unhappy.
+                                new venture. Options: Happy, Content, Browsing .
                               </p>
                             </div>
                           }
