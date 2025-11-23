@@ -5,7 +5,8 @@
 
 import { auth, clerkClient } from "@clerk/nextjs/server";
 
-export const completeOnboarding = async (formData: OnboardingData) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const completeOnboarding = async (_formData: OnboardingData) => {
   const { userId } = await auth();
 
   if (!userId) {
@@ -18,7 +19,8 @@ export const completeOnboarding = async (formData: OnboardingData) => {
     const res = await client.users.updateUser(userId, {
       publicMetadata: {
         onboardingComplete: true,
-        ...formData, // All collected onboarding data
+        // Only store the flag to prevent JWT token overflow
+        // Full profile data is stored in Supabase
       },
     });
     return { message: res.publicMetadata };

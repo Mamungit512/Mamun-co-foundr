@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { FaEnvelope } from "react-icons/fa6";
+import { FaEnvelope, FaUser } from "react-icons/fa6";
 import Image from "next/image";
 import { ConversationWithOtherParticipant } from "@/features/conversations/conversationService";
 
@@ -32,8 +32,8 @@ function ConversationItem({ conversation, onClick }: ConversationItemProps) {
               className="object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gray-700 text-gray-400">
-              <span className="text-lg">👤</span>
+            <div className="flex h-full w-full items-center justify-center bg-blue-500/20 text-blue-400">
+              <FaUser className="h-5 w-5" />
             </div>
           )}
         </div>

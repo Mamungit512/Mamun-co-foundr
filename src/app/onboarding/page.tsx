@@ -24,17 +24,20 @@ export default function OnboardingComponent() {
       const token = await session?.getToken();
 
       if (!userId || !token) {
-        return { success: false, error: "No Logged In User or Missing Token" };
+        const errorMsg = "No Logged In User or Missing Token";
+        setError(errorMsg);
+        return { success: false, error: errorMsg };
       }
 
       // -- Upsert OnboardingData into DB --
       const { success, error } = await upsertProfileMutationFn(formData);
 
       if (!success) {
-        setError(error || "Unknown error");
+        const errorMsg = error || "Unknown error";
+        setError(errorMsg);
         return {
           success: false,
-          error: "Error upserting into profiles table",
+          error: "Error creating your profile. Please try again.",
         };
       }
 
@@ -43,27 +46,20 @@ export default function OnboardingComponent() {
 
       if (res?.error) {
         setError(res.error);
-      } else {
-        // --- Sync Clerk pfp to Supabase Storage Bucket ---
-        // try {
-        //   const syncRes = await fetch("/api/sync-profile-pic");
-        //   if (!syncRes.ok) throw new Error("Failed to sync profile pic");
-        //   const { imageUrl } = await syncRes.json();
-        //   console.log("Profile pic synced:", imageUrl);
-        // } catch (syncErr) {
-        //   console.error("Error syncing profile pic:", syncErr);
-        // }
-
-        await user?.reload();
-
-        router.push("/onboarding/plan");
+        // Don't return here - profile is created, so we can proceed
       }
-    } catch (err) {
-      console.error(err);
-      setError("Something went wrong.");
-    }
 
-    return { success: true };
+      await user?.reload();
+
+      router.push("/onboarding/plan");
+
+      return { success: true };
+    } catch (err) {
+      const errorMsg =
+        err instanceof Error ? err.message : "Something went wrong.";
+      setError(errorMsg);
+      return { success: false, error: errorMsg };
+    }
   };
 
   return (

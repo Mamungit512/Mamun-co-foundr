@@ -68,7 +68,7 @@ export async function getMessagesByConversationId(
         sender_id,
         content,
         created_at,
-        profiles!messages_sender_id_fkey (
+        profiles!sender_id (
           user_id,
           first_name,
           last_name,
@@ -90,19 +90,33 @@ export async function getMessagesByConversationId(
 
     // Transform the data to match our Message type
     const messages: Message[] = data.map(
-      (message: SupabaseMessageResponse) => ({
-        id: message.id,
-        conversation_id: message.conversation_id,
-        sender_id: message.sender_id,
-        content: message.content,
-        created_at: message.created_at,
-        sender: {
-          id: message.profiles?.[0]?.user_id || "",
-          first_name: message.profiles?.[0]?.first_name || null,
-          last_name: message.profiles?.[0]?.last_name || null,
-          pfp_url: message.profiles?.[0]?.pfp_url || null,
-        },
-      }),
+      (message: SupabaseMessageResponse) => {
+        console.log('📧 Message raw data:', {
+          sender_id: message.sender_id,
+          profiles: message.profiles,
+          profiles_length: message.profiles?.length,
+          first_profile: message.profiles?.[0],
+        });
+
+        const senderProfile = message.profiles?.[0];
+        const mappedSender = {
+          id: senderProfile?.user_id || message.sender_id,
+          first_name: senderProfile?.first_name || null,
+          last_name: senderProfile?.last_name || null,
+          pfp_url: senderProfile?.pfp_url || null,
+        };
+
+        console.log('👤 Mapped sender data:', mappedSender);
+
+        return {
+          id: message.id,
+          conversation_id: message.conversation_id,
+          sender_id: message.sender_id,
+          content: message.content,
+          created_at: message.created_at,
+          sender: mappedSender,
+        };
+      },
     );
 
     return {

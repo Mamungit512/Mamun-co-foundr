@@ -18,14 +18,16 @@ import {
   FaBars,
   FaUsers,
   FaEnvelope,
+  FaCreditCard,
 } from "react-icons/fa6";
 import { FaTimes } from "react-icons/fa";
 import { motion, AnimatePresence } from "motion/react";
 import LikedProfilesModal from "@/components/LikedProfilesModal";
 import { useLikedProfilesData } from "@/features/likes/useLikes";
+import Countdown from "../Countdown";
 
 function Header() {
-  const { signOut } = useClerk();
+  const { signOut, openUserProfile } = useClerk();
   const router = useRouter();
   const [isLikedProfilesOpen, setIsLikedProfilesOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -68,8 +70,14 @@ function Header() {
       {/* Desktop Navigation */}
       <div className="hidden sm:block">
         <ul className="flex items-center justify-between gap-x-4 md:gap-x-6">
-          <li className="translate-y text-sm font-semibold sm:text-base">
-            <Link href="/cofoundr-matching">Co-Foundr Matching</Link>
+          <li className="flex items-center gap-3 font-semibold sm:text-base">
+            <Countdown />
+            <Link
+              href="/cofoundr-matching"
+              className="translate-y text-sm font-semibold sm:text-base"
+            >
+              Co-Foundr Matching
+            </Link>
           </li>
 
           <li className="translate-y text-sm font-semibold sm:text-base">
@@ -105,10 +113,18 @@ function Header() {
                 appearance={{
                   elements: {
                     userButtonAvatarBox: { width: "48px", height: "48px" },
+                    userButtonPopoverActionButton__manageAccount: {
+                      display: "none",
+                    },
                   },
                 }}
               >
                 <UserButton.MenuItems>
+                  <UserButton.Action
+                    label="Account and Billings"
+                    labelIcon={<FaCreditCard />}
+                    onClick={() => openUserProfile()}
+                  />
                   <UserButton.Link
                     label="Edit your ummatic passport"
                     href="/edit-profile"
@@ -116,10 +132,10 @@ function Header() {
                   />
                   <UserButton.Action
                     label="Delete Account"
-                    labelIcon={<FaTrash />}
+                    labelIcon={<FaTrash className="text-red-500" />}
                     onClick={async () => {
                       const confirmed = confirm(
-                        "Are you sure you want to delete your account? It will be permanently removed after 3 months. Reactivate your account by logging back in before the permanent deletion date.",
+                        "Are you sure you want to delete your account? This action is PERMANENT and CANNOT be undone. All your data will be immediately deleted.",
                       );
                       if (confirmed) {
                         try {
@@ -129,9 +145,7 @@ function Header() {
                           });
 
                           if (response.ok) {
-                            alert(
-                              "Your account has been marked for deletion. You will now be signed out.",
-                            );
+                            alert("Your account has been permanently deleted.");
                             // Sign out the user after successful deletion
                             signOut({ redirectUrl: "/" });
                           } else {
@@ -236,17 +250,6 @@ function Header() {
 
                 <li>
                   <Link
-                    href="/messages"
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <FaEnvelope className="h-4 w-4" />
-                    Messages
-                  </Link>
-                </li>
-
-                <li>
-                  <Link
                     href="/contact-us"
                     className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
                     onClick={() => setIsMobileMenuOpen(false)}
@@ -269,6 +272,18 @@ function Header() {
                 </li>
 
                 <SignedIn>
+                  <li>
+                    <button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        openUserProfile();
+                      }}
+                      className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
+                    >
+                      <FaCreditCard className="h-4 w-4" />
+                      Account and Billings
+                    </button>
+                  </li>
                   <li>
                     <Link
                       href="/edit-profile"
@@ -308,7 +323,7 @@ function Header() {
                       onClick={async () => {
                         setIsMobileMenuOpen(false);
                         const confirmed = confirm(
-                          "Are you sure you want to delete your account? It will be permanently removed after 3 months. Reactivate your account by logging back in before the permanent deletion date.",
+                          "Are you sure you want to delete your account? This action is PERMANENT and CANNOT be undone. All your data will be immediately deleted.",
                         );
                         if (confirmed) {
                           try {
@@ -322,7 +337,7 @@ function Header() {
 
                             if (response.ok) {
                               alert(
-                                "Your account has been marked for deletion. You will now be signed out.",
+                                "Your account has been permanently deleted.",
                               );
                               signOut({ redirectUrl: "/" });
                             } else {
