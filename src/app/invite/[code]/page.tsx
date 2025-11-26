@@ -4,10 +4,8 @@ import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import React from "react";
 
-export default function InvitePage({
-  params,
-}: {
-  params: Promise<{ code: string }>;
+export default function InvitePage ({params} : {
+  params: Promise <{ code: string }>;
 }) {
   const searchParams = useSearchParams();
   const { code } = React.use(params); // mamun-xxxx
