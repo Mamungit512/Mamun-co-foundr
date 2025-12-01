@@ -70,11 +70,30 @@ function Header() {
       <div className="hidden sm:block">
         <ul className="flex items-center justify-between gap-x-4 md:gap-x-6">
           <li className="translate-y text-sm font-semibold sm:text-base">
-            <Link href="/cofoundr-matching">Co-Foundr Matching</Link>
+            <Link
+              href="/cofoundr-matching"
+              className="inline-block rounded-lg bg-gray-700 px-4 py-2 text-white transition hover:bg-gray-600"
+            >
+              Co-Foundr Matching
+            </Link>
           </li>
 
           <li className="translate-y text-sm font-semibold sm:text-base">
-            <Link href="/contact-us">Contact Us</Link>
+            <Link
+              href="/contact-us"
+              className="underline decoration-gray-300 underline-offset-4"
+            >
+              Contact Us
+            </Link>
+          </li>
+          <li className="translate-y text-sm font-semibold sm:text-base">
+            <Link
+              href="https://calendly.com/teslim-mamuncofoundr"
+              target="_blank"
+              className="underline underline-offset-4 transition hover:text-gray-300"
+            >
+              Book a Demo
+            </Link>
           </li>
 
           <SignedIn>
@@ -95,7 +114,7 @@ function Header() {
             <li>
               <button
                 onClick={() => router.push("/messages")}
-                className="group relative cursor-pointer rounded-full p-3 text-gray-300 transition-all duration-200 hover:bg-blue-500/20 hover:text-blue-400"
+                className="group relative cursor-pointer rounded-full p-3 text-lime-500 transition-all duration-200 hover:bg-blue-500/20 hover:text-blue-400"
                 title="Messages"
               >
                 <FaEnvelope className="h-5 w-5 transition-transform group-hover:scale-110" />
@@ -261,6 +280,29 @@ function Header() {
                       />
                     </svg>
                     Contact Us
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="https://calendly.com/teslim-mamuncofoundr"
+                    target="_blank"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7v10m4-6v6m4-2v2M3 3h18M3 3v18M3 3l18 18"
+                      />
+                    </svg>
+                    Book a Demo
                   </Link>
                 </li>
 
