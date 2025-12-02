@@ -24,7 +24,6 @@ import { FaTimes } from "react-icons/fa";
 import { motion, AnimatePresence } from "motion/react";
 import LikedProfilesModal from "@/components/LikedProfilesModal";
 import { useLikedProfilesData } from "@/features/likes/useLikes";
-import Countdown from "../Countdown";
 
 function Header() {
   const { signOut, openUserProfile } = useClerk();
