@@ -19,6 +19,7 @@ import {
   FaUsers,
   FaEnvelope,
   FaCreditCard,
+  FaGift,
 } from "react-icons/fa6";
 import { FaTimes } from "react-icons/fa";
 import { motion, AnimatePresence } from "motion/react";
@@ -85,6 +86,9 @@ function Header() {
           </li>
 
           <SignedIn>
+            <li className="translate-y text-sm font-semibold sm:text-base">
+              <Link href="/dashboard/referrals">Referrals</Link>
+            </li>
             <li>
               <button
                 onClick={() => setIsLikedProfilesOpen(true)}
@@ -272,6 +276,16 @@ function Header() {
                 </li>
 
                 <SignedIn>
+                  <li>
+                    <Link
+                      href="/dashboard/referrals"
+                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <FaGift className="h-4 w-4" />
+                      My Referrals
+                    </Link>
+                  </li>
                   <li>
                     <button
                       onClick={() => {
