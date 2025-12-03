@@ -2,7 +2,6 @@ import React from "react";
 import { CiGlobe } from "react-icons/ci";
 import { LuBrain, LuSparkle } from "react-icons/lu";
 import { motion } from "motion/react";
-import Image from "next/image";
 
 function Vision() {
   return (
