@@ -8,15 +8,16 @@ export default function BookMe() {
   return (
     <section className="px-4 py-20 sm:px-6 sm:py-24 md:px-8 lg:px-12 xl:px-20 2xl:px-40">
       <motion.div
-        className="mx-auto max-w-4xl rounded-2xl bg-gray-800/40 p-24 text-center shadow-xl backdrop-blur-md"
+        className="mx-auto max-w-4xl overflow-hidden rounded-2xl border border-gray-700 bg-gray-900 p-6 sm:p-10 md:p-12"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        <h2 className="mb-4 text-2xl font-bold sm:text-3xl md:text-4xl">
+        <h2 className="mb-4 text-2xl font-bold text-(--mist-white) sm:text-3xl md:text-4xl">
           Book a Demo
         </h2>
+
         <p className="mb-8 text-gray-300 sm:text-lg">
           Learn how Mamun can help you find your ideal co-founder.
         </p>
