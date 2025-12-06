@@ -69,7 +69,6 @@ export default function EditProfile() {
     defaultValues: profileData,
   });
 
-  // Watch values for AI Writer
   const titleValue = watch("title") || "";
   const educationValue = watch("education") || "";
   const experienceValue = watch("experience") || "";
@@ -78,10 +77,6 @@ export default function EditProfile() {
   const ummahValue = watch("ummah") || "";
   const interestsValue = watch("interests") || "";
   const hobbiesValue = watch("hobbies") || "";
-  const startupTimeSpentValue = watch("startupTimeSpent") || "";
-  const startupFundingValue = watch("startupFunding") || "";
-  const coFounderStatusValue = watch("coFounderStatus") || "";
-  const fullTimeTimelineValue = watch("fullTimeTimeline") || "";
 
   useEffect(() => {
     if (profileData) reset(profileData);
@@ -349,8 +344,9 @@ export default function EditProfile() {
                 </label>
                 <AIWriter
                   text={titleValue}
-                  fieldType="title"
                   onAccept={(suggestion) => setValue("title", suggestion)}
+                  fieldType="title"
+                  placeholder="Start typing your title..."
                 />
                 <FormInput
                   placeholder="Title: (Ex. Software Engineer)"
@@ -425,8 +421,9 @@ export default function EditProfile() {
                 </label>
                 <AIWriter
                   text={educationValue}
-                  fieldType="education"
                   onAccept={(suggestion) => setValue("education", suggestion)}
+                  fieldType="education"
+                  placeholder="Start typing your education..."
                 />
                 <textarea
                   rows={3}
@@ -449,8 +446,9 @@ export default function EditProfile() {
                 </label>
                 <AIWriter
                   text={experienceValue}
-                  fieldType="experience"
                   onAccept={(suggestion) => setValue("experience", suggestion)}
+                  fieldType="experience"
+                  placeholder="Start typing your experience..."
                 />
                 <textarea
                   rows={3}
@@ -533,8 +531,11 @@ export default function EditProfile() {
                 </label>
                 <AIWriter
                   text={personalIntroValue}
+                  onAccept={(suggestion) =>
+                    setValue("personalIntro", suggestion)
+                  }
                   fieldType="personalIntro"
-                  onAccept={(suggestion) => setValue("personalIntro", suggestion)}
+                  placeholder="Start typing your introduction..."
                 />
                 <textarea
                   rows={4}
@@ -562,8 +563,11 @@ export default function EditProfile() {
                 </label>
                 <AIWriter
                   text={accomplishmentsValue}
+                  onAccept={(suggestion) =>
+                    setValue("accomplishments", suggestion)
+                  }
                   fieldType="accomplishments"
-                  onAccept={(suggestion) => setValue("accomplishments", suggestion)}
+                  placeholder="Start typing your accomplishments..."
                 />
                 <textarea
                   rows={3}
@@ -580,8 +584,9 @@ export default function EditProfile() {
                 </label>
                 <AIWriter
                   text={ummahValue}
-                  fieldType="ummah"
                   onAccept={(suggestion) => setValue("ummah", suggestion)}
+                  fieldType="ummah"
+                  placeholder="Start typing your idea..."
                 />
                 <textarea
                   rows={3}
@@ -676,13 +681,6 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Time Spent on Startup
                 </label>
-                <AIWriter
-                  text={startupTimeSpentValue}
-                  fieldType="startupTimeSpent"
-                  onAccept={(suggestion) => setValue("startupTimeSpent", suggestion)}
-                />
-                <FormInput
-                  placeholder="e.g. 3 months in, MVP built"
                 <select
                   {...register("startupTimeSpent")}
                   className="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2.5 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -701,13 +699,6 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Startup Funding
                 </label>
-                <AIWriter
-                  text={startupFundingValue}
-                  fieldType="startupFunding"
-                  onAccept={(suggestion) => setValue("startupFunding", suggestion)}
-                />
-                <FormInput
-                  placeholder="e.g. Bootstrapped, Pre-seed, $20k grant"
                 <select
                   {...register("startupFunding")}
                   className="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2.5 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -726,15 +717,6 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Co-founder Status
                 </label>
-                <AIWriter
-                  text={coFounderStatusValue}
-                  fieldType="coFounderStatus"
-                  onAccept={(suggestion) => setValue("coFounderStatus", suggestion)}
-                />
-                <FormInput
-                  placeholder="e.g. Solo founder, Seeking co-founder"
-                  {...register("coFounderStatus")}
-                />
                 <div className="flex flex-wrap gap-4">
                   {[
                     "Solo founder",
@@ -758,13 +740,6 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Full-time Timeline
                 </label>
-                <AIWriter
-                  text={fullTimeTimelineValue}
-                  fieldType="fullTimeTimeline"
-                  onAccept={(suggestion) => setValue("fullTimeTimeline", suggestion)}
-                />
-                <FormInput
-                  placeholder="e.g. Within 3 months, Already full-time"
                 <select
                   {...register("fullTimeTimeline")}
                   className="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2.5 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -864,8 +839,9 @@ export default function EditProfile() {
                 </label>
                 <AIWriter
                   text={interestsValue}
-                  fieldType="interests"
                   onAccept={(suggestion) => setValue("interests", suggestion)}
+                  fieldType="interests"
+                  placeholder="Start typing your interests..."
                 />
                 <textarea
                   rows={3}
@@ -881,8 +857,9 @@ export default function EditProfile() {
                 </label>
                 <AIWriter
                   text={hobbiesValue}
-                  fieldType="hobbies"
                   onAccept={(suggestion) => setValue("hobbies", suggestion)}
+                  fieldType="hobbies"
+                  placeholder="Start typing your hobbies..."
                 />
                 <textarea
                   rows={3}
@@ -900,7 +877,11 @@ export default function EditProfile() {
               type="submit"
               disabled={isSubmitting || !profileData?.pfp_url}
               className="cursor-pointer rounded-md bg-blue-600 px-8 py-3 text-white transition hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-              title={!profileData?.pfp_url ? "Please upload a profile picture first" : ""}
+              title={
+                !profileData?.pfp_url
+                  ? "Please upload a profile picture first"
+                  : ""
+              }
             >
               {isSubmitting ? "Saving..." : "Save Changes"}
             </button>

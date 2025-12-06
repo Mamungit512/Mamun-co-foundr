@@ -1,3 +1,4 @@
+
 // src/components/ui/AIWriter.tsx
 
 "use client";
@@ -57,7 +58,7 @@ export default function AIWriter({
       }
     } catch (error) {
       console.error("Error fetching AI suggestion:", error);
-      setSuggestionMessage("Failed to generate suggestion. Please try again.");
+      setSuggestionMessage("Failed to generate AI suggestion. Please try again.");
     } finally {
       setIsLoadingSuggestion(false);
     }

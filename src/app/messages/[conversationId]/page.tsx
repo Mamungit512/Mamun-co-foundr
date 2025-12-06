@@ -2,8 +2,6 @@
 
 import React from "react";
 import Image from "next/image";
-import { FaArrowLeft, FaEnvelope, FaWandMagicSparkles, FaCheck, FaXmark } from "react-icons/fa6";
-import { motion, AnimatePresence } from "motion/react";
 import { FaArrowLeft, FaEnvelope, FaUser } from "react-icons/fa6";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
@@ -12,6 +10,7 @@ import { useMessages } from "@/hooks/useMessages";
 import { useConversation } from "@/hooks/useConversations";
 import MessageItem from "@/components/MessageItem";
 import { Message } from "@/features/messages/messagesService";
+import AIWriter from "@/components/ui/AIWriter"; 
 
 interface ConversationPageProps {
   params: Promise<{
@@ -28,12 +27,6 @@ function ConversationPage({ params }: ConversationPageProps) {
   const [sendError, setSendError] = React.useState<string | null>(null);
   const [isLimitReached, setIsLimitReached] = React.useState<boolean>(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
-
-  // AI Writer states
-  const [showSuggestion, setShowSuggestion] = React.useState<boolean>(false);
-  const [aiSuggestion, setAiSuggestion] = React.useState<string>("");
-  const [isLoadingSuggestion, setIsLoadingSuggestion] = React.useState<boolean>(false);
-  const [suggestionMessage, setSuggestionMessage] = React.useState<string>("");
 
   React.useEffect(() => {
     params.then((resolvedParams) => {
@@ -52,78 +45,6 @@ function ConversationPage({ params }: ConversationPageProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Check for AI suggestion trigger
-  React.useEffect(() => {
-    const checkForSuggestion = async () => {
-      const text = messageInput.trim();
-      const words = text.split(/\s+/).filter(word => word.length >= 3);
-      
-      if (words.length >= 2 && !showSuggestion && !isLoadingSuggestion) {
-        setShowSuggestion(true);
-      } else if (words.length < 2) {
-        setShowSuggestion(false);
-        setAiSuggestion("");
-        setSuggestionMessage("");
-      }
-    };
-
-    const debounceTimer = setTimeout(checkForSuggestion, 500);
-    return () => clearTimeout(debounceTimer);
-  }, [messageInput, showSuggestion, isLoadingSuggestion]);
-
-  const fetchAiSuggestion = async () => {
-    if (!messageInput.trim() || isLoadingSuggestion) return;
-
-    setIsLoadingSuggestion(true);
-    setSuggestionMessage("");
-    setAiSuggestion("");
-
-    try {
-      const token = await session?.getToken();
-      
-      const response = await fetch("/api/ai/suggest", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          text: messageInput.trim(),
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to get AI suggestion");
-      }
-
-      const data = await response.json();
-      
-      if (data.suggestion) {
-        setAiSuggestion(data.suggestion);
-      } else if (data.message) {
-        setSuggestionMessage(data.message);
-      }
-    } catch (error) {
-      console.error("Error fetching AI suggestion:", error);
-      setSuggestionMessage("Could not generate suggestion. Please try again.");
-    } finally {
-      setIsLoadingSuggestion(false);
-    }
-  };
-
-  const acceptSuggestion = () => {
-    setMessageInput(aiSuggestion);
-    setShowSuggestion(false);
-    setAiSuggestion("");
-    setSuggestionMessage("");
-  };
-
-  const rejectSuggestion = () => {
-    setShowSuggestion(false);
-    setAiSuggestion("");
-    setSuggestionMessage("");
-  };
-
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -136,9 +57,6 @@ function ConversationPage({ params }: ConversationPageProps) {
     try {
       await sendMessage(messageInput.trim());
       setMessageInput("");
-      setShowSuggestion(false);
-      setAiSuggestion("");
-      setSuggestionMessage("");
     } catch (error: unknown) {
       console.error("Failed to send message:", error);
 
@@ -336,65 +254,16 @@ function ConversationPage({ params }: ConversationPageProps) {
 
           {/* Message Input Area */}
           <div className="border-t border-gray-700 p-4">
-            {/* AI Writer Panel */}
-            <AnimatePresence>
-              {showSuggestion && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="mb-3 overflow-hidden"
-                >
-                  <div className="rounded-lg border border-purple-500/30 bg-purple-500/10 p-3">
-                    <div className="mb-2 flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-purple-400">
-                        <FaWandMagicSparkles className="h-4 w-4" />
-                        <span className="text-sm font-medium">AI Writer</span>
-                      </div>
-                      {!isLoadingSuggestion && !aiSuggestion && (
-                        <button
-                          onClick={fetchAiSuggestion}
-                          className="rounded bg-purple-500/20 px-3 py-1 text-xs text-purple-300 transition-colors hover:bg-purple-500/30"
-                        >
-                          Generate
-                        </button>
-                      )}
-                    </div>
-
-                    {isLoadingSuggestion ? (
-                      <div className="flex items-center gap-2 text-purple-300">
-                        <div className="h-3 w-3 animate-spin rounded-full border-2 border-purple-300 border-t-transparent"></div>
-                        <span className="text-xs">Generating suggestion...</span>
-                      </div>
-                    ) : aiSuggestion ? (
-                      <div className="space-y-2">
-                        <div className="rounded bg-gray-700/50 p-2 text-sm text-white">
-                          {aiSuggestion}
-                        </div>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={acceptSuggestion}
-                            className="flex items-center gap-1 rounded bg-green-500/20 px-3 py-1 text-xs text-green-300 transition-colors hover:bg-green-500/30"
-                          >
-                            <FaCheck className="h-3 w-3" />
-                            Accept
-                          </button>
-                          <button
-                            onClick={rejectSuggestion}
-                            className="flex items-center gap-1 rounded bg-red-500/20 px-3 py-1 text-xs text-red-300 transition-colors hover:bg-red-500/30"
-                          >
-                            <FaXmark className="h-3 w-3" />
-                            Reject
-                          </button>
-                        </div>
-                      </div>
-                    ) : suggestionMessage ? (
-                      <p className="text-xs text-purple-300">{suggestionMessage}</p>
-                    ) : null}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            
+            {/*AI WRITER*/}
+            <div className="mb-2">
+              <AIWriter
+                text={messageInput}
+                fieldType="message"
+                onAccept={(suggestion) => setMessageInput(suggestion)}
+              />
+            </div>
+            {/* -------------------------- */}
 
             <form
               onSubmit={handleSendMessage}

@@ -3,7 +3,7 @@
 import React from "react";
 import { useForm, useWatch } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
-import AIWriter from "@/components/ui/AIWriter";
+import AIWriter from "@/components/ui/AIWriter"; 
 
 function StartupDetailsForm({
   onNext,
@@ -18,20 +18,16 @@ function StartupDetailsForm({
     register,
     handleSubmit,
     control,
+    watch, 
+    setValue, 
     formState: { errors },
-    watch,
-    setValue,
   } = useForm<StartupDetailsFormData>({
     defaultValues,
   });
 
   const hasStartup = useWatch({ control, name: "hasStartup" });
-
+  
   const startupDescriptionValue = watch("startupDescription") || "";
-  const startupTimeSpentValue = watch("startupTimeSpent") || "";
-  const startupFundingValue = watch("startupFunding") || "";
-  const coFounderStatusValue = watch("coFounderStatus") || "";
-  const fullTimeTimelineValue = watch("fullTimeTimeline") || "";
 
   const onSubmit = (data: StartupDetailsFormData) => {
     onNext(data);
@@ -109,14 +105,6 @@ function StartupDetailsForm({
 
           <div className="flex flex-col gap-y-2">
             <label>Time Spent & Progress</label>
-            <AIWriter
-              text={startupTimeSpentValue}
-              fieldType="startupTimeSpent"
-              onAccept={(suggestion) => setValue("startupTimeSpent", suggestion)}
-            />
-            <FormInput
-              type="text"
-              placeholder="e.g. 3 months in, MVP built and 5 users"
             <select
               {...register("startupTimeSpent")}
               className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white focus:ring-2 focus:ring-white/30 focus:outline-none"
@@ -133,14 +121,6 @@ function StartupDetailsForm({
 
           <div className="flex flex-col gap-y-2">
             <label>Funding Info (if applicable)</label>
-            <AIWriter
-              text={startupFundingValue}
-              fieldType="startupFunding"
-              onAccept={(suggestion) => setValue("startupFunding", suggestion)}
-            />
-            <FormInput
-              type="text"
-              placeholder="e.g. Bootstrapped, Pre-seed, $20k grant"
             <select
               {...register("startupFunding")}
               className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white focus:ring-2 focus:ring-white/30 focus:outline-none"
@@ -156,19 +136,6 @@ function StartupDetailsForm({
           </div>
 
           <div className="flex flex-col gap-y-2">
-            <label>Co-founder Status</label>
-            <AIWriter
-              text={coFounderStatusValue}
-              fieldType="coFounderStatus"
-              onAccept={(suggestion) =>
-                setValue("coFounderStatus", suggestion)
-              }
-            />
-            <FormInput
-              type="text"
-              placeholder="e.g. Solo founder, Seeking co-founder, Already partnered"
-              {...register("coFounderStatus")}
-            />
             <label>Co-Founder Status</label>
             <div className="flex flex-col gap-y-2">
               {["Solo founder", "Have co-founder(s)", "Seeking co-founder"].map(
@@ -189,16 +156,6 @@ function StartupDetailsForm({
 
           <div className="flex flex-col gap-y-2">
             <label>Timeline for Going Full-Time</label>
-            <AIWriter
-              text={fullTimeTimelineValue}
-              fieldType="fullTimeTimeline"
-              onAccept={(suggestion) =>
-                setValue("fullTimeTimeline", suggestion)
-              }
-            />
-            <FormInput
-              type="text"
-              placeholder="e.g. Within 3 months, Already full-time"
             <select
               {...register("fullTimeTimeline")}
               className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white focus:ring-2 focus:ring-white/30 focus:outline-none"
@@ -226,6 +183,11 @@ function StartupDetailsForm({
                 max: { value: 100, message: "Equity cannot exceed 100%" },
               })}
             />
+            {errors.equityExpectation && (
+              <p className="text-sm text-red-500">
+                {errors.equityExpectation.message}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-y-2">
