@@ -70,7 +70,7 @@ export default function PreferencesPanel({
     <div className="mb-8">
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between rounded-lg bg-gray-800/50 p-4 text-left transition-colors hover:bg-gray-800/70"
+        className="flex w-full items-center justify-between rounded-xl border border-white bg-(--charcoal-black) p-4 text-left transition-colors hover:bg-gray-800/70"
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.99 }}
       >

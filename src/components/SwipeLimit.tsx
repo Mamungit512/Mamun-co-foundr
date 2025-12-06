@@ -70,7 +70,7 @@ export default function SwipeLimit({
 
   return (
     <motion.div
-      className="mb-6 overflow-hidden rounded-2xl border border-gray-700/50 bg-gray-800/30 p-4"
+      className="mb-6 overflow-hidden rounded-2xl border border-white bg-(--charcoal-black) p-4"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}

@@ -72,7 +72,9 @@ export default function EditProfile() {
   const onSubmit = async (formData: Partial<OnboardingData>) => {
     // Validate that user has a profile picture before saving
     if (!profileData?.pfp_url) {
-      setPhotoError("Please upload a profile picture before saving your profile.");
+      setPhotoError(
+        "Please upload a profile picture before saving your profile.",
+      );
       // Scroll to the top where the photo upload section is
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
@@ -170,7 +172,8 @@ export default function EditProfile() {
                   Profile Picture Required
                 </p>
                 <p className="text-sm text-red-300">
-                  You must upload a profile picture before you can save changes to your profile.
+                  You must upload a profile picture before you can save changes
+                  to your profile.
                 </p>
               </div>
             </div>
@@ -188,8 +191,8 @@ export default function EditProfile() {
                 Profile Picture
               </h2>
               <p className="text-sm text-gray-400">
-                Upload a clear photo of yourself. AI will verify it&apos;s a real
-                human face.
+                Upload a clear photo of yourself. AI will verify it&apos;s a
+                real human face.
               </p>
             </div>
           </div>
@@ -286,7 +289,7 @@ export default function EditProfile() {
           className="space-y-6 sm:space-y-8"
         >
           {/* Basic Information Section */}
-          <div className="rounded-lg bg-gray-800 p-4 sm:p-6">
+          <div className="bg-(--charcoal-black) p-4 rounded-lg sm:p-6">
             <h2 className="mb-4 text-lg font-semibold text-white sm:mb-6 sm:text-xl">
               Basic Information
             </h2>
@@ -812,7 +815,11 @@ export default function EditProfile() {
               type="submit"
               disabled={isSubmitting || !profileData?.pfp_url}
               className="cursor-pointer rounded-md bg-blue-600 px-8 py-3 text-white transition hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-              title={!profileData?.pfp_url ? "Please upload a profile picture first" : ""}
+              title={
+                !profileData?.pfp_url
+                  ? "Please upload a profile picture first"
+                  : ""
+              }
             >
               {isSubmitting ? "Saving..." : "Save Changes"}
             </button>
