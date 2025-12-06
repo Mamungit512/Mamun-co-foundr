@@ -5,7 +5,6 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { CiCircleInfo } from "react-icons/ci";
 import { FaHeart, FaLocationDot } from "react-icons/fa6";
-import { ImCross } from "react-icons/im";
 import { TbMessageCircleFilled } from "react-icons/tb";
 import { motion, AnimatePresence } from "motion/react";
 import { useQueryClient } from "@tanstack/react-query";
