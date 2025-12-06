@@ -472,7 +472,7 @@ export default function EditProfile() {
                   Current Occupation Satisfaction *
                 </label>
                 <div className="flex flex-wrap gap-4">
-                  {["Happy", "Content", "Browsing", "Unhappy"].map((option) => (
+                  {["Happy", "Content", "Browsing"].map((option) => (
                     <label key={option} className="flex items-center space-x-2">
                       <input
                         type="radio"

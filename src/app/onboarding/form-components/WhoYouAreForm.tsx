@@ -118,7 +118,7 @@ function WhoYouAreForm({
             Current Occupation Satisfaction *
           </label>
           <div className="flex flex-col gap-y-2">
-            {["Happy", "Content", "Browsing", "Unhappy"].map((option) => (
+            {["Happy", "Content", "Browsing"].map((option) => (
               <label key={option} className="flex items-center gap-x-2">
                 <input
                   type="radio"

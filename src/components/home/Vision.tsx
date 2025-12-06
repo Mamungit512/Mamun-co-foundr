@@ -93,20 +93,6 @@ function Vision() {
             </p>
           </motion.div>
         </div>
-
-        {/* Mission Statement */}
-        <motion.div
-          className="mt-20 text-center"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.8, delay: 0.7, ease: "easeOut" }}
-        >
-          <p className="heading-6 lg:heading-5 font-semibold text-gray-200">
-            Mission: Rebuilding the{" "}
-            <span className="text-yellow-300">Silk Road</span> in digital form
-          </p>
-        </motion.div>
       </div>
     </section>
   );

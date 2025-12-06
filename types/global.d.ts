@@ -39,7 +39,7 @@ declare global {
     preferred_location: "same-city" | "same-country" | "remote" | null;
 
     responsibilities: string[] | null;
-    satisfaction: "Happy" | "Content" | "Browsing" | "Unhappy";
+    satisfaction: "Happy" | "Content" | "Browsing";
     battery_level: "Energized" | "Content" | "Burnt out";
     startup_description: string | null;
     startup_funding: string | null;
@@ -74,7 +74,7 @@ declare global {
     title: string;
     city: string;
     country: string;
-    satisfaction: "Happy" | "Content" | "Browsing" | "Unhappy";
+    satisfaction: "Happy" | "Content" | "Browsing";
     batteryLevel: "Energized" | "Content" | "Burnt out";
     gender?: string;
     birthdate?: string;
