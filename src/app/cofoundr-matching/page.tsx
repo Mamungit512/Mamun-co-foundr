@@ -27,6 +27,7 @@ import CofoundrShowMore from "./CofoundrShowMore";
 import { useSkipProfile } from "@/features/user-actions/useUserActions";
 import { useSwipeLimit } from "@/features/swipes/useSwipes";
 import SwipeLimit from "@/components/SwipeLimit";
+import { MdSkipNext } from "react-icons/md";
 
 function CofoundrMatching() {
   const [curProfileIdx, setCurProfileIdx] = useState(0);
@@ -295,7 +296,7 @@ function CofoundrMatching() {
               />
             )}
 
-            <div className="overflow-hidden rounded-2xl border border-gray-800/50 bg-gray-900/50 shadow-2xl backdrop-blur-sm">
+            <div className="overflow-hidden rounded-2xl border border-white bg-(--charcoal-black) shadow-2xl backdrop-blur-sm">
               <div className="p-4 sm:p-6 md:p-8 lg:p-12">
                 <div className="flex flex-col items-center space-y-6 sm:space-y-8">
                   {/* Profile Image Section - Centered on Top */}
@@ -542,7 +543,7 @@ function CofoundrMatching() {
               {skipProfileMutation.isPending ? (
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-red-400 border-t-transparent sm:h-6 sm:w-6 md:h-7 md:w-7" />
               ) : (
-                <ImCross className="size-5 transition-transform group-hover:scale-110 sm:size-6 md:size-7" />
+                <MdSkipNext className="size-5 transition-transform group-hover:scale-110 sm:size-6 md:size-7" />
               )}
             </motion.button>
 
