@@ -12,6 +12,7 @@ import CTA from "@/components/home/CTA";
 import FAQ from "@/components/home/faq";
 import NewsletterCTA from "@/components/home/NewsletterCTA";
 import Vision from "@/components/home/Vision";
+import BookMe from "@/components/home/BookMe";
 
 /* ------
 HOME PAGE
@@ -137,7 +138,7 @@ function page() {
               transition={{ duration: 0.8, delay: 1.8, ease: "easeOut" }}
             >
               <div className="flex flex-col items-center">
-                 <SignInButton forceRedirectUrl="/cofoundr-matching">
+                <SignInButton forceRedirectUrl="/cofoundr-matching">
                   <motion.button
                     className="cursor-pointer"
                     whileHover={{ scale: 1.05 }}
@@ -175,9 +176,10 @@ function page() {
             </motion.div>
           </div>
         </section>
+        <BookMe />
 
         {/* How It Works Section */}
-        <section className="px-4 py-16 pt-32 sm:px-6 sm:py-20 sm:pt-48 md:px-8 lg:px-12 xl:px-20 2xl:px-40">
+        <section className="px-4 py-16 pt-32 sm:px-6 sm:py-20 md:px-8 lg:px-12 xl:px-20 2xl:px-40">
           <div className="mx-auto max-w-6xl">
             <motion.div
               className="mb-12 text-center sm:mb-16"
@@ -284,6 +286,29 @@ function page() {
             </div>
           </div>
         </section>
+
+        {/* Mission Statement */}
+        <motion.div
+          className="mt-20 text-center"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.8, delay: 0.7, ease: "easeOut" }}
+        >
+          <p className="heading-6 lg:heading-5 font-semibold text-gray-200">
+            Mission: Rebuilding the{" "}
+            <span className="text-yellow-300">Silk Road</span> in digital form
+          </p>
+          <div className="mt-6 flex justify-center">
+            <Image
+              src="/img/silk.png"
+              alt="Silk Road"
+              width={800}
+              height={500}
+              className="w-full max-w-[800px] rounded-xl"
+            />
+          </div>
+        </motion.div>
 
         {/* Vision Section */}
         <motion.div
