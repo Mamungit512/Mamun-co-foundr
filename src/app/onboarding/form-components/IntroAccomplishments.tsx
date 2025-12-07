@@ -3,7 +3,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
-import AIWriter from "@/components/ui/AIWriter";
 
 function IntroAccomplishments({
   onNext,
@@ -14,22 +13,18 @@ function IntroAccomplishments({
   onBack: () => void;
   defaultValues?: Partial<IntroAccomplishmentsFormData>;
 }) {
+  // Pass defaultValues to useForm for pre-filling inputs
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
-    setValue,
   } = useForm<IntroAccomplishmentsFormData>({
     defaultValues,
   });
 
+  // Watch isTechnical for radio checked state
   const isTechnicalValue = watch("isTechnical");
-  const personalIntroValue = watch("personalIntro") || "";
-  const accomplishmentsValue = watch("accomplishments") || "";
-  const ummahValue = watch("ummah") || "";
-  const educationValue = watch("education") || "";
-  const experienceValue = watch("experience") || "";
 
   const onSubmit = (data: IntroAccomplishmentsFormData) => {
     onNext(data);
@@ -42,11 +37,6 @@ function IntroAccomplishments({
       {/* Personal Intro */}
       <div className="flex flex-col gap-y-2">
         <label htmlFor="personalIntro">Personal Introduction *</label>
-        <AIWriter
-          text={personalIntroValue}
-          fieldType="personalIntro"
-          onAccept={(suggestion) => setValue("personalIntro", suggestion)}
-        />
         <textarea
           id="personalIntro"
           {...register("personalIntro", {
@@ -69,11 +59,6 @@ function IntroAccomplishments({
       {/* Accomplishments */}
       <div className="flex flex-col gap-y-2">
         <label htmlFor="accomplishments">Impressive Accomplishments</label>
-        <AIWriter
-          text={accomplishmentsValue}
-          fieldType="accomplishments"
-          onAccept={(suggestion) => setValue("accomplishments", suggestion)}
-        />
         <textarea
           id="accomplishments"
           {...register("accomplishments")}
@@ -81,6 +66,7 @@ function IntroAccomplishments({
           rows={4}
           placeholder={`Built an app used by 10k+ users\nLaunched a startup\nTop 5% LeetCode`}
         />
+        {/* No validation error needed here unless you want it */}
       </div>
 
       {/* Ummah Question */}
@@ -89,11 +75,6 @@ function IntroAccomplishments({
           If you were a civilizational engineer for the Ummah, what idea would
           you bring? *
         </label>
-        <AIWriter
-          text={ummahValue}
-          fieldType="ummah"
-          onAccept={(suggestion) => setValue("ummah", suggestion)}
-        />
         <FormInput
           {...register("ummah", { required: true })}
           type="text"
@@ -109,11 +90,6 @@ function IntroAccomplishments({
       {/* Education */}
       <div className="flex flex-col gap-y-2">
         <label htmlFor="education">Education *</label>
-        <AIWriter
-          text={educationValue}
-          fieldType="education"
-          onAccept={(suggestion) => setValue("education", suggestion)}
-        />
         <textarea
           id="education"
           {...register("education", { required: true })}
@@ -129,11 +105,6 @@ function IntroAccomplishments({
       {/* Experience */}
       <div className="flex flex-col gap-y-2">
         <label htmlFor="experience">Work Experience *</label>
-        <AIWriter
-          text={experienceValue}
-          fieldType="experience"
-          onAccept={(suggestion) => setValue("experience", suggestion)}
-        />
         <textarea
           id="experience"
           {...register("experience", { required: true })}
