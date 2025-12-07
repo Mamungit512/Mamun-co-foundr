@@ -3,26 +3,31 @@
 import React from "react";
 import { useForm, useWatch } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
+import AIWriter from "@/components/ui/AIWriter"; 
 
 function StartupDetailsForm({
   onNext,
   onBack,
-  defaultValues, // Add this prop
+  defaultValues,
 }: {
   onNext: (data: StartupDetailsFormData) => void;
   onBack: () => void;
-  defaultValues?: Partial<StartupDetailsFormData>; // optional
+  defaultValues?: Partial<StartupDetailsFormData>;
 }) {
   const {
     register,
     handleSubmit,
     control,
+    watch, 
+    setValue, 
     formState: { errors },
   } = useForm<StartupDetailsFormData>({
-    defaultValues, // Pass it here
+    defaultValues,
   });
 
   const hasStartup = useWatch({ control, name: "hasStartup" });
+  
+  const startupDescriptionValue = watch("startupDescription") || "";
 
   const onSubmit = (data: StartupDetailsFormData) => {
     onNext(data);
@@ -83,6 +88,13 @@ function StartupDetailsForm({
 
           <div className="flex flex-col gap-y-2">
             <label>Brief Description</label>
+            <AIWriter
+              text={startupDescriptionValue}
+              fieldType="startupDescription"
+              onAccept={(suggestion) =>
+                setValue("startupDescription", suggestion)
+              }
+            />
             <textarea
               rows={3}
               placeholder="Tell us what it's about in 1–2 sentences"

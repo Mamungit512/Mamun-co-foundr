@@ -3,8 +3,8 @@
 
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-
 import FormInput from "@/components/ui/FormInput";
+import AIWriter from "@/components/ui/AIWriter";
 
 function WhoYouAreForm({
   onNext,
@@ -18,9 +18,13 @@ function WhoYouAreForm({
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
+    setValue,
   } = useForm<WhoYouAreFormData>({
     defaultValues,
   });
+
+  const titleValue = watch("title") || "";
 
   useEffect(() => {
     if (defaultValues) {
@@ -64,8 +68,14 @@ function WhoYouAreForm({
           </div>
         </div>
 
+        {/* Job Title with AI Writer */}
         <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
-          <label htmlFor="lastName">Job Title *</label>
+          <label htmlFor="title">Job Title *</label>
+          <AIWriter
+            text={titleValue}
+            fieldType="title"
+            onAccept={(suggestion) => setValue("title", suggestion)}
+          />
           <FormInput
             type="text"
             placeholder="e.g. UX Designer, Software Engineer, etc"

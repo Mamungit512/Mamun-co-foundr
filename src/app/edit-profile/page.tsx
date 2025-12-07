@@ -9,6 +9,7 @@ import {
   useUserProfile,
 } from "@/features/profile/useProfile";
 import FormInput from "@/components/ui/FormInput";
+import AIWriter from "@/components/ui/AIWriter";
 import HiringSettings from "@/components/HiringSettings";
 
 // Dynamically import with SSR disabled (required for face-api.js)
@@ -60,10 +61,22 @@ export default function EditProfile() {
     register,
     handleSubmit,
     reset,
+    control,
+    watch,
+    setValue,
     formState: { isSubmitting, errors },
   } = useForm<Partial<OnboardingData>>({
     defaultValues: profileData,
   });
+
+  const titleValue = watch("title") || "";
+  const educationValue = watch("education") || "";
+  const experienceValue = watch("experience") || "";
+  const personalIntroValue = watch("personalIntro") || "";
+  const accomplishmentsValue = watch("accomplishments") || "";
+  const ummahValue = watch("ummah") || "";
+  const interestsValue = watch("interests") || "";
+  const hobbiesValue = watch("hobbies") || "";
 
   useEffect(() => {
     if (profileData) reset(profileData);
@@ -329,6 +342,12 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Title *
                 </label>
+                <AIWriter
+                  text={titleValue}
+                  onAccept={(suggestion) => setValue("title", suggestion)}
+                  fieldType="title"
+                  placeholder="Start typing your title..."
+                />
                 <FormInput
                   placeholder="Title: (Ex. Software Engineer)"
                   {...register("title", { required: "Title is required" })}
@@ -400,6 +419,12 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Education *
                 </label>
+                <AIWriter
+                  text={educationValue}
+                  onAccept={(suggestion) => setValue("education", suggestion)}
+                  fieldType="education"
+                  placeholder="Start typing your education..."
+                />
                 <textarea
                   rows={3}
                   placeholder="Your degree, school, etc."
@@ -419,6 +444,12 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Experience *
                 </label>
+                <AIWriter
+                  text={experienceValue}
+                  onAccept={(suggestion) => setValue("experience", suggestion)}
+                  fieldType="experience"
+                  placeholder="Start typing your experience..."
+                />
                 <textarea
                   rows={3}
                   placeholder="Current/previous job title(s)"
@@ -498,6 +529,14 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Personal Introduction *
                 </label>
+                <AIWriter
+                  text={personalIntroValue}
+                  onAccept={(suggestion) =>
+                    setValue("personalIntro", suggestion)
+                  }
+                  fieldType="personalIntro"
+                  placeholder="Start typing your introduction..."
+                />
                 <textarea
                   rows={4}
                   placeholder="Write a short paragraph or two introducing yourself..."
@@ -522,6 +561,14 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Accomplishments
                 </label>
+                <AIWriter
+                  text={accomplishmentsValue}
+                  onAccept={(suggestion) =>
+                    setValue("accomplishments", suggestion)
+                  }
+                  fieldType="accomplishments"
+                  placeholder="Start typing your accomplishments..."
+                />
                 <textarea
                   rows={3}
                   placeholder="Built an app used by 10k+ users, Launched a startup, Top 5% LeetCode"
@@ -535,6 +582,12 @@ export default function EditProfile() {
                   If you were a civilizational engineer for the Ummah, what idea
                   would you bring?
                 </label>
+                <AIWriter
+                  text={ummahValue}
+                  onAccept={(suggestion) => setValue("ummah", suggestion)}
+                  fieldType="ummah"
+                  placeholder="Start typing your idea..."
+                />
                 <textarea
                   rows={3}
                   placeholder="Your idea here"
@@ -784,6 +837,12 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Interests
                 </label>
+                <AIWriter
+                  text={interestsValue}
+                  onAccept={(suggestion) => setValue("interests", suggestion)}
+                  fieldType="interests"
+                  placeholder="Start typing your interests..."
+                />
                 <textarea
                   rows={3}
                   placeholder="Your interests and passions"
@@ -796,6 +855,12 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-300">
                   Hobbies
                 </label>
+                <AIWriter
+                  text={hobbiesValue}
+                  onAccept={(suggestion) => setValue("hobbies", suggestion)}
+                  fieldType="hobbies"
+                  placeholder="Start typing your hobbies..."
+                />
                 <textarea
                   rows={3}
                   placeholder="Your hobbies and activities"
@@ -812,7 +877,11 @@ export default function EditProfile() {
               type="submit"
               disabled={isSubmitting || !profileData?.pfp_url}
               className="cursor-pointer rounded-md bg-blue-600 px-8 py-3 text-white transition hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-              title={!profileData?.pfp_url ? "Please upload a profile picture first" : ""}
+              title={
+                !profileData?.pfp_url
+                  ? "Please upload a profile picture first"
+                  : ""
+              }
             >
               {isSubmitting ? "Saving..." : "Save Changes"}
             </button>

@@ -10,6 +10,7 @@ import { useMessages } from "@/hooks/useMessages";
 import { useConversation } from "@/hooks/useConversations";
 import MessageItem from "@/components/MessageItem";
 import { Message } from "@/features/messages/messagesService";
+import AIWriter from "@/components/ui/AIWriter"; 
 
 interface ConversationPageProps {
   params: Promise<{
@@ -253,6 +254,17 @@ function ConversationPage({ params }: ConversationPageProps) {
 
           {/* Message Input Area */}
           <div className="border-t border-gray-700 p-4">
+            
+            {/*AI WRITER*/}
+            <div className="mb-2">
+              <AIWriter
+                text={messageInput}
+                fieldType="message"
+                onAccept={(suggestion) => setMessageInput(suggestion)}
+              />
+            </div>
+            {/* -------------------------- */}
+
             <form
               onSubmit={handleSendMessage}
               className="flex items-center gap-3"
