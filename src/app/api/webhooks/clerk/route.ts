@@ -15,6 +15,60 @@ export async function POST(req: NextRequest) {
     // Note: Removed reactivation logic since we now use hard deletes
     // Deleted users cannot be reactivated
 
+    // Track referrals when a new user is created
+    if (eventType === "user.created") {
+      const emailAddresses = evt.data.email_addresses;
+      const email =
+        emailAddresses && emailAddresses.length > 0
+          ? emailAddresses[0].email_address
+          : null;
+
+      // Get referral code from unsafe_metadata
+      const referralCode = evt.data.unsafe_metadata?.referral_code as
+        | string
+        | undefined;
+
+      console.log("🆕 New user created:", {
+        userId: id,
+        email,
+        referralCode: referralCode || "none",
+      });
+
+      if (email) {
+        try {
+          const baseUrl =
+            process.env.NODE_ENV === "production"
+              ? process.env.NEXT_PUBLIC_PRODUCTION_URL ||
+                "https://www.mamuncofoundr.com"
+              : process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
+          const referralUrl = `${baseUrl}/api/referral`;
+
+          const referralRes = await fetch(referralUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: id,
+              email: email,
+              referralCode: referralCode || null,
+              fpRef: null, // Can be extracted from metadata if needed
+            }),
+            signal: AbortSignal.timeout(25000),
+          });
+
+          if (!referralRes.ok) {
+            const errorText = await referralRes.text();
+            console.error("❌ Referral tracking failed:", errorText);
+          } else {
+            const result = await referralRes.json();
+            console.log("✅ Referral tracked successfully:", result);
+          }
+        } catch (refError) {
+          console.error("Error tracking referral:", refError);
+        }
+      }
+    }
+
     // Call sync-profile-pic endpoint when user updates their data
     if (eventType === "user.updated") {
       // Check if the user actually has a profile image
