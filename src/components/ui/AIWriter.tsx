@@ -11,14 +11,12 @@ interface AIWriterProps {
   text: string;
   onAccept: (suggestion: string) => void;
   fieldType?: string;
-  placeholder?: string;
 }
 
 export default function AIWriter({
   text,
   onAccept,
   fieldType,
-  placeholder = "Start typing to get AI suggestions...",
 }: AIWriterProps) {
   const [showSuggestion, setShowSuggestion] = useState(false);
   const [aiSuggestion, setAiSuggestion] = useState("");

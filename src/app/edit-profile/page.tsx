@@ -61,7 +61,6 @@ export default function EditProfile() {
     register,
     handleSubmit,
     reset,
-    control,
     watch,
     setValue,
     formState: { isSubmitting, errors },
@@ -346,7 +345,6 @@ export default function EditProfile() {
                   text={titleValue}
                   onAccept={(suggestion) => setValue("title", suggestion)}
                   fieldType="title"
-                  placeholder="Start typing your title..."
                 />
                 <FormInput
                   placeholder="Title: (Ex. Software Engineer)"
@@ -423,7 +421,6 @@ export default function EditProfile() {
                   text={educationValue}
                   onAccept={(suggestion) => setValue("education", suggestion)}
                   fieldType="education"
-                  placeholder="Start typing your education..."
                 />
                 <textarea
                   rows={3}
@@ -448,7 +445,6 @@ export default function EditProfile() {
                   text={experienceValue}
                   onAccept={(suggestion) => setValue("experience", suggestion)}
                   fieldType="experience"
-                  placeholder="Start typing your experience..."
                 />
                 <textarea
                   rows={3}
@@ -535,7 +531,6 @@ export default function EditProfile() {
                     setValue("personalIntro", suggestion)
                   }
                   fieldType="personalIntro"
-                  placeholder="Start typing your introduction..."
                 />
                 <textarea
                   rows={4}
@@ -567,7 +562,6 @@ export default function EditProfile() {
                     setValue("accomplishments", suggestion)
                   }
                   fieldType="accomplishments"
-                  placeholder="Start typing your accomplishments..."
                 />
                 <textarea
                   rows={3}
@@ -586,7 +580,6 @@ export default function EditProfile() {
                   text={ummahValue}
                   onAccept={(suggestion) => setValue("ummah", suggestion)}
                   fieldType="ummah"
-                  placeholder="Start typing your idea..."
                 />
                 <textarea
                   rows={3}
@@ -841,7 +834,6 @@ export default function EditProfile() {
                   text={interestsValue}
                   onAccept={(suggestion) => setValue("interests", suggestion)}
                   fieldType="interests"
-                  placeholder="Start typing your interests..."
                 />
                 <textarea
                   rows={3}
@@ -859,7 +851,6 @@ export default function EditProfile() {
                   text={hobbiesValue}
                   onAccept={(suggestion) => setValue("hobbies", suggestion)}
                   fieldType="hobbies"
-                  placeholder="Start typing your hobbies..."
                 />
                 <textarea
                   rows={3}

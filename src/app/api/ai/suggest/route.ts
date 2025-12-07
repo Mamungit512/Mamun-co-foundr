@@ -149,6 +149,7 @@ Examples:
 
       if (candidate.content?.parts && candidate.content.parts.length > 0) {
         suggestion = candidate.content.parts
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .map((part: any) => part.text || "")
           .join("")
           .trim();
