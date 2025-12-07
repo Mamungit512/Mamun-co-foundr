@@ -3,11 +3,12 @@
 import React, { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
+import AIWriter from "@/components/ui/AIWriter";
 
 function InterestsAndValuesForm({
   onBack,
   onNext,
-  defaultValues, // add this prop
+  defaultValues,
 }: {
   onBack: () => void;
   onNext: (data: InterestsAndValuesFormData) => void;
@@ -27,20 +28,19 @@ function InterestsAndValuesForm({
     [],
   );
 
-  // States for the "Other" priority input visibility and value
   const [showOtherInput, setShowOtherInput] = React.useState(false);
   const [otherPriority, setOtherPriority] = React.useState("");
 
-  const { register, handleSubmit, reset } = useForm<InterestsAndValuesFormData>(
-    {
+  const { register, handleSubmit, reset, watch, setValue } =
+    useForm<InterestsAndValuesFormData>({
       defaultValues,
-    },
-  );
+    });
 
-  // When defaultValues change (or on mount), check if "Other" should be shown and prefilled
+  const interestsValue = watch("interests") || "";
+  const hobbiesValue = watch("hobbies") || "";
+
   useEffect(() => {
     if (defaultValues?.priorityAreas) {
-      // Filter priorityAreas to those not in preset options
       const others = defaultValues.priorityAreas.filter(
         (area) => !priorityOptions.includes(area),
       );
@@ -51,13 +51,11 @@ function InterestsAndValuesForm({
         setShowOtherInput(false);
         setOtherPriority("");
       }
-      // Reset form with new defaultValues
       reset(defaultValues);
     }
   }, [defaultValues, reset, priorityOptions]);
 
   const onSubmit = (data: InterestsAndValuesFormData) => {
-    // Combine checked priorities with the "Other" if shown and filled
     const mergedPriorityAreas = [
       ...(data.priorityAreas || []),
       ...(showOtherInput && otherPriority ? [otherPriority] : []),
@@ -77,6 +75,11 @@ function InterestsAndValuesForm({
         <label htmlFor="interests">
           Topics or Industries You&apos;re Interested In
         </label>
+        <AIWriter
+          text={interestsValue}
+          fieldType="interests"
+          onAccept={(suggestion) => setValue("interests", suggestion)}
+        />
         <FormInput
           type="text"
           placeholder="e.g. AI in mental health, fintech for creators"
@@ -100,7 +103,6 @@ function InterestsAndValuesForm({
             </label>
           ))}
 
-          {/* "Other" checkbox */}
           <label className="flex items-center gap-x-2">
             <input
               type="checkbox"
@@ -125,6 +127,11 @@ function InterestsAndValuesForm({
       {/* Hobbies and Interests */}
       <div className="flex flex-col gap-y-2">
         <label htmlFor="hobbies">Hobbies and Interests</label>
+        <AIWriter
+          text={hobbiesValue}
+          fieldType="hobbies"
+          onAccept={(suggestion) => setValue("hobbies", suggestion)}
+        />
         <textarea
           rows={2}
           placeholder="e.g. Rock climbing, journaling, strategy games"
