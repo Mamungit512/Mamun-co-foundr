@@ -177,7 +177,7 @@ function page() {
           </div>
         </section>
         <BookMe />
-        
+
         {/* How It Works Section */}
         <section className="px-4 py-16 pt-32 sm:px-6 sm:py-20 md:px-8 lg:px-12 xl:px-20 2xl:px-40">
           <div className="mx-auto max-w-6xl">
@@ -286,6 +286,8 @@ function page() {
             </div>
           </div>
         </section>
+
+        {/* Mission Statement */}
         <motion.div
           className="mt-20 text-center"
           initial={{ opacity: 0, y: 30 }}
@@ -297,7 +299,17 @@ function page() {
             Mission: Rebuilding the{" "}
             <span className="text-yellow-300">Silk Road</span> in digital form
           </p>
+          <div className="mt-6 flex justify-center">
+            <Image
+              src="/img/silk.png"
+              alt="Silk Road"
+              width={800}
+              height={500}
+              className="w-full max-w-[800px] rounded-xl"
+            />
+          </div>
         </motion.div>
+
         {/* Vision Section */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}

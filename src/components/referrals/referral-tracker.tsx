@@ -5,9 +5,19 @@ import { useEffect } from "react";
 import { captureReferralCode } from "@/lib/referral-utils";
 
 export default function ReferralTracker() {
+  const firstPromoterId = process.env.NEXT_PUBLIC_FIRSTPROMOTER_ID;
+
   useEffect(() => {
     captureReferralCode();
   }, []);
+
+  // Only load FirstPromoter script if ID is configured
+  if (!firstPromoterId) {
+    console.warn(
+      "FirstPromoter ID not configured. Set NEXT_PUBLIC_FIRSTPROMOTER_ID in your environment variables.",
+    );
+    return null;
+  }
 
   return (
     <>
@@ -17,7 +27,7 @@ export default function ReferralTracker() {
         dangerouslySetInnerHTML={{
           __html: `
             (function(w){w.fpr=w.fpr||function(){w.fpr.q = w.fpr.q||[];w.fpr.q[arguments[0]=='set'?'unshift':'push'](arguments);};})(window);
-            fpr("init", {cid:"YOUR_FIRSTPROMOTER_ID"});
+            fpr("init", {cid:"${firstPromoterId}"});
             fpr("click");
           `,
         }}
