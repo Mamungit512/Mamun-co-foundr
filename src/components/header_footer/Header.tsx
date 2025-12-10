@@ -98,7 +98,7 @@ function Header() {
           </li>
 
           <SignedIn>
-            <li className="translate-y text-sm font-semibold sm:text-base">
+            <li className="translate-y text-sm font-semibold sm:text-base underline underline-offset-4">
               <Link href="/dashboard/referrals">Referrals</Link>
             </li>
             <li>
