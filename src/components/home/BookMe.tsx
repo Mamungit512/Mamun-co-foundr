@@ -1,10 +1,13 @@
 "use client";
 
+import { useClerk } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { MdCalendarToday } from "react-icons/md";
 
 export default function BookMe() {
+  const { openUserProfile } = useClerk();
+
   return (
     <section className="px-4 py-20 sm:px-6 sm:py-24 md:px-8 lg:px-12 xl:px-20 2xl:px-40">
       <motion.div
@@ -14,7 +17,7 @@ export default function BookMe() {
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        <h2 className="mb-4 text-2xl font-bold text-(--mist-white) sm:text-3xl md:text-4xl">
+        <h2 className="mb-4 text-2xl font-bold text-white sm:text-3xl md:text-4xl">
           Book a Demo
         </h2>
 
@@ -26,7 +29,7 @@ export default function BookMe() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           transition={{ duration: 0.2 }}
-          className="mx-auto flex items-center gap-2 rounded-lg bg-yellow-300 px-6 py-3 font-semibold text-(--charcoal-black)"
+          className="mx-auto mb-4 flex items-center gap-2 rounded-lg bg-yellow-300 px-6 py-3 font-semibold text-black"
         >
           <Link
             href="https://calendly.com/teslim-mamuncofoundr"
@@ -37,6 +40,26 @@ export default function BookMe() {
             <MdCalendarToday className="text-xl" />
             Book Now
           </Link>
+        </motion.button>
+
+        <motion.button
+          onClick={() => {
+            openUserProfile({
+              appearance: {
+                elements: {
+                  rootBox: "billing-focus",
+                },
+              },
+            });
+          }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.2 }}
+          className="flex w-full items-center justify-center gap-2 rounded-lg border border-yellow-300 bg-transparent px-6 py-3 font-semibold text-yellow-300 transition-colors hover:bg-yellow-300/10"
+        >
+          <MdCalendarToday className="text-xl" />
+          Upgrade to Collab+ for unlimited matching -&gt; Go to Account and
+          Billings.
         </motion.button>
       </motion.div>
     </section>
