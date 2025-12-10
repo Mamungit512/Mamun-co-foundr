@@ -494,7 +494,7 @@ function CofoundrMatching() {
                           transition={{ duration: 0.5, ease: "easeOut" }}
                           className="mt-6 sm:mt-8"
                         >
-                          <div className="overflow-hidden rounded-2xl border border-gray-800/30 bg-gray-900/30 p-4 backdrop-blur-sm sm:p-6 md:p-8">
+                          <div className="overflow-hidden rounded-2xl border border-gray-800/30 bg-(--charcoal-black) p-4 backdrop-blur-sm sm:p-6 md:p-8">
                             <CofoundrShowMore curProfile={curProfile} />
                           </div>
                         </motion.div>
