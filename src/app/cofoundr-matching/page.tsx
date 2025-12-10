@@ -484,27 +484,26 @@ function CofoundrMatching() {
                         {showMore ? "Show Less" : "Show More Details"}
                       </motion.button>
                     </div>
+                    {/* Show More Section */}
+                    <AnimatePresence>
+                      {showMore && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.5, ease: "easeOut" }}
+                          className="mt-6 sm:mt-8"
+                        >
+                          <div className="overflow-hidden rounded-2xl border border-gray-800/30 bg-gray-900/30 p-4 backdrop-blur-sm sm:p-6 md:p-8">
+                            <CofoundrShowMore curProfile={curProfile} />
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </motion.div>
                 </div>
               </div>
             </div>
-
-            {/* Show More Section */}
-            <AnimatePresence>
-              {showMore && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="mt-6 sm:mt-8"
-                >
-                  <div className="overflow-hidden rounded-2xl border border-gray-800/30 bg-gray-900/30 p-4 backdrop-blur-sm sm:p-6 md:p-8">
-                    <CofoundrShowMore curProfile={curProfile} />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>
         </motion.section>
 
