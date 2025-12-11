@@ -2,6 +2,7 @@
 
 import {
   SignedIn,
+  SignUpButton,
   SignedOut,
   SignInButton,
   UserButton,
@@ -98,8 +99,8 @@ function Header() {
           </li>
 
           <SignedIn>
-            <li className="translate-y text-sm font-semibold sm:text-base underline underline-offset-4">
-              <Link href="/dashboard/referrals">Referrals</Link>
+            <li className="translate-y text-sm font-semibold underline underline-offset-4 sm:text-base">
+              <Link href="/dashboard/referrals">Ambassador Only</Link>
             </li>
             <li>
               <button
@@ -187,11 +188,11 @@ function Header() {
           <SignedOut>
             <li>
               <div className="flex items-center gap-x-2">
-                <SignInButton>
+                <SignUpButton>
                   <button className="cursor-pointer rounded-md bg-(--mist-white) px-4 py-2 font-semibold text-(--charcoal-black)">
-                    Login
+                    Sign Up
                   </button>
-                </SignInButton>
+                </SignUpButton>
               </div>
             </li>
           </SignedOut>
@@ -318,7 +319,7 @@ function Header() {
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <FaGift className="h-4 w-4" />
-                      My Referrals
+                      Ambassador Only
                     </Link>
                   </li>
                   <li>
