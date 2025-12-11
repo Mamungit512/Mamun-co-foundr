@@ -19,7 +19,7 @@ function ConversationItem({ conversation, onClick }: ConversationItemProps) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ scale: 1.02 }}
-      className="group cursor-pointer rounded-lg border border-gray-700 bg-gray-800/50 p-4 transition-all duration-200 hover:border-blue-500/50 hover:bg-gray-800"
+      className="group cursor-pointer rounded-lg border border-white bg-(--charcoal-black) p-4 transition-all duration-200 hover:border-blue-500/50 hover:bg-gray-800"
       onClick={onClick}
     >
       <div className="flex items-center gap-4">
