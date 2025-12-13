@@ -193,7 +193,7 @@ export default function EditProfile() {
         )}
 
         {/* Profile Picture Section */}
-        <div className="mb-8 rounded-lg border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-transparent p-6">
+        <div className="mb-8 rounded-lg border border-blue-500/20 bg-(--charcoal-black) from-blue-500/10 to-transparent p-6">
           <div className="mb-4 flex items-center gap-3">
             <div className="rounded-full bg-blue-500/20 p-2">
               <span className="text-lg">📸</span>
@@ -269,10 +269,10 @@ export default function EditProfile() {
         </div>
 
         {/* Hiring Settings Section */}
-        <div className="mb-8 rounded-lg border border-yellow-500/20 bg-gradient-to-br from-yellow-500/10 to-transparent p-6">
+        <div className="mb-8 rounded-lg border border-blue-500/20 bg-(--charcoal-black) from-blue-500/10 to-transparent p-6">
           <div className="mb-4 flex items-center gap-3">
-            <div className="rounded-full bg-yellow-500/20 p-2">
-              <span className="text-lg text-yellow-300">💼</span>
+            <div className="rounded-full bg-blue-500/20 p-2">
+              <span className="blue-blue-300 text-lg">💼</span>
             </div>
             <div>
               <h2 className="text-xl font-semibold text-white">
@@ -301,11 +301,11 @@ export default function EditProfile() {
           className="space-y-6 sm:space-y-8"
         >
           {/* Basic Information Section */}
-          <div className="bg-(--charcoal-black) p-4 rounded-lg sm:p-6">
+          <div className="rounded-lg bg-(--charcoal-black) p-4 sm:p-6">
             <h2 className="mb-4 text-lg font-semibold text-white sm:mb-6 sm:text-xl">
               Basic Information
             </h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+            <div className="grid grid-cols-1 gap-4 bg-(--charcoal-black) sm:grid-cols-2 sm:gap-6">
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-300">
                   First Name *
@@ -411,7 +411,7 @@ export default function EditProfile() {
           </div>
 
           {/* Professional Information Section */}
-          <div className="rounded-lg bg-gray-800 p-6">
+          <div className="bg-(--charcoal-black)0 rounded-lg p-6">
             <h2 className="mb-6 text-xl font-semibold text-white">
               Professional Information
             </h2>
@@ -431,7 +431,7 @@ export default function EditProfile() {
                   {...register("education", {
                     required: "Education is required",
                   })}
-                  className="w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="w-full rounded-md border border-gray-600 bg-(--charcoal-black) px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                 />
                 {errors.education && (
                   <p className="text-sm text-red-500">
@@ -455,7 +455,7 @@ export default function EditProfile() {
                   {...register("experience", {
                     required: "Experience is required",
                   })}
-                  className="w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="w-full rounded-md border border-gray-600 bg-(--charcoal-black) px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                 />
                 {errors.experience && (
                   <p className="text-sm text-red-500">
@@ -519,7 +519,7 @@ export default function EditProfile() {
           </div>
 
           {/* Personal Story Section */}
-          <div className="rounded-lg bg-gray-800 p-6">
+          <div className="rounded-lg bg-(--charcoal-black) p-6">
             <h2 className="mb-6 text-xl font-semibold text-white">
               Personal Story
             </h2>
@@ -546,7 +546,7 @@ export default function EditProfile() {
                       message: "Your bio must be at least 10 characters long.",
                     },
                   })}
-                  className="w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="w-full rounded-md border border-gray-600 bg-(--charcoal-black) px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                 />
                 {errors.personalIntro && (
                   <p className="text-sm text-red-500">
@@ -570,7 +570,7 @@ export default function EditProfile() {
                   rows={3}
                   placeholder="Built an app used by 10k+ users, Launched a startup, Top 5% LeetCode"
                   {...register("accomplishments")}
-                  className="w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="bg-(--charcoal-black)px-3 w-full rounded-md border border-gray-600 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -588,14 +588,14 @@ export default function EditProfile() {
                   rows={3}
                   placeholder="Your idea here"
                   {...register("ummah")}
-                  className="w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="w-full rounded-md border border-gray-600 bg-(--charcoal-black) px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
             </div>
           </div>
 
           {/* Social Links Section */}
-          <div className="rounded-lg bg-gray-800 p-6">
+          <div className="rounded-lg bg-(--charcoal-black) p-6">
             <h2 className="mb-6 text-xl font-semibold text-white">
               Social Links
             </h2>
@@ -658,7 +658,7 @@ export default function EditProfile() {
           </div>
 
           {/* Startup Information Section */}
-          <div className="rounded-lg bg-gray-800 p-6">
+          <div className="rounded-lg bg-(--charcoal-black) p-6">
             <h2 className="mb-6 text-xl font-semibold text-white">
               Startup Information
             </h2>
@@ -679,7 +679,7 @@ export default function EditProfile() {
                 </label>
                 <select
                   {...register("startupTimeSpent")}
-                  className="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2.5 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/10 px-4 py-2.5 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 >
                   <option value="">Select time spent...</option>
                   <option value="Just started">Just started</option>
@@ -697,7 +697,7 @@ export default function EditProfile() {
                 </label>
                 <select
                   {...register("startupFunding")}
-                  className="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2.5 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/10 px-4 py-2.5 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 >
                   <option value="">Select funding status...</option>
                   <option value="Bootstrapped">Bootstrapped</option>
@@ -738,7 +738,7 @@ export default function EditProfile() {
                 </label>
                 <select
                   {...register("fullTimeTimeline")}
-                  className="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2.5 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/10 px-4 py-2.5 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 >
                   <option value="">Select timeline...</option>
                   <option value="Already full-time">Already full-time</option>
@@ -775,7 +775,7 @@ export default function EditProfile() {
           </div>
 
           {/* Interests & Values Section */}
-          <div className="rounded-lg bg-gray-800 p-6">
+          <div className="rounded-lg bg-(--charcoal-black) p-6">
             <h2 className="mb-6 text-xl font-semibold text-white">
               Interests & Values
             </h2>
@@ -842,7 +842,7 @@ export default function EditProfile() {
                   rows={3}
                   placeholder="Your interests and passions"
                   {...register("interests")}
-                  className="w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="w-full rounded-md border border-gray-600 bg-(--charcoal-black) px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -859,7 +859,7 @@ export default function EditProfile() {
                   rows={3}
                   placeholder="Your hobbies and activities"
                   {...register("hobbies")}
-                  className="w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="bg-(--charcoal-black)px-3 w-full rounded-md border border-gray-600 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
             </div>
