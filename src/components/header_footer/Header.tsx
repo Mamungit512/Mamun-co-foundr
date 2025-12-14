@@ -4,7 +4,6 @@ import {
   SignedIn,
   SignUpButton,
   SignedOut,
-  SignInButton,
   UserButton,
   useClerk,
 } from "@clerk/nextjs";
