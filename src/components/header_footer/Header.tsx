@@ -140,7 +140,18 @@ function Header() {
                   <UserButton.Action
                     label="Account and Billings"
                     labelIcon={<FaCreditCard />}
-                    onClick={() => openUserProfile()}
+                    onClick={() =>
+                      openUserProfile({
+                        appearance: {
+                          elements: {
+                            profileSection__profile: { display: "none" },
+                            profileSectionContent__profile: { display: "none" },
+                            avatarImage: { display: "none" },
+                            avatarImageActions: { display: "none" },
+                          },
+                        },
+                      })
+                    }
                   />
                   <UserButton.Link
                     label="Edit your ummatic passport"
@@ -326,7 +337,18 @@ function Header() {
                     <button
                       onClick={() => {
                         setIsMobileMenuOpen(false);
-                        openUserProfile();
+                        openUserProfile({
+                          appearance: {
+                            elements: {
+                              profileSection__profile: { display: "none" },
+                              profileSectionContent__profile: {
+                                display: "none",
+                              },
+                              avatarImage: { display: "none" },
+                              avatarImageActions: { display: "none" },
+                            },
+                          },
+                        });
                       }}
                       className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
                     >

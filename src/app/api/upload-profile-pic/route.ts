@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 
 export async function POST(request: NextRequest) {
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
 
     const publicUrl = publicUrlData.publicUrl;
 
-    // Update profile with new photo URL
+    // Update profile with new photo URL in Supabase
     const { error: updateError } = await supabase
       .from("profiles")
       .update({ pfp_url: publicUrl })
@@ -101,6 +101,25 @@ export async function POST(request: NextRequest) {
         { error: `Failed to update profile: ${updateError.message}` },
         { status: 500 },
       );
+    }
+
+    // Update Clerk's profile image to keep UserButton avatar in sync
+    try {
+      const clerk = await clerkClient();
+
+      // Create a File object from the buffer for Clerk
+      const clerkFile = new File([buffer], file.name, { type: file.type });
+
+      await clerk.users.updateUserProfileImage(userId, {
+        file: clerkFile,
+      });
+
+      console.log("✅ Profile image synced to Clerk successfully");
+    } catch (clerkError) {
+      // Log error
+      // DO NOT fail the request, Supabase will still have the new profile image
+      console.error("⚠️ Failed to sync image to Clerk:", clerkError);
+      console.error("Supabase update succeeded, but Clerk sync failed");
     }
 
     return NextResponse.json({

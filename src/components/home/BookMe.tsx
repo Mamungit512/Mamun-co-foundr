@@ -48,6 +48,10 @@ export default function BookMe() {
               appearance: {
                 elements: {
                   rootBox: "billing-focus",
+                  profileSection__profile: { display: "none" },
+                  profileSectionContent__profile: { display: "none" },
+                  avatarImage: { display: "none" },
+                  avatarImageActions: { display: "none" },
                 },
               },
             });
