@@ -8,7 +8,6 @@ const isPublicRoute = createRouteMatcher([
   "/contact-us",
   "/mission",
   "/api/webhooks/clerk",
-  "/api/sync-profile-pic",
 ]);
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {

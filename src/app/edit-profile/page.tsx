@@ -301,7 +301,7 @@ export default function EditProfile() {
           className="space-y-6 sm:space-y-8"
         >
           {/* Basic Information Section */}
-          <div className="bg-(--charcoal-black) p-4 rounded-lg sm:p-6">
+          <div className="rounded-lg bg-(--charcoal-black) p-4 sm:p-6">
             <h2 className="mb-4 text-lg font-semibold text-white sm:mb-6 sm:text-xl">
               Basic Information
             </h2>
