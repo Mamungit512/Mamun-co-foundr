@@ -104,7 +104,7 @@ export default function LikedProfilesModal({
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-gray-700 p-6">
+          <div className="flex items-center justify-between border-b border-gray-700 bg-(--charcoal-black) p-6">
             <div className="flex items-center gap-3">
               <FaHeart className="text-pink-400" />
               <h2 className="text-2xl font-bold text-white">Liked Profiles</h2>
@@ -117,7 +117,7 @@ export default function LikedProfilesModal({
           {/* Content */}
           <div
             ref={scrollableRef}
-            className="flex-1 overflow-y-auto p-6 focus:outline-none"
+            className="flex-1 overflow-y-auto bg-(--charcoal-black) p-6 focus:outline-none"
             style={{
               scrollbarWidth: "thin",
               scrollbarColor: "#4B5563 #1F2937",
@@ -156,7 +156,7 @@ export default function LikedProfilesModal({
                     key={profile.user_id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="group cursor-pointer overflow-hidden rounded-xl border border-gray-700 bg-gray-800/50 transition-all duration-200 hover:border-pink-500/50 hover:bg-gray-800"
+                    className="group cursor-pointer overflow-hidden rounded-xl border border-gray-700 bg-(--charcoal-black) transition-all duration-200 hover:border-pink-500/50 hover:bg-gray-800"
                     onClick={() => setSelectedProfile(profile)}
                   >
                     {/* Profile Image */}

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useAuth} from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -22,7 +22,7 @@ export default function HiringSettings({
   hiringEmail,
   onUpdate,
 }: HiringSettingsProps) {
-  const { has} = useAuth();
+  const { has } = useAuth();
   const router = useRouter();
 
   const {
@@ -59,7 +59,7 @@ export default function HiringSettings({
     return (
       <div className="py-6 text-center">
         <div className="mb-4">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500/20">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-500/20">
             <span className="text-xl">💼</span>
           </div>
         </div>
@@ -72,7 +72,7 @@ export default function HiringSettings({
         </p>
         <button
           onClick={handleUpgrade}
-          className="rounded-md bg-yellow-600 px-6 py-2 text-sm font-medium text-white transition hover:bg-yellow-700 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:outline-none"
+          className="rounded-md bg-blue-600 px-6 py-2 text-sm font-medium text-white transition hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
         >
           Upgrade Now
         </button>
