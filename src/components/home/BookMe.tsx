@@ -62,7 +62,7 @@ export default function BookMe() {
           className="flex w-full items-center justify-center gap-2 rounded-lg border border-yellow-300 bg-transparent px-6 py-3 font-semibold text-yellow-300 transition-colors hover:bg-yellow-300/10"
         >
           <MdCalendarToday className="text-xl" />
-          Upgrade to Collab+ for unlimited matching -&gt; Go to Account and
+          Upgrade to Collab+ for unlimited matching → Go to Account and
           Billings.
         </motion.button>
       </motion.div>
