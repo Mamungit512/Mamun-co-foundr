@@ -21,7 +21,7 @@ function CofoundrShowMore({ curProfile }: { curProfile: OnboardingData }) {
               className={`rounded-full px-3 py-1 text-sm font-medium ${
                 curProfile.hasStartup
                   ? "border border-green-500/30 bg-green-500/20 text-green-400"
-                  : "border border-gray-500/30 bg-gray-500/20 text-gray-400"
+                  : "border border-blue-500/30 bg-blue-500/20 text-blue-400"
               }`}
             >
               {curProfile.hasStartup ? "Yes" : "No"}
