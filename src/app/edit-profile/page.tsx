@@ -681,13 +681,48 @@ export default function EditProfile() {
                   {...register("startupTimeSpent")}
                   className="w-full rounded-lg border border-white/10 bg-white/10 px-4 py-2.5 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 >
-                  <option value="">Select time spent...</option>
-                  <option value="Just started">Just started</option>
-                  <option value="1-3 months">1-3 months</option>
-                  <option value="3-6 months">3-6 months</option>
-                  <option value="6-12 months">6-12 months</option>
-                  <option value="1-2 years">1-2 years</option>
-                  <option value="2+ years">2+ years</option>
+                  <option
+                    value=""
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    Select time spent...
+                  </option>
+                  <option
+                    value="Just started"
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    Just started
+                  </option>
+                  <option
+                    value="1-3 months"
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    1-3 months
+                  </option>
+                  <option
+                    value="3-6 months"
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    3-6 months
+                  </option>
+                  <option
+                    value="6-12 months"
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    6-12 months
+                  </option>
+                  <option
+                    value="1-2 years"
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    1-2 years
+                  </option>
+                  <option
+                    value="2+ years"
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    2+ years
+                  </option>
                 </select>
               </div>
 
@@ -699,13 +734,48 @@ export default function EditProfile() {
                   {...register("startupFunding")}
                   className="w-full rounded-lg border border-white/10 bg-white/10 px-4 py-2.5 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 >
-                  <option value="">Select funding status...</option>
-                  <option value="Bootstrapped">Bootstrapped</option>
-                  <option value="Pre-seed">Pre-seed</option>
-                  <option value="Seed">Seed</option>
-                  <option value="Series A+">Series A+</option>
-                  <option value="Grant funded">Grant funded</option>
-                  <option value="Other">Other</option>
+                  <option
+                    value=""
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    Select funding status...
+                  </option>
+                  <option
+                    value="Bootstrapped"
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    Bootstrapped
+                  </option>
+                  <option
+                    value="Pre-seed"
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    Pre-seed
+                  </option>
+                  <option
+                    value="Seed"
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    Seed
+                  </option>
+                  <option
+                    value="Series A+"
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    Series A+
+                  </option>
+                  <option
+                    value="Grant funded"
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    Grant funded
+                  </option>
+                  <option
+                    value="Other"
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    Other
+                  </option>
                 </select>
               </div>
 
@@ -740,13 +810,48 @@ export default function EditProfile() {
                   {...register("fullTimeTimeline")}
                   className="w-full rounded-lg border border-white/10 bg-white/10 px-4 py-2.5 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 >
-                  <option value="">Select timeline...</option>
-                  <option value="Already full-time">Already full-time</option>
-                  <option value="Within 1 month">Within 1 month</option>
-                  <option value="Within 3 months">Within 3 months</option>
-                  <option value="Within 6 months">Within 6 months</option>
-                  <option value="Within 1 year">Within 1 year</option>
-                  <option value="Unsure">Unsure</option>
+                  <option
+                    value=""
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    Select timeline...
+                  </option>
+                  <option
+                    value="Already full-time"
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    Already full-time
+                  </option>
+                  <option
+                    value="Within 1 month"
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    Within 1 month
+                  </option>
+                  <option
+                    value="Within 3 months"
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    Within 3 months
+                  </option>
+                  <option
+                    value="Within 6 months"
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    Within 6 months
+                  </option>
+                  <option
+                    value="Within 1 year"
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    Within 1 year
+                  </option>
+                  <option
+                    value="Unsure"
+                    className="bg-[var(--charcoal-black)] text-white"
+                  >
+                    Unsure
+                  </option>
                 </select>
               </div>
 
