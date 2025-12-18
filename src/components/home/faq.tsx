@@ -73,6 +73,13 @@ function FAQ() {
       answer:
         "Yes, you can specify your interest in Sharia-compliant ventures in your profile and  preferences. Mamun might also explore integrating with Islamic financial institutions in  the future to facilitate access to Sharia-compliant funding.",
     },
+      {
+      id: 11,
+      question:
+        "Can I apply for funding ?",
+      answer:
+        "Founders will soon become eligible for Mamun ECC funding by actively building and demonstrating progress. Being clear about what they aim to create. Consistently engaging with other builders on the platform. Building trust over time through action.",
+    },
   ];
 
   const toggleFaq = (faqId: number) => {
