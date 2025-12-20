@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import React from "react";
-import posthog from "posthog-js";
+import { trackEvent } from "@/lib/posthog-events";
 
 export default function InvitePage({
   params,
@@ -25,7 +25,7 @@ export default function InvitePage({
     // Track referral invite landing (only once)
     if (!hasTrackedRef.current && referralCode) {
       hasTrackedRef.current = true;
-      posthog.capture("referral_invite_landing", {
+      trackEvent.referralInviteLanding({
         referral_code: code || null,
         fp_ref: fpRef || null,
         is_signed_in: isSignedIn,

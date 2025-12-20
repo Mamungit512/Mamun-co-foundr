@@ -3,11 +3,11 @@
 import { motion } from "motion/react";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { HiMail } from "react-icons/hi";
-import posthog from "posthog-js";
+import { trackEvent } from "@/lib/posthog-events";
 
 export default function NewsletterCTA() {
   const handleNewsletterClick = () => {
-    posthog.capture("newsletter_cta_clicked", {
+    trackEvent.newsletterCtaClicked({
       source: "homepage",
       destination_url: "https://mamun-cofoundr.kit.com/d7eb029da2",
     });

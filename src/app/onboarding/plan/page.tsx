@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { PricingTable, useUser } from "@clerk/nextjs";
 import { useUserProfile } from "@/features/profile/useProfile";
 import toast from "react-hot-toast";
-import posthog from "posthog-js";
+import { trackEvent } from "@/lib/posthog-events";
 
 export default function OnboardingNextPage() {
   const router = useRouter();
@@ -51,13 +51,16 @@ export default function OnboardingNextPage() {
       }
 
       // Profile exists, proceed to matching
-      posthog.capture("plan_page_continued", {
+      trackEvent.planPageContinued({
         user_id: user?.id,
         has_profile: true,
       });
       router.push("/cofoundr-matching");
     } catch (error) {
-      posthog.captureException(error);
+      // Keep direct posthog.captureException for error tracking
+      if (typeof window !== "undefined" && window.posthog) {
+        window.posthog.captureException(error);
+      }
       toast.error("Something went wrong. Please try again.", {
         duration: 3000,
         position: "bottom-right",

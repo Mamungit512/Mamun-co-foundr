@@ -4,12 +4,12 @@ import React from "react";
 import { motion } from "motion/react";
 import { FaCheck, FaUsers, FaEnvelope, FaEye } from "react-icons/fa";
 import { PricingTable } from "@clerk/nextjs";
-import posthog from "posthog-js";
+import { trackEvent } from "@/lib/posthog-events";
 
 export default function BillingUpgradePage() {
   // Track page view when component mounts - using motion.div onAnimationComplete as event handler
   const handlePageLoaded = () => {
-    posthog.capture("viewed_upgrade_page", {
+    trackEvent.upgradePageViewed({
       referrer: typeof document !== "undefined" ? document.referrer : undefined,
     });
   };

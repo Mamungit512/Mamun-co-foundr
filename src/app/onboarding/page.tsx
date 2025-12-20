@@ -7,7 +7,8 @@ import { useRouter } from "next/navigation";
 import { completeOnboarding } from "./_actions";
 import { useProfileUpsert } from "@/features/profile/useProfile";
 import CreateProfile from "@/components/forms/CreateProfile";
-import posthog from "posthog-js";
+import { posthog } from "@/lib/posthog";
+import { trackEvent } from "@/lib/posthog-events";
 
 export default function OnboardingComponent() {
   const [error, setError] = useState<string | null>(null);
@@ -62,7 +63,7 @@ export default function OnboardingComponent() {
         is_technical: formData.isTechnical,
       });
 
-      posthog.capture("onboarding_completed", {
+      trackEvent.onboardingCompleted({
         city: formData.city,
         country: formData.country,
         is_technical: formData.isTechnical,
@@ -78,7 +79,10 @@ export default function OnboardingComponent() {
       const errorMsg =
         err instanceof Error ? err.message : "Something went wrong.";
       setError(errorMsg);
-      posthog.captureException(err);
+      // Keep direct posthog.captureException for error tracking
+      if (typeof window !== "undefined" && window.posthog) {
+        window.posthog.captureException(err);
+      }
       return { success: false, error: errorMsg };
     }
   };

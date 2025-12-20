@@ -1,6 +1,18 @@
 export {};
 
 declare global {
+  // PostHog on window
+  interface Window {
+    posthog?: {
+      capture: (event: string, properties?: Record<string, unknown>) => void;
+      captureException: (error: unknown) => void;
+      identify: (userId: string, properties?: Record<string, unknown>) => void;
+      reset: () => void;
+      get_distinct_id: () => string;
+      [key: string]: unknown;
+    };
+  }
+
   interface CustomJwtSessionClaims {
     metadata: {
       onboardingComplete?: boolean;

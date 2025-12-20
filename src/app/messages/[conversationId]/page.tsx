@@ -11,7 +11,7 @@ import { useConversation } from "@/hooks/useConversations";
 import MessageItem from "@/components/MessageItem";
 import { Message } from "@/features/messages/messagesService";
 import AIWriter from "@/components/ui/AIWriter";
-import posthog from "posthog-js";
+import { trackEvent } from "@/lib/posthog-events";
 
 interface ConversationPageProps {
   params: Promise<{
@@ -58,8 +58,7 @@ function ConversationPage({ params }: ConversationPageProps) {
     try {
       await sendMessage(messageInput.trim());
 
-      posthog.capture("message_sent", {
-        conversation_id: conversationId,
+      trackEvent.messageSent(conversationId, {
         message_length: messageInput.trim().length,
         total_messages_in_conversation: messages.length + 1,
       });
@@ -67,7 +66,10 @@ function ConversationPage({ params }: ConversationPageProps) {
       setMessageInput("");
     } catch (error: unknown) {
       console.error("Failed to send message:", error);
-      posthog.captureException(error);
+      // Keep direct posthog.captureException for error tracking
+      if (typeof window !== "undefined" && window.posthog) {
+        window.posthog.captureException(error);
+      }
 
       if (error && typeof error === "object" && "isLimitReached" in error) {
         const limitError = error as Error & {

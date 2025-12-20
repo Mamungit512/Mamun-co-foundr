@@ -11,7 +11,7 @@ import {
 import FormInput from "@/components/ui/FormInput";
 import AIWriter from "@/components/ui/AIWriter";
 import HiringSettings from "@/components/HiringSettings";
-import posthog from "posthog-js";
+import { trackEvent } from "@/lib/posthog-events";
 
 // Dynamically import with SSR disabled (required for face-api.js)
 const FaceDetectionUploader = dynamic(
@@ -97,7 +97,7 @@ export default function EditProfile() {
       // -- Upsert editted profile data into DB --
       await upsertProfileMutationFn(formData);
 
-      posthog.capture("profile_updated", {
+      trackEvent.profileUpdated({
         city: formData.city,
         country: formData.country,
         is_technical: formData.isTechnical,
@@ -106,7 +106,10 @@ export default function EditProfile() {
         satisfaction: formData.satisfaction,
       });
     } catch (error) {
-      posthog.captureException(error);
+      // Keep direct posthog.captureException for error tracking
+      if (typeof window !== "undefined" && window.posthog) {
+        window.posthog.captureException(error);
+      }
       throw error;
     }
   };
@@ -143,7 +146,7 @@ export default function EditProfile() {
         throw new Error(errorData.error || "Upload failed");
       }
 
-      posthog.capture("profile_photo_uploaded", {
+      trackEvent.profilePhotoUploaded({
         file_size: validatedPhotoFile.size,
         file_type: validatedPhotoFile.type,
       });
@@ -157,7 +160,10 @@ export default function EditProfile() {
       }, 1500);
     } catch (err) {
       console.error("Upload error:", err);
-      posthog.captureException(err);
+      // Keep direct posthog.captureException for error tracking
+      if (typeof window !== "undefined" && window.posthog) {
+        window.posthog.captureException(err);
+      }
       setPhotoError(
         err instanceof Error
           ? err.message

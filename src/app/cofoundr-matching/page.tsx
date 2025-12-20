@@ -28,7 +28,7 @@ import { useSkipProfile } from "@/features/user-actions/useUserActions";
 import { useSwipeLimit } from "@/features/swipes/useSwipes";
 import SwipeLimit from "@/components/SwipeLimit";
 import { MdSkipNext } from "react-icons/md";
-import posthog from "posthog-js";
+import { trackEvent } from "@/lib/posthog-events";
 
 function CofoundrMatching() {
   const [curProfileIdx, setCurProfileIdx] = useState(0);
@@ -52,9 +52,7 @@ function CofoundrMatching() {
   // Track profile views
   React.useEffect(() => {
     if (curProfile?.user_id) {
-      posthog.capture("profile_viewed", {
-        target_user_id: curProfile.user_id,
-        from_page: "matching",
+      trackEvent.profileViewed(curProfile.user_id, "matching", {
         profile_index: curProfileIdx,
       });
     }
@@ -147,7 +145,7 @@ function CofoundrMatching() {
 
     // Check if user has reached swipe limit
     if (swipeLimitData?.hasReachedLimit) {
-      posthog.capture("swipe_limit_reached", {
+      trackEvent.swipeLimitReached({
         current_count: swipeLimitData.currentCount,
         limit: swipeLimitData.limit,
         action_attempted: "skip",
@@ -167,7 +165,7 @@ function CofoundrMatching() {
         skippedProfileId: curProfile.user_id,
       });
 
-      posthog.capture("profile_skipped", {
+      trackEvent.profileSkipped(curProfile.user_id, {
         skipped_profile_id: curProfile.user_id,
         skipped_profile_city: curProfile.city,
         skipped_profile_country: curProfile.country,
@@ -183,7 +181,10 @@ function CofoundrMatching() {
       handleNextProfile();
     } catch (error) {
       console.error("Error skipping profile:", error);
-      posthog.captureException(error);
+      // Keep direct posthog.captureException for error tracking
+      if (typeof window !== "undefined" && window.posthog) {
+        window.posthog.captureException(error);
+      }
       toast.error("Failed to skip profile. Please try again.", {
         duration: 3000,
         position: "bottom-right",
@@ -196,7 +197,7 @@ function CofoundrMatching() {
 
     // Check if user has reached swipe limit
     if (swipeLimitData?.hasReachedLimit) {
-      posthog.capture("swipe_limit_reached", {
+      trackEvent.swipeLimitReached({
         current_count: swipeLimitData.currentCount,
         limit: swipeLimitData.limit,
         action_attempted: "like",
@@ -222,7 +223,7 @@ function CofoundrMatching() {
           curProfile.user_id,
         );
 
-        posthog.capture("profile_liked", {
+        trackEvent.profileLiked(curProfile.user_id, {
           liked_profile_id: curProfile.user_id,
           liked_profile_city: curProfile.city,
           liked_profile_country: curProfile.country,
@@ -232,8 +233,7 @@ function CofoundrMatching() {
         });
 
         if (isMutualMatch) {
-          posthog.capture("mutual_match_created", {
-            matched_profile_id: curProfile.user_id,
+          trackEvent.mutualMatchCreated(curProfile.user_id, {
             matched_profile_city: curProfile.city,
             matched_profile_country: curProfile.country,
           });
@@ -266,7 +266,10 @@ function CofoundrMatching() {
       handleNextProfile();
     } catch (error) {
       console.error("Error liking profile:", error);
-      posthog.captureException(error);
+      // Keep direct posthog.captureException for error tracking
+      if (typeof window !== "undefined" && window.posthog) {
+        window.posthog.captureException(error);
+      }
       toast.error("Failed to like profile. Please try again.", {
         duration: 3000,
         position: "bottom-right",
@@ -284,18 +287,23 @@ function CofoundrMatching() {
       });
 
       if (result.success) {
-        posthog.capture("conversation_started", {
-          conversation_id: result.conversation.id,
-          other_user_id: curProfile.user_id,
-          other_user_city: curProfile.city,
-          other_user_country: curProfile.country,
-        });
+        trackEvent.conversationStarted(
+          result.conversation.id,
+          curProfile.user_id,
+          {
+            other_user_city: curProfile.city,
+            other_user_country: curProfile.country,
+          },
+        );
         // Navigate to the conversation
         router.push(`/messages/${result.conversation.id}`);
       }
     } catch (error) {
       console.error("Failed to start conversation:", error);
-      posthog.captureException(error);
+      // Keep direct posthog.captureException for error tracking
+      if (typeof window !== "undefined" && window.posthog) {
+        window.posthog.captureException(error);
+      }
       toast.error("Failed to start conversation. Please try again.");
     } finally {
       setIsStartingConversation(false);

@@ -3,7 +3,7 @@
 import { SignUp } from "@clerk/nextjs";
 import { useEffect, useState, useRef } from "react";
 import { getSavedReferralCode } from "@/lib/referral-utils";
-import posthog from "posthog-js";
+import { trackEvent } from "@/lib/posthog-events";
 
 export default function SignUpPage() {
   const [referralCode, setReferralCode] = useState<string | null>(null);
@@ -19,7 +19,7 @@ export default function SignUpPage() {
     // Track signup page view (only once)
     if (!hasTrackedRef.current) {
       hasTrackedRef.current = true;
-      posthog.capture("signup_page_viewed", {
+      trackEvent.signupPageViewed({
         has_referral_code: !!code,
         referral_code: code || null,
         referrer_url:
