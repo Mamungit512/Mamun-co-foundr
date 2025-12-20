@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useSession } from "@clerk/nextjs";
 import {
   useProfileUpsert,
@@ -241,9 +242,11 @@ export default function EditProfile() {
             {profileData?.pfp_url && (
               <div>
                 <p className="mb-2 text-sm text-gray-400">Current Photo:</p>
-                <img
+                <Image
                   src={profileData.pfp_url}
                   alt="Current profile"
+                  width={128}
+                  height={128}
                   className="h-32 w-32 rounded-full border-2 border-gray-600 object-cover"
                 />
               </div>
