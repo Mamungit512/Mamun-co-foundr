@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/next";
+import { Suspense } from "react";
 
 import "./globals.css";
 import Header from "@/components/header_footer/Header";
@@ -36,15 +37,17 @@ export default function RootLayout({
         <body
           className={`${satoshi.className} scroll-smooth bg-(--charcoal-black) antialiased lg:text-lg`}
         >
-          <PostHogProvider>
-            <QueryProvider>
-              <ReferralTracker />
-              <Header />
-              {children}
-              <Socials />
-              <Footer />
-            </QueryProvider>
-          </PostHogProvider>
+          <Suspense fallback={null}>
+            <PostHogProvider>
+              <QueryProvider>
+                <ReferralTracker />
+                <Header />
+                {children}
+                <Socials />
+                <Footer />
+              </QueryProvider>
+            </PostHogProvider>
+          </Suspense>
           <Toaster position="bottom-right" />
         </body>
       </html>
