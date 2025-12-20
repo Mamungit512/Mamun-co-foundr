@@ -26,9 +26,5 @@ export default async function ReferralsPage() {
     );
   }
 
-  return (
-    <ReferralDashboard
-      initialData={result.data ?? EMPTY_REFERRAL_DATA}
-    />
-  );
+  return <ReferralDashboard initialData={result.data ?? EMPTY_REFERRAL_DATA} />;
 }

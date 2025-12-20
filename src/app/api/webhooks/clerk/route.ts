@@ -15,6 +15,9 @@ export async function POST(req: NextRequest) {
     // Note: Removed reactivation logic since we now use hard deletes
     // Deleted users cannot be reactivated
 
+    // Note: User login tracking happens client-side via PostHogProvider
+    // when user is identified. This webhook primarily handles referral tracking.
+
     // Track referrals when a new user is created
     if (eventType === "user.created") {
       const emailAddresses = evt.data.email_addresses;

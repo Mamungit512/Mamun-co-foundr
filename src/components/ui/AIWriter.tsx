@@ -1,4 +1,3 @@
-
 // src/components/ui/AIWriter.tsx
 
 "use client";
@@ -13,11 +12,7 @@ interface AIWriterProps {
   fieldType?: string;
 }
 
-export default function AIWriter({
-  text,
-  onAccept,
-  fieldType,
-}: AIWriterProps) {
+export default function AIWriter({ text, onAccept, fieldType }: AIWriterProps) {
   const [showSuggestion, setShowSuggestion] = useState(false);
   const [aiSuggestion, setAiSuggestion] = useState("");
   const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(false);
@@ -25,7 +20,10 @@ export default function AIWriter({
 
   // Check if user has typed 2+ words with 3+ characters
   useEffect(() => {
-    const words = text.trim().split(/\s+/).filter((word) => word.length >= 3);
+    const words = text
+      .trim()
+      .split(/\s+/)
+      .filter((word) => word.length >= 3);
     console.log("AIWriter Debug:", { text, words, wordCount: words.length });
     if (words.length >= 2 && !showSuggestion && !aiSuggestion) {
       console.log("AIWriter: Showing suggestion panel");
@@ -56,7 +54,9 @@ export default function AIWriter({
       }
     } catch (error) {
       console.error("Error fetching AI suggestion:", error);
-      setSuggestionMessage("Failed to generate AI suggestion. Please try again.");
+      setSuggestionMessage(
+        "Failed to generate AI suggestion. Please try again.",
+      );
     } finally {
       setIsLoadingSuggestion(false);
     }
@@ -78,7 +78,10 @@ export default function AIWriter({
   };
 
   // If not enough words typed, don't show anything
-  const words = text.trim().split(/\s+/).filter((word) => word.length >= 3);
+  const words = text
+    .trim()
+    .split(/\s+/)
+    .filter((word) => word.length >= 3);
   if (words.length < 2) {
     return null;
   }

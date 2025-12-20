@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import React from "react";
+import { trackEvent } from "@/lib/posthog-events";
 
 export default function InvitePage({
   params,
@@ -15,10 +16,23 @@ export default function InvitePage({
   const router = useRouter();
   const { isSignedIn, isLoaded } = useUser();
   const [countdown, setCountdown] = useState(3);
+  const hasTrackedRef = useRef(false);
 
   useEffect(() => {
     const fpRef = searchParams.get("fp_ref"); // FP code
     const referralCode = code || fpRef;
+
+    // Track referral invite landing (only once)
+    if (!hasTrackedRef.current && referralCode) {
+      hasTrackedRef.current = true;
+      trackEvent.referralInviteLanding({
+        referral_code: code || null,
+        fp_ref: fpRef || null,
+        is_signed_in: isSignedIn,
+        referrer_url:
+          typeof document !== "undefined" ? document.referrer : undefined,
+      });
+    }
 
     if (code) {
       localStorage.setItem("mamun_referral_code", code);

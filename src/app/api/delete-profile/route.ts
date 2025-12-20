@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
+import { getPostHogClient } from "@/lib/posthog-server";
 
 export async function POST() {
   try {
@@ -119,6 +120,25 @@ export async function POST() {
       console.error("Error deleting user from Clerk:", clerkError);
       // Don't fail the request if Clerk deletion fails
       // The Supabase data is already deleted
+    }
+
+    // 8. Track account deletion in PostHog (churn event)
+    try {
+      const posthog = getPostHogClient();
+      posthog.capture({
+        distinctId: userId,
+        event: "account_deleted",
+        properties: {
+          deletion_source: "user_initiated",
+        },
+      });
+      await posthog.shutdown();
+    } catch (posthogError) {
+      console.error(
+        "Error tracking account deletion in PostHog:",
+        posthogError,
+      );
+      // Don't fail the request if PostHog tracking fails
     }
 
     return NextResponse.json(

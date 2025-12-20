@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useSession } from "@clerk/nextjs";
 import {
   useProfileUpsert,
@@ -11,6 +12,7 @@ import {
 import FormInput from "@/components/ui/FormInput";
 import AIWriter from "@/components/ui/AIWriter";
 import HiringSettings from "@/components/HiringSettings";
+import { trackEvent } from "@/lib/posthog-events";
 
 // Dynamically import with SSR disabled (required for face-api.js)
 const FaceDetectionUploader = dynamic(
@@ -92,8 +94,25 @@ export default function EditProfile() {
       return;
     }
 
-    // -- Upsert editted profile data into DB --
-    await upsertProfileMutationFn(formData);
+    try {
+      // -- Upsert editted profile data into DB --
+      await upsertProfileMutationFn(formData);
+
+      trackEvent.profileUpdated({
+        city: formData.city,
+        country: formData.country,
+        is_technical: formData.isTechnical,
+        has_startup: !!formData.startupName,
+        battery_level: formData.batteryLevel,
+        satisfaction: formData.satisfaction,
+      });
+    } catch (error) {
+      // Keep direct posthog.captureException for error tracking
+      if (typeof window !== "undefined" && window.posthog) {
+        window.posthog.captureException(error);
+      }
+      throw error;
+    }
   };
 
   const handlePhotoUpload = async () => {
@@ -128,6 +147,11 @@ export default function EditProfile() {
         throw new Error(errorData.error || "Upload failed");
       }
 
+      trackEvent.profilePhotoUploaded({
+        file_size: validatedPhotoFile.size,
+        file_type: validatedPhotoFile.type,
+      });
+
       setPhotoSuccess("Profile picture updated successfully!");
       setValidatedPhotoFile(null);
 
@@ -137,6 +161,10 @@ export default function EditProfile() {
       }, 1500);
     } catch (err) {
       console.error("Upload error:", err);
+      // Keep direct posthog.captureException for error tracking
+      if (typeof window !== "undefined" && window.posthog) {
+        window.posthog.captureException(err);
+      }
       setPhotoError(
         err instanceof Error
           ? err.message
@@ -214,9 +242,11 @@ export default function EditProfile() {
             {profileData?.pfp_url && (
               <div>
                 <p className="mb-2 text-sm text-gray-400">Current Photo:</p>
-                <img
+                <Image
                   src={profileData.pfp_url}
                   alt="Current profile"
+                  width={128}
+                  height={128}
                   className="h-32 w-32 rounded-full border-2 border-gray-600 object-cover"
                 />
               </div>

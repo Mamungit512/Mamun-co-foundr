@@ -4,8 +4,16 @@ import React from "react";
 import { motion } from "motion/react";
 import { FaCheck, FaUsers, FaEnvelope, FaEye } from "react-icons/fa";
 import { PricingTable } from "@clerk/nextjs";
+import { trackEvent } from "@/lib/posthog-events";
 
 export default function BillingUpgradePage() {
+  // Track page view when component mounts - using motion.div onAnimationComplete as event handler
+  const handlePageLoaded = () => {
+    trackEvent.upgradePageViewed({
+      referrer: typeof document !== "undefined" ? document.referrer : undefined,
+    });
+  };
+
   const valueProps = [
     {
       icon: FaUsers,
@@ -36,6 +44,7 @@ export default function BillingUpgradePage() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
+          onAnimationComplete={handlePageLoaded}
         >
           <h1 className="mb-4 text-4xl font-bold text-yellow-300">
             Upgrade to Collab Tier

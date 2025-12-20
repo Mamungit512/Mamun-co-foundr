@@ -14,6 +14,7 @@ import BatteryLevel from "@/components/BatteryLevel";
 import PreferencesPanel from "@/app/cofoundr-matching/PreferencesPanel";
 import InformationTooltipButton from "@/components/ui/InformationTooltipButton";
 import HiringBadge from "@/components/HiringBadge";
+import ActivityIndicator from "@/components/ActivityIndicator";
 import { useGetProfiles, useUserProfile } from "@/features/profile/useProfile";
 import {
   useToggleLike,
@@ -27,6 +28,7 @@ import { useSkipProfile } from "@/features/user-actions/useUserActions";
 import { useSwipeLimit } from "@/features/swipes/useSwipes";
 import SwipeLimit from "@/components/SwipeLimit";
 import { MdSkipNext } from "react-icons/md";
+import { trackEvent } from "@/lib/posthog-events";
 
 function CofoundrMatching() {
   const [curProfileIdx, setCurProfileIdx] = useState(0);
@@ -46,6 +48,15 @@ function CofoundrMatching() {
   // Get current profile and like status
   const curProfile = profiles?.[curProfileIdx];
   const { data: likeStatus } = useLikeStatus(curProfile?.user_id);
+
+  // Track profile views
+  React.useEffect(() => {
+    if (curProfile?.user_id) {
+      trackEvent.profileViewed(curProfile.user_id, "matching", {
+        profile_index: curProfileIdx,
+      });
+    }
+  }, [curProfile?.user_id, curProfileIdx]);
 
   const onPreferencesChange = () => {
     // Invalidate profiles query to refetch with new preferences
@@ -134,6 +145,11 @@ function CofoundrMatching() {
 
     // Check if user has reached swipe limit
     if (swipeLimitData?.hasReachedLimit) {
+      trackEvent.swipeLimitReached({
+        current_count: swipeLimitData.currentCount,
+        limit: swipeLimitData.limit,
+        action_attempted: "skip",
+      });
       toast.error(
         "You've reached your daily swipe limit. Upgrade to continue!",
         {
@@ -149,6 +165,13 @@ function CofoundrMatching() {
         skippedProfileId: curProfile.user_id,
       });
 
+      trackEvent.profileSkipped(curProfile.user_id, {
+        skipped_profile_id: curProfile.user_id,
+        skipped_profile_city: curProfile.city,
+        skipped_profile_country: curProfile.country,
+        skipped_profile_is_technical: curProfile.isTechnical,
+      });
+
       toast(`Skipped ${curProfile.firstName}`, {
         duration: 2000,
         position: "bottom-right",
@@ -158,6 +181,10 @@ function CofoundrMatching() {
       handleNextProfile();
     } catch (error) {
       console.error("Error skipping profile:", error);
+      // Keep direct posthog.captureException for error tracking
+      if (typeof window !== "undefined" && window.posthog) {
+        window.posthog.captureException(error);
+      }
       toast.error("Failed to skip profile. Please try again.", {
         duration: 3000,
         position: "bottom-right",
@@ -170,6 +197,11 @@ function CofoundrMatching() {
 
     // Check if user has reached swipe limit
     if (swipeLimitData?.hasReachedLimit) {
+      trackEvent.swipeLimitReached({
+        current_count: swipeLimitData.currentCount,
+        limit: swipeLimitData.limit,
+        action_attempted: "like",
+      });
       toast.error(
         "You've reached your daily swipe limit. Upgrade to continue!",
         {
@@ -191,7 +223,20 @@ function CofoundrMatching() {
           curProfile.user_id,
         );
 
+        trackEvent.profileLiked(curProfile.user_id, {
+          liked_profile_id: curProfile.user_id,
+          liked_profile_city: curProfile.city,
+          liked_profile_country: curProfile.country,
+          liked_profile_is_technical: curProfile.isTechnical,
+          liked_profile_battery_level: curProfile.batteryLevel,
+          is_mutual_match: isMutualMatch,
+        });
+
         if (isMutualMatch) {
+          trackEvent.mutualMatchCreated(curProfile.user_id, {
+            matched_profile_city: curProfile.city,
+            matched_profile_country: curProfile.country,
+          });
           toast.success(
             `🎉 It's a match! You and ${curProfile.firstName} liked each other!`,
             {
@@ -221,6 +266,10 @@ function CofoundrMatching() {
       handleNextProfile();
     } catch (error) {
       console.error("Error liking profile:", error);
+      // Keep direct posthog.captureException for error tracking
+      if (typeof window !== "undefined" && window.posthog) {
+        window.posthog.captureException(error);
+      }
       toast.error("Failed to like profile. Please try again.", {
         duration: 3000,
         position: "bottom-right",
@@ -238,11 +287,23 @@ function CofoundrMatching() {
       });
 
       if (result.success) {
+        trackEvent.conversationStarted(
+          result.conversation.id,
+          curProfile.user_id,
+          {
+            other_user_city: curProfile.city,
+            other_user_country: curProfile.country,
+          },
+        );
         // Navigate to the conversation
         router.push(`/messages/${result.conversation.id}`);
       }
     } catch (error) {
       console.error("Failed to start conversation:", error);
+      // Keep direct posthog.captureException for error tracking
+      if (typeof window !== "undefined" && window.posthog) {
+        window.posthog.captureException(error);
+      }
       toast.error("Failed to start conversation. Please try again.");
     } finally {
       setIsStartingConversation(false);
@@ -356,6 +417,11 @@ function CofoundrMatching() {
                         <p className="text-base text-gray-300 sm:text-lg md:text-xl">
                           {curProfile.title}
                         </p>
+                        <ActivityIndicator
+                          lastActiveAt={curProfile.last_active_at}
+                          size="sm"
+                          className="mt-2"
+                        />
                       </div>
                       <div className="flex items-center gap-3">
                         <BatteryLevel

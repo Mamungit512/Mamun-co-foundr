@@ -12,11 +12,14 @@ export function captureReferralCode() {
   if (fpRef) {
     localStorage.setItem(REFERRAL_STORAGE_KEY, fpRef);
     document.cookie = `${REFERRAL_COOKIE_NAME}=${fpRef}; path=/; max-age=${30 * 24 * 60 * 60}`;
-    
+
     return fpRef;
   }
 
-  return localStorage.getItem(REFERRAL_STORAGE_KEY) || getCookieValue(REFERRAL_COOKIE_NAME);
+  return (
+    localStorage.getItem(REFERRAL_STORAGE_KEY) ||
+    getCookieValue(REFERRAL_COOKIE_NAME)
+  );
 }
 
 function getCookieValue(name: string): string | null {
@@ -30,13 +33,16 @@ function getCookieValue(name: string): string | null {
 
 export function clearReferralCode() {
   if (typeof window === "undefined") return;
-  
+
   localStorage.removeItem(REFERRAL_STORAGE_KEY);
   document.cookie = `${REFERRAL_COOKIE_NAME}=; path=/; max-age=0`;
 }
 
 export function getSavedReferralCode(): string | null {
   if (typeof window === "undefined") return null;
-  
-  return localStorage.getItem(REFERRAL_STORAGE_KEY) || getCookieValue(REFERRAL_COOKIE_NAME);
+
+  return (
+    localStorage.getItem(REFERRAL_STORAGE_KEY) ||
+    getCookieValue(REFERRAL_COOKIE_NAME)
+  );
 }

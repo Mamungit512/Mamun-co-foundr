@@ -3,8 +3,16 @@
 import { motion } from "motion/react";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { HiMail } from "react-icons/hi";
+import { trackEvent } from "@/lib/posthog-events";
 
 export default function ECCWaitlist() {
+  const handleNewsletterClick = () => {
+    trackEvent.newsletterCtaClicked({
+      source: "homepage",
+      destination_url: "https://mamun-cofoundr.kit.com/d7eb029da2",
+    });
+  };
+
   return (
     <section className="my-12 px-4 sm:my-16 sm:px-6 md:px-8 lg:px-12 xl:px-20 2xl:px-40">
       <motion.div
@@ -57,7 +65,8 @@ export default function ECCWaitlist() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.5 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            onClick={handleNewsletterClick}
           >
             <motion.a
               href="https://docs.google.com/forms/d/1My_Kc6IVqupj3SeRzsK7uvEoVCqxKAuY4np6phaAQP4/edit "

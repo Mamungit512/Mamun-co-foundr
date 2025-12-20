@@ -10,7 +10,8 @@ import { useMessages } from "@/hooks/useMessages";
 import { useConversation } from "@/hooks/useConversations";
 import MessageItem from "@/components/MessageItem";
 import { Message } from "@/features/messages/messagesService";
-import AIWriter from "@/components/ui/AIWriter"; 
+import AIWriter from "@/components/ui/AIWriter";
+import { trackEvent } from "@/lib/posthog-events";
 
 interface ConversationPageProps {
   params: Promise<{
@@ -56,9 +57,19 @@ function ConversationPage({ params }: ConversationPageProps) {
 
     try {
       await sendMessage(messageInput.trim());
+
+      trackEvent.messageSent(conversationId, {
+        message_length: messageInput.trim().length,
+        total_messages_in_conversation: messages.length + 1,
+      });
+
       setMessageInput("");
     } catch (error: unknown) {
       console.error("Failed to send message:", error);
+      // Keep direct posthog.captureException for error tracking
+      if (typeof window !== "undefined" && window.posthog) {
+        window.posthog.captureException(error);
+      }
 
       if (error && typeof error === "object" && "isLimitReached" in error) {
         const limitError = error as Error & {
@@ -144,7 +155,7 @@ function ConversationPage({ params }: ConversationPageProps) {
         </motion.div>
 
         {/* Notifications - Always Visible */}
-        <div className="space-y-3 ">
+        <div className="space-y-3">
           {/* Privacy Notice */}
           <div className="rounded-lg border border-gray-700 bg-(--charcoal-black) p-3">
             <div className="mb-2 flex items-center gap-2 text-yellow-400">
@@ -199,7 +210,7 @@ function ConversationPage({ params }: ConversationPageProps) {
           className="flex h-[600px] flex-col rounded-lg border border-gray-700 bg-gray-800/50"
         >
           {/* Messages Container */}
-          <div className="chat-scroll h-[500px] p-4 bg-(--charcoal-black)">
+          <div className="chat-scroll h-[500px] bg-(--charcoal-black) p-4">
             {isLoading ? (
               <div className="flex h-full items-center justify-center">
                 <div className="flex items-center gap-2 text-gray-400">
@@ -253,8 +264,7 @@ function ConversationPage({ params }: ConversationPageProps) {
           </div>
 
           {/* Message Input Area */}
-          <div className="border-t border-gray-700 p-4 bg-(--charcoal-black)">
-            
+          <div className="border-t border-gray-700 bg-(--charcoal-black) p-4">
             {/*AI WRITER*/}
             <div className="mb-2">
               <AIWriter

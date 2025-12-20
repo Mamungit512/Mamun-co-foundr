@@ -1,6 +1,18 @@
 export {};
 
 declare global {
+  // PostHog on window
+  interface Window {
+    posthog?: {
+      capture: (event: string, properties?: Record<string, unknown>) => void;
+      captureException: (error: unknown) => void;
+      identify: (userId: string, properties?: Record<string, unknown>) => void;
+      reset: () => void;
+      get_distinct_id: () => string;
+      [key: string]: unknown;
+    };
+  }
+
   interface CustomJwtSessionClaims {
     metadata: {
       onboardingComplete?: boolean;
@@ -63,7 +75,8 @@ declare global {
       StartupDetailsFormData &
       InterestsAndValuesFormData &
       Preferences &
-      HiringSettingsFormData
+      HiringSettingsFormData &
+      ActivityFields
   >;
 
   type WhoYouAreFormData = {
@@ -123,5 +136,27 @@ declare global {
   type HiringSettingsFormData = {
     isHiring: boolean;
     hiringEmail?: string;
+  };
+
+  // Activity Summary (synced from PostHog)
+  type UserActivitySummary = {
+    user_id: string;
+    last_active_at: string | null;
+    total_login_count: number;
+    last_login_at: string | null;
+    logins_last_7_days: number;
+    logins_last_30_days: number;
+    last_synced_at: string;
+    created_at: string;
+    updated_at: string;
+  };
+
+  // Activity fields for OnboardingData (when joined with activity_summary)
+  type ActivityFields = {
+    last_active_at?: string | null;
+    total_login_count?: number;
+    last_login_at?: string | null;
+    logins_last_7_days?: number;
+    logins_last_30_days?: number;
   };
 }

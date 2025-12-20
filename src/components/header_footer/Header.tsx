@@ -435,14 +435,14 @@ function Header() {
 
                 <SignedOut>
                   <li>
-                <SignUpButton>
+                    <SignUpButton>
                       <button
                         className="w-full rounded-lg bg-(--mist-white) px-3 py-2 text-sm font-semibold text-(--charcoal-black) transition-colors hover:bg-gray-200"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
                         Sign Up
                       </button>
-                </SignUpButton>
+                    </SignUpButton>
                   </li>
                 </SignedOut>
               </ul>

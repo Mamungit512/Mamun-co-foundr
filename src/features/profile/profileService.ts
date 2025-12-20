@@ -136,6 +136,10 @@ export async function getProfileByUserId(
 export async function getProfiles(
   { token }: { token: string },
   currentUser: OnboardingData,
+  options?: {
+    filterInactive?: boolean;
+    inactivityThresholdDays?: number;
+  }
 ) {
   const supabase = createSupabaseClientWithToken(token);
 
@@ -152,19 +156,62 @@ export async function getProfiles(
 
   const likedIds = likedProfiles?.map((like) => like.liked_id) || [];
 
-  // Get profiles excluding current user, deleted profiles, and already liked profiles
-  let query = supabase
-    .from("profiles")
-    .select("*")
-    .neq("user_id", currentUser.user_id) // Exclude current user's profile
-    .is("deleted_at", null); // Exclude soft-deleted profiles
+  // Build query based on whether we're filtering by activity
+  let profiles;
+  let error;
 
-  // Exclude already liked profiles if there are any
-  if (likedIds.length > 0) {
-    query = query.not("user_id", "in", `(${likedIds.join(",")})`);
+  if (options?.filterInactive) {
+    // Query with JOIN to filter by activity
+    const thresholdDays = options?.inactivityThresholdDays || 30;
+    const thresholdDate = new Date();
+    thresholdDate.setDate(thresholdDate.getDate() - thresholdDays);
+
+    // Get active user IDs first
+    const { data: activeUsers } = await supabase
+      .from("user_activity_summary")
+      .select("user_id")
+      .gte("last_active_at", thresholdDate.toISOString());
+
+    const activeUserIds = activeUsers?.map(u => u.user_id) || [];
+
+    if (activeUserIds.length > 0) {
+      // Get profiles for active users
+      let query = supabase
+        .from("profiles")
+        .select("*")
+        .neq("user_id", currentUser.user_id)
+        .is("deleted_at", null)
+        .in("user_id", activeUserIds);
+
+      // Exclude already liked profiles
+      if (likedIds.length > 0) {
+        query = query.not("user_id", "in", `(${likedIds.join(",")})`);
+      }
+
+      const result = await query.limit(20);
+      profiles = result.data;
+      error = result.error;
+    } else {
+      profiles = [];
+      error = null;
+    }
+  } else {
+    // Standard query without activity filtering
+    let query = supabase
+      .from("profiles")
+      .select("*")
+      .neq("user_id", currentUser.user_id)
+      .is("deleted_at", null);
+
+    // Exclude already liked profiles if there are any
+    if (likedIds.length > 0) {
+      query = query.not("user_id", "in", `(${likedIds.join(",")})`);
+    }
+
+    const result = await query.limit(20);
+    profiles = result.data;
+    error = result.error;
   }
-
-  const { data: profiles, error } = await query.limit(20); // batch fetching
 
   if (error) {
     throw error;
@@ -173,7 +220,28 @@ export async function getProfiles(
 
   if (!profiles) return [];
 
-  const mappedProfiles = profiles.map(mapProfileToOnboardingData);
+  // Fetch activity data for the profiles to include in the response
+  const profileUserIds = profiles.map(p => p.user_id);
+  const { data: activityData } = await supabase
+    .from("user_activity_summary")
+    .select("*")
+    .in("user_id", profileUserIds);
+
+  // Create a map of activity data
+  const activityMap = new Map(
+    activityData?.map(a => [a.user_id, a]) || []
+  );
+
+  // Map profiles and merge with activity data
+  const mappedProfiles = profiles.map(profile => {
+    const activity = activityMap.get(profile.user_id);
+    return {
+      ...mapProfileToOnboardingData(profile),
+      last_active_at: activity?.last_active_at || null,
+      total_login_count: activity?.total_login_count || 0,
+      last_login_at: activity?.last_login_at || null,
+    };
+  });
 
   // --- Sort profiles based on scoring algorithm ---
   const sorted = sortProfiles(currentUser, mappedProfiles);
