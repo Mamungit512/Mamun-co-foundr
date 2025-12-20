@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { PricingTable, useUser } from "@clerk/nextjs";
 import { useUserProfile } from "@/features/profile/useProfile";
 import toast from "react-hot-toast";
+import posthog from "posthog-js";
 
 export default function OnboardingNextPage() {
   const router = useRouter();
@@ -40,21 +41,23 @@ export default function OnboardingNextPage() {
 
         // Profile wasn't created properly - redirect back to onboarding
         // Note: We no longer store full profile data in Clerk metadata to prevent JWT overflow
-        toast.error(
-          "Profile incomplete. Please complete your profile again.",
-          {
-            duration: 4000,
-            position: "bottom-right",
-          },
-        );
+        toast.error("Profile incomplete. Please complete your profile again.", {
+          duration: 4000,
+          position: "bottom-right",
+        });
         setIsNavigating(false);
         router.push("/onboarding");
         return;
       }
 
       // Profile exists, proceed to matching
+      posthog.capture("plan_page_continued", {
+        user_id: user?.id,
+        has_profile: true,
+      });
       router.push("/cofoundr-matching");
-    } catch {
+    } catch (error) {
+      posthog.captureException(error);
       toast.error("Something went wrong. Please try again.", {
         duration: 3000,
         position: "bottom-right",

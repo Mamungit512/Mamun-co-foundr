@@ -14,15 +14,15 @@ export async function POST(request: NextRequest) {
     const { text, fieldType } = await request.json();
 
     if (!text || typeof text !== "string") {
-      return NextResponse.json(
-        { error: "Text is required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Text is required" }, { status: 400 });
     }
 
     // Count words with at least 3 characters
-    const words = text.trim().split(/\s+/).filter((word: string) => word.length >= 3);
-    
+    const words = text
+      .trim()
+      .split(/\s+/)
+      .filter((word: string) => word.length >= 3);
+
     if (words.length < 2) {
       return NextResponse.json({
         suggestion: null,
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     const geminiApiKey = process.env.GEMINI_API_KEY;
-    
+
     if (!geminiApiKey) {
       return NextResponse.json(
         { error: "AI service not configured" },
@@ -42,22 +42,31 @@ export async function POST(request: NextRequest) {
     // Get appropriate prompt based on field type
     const getPrompt = (type: string, inputText: string): string => {
       const contexts: Record<string, string> = {
-        interests: "Fix typos and expand this into a complete list of 3-5 related professional interests/topics:",
-        hobbies: "Fix typos and expand this into a complete list of 3-5 related hobbies:",
+        interests:
+          "Fix typos and expand this into a complete list of 3-5 related professional interests/topics:",
+        hobbies:
+          "Fix typos and expand this into a complete list of 3-5 related hobbies:",
         title: "Fix typos and provide the complete professional job title:",
-        startupDescription: "Fix typos and complete this into a compelling 1-2 sentence startup description:",
-        startupTimeSpent: "Fix typos and complete with specific time and progress details:",
+        startupDescription:
+          "Fix typos and complete this into a compelling 1-2 sentence startup description:",
+        startupTimeSpent:
+          "Fix typos and complete with specific time and progress details:",
         startupFunding: "Fix typos and complete with specific funding details:",
         coFounderStatus: "Fix typos and complete with clear co-founder status:",
         fullTimeTimeline: "Fix typos and complete with specific timeline:",
-        personalIntro: "Aggressively fix typos, complete ALL incomplete words, and expand this into a natural 2-3 sentence professional bio:",
-        accomplishments: "Fix typos and expand into a list of 2-3 impressive accomplishments:",
+        personalIntro:
+          "Aggressively fix typos, complete ALL incomplete words, and expand this into a natural 2-3 sentence professional bio:",
+        accomplishments:
+          "Fix typos and expand into a list of 2-3 impressive accomplishments:",
         ummah: "Fix typos and complete this civilizational engineering idea:",
-        education: "Fix typos and complete with full education details (degree, field, university, year):",
-        experience: "Fix typos and complete with full work experience (job title, company, duration):",
+        education:
+          "Fix typos and complete with full education details (degree, field, university, year):",
+        experience:
+          "Fix typos and complete with full work experience (job title, company, duration):",
       };
 
-      const context = contexts[type] || "Fix typos and complete this naturally:";
+      const context =
+        contexts[type] || "Fix typos and complete this naturally:";
       return `${context} ${inputText}`;
     };
 
@@ -97,9 +106,9 @@ Examples:
           system_instruction: {
             parts: [
               {
-                text: systemPrompt
-              }
-            ]
+                text: systemPrompt,
+              },
+            ],
           },
           contents: [
             {

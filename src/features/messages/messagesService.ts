@@ -89,35 +89,33 @@ export async function getMessagesByConversationId(
     }
 
     // Transform the data to match our Message type
-    const messages: Message[] = data.map(
-      (message: SupabaseMessageResponse) => {
-        console.log('📧 Message raw data:', {
-          sender_id: message.sender_id,
-          profiles: message.profiles,
-          profiles_length: message.profiles?.length,
-          first_profile: message.profiles?.[0],
-        });
+    const messages: Message[] = data.map((message: SupabaseMessageResponse) => {
+      console.log("📧 Message raw data:", {
+        sender_id: message.sender_id,
+        profiles: message.profiles,
+        profiles_length: message.profiles?.length,
+        first_profile: message.profiles?.[0],
+      });
 
-        const senderProfile = message.profiles?.[0];
-        const mappedSender = {
-          id: senderProfile?.user_id || message.sender_id,
-          first_name: senderProfile?.first_name || null,
-          last_name: senderProfile?.last_name || null,
-          pfp_url: senderProfile?.pfp_url || null,
-        };
+      const senderProfile = message.profiles?.[0];
+      const mappedSender = {
+        id: senderProfile?.user_id || message.sender_id,
+        first_name: senderProfile?.first_name || null,
+        last_name: senderProfile?.last_name || null,
+        pfp_url: senderProfile?.pfp_url || null,
+      };
 
-        console.log('👤 Mapped sender data:', mappedSender);
+      console.log("👤 Mapped sender data:", mappedSender);
 
-        return {
-          id: message.id,
-          conversation_id: message.conversation_id,
-          sender_id: message.sender_id,
-          content: message.content,
-          created_at: message.created_at,
-          sender: mappedSender,
-        };
-      },
-    );
+      return {
+        id: message.id,
+        conversation_id: message.conversation_id,
+        sender_id: message.sender_id,
+        content: message.content,
+        created_at: message.created_at,
+        sender: mappedSender,
+      };
+    });
 
     return {
       messages,

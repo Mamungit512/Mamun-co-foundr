@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Copy, Check, Users, Award, TrendingUp, RefreshCw } from "lucide-react";
 import { getReferralStats } from "@/actions/referral-action";
+import posthog from "posthog-js";
 
 interface ReferralData {
   referral_code: string;
@@ -43,6 +44,13 @@ export default function ReferralDashboard({
   const copyToClipboard = async () => {
     await navigator.clipboard.writeText(data.referral_url);
     setCopied(true);
+
+    posthog.capture("referral_link_shared", {
+      referral_code: data.referral_code,
+      share_method: "clipboard_copy",
+      current_invite_count: data.invite_count,
+    });
+
     setTimeout(() => setCopied(false), 1500);
   };
 

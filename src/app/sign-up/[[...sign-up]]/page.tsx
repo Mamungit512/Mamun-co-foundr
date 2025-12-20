@@ -1,17 +1,30 @@
 "use client";
 
 import { SignUp } from "@clerk/nextjs";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getSavedReferralCode } from "@/lib/referral-utils";
+import posthog from "posthog-js";
 
 export default function SignUpPage() {
   const [referralCode, setReferralCode] = useState<string | null>(null);
+  const hasTrackedRef = useRef(false);
 
   useEffect(() => {
     const code = getSavedReferralCode();
     setReferralCode(code);
     if (code) {
       console.log("📝 Sign up with referral:", code);
+    }
+
+    // Track signup page view (only once)
+    if (!hasTrackedRef.current) {
+      hasTrackedRef.current = true;
+      posthog.capture("signup_page_viewed", {
+        has_referral_code: !!code,
+        referral_code: code || null,
+        referrer_url:
+          typeof document !== "undefined" ? document.referrer : undefined,
+      });
     }
   }, []);
 
@@ -21,7 +34,7 @@ export default function SignUpPage() {
         {referralCode && (
           <div className="mb-4 rounded-xl border-2 border-green-200 bg-green-50 p-4 text-center">
             <p className="text-sm font-medium text-green-700">
-               You were invited by:{" "}
+              You were invited by:{" "}
               <span className="font-bold">{referralCode}</span>
             </p>
           </div>

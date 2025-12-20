@@ -3,8 +3,16 @@
 import { motion } from "motion/react";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { HiMail } from "react-icons/hi";
+import posthog from "posthog-js";
 
 export default function NewsletterCTA() {
+  const handleNewsletterClick = () => {
+    posthog.capture("newsletter_cta_clicked", {
+      source: "homepage",
+      destination_url: "https://mamun-cofoundr.kit.com/d7eb029da2",
+    });
+  };
+
   return (
     <section className="my-12 px-4 sm:my-16 sm:px-6 md:px-8 lg:px-12 xl:px-20 2xl:px-40">
       <motion.div
@@ -73,6 +81,7 @@ export default function NewsletterCTA() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.6 }}
+            onClick={handleNewsletterClick}
           >
             <motion.button
               className="group flex cursor-pointer items-center gap-1.5 rounded-lg bg-yellow-300 px-5 py-2.5 font-semibold text-(--charcoal-black) transition-all hover:bg-yellow-400 sm:gap-2 sm:px-8 sm:py-4"

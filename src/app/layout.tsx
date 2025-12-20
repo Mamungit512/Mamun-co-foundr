@@ -8,6 +8,7 @@ import Header from "@/components/header_footer/Header";
 import Socials from "@/components/Socials";
 import Footer from "@/components/header_footer/Footer";
 import QueryProvider from "./_providers/QueryProvider";
+import { PostHogProvider } from "./_providers/PostHogProvider";
 import { Toaster } from "react-hot-toast";
 import ReferralTracker from "@/components/referrals/referral-tracker";
 
@@ -35,13 +36,15 @@ export default function RootLayout({
         <body
           className={`${satoshi.className} scroll-smooth bg-(--charcoal-black) antialiased lg:text-lg`}
         >
-          <QueryProvider>
-            <ReferralTracker />
-            <Header />
-            {children}
-            <Socials />
-            <Footer />
-          </QueryProvider>
+          <PostHogProvider>
+            <QueryProvider>
+              <ReferralTracker />
+              <Header />
+              {children}
+              <Socials />
+              <Footer />
+            </QueryProvider>
+          </PostHogProvider>
           <Toaster position="bottom-right" />
         </body>
       </html>

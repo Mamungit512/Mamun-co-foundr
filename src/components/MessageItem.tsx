@@ -17,7 +17,7 @@ function MessageItem({ message, isOwnMessage }: MessageItemProps) {
 
   // Debug logging
   if (!isOwnMessage) {
-    console.log('💬 MessageItem received:', {
+    console.log("💬 MessageItem received:", {
       sender_id: message.sender_id,
       sender: message.sender,
       pfp_url: message.sender.pfp_url,

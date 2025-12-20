@@ -27,8 +27,7 @@ export async function getReferralStats() {
     const inviteCount = referrals?.length ?? 0;
     const earnedAmount = inviteCount * 5;
 
-    const baseUrl =
-      process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
     return {
       ok: true,

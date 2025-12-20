@@ -26,8 +26,8 @@ export default function RefundPolicy() {
               Mamun co-foundr LLC (&quot;Mamun,&quot; &quot;we,&quot;
               &quot;our,&quot; or &quot;us&quot;) is committed to providing a
               valuable co-founder matching platform. This Refund Policy outlines
-              the terms and conditions for refund requests related to subscription
-              fees and other paid services.
+              the terms and conditions for refund requests related to
+              subscription fees and other paid services.
             </p>
           </section>
 
@@ -64,17 +64,18 @@ export default function RefundPolicy() {
             </p>
             <ul className="mt-2 ml-6 list-disc space-y-1">
               <li>
-                Subscription fees after you have actively used the Platform&apos;s
-                features (e.g., made matches, sent messages, viewed profiles);
+                Subscription fees after you have actively used the
+                Platform&apos;s features (e.g., made matches, sent messages,
+                viewed profiles);
               </li>
               <li>
                 Partial refunds for unused portions of a subscription period
                 after you have begun using the service;
               </li>
               <li>
-                Dissatisfaction with match quality or inability to find a suitable
-                co-founder, as matching outcomes depend on multiple factors
-                including user engagement and compatibility;
+                Dissatisfaction with match quality or inability to find a
+                suitable co-founder, as matching outcomes depend on multiple
+                factors including user engagement and compatibility;
               </li>
               <li>
                 Changes in personal circumstances or business plans that no
@@ -102,8 +103,8 @@ export default function RefundPolicy() {
               <li>Date of the transaction;</li>
               <li>Transaction amount;</li>
               <li>
-                A detailed explanation of why you believe you are eligible for
-                a refund.
+                A detailed explanation of why you believe you are eligible for a
+                refund.
               </li>
             </ul>
             <p className="mt-4 leading-relaxed">
@@ -169,12 +170,10 @@ export default function RefundPolicy() {
             </p>
             <ul className="mt-2 ml-6 list-disc space-y-1">
               <li>Immediate suspension or termination of your account;</li>
+              <li>Loss of access to the Platform and all associated data;</li>
               <li>
-                Loss of access to the Platform and all associated data;
-              </li>
-              <li>
-                Potential legal action to recover costs associated with fraudulent
-                chargebacks.
+                Potential legal action to recover costs associated with
+                fraudulent chargebacks.
               </li>
             </ul>
             <p className="mt-4 leading-relaxed">
@@ -207,7 +206,8 @@ export default function RefundPolicy() {
               9. Contact Information
             </h2>
             <p className="leading-relaxed">
-              For refund requests, billing questions, or concerns, please contact:
+              For refund requests, billing questions, or concerns, please
+              contact:
             </p>
             <div className="mt-4 rounded-lg border border-gray-700 bg-gray-800/50 p-4">
               <p className="font-semibold">Mamun co-foundr LLC</p>

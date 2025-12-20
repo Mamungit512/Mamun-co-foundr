@@ -3,7 +3,7 @@
 import React from "react";
 import { useForm, useWatch } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
-import AIWriter from "@/components/ui/AIWriter"; 
+import AIWriter from "@/components/ui/AIWriter";
 
 function StartupDetailsForm({
   onNext,
@@ -18,15 +18,15 @@ function StartupDetailsForm({
     register,
     handleSubmit,
     control,
-    watch, 
-    setValue, 
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<StartupDetailsFormData>({
     defaultValues,
   });
 
   const hasStartup = useWatch({ control, name: "hasStartup" });
-  
+
   const startupDescriptionValue = watch("startupDescription") || "";
 
   const onSubmit = (data: StartupDetailsFormData) => {

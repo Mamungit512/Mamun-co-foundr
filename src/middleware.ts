@@ -1,5 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
 const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
 const isPublicRoute = createRouteMatcher([
@@ -9,6 +10,48 @@ const isPublicRoute = createRouteMatcher([
   "/mission",
   "/api/webhooks/clerk",
 ]);
+
+// Helper function to update user activity in user_activity_summary table
+async function updateUserActivity(userId: string) {
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey =
+      process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      console.error(
+        "Supabase credentials not configured for activity tracking",
+      );
+      return;
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const now = new Date().toISOString();
+
+    // Upsert to user_activity_summary table
+    // This updates last_active_at in real-time while the cron job handles login counts
+    const { error } = await supabase.from("user_activity_summary").upsert(
+      {
+        user_id: userId,
+        last_active_at: now,
+        updated_at: now,
+      },
+      {
+        onConflict: "user_id",
+        // Don't overwrite login counts that are managed by cron job
+        ignoreDuplicates: false,
+      },
+    );
+
+    if (error) {
+      console.error("Error updating user activity:", error);
+    }
+  } catch (error) {
+    console.error("Failed to update user activity:", error);
+    // Don't throw - activity tracking should not break the request
+  }
+}
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const { userId, sessionClaims, redirectToSignIn } = await auth();
@@ -36,8 +79,21 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     return NextResponse.redirect(onboardingUrl);
   }
 
-  // If the user is logged in and the route is protected, let them view.
-  if (userId && !isPublicRoute(req)) return NextResponse.next();
+  // Update user activity for authenticated users on protected routes
+  // Skip for API routes, static assets, and webhooks to reduce DB load
+  if (userId && !isPublicRoute(req)) {
+    const isApiRoute = req.nextUrl.pathname.startsWith("/api/");
+    const isStaticAsset = req.nextUrl.pathname.match(
+      /\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2|ttf)$/,
+    );
+
+    if (!isApiRoute && !isStaticAsset) {
+      // Update activity asynchronously without blocking the response
+      updateUserActivity(userId).catch(console.error);
+    }
+
+    return NextResponse.next();
+  }
 });
 
 export const config = {

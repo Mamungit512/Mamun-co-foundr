@@ -10,28 +10,24 @@ export default function BatteryLevel({ level }: BatteryLevelProps) {
           color: "bg-green-500",
           width: "100%",
           label: "Energized",
-
         };
       case "Content":
         return {
           color: "bg-yellow-400",
           width: "66%",
           label: "Content",
-
         };
       case "Burnt out":
         return {
           color: "bg-red-500",
           width: "25%",
           label: "Burnt out",
-
         };
       default:
         return {
           color: "bg-gray-400",
           width: "50%",
           label: "Unknown",
-
         };
     }
   };

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { completeOnboarding } from "./_actions";
 import { useProfileUpsert } from "@/features/profile/useProfile";
 import CreateProfile from "@/components/forms/CreateProfile";
+import posthog from "posthog-js";
 
 export default function OnboardingComponent() {
   const [error, setError] = useState<string | null>(null);
@@ -51,6 +52,25 @@ export default function OnboardingComponent() {
 
       await user?.reload();
 
+      // Identify user in PostHog after successful onboarding
+      posthog.identify(userId, {
+        email: user?.primaryEmailAddress?.emailAddress,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        city: formData.city,
+        country: formData.country,
+        is_technical: formData.isTechnical,
+      });
+
+      posthog.capture("onboarding_completed", {
+        city: formData.city,
+        country: formData.country,
+        is_technical: formData.isTechnical,
+        has_startup: !!formData.startupName,
+        cofounder_status: formData.coFounderStatus,
+        priority_areas: formData.priorityAreas,
+      });
+
       router.push("/onboarding/plan");
 
       return { success: true };
@@ -58,6 +78,7 @@ export default function OnboardingComponent() {
       const errorMsg =
         err instanceof Error ? err.message : "Something went wrong.";
       setError(errorMsg);
+      posthog.captureException(err);
       return { success: false, error: errorMsg };
     }
   };
