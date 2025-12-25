@@ -3,6 +3,8 @@ import { motion } from "motion/react";
 import Link from "next/link";
 
 function CofoundrShowMore({ curProfile }: { curProfile: OnboardingData }) {
+  const hasStartup = curProfile?.hasStartup === "yes";
+
   return (
     <div className="space-y-12">
       {/* Startup Plans Section */}
@@ -19,16 +21,16 @@ function CofoundrShowMore({ curProfile }: { curProfile: OnboardingData }) {
             <span className="font-semibold text-gray-300">Has Startup:</span>
             <span
               className={`rounded-full px-3 py-1 text-sm font-medium ${
-                curProfile.hasStartup
+                hasStartup
                   ? "border border-green-500/30 bg-green-500/20 text-green-400"
                   : "border border-gray-500/30 bg-gray-500/20 text-gray-400"
               }`}
             >
-              {curProfile.hasStartup ? "Yes" : "No"}
+              {hasStartup ? "Yes" : "No"}
             </span>
           </div>
 
-          {curProfile.hasStartup && (
+          {hasStartup && (
             <div className="space-y-4 border-l-2 border-yellow-300/30 pl-4">
               <div>
                 <h3 className="heading-6 mb-2 font-bold text-yellow-300">
