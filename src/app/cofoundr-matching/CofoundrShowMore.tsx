@@ -61,9 +61,16 @@ function CofoundrShowMore({ curProfile }: { curProfile: OnboardingData }) {
                   Equity Expectation (%)
                 </h3>
                 <p className="text-gray-300">
-                  {typeof curProfile?.equityExpectation === "number"
-                    ? `${curProfile.equityExpectation}%`
-                    : "Not provided"}
+                  {typeof curProfile?.equityExpectation === "number" ? (
+                    <span
+                      className="rounded px-10 py-2"
+                      style={{ backgroundColor: "#159A8C33" }} 
+                    >
+                      {curProfile.equityExpectation}%
+                    </span>
+                  ) : (
+                    "Not provided"
+                  )}
                 </p>
               </div>
             </div>
