@@ -86,7 +86,7 @@ function FAQ() {
   };
 
   return (
-    <section className="mt-50 w-full px-6 py-20 sm:px-8 lg:px-12">
+    <section className="mt-20 w-full px-6 py-20 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-4xl">
         <div className="mb-16 text-center">
           <h2 className="heading-5 mb-4">Frequently Asked Questions</h2>
