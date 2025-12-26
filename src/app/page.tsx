@@ -176,7 +176,15 @@ function page() {
             </motion.div>
           </div>
         </section>
-        <BookMe />
+        {/* Newsletter CTA Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 1, ease: "easeOut" }}
+        >
+          <NewsletterCTA />
+        </motion.div>
 
         {/* How It Works Section */}
         <section className="px-4 py-16 pt-32 sm:px-6 sm:py-20 md:px-8 lg:px-12 xl:px-20 2xl:px-40">
@@ -320,15 +328,7 @@ function page() {
           <Vision />
         </motion.div>
 
-        {/* Newsletter CTA Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1, ease: "easeOut" }}
-        >
-          <NewsletterCTA />
-        </motion.div>
+        <BookMe />
 
         {/* FAQ Section */}
         <motion.div
