@@ -97,6 +97,15 @@ function Header() {
             </Link>
           </li>
 
+          <li className="translate-y text-sm font-semibold sm:text-base">
+            <Link
+              href="https://luma.com/user/usr-eZsILDku7ToYtZZ"
+              className="underline decoration-gray-300 underline-offset-4"
+            >
+              Events
+            </Link>
+          </li>
+
           <SignedIn>
             <li className="translate-y text-sm font-semibold underline underline-offset-4 sm:text-base">
               <Link href="/dashboard/referrals">Ambassador Only</Link>
@@ -318,6 +327,29 @@ function Header() {
                       />
                     </svg>
                     Book a Demo
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="https://luma.com/user/usr-eZsILDku7ToYtZZ"
+                    target="_blank"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    Events
                   </Link>
                 </li>
 

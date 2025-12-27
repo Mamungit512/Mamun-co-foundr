@@ -60,11 +60,11 @@ function CofoundrShowMore({ curProfile }: { curProfile: OnboardingData }) {
                 <h3 className="heading-6 mb-2 font-bold text-yellow-300">
                   Equity Expectation (%)
                 </h3>
-                <p className="text-gray-300">
+                <p className="text-black">
                   {typeof curProfile?.equityExpectation === "number" ? (
                     <span
                       className="rounded px-10 py-2"
-                      style={{ backgroundColor: "#159A8C33" }} 
+                      style={{ backgroundColor: "#A7F79E" }}
                     >
                       {curProfile.equityExpectation}%
                     </span>
