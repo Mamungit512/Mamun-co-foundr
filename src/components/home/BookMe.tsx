@@ -11,7 +11,7 @@ export default function BookMe() {
   return (
     <section className="px-4 py-20 sm:px-6 sm:py-24 md:px-8 lg:px-12 xl:px-20 2xl:px-40">
       <motion.div
-        className="mx-auto max-w-4xl overflow-hidden rounded-2xl border border-gray-700 bg-gray-900 p-6 sm:p-10 md:p-12"
+        className="mx-auto max-w-4xl overflow-hidden rounded-2xl border border-white  bg-(--charcoal-black) p-6 sm:p-10 md:p-12"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
