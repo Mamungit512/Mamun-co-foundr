@@ -1,6 +1,5 @@
 "use client";
 import { motion } from "framer-motion";
-import { MdEvent } from "react-icons/md";
 
 export default function EventsSection() {
   return (
