@@ -1,5 +1,11 @@
 import React from "react";
-import { FaInstagram, FaLinkedin, FaTiktok, FaYoutube } from "react-icons/fa6";
+import {
+  FaInstagram,
+  FaLinkedin,
+  FaReddit,
+  FaTiktok,
+  FaYoutube,
+} from "react-icons/fa6";
 
 /* ------
 Socials
@@ -44,6 +50,14 @@ function Socials() {
         className="translate-y transition-opacity hover:opacity-80"
       >
         <FaLinkedin className="size-4 text-(--mist-white)" />
+      </a>
+      <a
+        href="https://www.reddit.com/user/ComfortableDry6491/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="translate-y transition-opacity hover:opacity-80"
+      >
+        <FaReddit className="size-4 text-(--mist-white)" />
       </a>
     </div>
   );
