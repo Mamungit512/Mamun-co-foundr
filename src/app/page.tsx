@@ -13,6 +13,7 @@ import FAQ from "@/components/home/faq";
 import NewsletterCTA from "@/components/home/NewsletterCTA";
 import Vision from "@/components/home/Vision";
 import BookMe from "@/components/home/BookMe";
+import EventsSection from "@/components/EventsSection";
 
 /* ------
 HOME PAGE
@@ -348,6 +349,14 @@ function page() {
           transition={{ duration: 1, ease: "easeOut" }}
         >
           <CTA />
+        </motion.div>
+         <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 1, ease: "easeOut" }}
+        >
+          <EventsSection />
         </motion.div>
       </main>
     </ReactLenis>
