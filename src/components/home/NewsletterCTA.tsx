@@ -16,7 +16,7 @@ export default function ECCWaitlist() {
   return (
     <section className="my-12 px-4 sm:my-16 sm:px-6 md:px-8 lg:px-12 xl:px-20 2xl:px-40">
       <motion.div
-        className="mx-auto max-w-4xl overflow-hidden rounded-2xl border border-gray-700 bg-gray-900 p-8 sm:p-12 md:p-16 lg:p-20"
+        className="mx-auto max-w-4xl overflow-hidden rounded-2xl border border-white bg-(--charcoal-black) p-8 sm:p-12 md:p-16 lg:p-20"
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
