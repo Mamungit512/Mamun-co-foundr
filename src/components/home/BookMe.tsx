@@ -32,7 +32,7 @@ export default function BookMe() {
           className="mx-auto mb-4 flex items-center gap-2 rounded-lg bg-yellow-300 px-6 py-3 font-semibold text-black"
         >
           <Link
-            href="https://calendly.com/teslim-mamuncofoundr"
+            href="https://calendly.com/mcfm-mamuncofoundr/30min"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2"
