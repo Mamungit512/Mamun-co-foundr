@@ -89,7 +89,7 @@ function Header() {
           </li>
           <li className="translate-y text-sm font-semibold sm:text-base">
             <Link
-              href="https://calendly.com/teslim-mamuncofoundr"
+              href="https://calendly.com/mcfm-mamuncofoundr/30min"
               target="_blank"
               className="underline underline-offset-4 transition hover:text-gray-300"
             >
@@ -308,7 +308,7 @@ function Header() {
                 </li>
                 <li>
                   <Link
-                    href="https://calendly.com/teslim-mamuncofoundr"
+                    href="https://calendly.com/mcfm-mamuncofoundr/30min"
                     target="_blank"
                     className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
                     onClick={() => setIsMobileMenuOpen(false)}
