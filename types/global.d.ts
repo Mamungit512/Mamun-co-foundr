@@ -11,6 +11,11 @@ declare global {
       get_distinct_id: () => string;
       [key: string]: unknown;
     };
+    // FirstPromoter tracking function
+    fpr?: (
+      action: string,
+      data?: { email: string; uid?: string } | { cid: string } | string,
+    ) => void;
   }
 
   interface CustomJwtSessionClaims {
