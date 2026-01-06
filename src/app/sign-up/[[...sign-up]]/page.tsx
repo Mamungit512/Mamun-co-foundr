@@ -2,18 +2,26 @@
 
 import { SignUp } from "@clerk/nextjs";
 import { useEffect, useState, useRef } from "react";
-import { getSavedReferralCode } from "@/lib/referral-utils";
+import {
+  getSavedReferralCode,
+  getFirstPromoterRef,
+} from "@/lib/referral-utils";
 import { trackEvent } from "@/lib/posthog-events";
 
 export default function SignUpPage() {
   const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [fpRef, setFpRef] = useState<string | null>(null);
   const hasTrackedRef = useRef(false);
 
   useEffect(() => {
     const code = getSavedReferralCode();
+    const fpRefValue = getFirstPromoterRef();
+
     setReferralCode(code);
-    if (code) {
-      console.log("📝 Sign up with referral:", code);
+    setFpRef(fpRefValue);
+
+    if (code || fpRefValue) {
+      console.log("📝 Sign up with referral:", { code, fpRef: fpRefValue });
     }
 
     // Track signup page view (only once)
@@ -48,6 +56,7 @@ export default function SignUpPage() {
           }}
           unsafeMetadata={{
             referral_code: referralCode,
+            fp_ref: fpRef,
           }}
           forceRedirectUrl="/dashboard"
           signInUrl="/sign-in"

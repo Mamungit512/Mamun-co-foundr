@@ -26,15 +26,17 @@ export async function POST(req: NextRequest) {
           ? emailAddresses[0].email_address
           : null;
 
-      // Get referral code from unsafe_metadata
+      // Get referral code and FirstPromoter ref from unsafe_metadata
       const referralCode = evt.data.unsafe_metadata?.referral_code as
         | string
         | undefined;
+      const fpRef = evt.data.unsafe_metadata?.fp_ref as string | undefined;
 
       console.log("🆕 New user created:", {
         userId: id,
         email,
         referralCode: referralCode || "none",
+        fpRef: fpRef || "none",
       });
 
       if (email) {
@@ -54,7 +56,7 @@ export async function POST(req: NextRequest) {
               userId: id,
               email: email,
               referralCode: referralCode || null,
-              fpRef: null, // Can be extracted from metadata if needed
+              fpRef: fpRef || null,
             }),
             signal: AbortSignal.timeout(25000),
           });

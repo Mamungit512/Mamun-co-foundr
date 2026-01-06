@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { PricingTable, useUser } from "@clerk/nextjs";
+import FirstPromoterSignup from "@/components/referrals/FirstPromoterSignup";
 
 export default function OnboardingNextPage() {
   const router = useRouter();
@@ -14,23 +15,25 @@ export default function OnboardingNextPage() {
   }, [isLoaded]);
 
   return (
-    <section className="section-height section-padding bg-(--charcoal-black) text-(--mist-white)">
-      <div className="mx-auto max-w-3xl text-center">
-        <h1 className="mb-4 text-3xl font-bold sm:text-4xl">
-          You&apos;re all set!
-        </h1>
-        <p className="mb-8 text-gray-400">
-          Thanks for completing your profile. Next, choose your plan or explore
-          matches.
-        </p>
-        <PricingTable />
-        <button
-          className="rounded bg-green-600 px-4 py-2 text-white"
-          onClick={() => router.push("/cofoundr-matching")}
-        >
-          Continue to Matching
-        </button>
-        {/*
+    <>
+      <FirstPromoterSignup /> {/* This is the FirstPromoter signup component */}
+      <section className="section-height section-padding bg-(--charcoal-black) text-(--mist-white)">
+        <div className="mx-auto max-w-3xl text-center">
+          <h1 className="mb-4 text-3xl font-bold sm:text-4xl">
+            You&apos;re all set!
+          </h1>
+          <p className="mb-8 text-gray-400">
+            Thanks for completing your profile. Next, choose your plan or
+            explore matches.
+          </p>
+          <PricingTable />
+          <button
+            className="rounded bg-green-600 px-4 py-2 text-white"
+            onClick={() => router.push("/cofoundr-matching")}
+          >
+            Continue to Matching
+          </button>
+          {/*
         <div className="flex items-center justify-center gap-3">
           <button
             className="rounded bg-green-600 px-4 py-2 text-white"
@@ -45,7 +48,8 @@ export default function OnboardingNextPage() {
             View Plans
           </button>
         </div> */}
-      </div>
-    </section>
+        </div>
+      </section>
+    </>
   );
 }
