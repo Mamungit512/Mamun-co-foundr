@@ -9,6 +9,7 @@ import { useProfileUpsert } from "@/features/profile/useProfile";
 import CreateProfile from "@/components/forms/CreateProfile";
 import { posthog } from "@/lib/posthog";
 import { trackEvent } from "@/lib/posthog-events";
+import FirstPromoterSignup from "@/components/referrals/FirstPromoterSignup";
 
 export default function OnboardingComponent() {
   const [error, setError] = useState<string | null>(null);
@@ -88,19 +89,22 @@ export default function OnboardingComponent() {
   };
 
   return (
-    <section className="section-height section-padding bg-(--charcoal-black) text-(--mist-white)">
-      <div className="mx-auto max-w-4xl">
-        <h1 className="mb-4 text-2xl font-bold sm:text-3xl md:text-4xl lg:text-5xl">
-          Welcome to Mamun Cofoundr Matching!
-        </h1>
-        <p className="mb-8 text-lg text-gray-500 sm:text-xl md:text-2xl">
-          To get started, tell us more about yourself
-        </p>
+    <>
+      <FirstPromoterSignup />
+      <section className="section-height section-padding bg-(--charcoal-black) text-(--mist-white)">
+        <div className="mx-auto max-w-4xl">
+          <h1 className="mb-4 text-2xl font-bold sm:text-3xl md:text-4xl lg:text-5xl">
+            Welcome to Mamun Cofoundr Matching!
+          </h1>
+          <p className="mb-8 text-lg text-gray-500 sm:text-xl md:text-2xl">
+            To get started, tell us more about yourself
+          </p>
 
-        {error && <p className="mb-4 text-red-500">{error}</p>}
+          {error && <p className="mb-4 text-red-500">{error}</p>}
 
-        <CreateProfile onSubmit={handleSubmit} onError={(e) => setError(e)} />
-      </div>
-    </section>
+          <CreateProfile onSubmit={handleSubmit} onError={(e) => setError(e)} />
+        </div>
+      </section>
+    </>
   );
 }
