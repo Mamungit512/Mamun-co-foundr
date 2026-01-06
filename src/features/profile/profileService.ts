@@ -197,16 +197,16 @@ export async function getProfiles(
     }
   } else {
     // Standard query without activity filtering
-    let query = supabase
-      .from("profiles")
-      .select("*")
+  let query = supabase
+    .from("profiles")
+    .select("*")
       .neq("user_id", currentUser.user_id)
       .is("deleted_at", null);
 
-    // Exclude already liked profiles if there are any
-    if (likedIds.length > 0) {
-      query = query.not("user_id", "in", `(${likedIds.join(",")})`);
-    }
+  // Exclude already liked profiles if there are any
+  if (likedIds.length > 0) {
+    query = query.not("user_id", "in", `(${likedIds.join(",")})`);
+  }
 
     const result = await query.limit(20);
     profiles = result.data;
