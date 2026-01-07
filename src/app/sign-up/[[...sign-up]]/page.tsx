@@ -5,35 +5,63 @@ import { useEffect, useState, useRef } from "react";
 import {
   getSavedReferralCode,
   getFirstPromoterRef,
+  getFirstPromoterTid,
 } from "@/lib/referral-utils";
 import { trackEvent } from "@/lib/posthog-events";
 
 export default function SignUpPage() {
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [fpRef, setFpRef] = useState<string | null>(null);
+  const [fpTid, setFpTid] = useState<string | null>(null);
   const hasTrackedRef = useRef(false);
 
   useEffect(() => {
-    const code = getSavedReferralCode();
-    const fpRefValue = getFirstPromoterRef();
+    let attempts = 0;
+    const maxAttempts = 10;
+    let timeoutId: NodeJS.Timeout;
 
-    setReferralCode(code);
-    setFpRef(fpRefValue);
+    const checkCookies = () => {
+      const fpTidValue = getFirstPromoterTid();
+      const fpRefValue = getFirstPromoterRef();
+      const code = getSavedReferralCode();
 
-    if (code || fpRefValue) {
-      console.log("📝 Sign up with referral:", { code, fpRef: fpRefValue });
-    }
+      // If we found FirstPromoter cookies or exhausted attempts, set state
+      if (fpTidValue || fpRefValue || attempts >= maxAttempts) {
+        setFpTid(fpTidValue);
+        setFpRef(fpRefValue);
+        setReferralCode(code);
 
-    // Track signup page view (only once)
-    if (!hasTrackedRef.current) {
-      hasTrackedRef.current = true;
-      trackEvent.signupPageViewed({
-        has_referral_code: !!code,
-        referral_code: code || null,
-        referrer_url:
-          typeof document !== "undefined" ? document.referrer : undefined,
-      });
-    }
+        if (code || fpRefValue || fpTidValue) {
+          console.log("📝 Sign up with referral:", {
+            code,
+            fpRef: fpRefValue,
+            fpTid: fpTidValue,
+            attempts,
+          });
+        }
+
+        // Track signup page view (only once)
+        if (!hasTrackedRef.current) {
+          hasTrackedRef.current = true;
+          trackEvent.signupPageViewed({
+            has_referral_code: !!code,
+            referral_code: code || null,
+            referrer_url:
+              typeof document !== "undefined" ? document.referrer : undefined,
+          });
+        }
+      } else {
+        // Keep polling until FirstPromoter sets cookies
+        attempts++;
+        timeoutId = setTimeout(checkCookies, 200);
+      }
+    };
+
+    checkCookies();
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   return (
@@ -57,6 +85,7 @@ export default function SignUpPage() {
           unsafeMetadata={{
             referral_code: referralCode,
             fp_ref: fpRef,
+            fp_tid: fpTid,
           }}
           forceRedirectUrl="/dashboard"
           signInUrl="/sign-in"

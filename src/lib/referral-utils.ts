@@ -2,7 +2,6 @@
 
 export const REFERRAL_COOKIE_NAME = "mamun_ref";
 export const REFERRAL_STORAGE_KEY = "mamun_referral_code";
-export const FP_REF_STORAGE_KEY = "fp_ref";
 
 export function captureReferralCode() {
   if (typeof window === "undefined") return null;
@@ -13,10 +12,10 @@ export function captureReferralCode() {
     urlParams.get("fpr") || urlParams.get("fp_ref") || urlParams.get("ref");
 
   if (fpRef) {
+    // Store for internal Mamun referral tracking
     localStorage.setItem(REFERRAL_STORAGE_KEY, fpRef);
-    localStorage.setItem(FP_REF_STORAGE_KEY, fpRef);
     document.cookie = `${REFERRAL_COOKIE_NAME}=${fpRef}; path=/; max-age=${30 * 24 * 60 * 60}`;
-
+    // Note: FirstPromoter's fpr("click") sets _fprom_tid and _fprom_ref cookies automatically
     return fpRef;
   }
 
@@ -57,13 +56,17 @@ export function getSavedReferralCode(): string | null {
  */
 export function getFirstPromoterRef(): string | null {
   if (typeof window === "undefined") return null;
+  return getCookieValue("_fprom_ref");
+}
 
-  // FirstPromoter's native cookie, or our stored version
-  return (
-    getCookieValue("_fprom_ref") ||
-    localStorage.getItem(FP_REF_STORAGE_KEY) ||
-    null
-  );
+/**
+ * Get FirstPromoter's tracking ID from their cookie (_fprom_tid)
+ * This is the PREFERRED parameter for server-side tracking as it includes
+ * deduplication logic to prevent multiple tracking for the same visitor
+ */
+export function getFirstPromoterTid(): string | null {
+  if (typeof window === "undefined") return null;
+  return getCookieValue("_fprom_tid");
 }
 
 /**
