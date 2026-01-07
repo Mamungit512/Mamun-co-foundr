@@ -12,6 +12,7 @@ import MessageItem from "@/components/MessageItem";
 import { Message } from "@/features/messages/messagesService";
 import AIWriter from "@/components/ui/AIWriter";
 import { trackEvent } from "@/lib/posthog-events";
+import ActivityIndicator from "@/components/ActivityIndicator";
 
 interface ConversationPageProps {
   params: Promise<{
@@ -131,15 +132,25 @@ function ConversationPage({ params }: ConversationPageProps) {
               )}
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">
-                {isConversationLoading
-                  ? "Loading..."
-                  : conversation?.otherParticipant
-                    ? `${conversation.otherParticipant.first_name || ""} ${
-                        conversation.otherParticipant.last_name || ""
-                      }`.trim() || "Conversation"
-                    : "Conversation"}
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-bold text-white">
+                  {isConversationLoading
+                    ? "Loading..."
+                    : conversation?.otherParticipant
+                      ? `${conversation.otherParticipant.first_name || ""} ${
+                          conversation.otherParticipant.last_name || ""
+                        }`.trim() || "Conversation"
+                      : "Conversation"}
+                </h1>
+                {/* Activity indicator showing online/offline status */}
+                {!isConversationLoading && conversation?.otherParticipant && (
+                  <ActivityIndicator
+                    lastActiveAt={conversation.otherParticipant.last_active_at}
+                    size="sm"
+                    showLabel={true}
+                  />
+                )}
+              </div>
               <p className="text-sm text-gray-400">
                 {isConversationLoading
                   ? "Loading conversation details..."

@@ -65,35 +65,29 @@ export function getActivityStatus(
 
 /**
  * Gets a display-friendly activity indicator
+ * Uses a simple 2-tier system: green (online/active today) vs red (offline)
  * @param lastActiveAt ISO timestamp string or null
  * @returns Object with label and color for UI display
  */
 export function getActivityIndicator(lastActiveAt: string | null | undefined): {
   label: string;
-  color: "green" | "yellow" | "gray";
+  color: "green" | "red";
   dotColor: string;
 } {
   const status = getActivityStatus(lastActiveAt);
 
-  switch (status) {
-    case "active":
-      return {
-        label: "Active today",
-        color: "green",
-        dotColor: "bg-green-500",
-      };
-    case "recent":
-      return {
-        label: "Active this week",
-        color: "yellow",
-        dotColor: "bg-yellow-500",
-      };
-    case "inactive":
-    default:
-      return {
-        label: formatLastActive(lastActiveAt),
-        color: "gray",
-        dotColor: "bg-gray-400",
-      };
+  // Simple 2-tier: active today = online (green), otherwise = offline (red)
+  if (status === "active") {
+    return {
+      label: "Online",
+      color: "green",
+      dotColor: "bg-green-500",
+    };
   }
+
+  return {
+    label: "Offline",
+    color: "red",
+    dotColor: "bg-red-400",
+  };
 }

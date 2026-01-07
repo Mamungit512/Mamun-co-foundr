@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { FaEnvelope, FaUser } from "react-icons/fa6";
 import Image from "next/image";
 import { ConversationWithOtherParticipant } from "@/features/conversations/conversationService";
+import ActivityIndicator from "@/components/ActivityIndicator";
 
 interface ConversationItemProps {
   conversation: ConversationWithOtherParticipant;
@@ -23,19 +24,29 @@ function ConversationItem({ conversation, onClick }: ConversationItemProps) {
       onClick={onClick}
     >
       <div className="flex items-center gap-4">
-        <div className="relative h-12 w-12 overflow-hidden rounded-full">
-          {otherParticipant.pfp_url ? (
-            <Image
-              src={otherParticipant.pfp_url}
-              alt={`${otherParticipant.first_name || ""} ${otherParticipant.last_name || ""}`}
-              fill
-              className="object-cover"
+        <div className="relative">
+          <div className="relative h-12 w-12 overflow-hidden rounded-full">
+            {otherParticipant.pfp_url ? (
+              <Image
+                src={otherParticipant.pfp_url}
+                alt={`${otherParticipant.first_name || ""} ${otherParticipant.last_name || ""}`}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-blue-500/20 text-blue-400">
+                <FaUser className="h-5 w-5" />
+              </div>
+            )}
+          </div>
+          {/* Activity indicator dot positioned at bottom-right of avatar */}
+          <div className="absolute -right-0.5 -bottom-0.5">
+            <ActivityIndicator
+              lastActiveAt={otherParticipant.last_active_at}
+              size="sm"
+              showLabel={false}
             />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-blue-500/20 text-blue-400">
-              <FaUser className="h-5 w-5" />
-            </div>
-          )}
+          </div>
         </div>
 
         <div className="flex-1">
