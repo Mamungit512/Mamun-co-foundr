@@ -13,6 +13,7 @@ export type ConversationWithOtherParticipant = {
     last_name: string | null;
     pfp_url: string | null;
     title: string | null;
+    last_active_at: string | null;
   };
 };
 
@@ -78,6 +79,13 @@ export async function getConversationById(
       return { error: "Failed to fetch profile" };
     }
 
+    // Get the other participant's activity data
+    const { data: activityData } = await supabase
+      .from("user_activity_summary")
+      .select("last_active_at")
+      .eq("user_id", otherParticipantData.user_id)
+      .single();
+
     return {
       conversation: {
         id: conversationData.id,
@@ -89,6 +97,7 @@ export async function getConversationById(
           last_name: profileData.last_name,
           pfp_url: profileData.pfp_url,
           title: profileData.title,
+          last_active_at: activityData?.last_active_at || null,
         },
       },
     };
@@ -174,6 +183,13 @@ export async function getUserConversations(
         continue;
       }
 
+      // Get the other participant's activity data
+      const { data: activityData } = await supabase
+        .from("user_activity_summary")
+        .select("last_active_at")
+        .eq("user_id", otherParticipantData.user_id)
+        .single();
+
       conversationsWithOtherParticipants.push({
         id: conversation.id as string,
         created_at: conversation.created_at as string,
@@ -184,6 +200,7 @@ export async function getUserConversations(
           last_name: profileData.last_name as string | null,
           pfp_url: profileData.pfp_url as string | null,
           title: profileData.title as string | null,
+          last_active_at: (activityData?.last_active_at as string) || null,
         },
       });
     }
@@ -272,6 +289,13 @@ export async function createConversation(
         return { error: "Failed to fetch profile" };
       }
 
+      // Get the other participant's activity data
+      const { data: activityData } = await supabase
+        .from("user_activity_summary")
+        .select("last_active_at")
+        .eq("user_id", otherUserId)
+        .single();
+
       return {
         conversation: {
           id: conversation.id,
@@ -283,6 +307,7 @@ export async function createConversation(
             last_name: profileData.last_name,
             pfp_url: profileData.pfp_url,
             title: profileData.title,
+            last_active_at: activityData?.last_active_at || null,
           },
         },
       };
@@ -335,6 +360,13 @@ export async function createConversation(
       return { error: "Failed to fetch profile" };
     }
 
+    // Get the other participant's activity data
+    const { data: activityData } = await supabase
+      .from("user_activity_summary")
+      .select("last_active_at")
+      .eq("user_id", otherUserId)
+      .single();
+
     return {
       conversation: {
         id: conversationData.id,
@@ -346,6 +378,7 @@ export async function createConversation(
           last_name: profileData.last_name,
           pfp_url: profileData.pfp_url,
           title: profileData.title,
+          last_active_at: activityData?.last_active_at || null,
         },
       },
     };
