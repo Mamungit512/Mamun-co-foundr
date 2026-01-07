@@ -67,6 +67,16 @@ export function getFirstPromoterRef(): string | null {
 }
 
 /**
+ * Get FirstPromoter's tracking ID from their cookie (_fprom_tid)
+ * This is the PREFERRED parameter for server-side tracking as it includes
+ * deduplication logic to prevent multiple tracking for the same visitor
+ */
+export function getFirstPromoterTid(): string | null {
+  if (typeof window === "undefined") return null;
+  return getCookieValue("_fprom_tid");
+}
+
+/**
  * Track a referral signup with FirstPromoter
  * This should be called after a user signs up to link their email to the promoter
  */

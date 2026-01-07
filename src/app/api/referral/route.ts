@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, email, referralCode, fpRef } = await req.json();
+    const { userId, email, referralCode, fpRef, fpTid } = await req.json();
 
     if (!userId) {
       return NextResponse.json({ error: "Missing userId" }, { status: 400 });
@@ -49,21 +49,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Database error" }, { status: 500 });
     }
 
-    // Send to FirstPromoter API
-    if (fpRef || referralCode) {
+    // Send to FirstPromoter v2 API
+    // tid is preferred (includes deduplication), ref_id as fallback
+    if (fpTid || fpRef || referralCode) {
       try {
         const fpResponse = await fetch(
-          "https://firstpromoter.com/api/v1/track/signup",
+          "https://v2.firstpromoter.com/api/v2/track/signup",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "x-api-key": process.env.FIRSTPROMOTER_API_KEY!,
+              Authorization: `Bearer ${process.env.FIRSTPROMOTER_API_KEY}`,
+              "Account-ID":
+                process.env.NEXT_PUBLIC_FIRSTPROMOTER_ACCOUNT_ID || "",
             },
             body: JSON.stringify({
               email: email,
               uid: userId,
-              ref_id: fpRef || referralCode,
+              tid: fpTid || undefined,
+              ref_id: !fpTid ? fpRef || referralCode : undefined,
             }),
           },
         );
