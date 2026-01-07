@@ -15,15 +15,6 @@ function MessageItem({ message, isOwnMessage }: MessageItemProps) {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
-  // Debug logging
-  if (!isOwnMessage) {
-    console.log("💬 MessageItem received:", {
-      sender_id: message.sender_id,
-      sender: message.sender,
-      pfp_url: message.sender.pfp_url,
-    });
-  }
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}

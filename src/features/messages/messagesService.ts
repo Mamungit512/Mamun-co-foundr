@@ -22,14 +22,14 @@ type SupabaseMessageResponse = {
   sender_id: string;
   content: string;
   created_at: string;
-  profiles:
-    | {
-        user_id: string;
-        first_name: string | null;
-        last_name: string | null;
-        pfp_url: string | null;
-      }[]
-    | null;
+};
+
+// Type for profile data
+type ProfileData = {
+  user_id: string;
+  first_name: string | null;
+  last_name: string | null;
+  pfp_url: string | null;
 };
 
 export async function getMessagesByConversationId(
@@ -67,13 +67,7 @@ export async function getMessagesByConversationId(
         conversation_id,
         sender_id,
         content,
-        created_at,
-        profiles!sender_id (
-          user_id,
-          first_name,
-          last_name,
-          pfp_url
-        )
+        created_at
       `,
       )
       .eq("conversation_id", conversationId)
@@ -88,24 +82,34 @@ export async function getMessagesByConversationId(
       return { messages: [], error: undefined };
     }
 
+    // Get unique sender IDs
+    const senderIds = [
+      ...new Set(data.map((m: SupabaseMessageResponse) => m.sender_id)),
+    ];
+
+    // Fetch all sender profiles in one query (matching the pattern used in conversationService)
+    // NOTE: Must change once profiles table gets exponentially larger
+    const { data: profilesData, error: profilesError } = await supabase
+      .from("profiles")
+      .select("user_id, first_name, last_name, pfp_url")
+      .in("user_id", senderIds)
+      .is("deleted_at", null);
+
+    if (profilesError) {
+      console.error("Error fetching sender profiles:", profilesError.message);
+    }
+
+    // Create a map of user_id to profile for quick lookup
+    const profilesMap = new Map<string, ProfileData>();
+    if (profilesData) {
+      for (const profile of profilesData) {
+        profilesMap.set(profile.user_id, profile);
+      }
+    }
+
     // Transform the data to match our Message type
     const messages: Message[] = data.map((message: SupabaseMessageResponse) => {
-      console.log("📧 Message raw data:", {
-        sender_id: message.sender_id,
-        profiles: message.profiles,
-        profiles_length: message.profiles?.length,
-        first_profile: message.profiles?.[0],
-      });
-
-      const senderProfile = message.profiles?.[0];
-      const mappedSender = {
-        id: senderProfile?.user_id || message.sender_id,
-        first_name: senderProfile?.first_name || null,
-        last_name: senderProfile?.last_name || null,
-        pfp_url: senderProfile?.pfp_url || null,
-      };
-
-      console.log("👤 Mapped sender data:", mappedSender);
+      const senderProfile = profilesMap.get(message.sender_id);
 
       return {
         id: message.id,
@@ -113,7 +117,12 @@ export async function getMessagesByConversationId(
         sender_id: message.sender_id,
         content: message.content,
         created_at: message.created_at,
-        sender: mappedSender,
+        sender: {
+          id: senderProfile?.user_id || message.sender_id,
+          first_name: senderProfile?.first_name || null,
+          last_name: senderProfile?.last_name || null,
+          pfp_url: senderProfile?.pfp_url || null,
+        },
       };
     });
 
