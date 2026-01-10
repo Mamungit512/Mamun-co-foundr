@@ -74,7 +74,7 @@ function MessagesPage() {
           >
             <div className="space-y-2 text-center md:text-left">
               <h2 className="text-2xl font-bold sm:text-3xl md:text-4xl lg:text-5xl">
-                Messages to Connections
+                Connections
               </h2>
               <p className="text-sm text-white/70 sm:text-base md:text-lg">
                 Connect with your matched cofounders
