@@ -95,7 +95,6 @@ function Header() {
               Pricing
             </Link>
           </li>
-
           {/* <li className="translate-y text-sm font-semibold sm:text-base">
             <Link
               href="https://calendly.com/mcfm-mamuncofoundr/30min"
@@ -114,7 +113,6 @@ function Header() {
               Events
             </Link>
           </li> */}
-
           <SignedIn>
             <li className="translate-y text-sm font-semibold underline underline-offset-4 sm:text-base">
               <Link href="/dashboard/referrals">Ambassador Only</Link>
