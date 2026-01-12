@@ -89,6 +89,15 @@ function Header() {
           </li>
           <li className="translate-y text-sm font-semibold sm:text-base">
             <Link
+              href="/billing/upgrade"
+              className="underline decoration-gray-300 underline-offset-4"
+            >
+              Pricing
+            </Link>
+          </li>
+
+          {/* <li className="translate-y text-sm font-semibold sm:text-base">
+            <Link
               href="https://calendly.com/mcfm-mamuncofoundr/30min"
               target="_blank"
               className="underline underline-offset-4 transition hover:text-gray-300"
@@ -104,7 +113,7 @@ function Header() {
             >
               Events
             </Link>
-          </li>
+          </li> */}
 
           <SignedIn>
             <li className="translate-y text-sm font-semibold underline underline-offset-4 sm:text-base">
@@ -308,6 +317,36 @@ function Header() {
                 </li>
                 <li>
                   <Link
+                    href="/billing/upgrade"
+                    target="_blank"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-all duration-200 hover:bg-gray-700/60 hover:text-white focus:bg-gray-700/60 focus:text-white"
+                  >
+                    <svg
+                      className="h-5 w-5 text-gray-400 transition-colors duration-200 group-hover:text-green-400"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M7 7h10l3 5-3 5H7l-3-5 3-5z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 11h.01"
+                      />
+                    </svg>
+
+                    <span>Pricing</span>
+                  </Link>
+                </li>
+
+                {/* <li>
+                  <Link
                     href="https://calendly.com/mcfm-mamuncofoundr/30min"
                     target="_blank"
                     className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
@@ -351,7 +390,7 @@ function Header() {
                     </svg>
                     Events
                   </Link>
-                </li>
+                </li> */}
 
                 <SignedIn>
                   <li>
