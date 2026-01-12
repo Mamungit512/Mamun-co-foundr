@@ -114,7 +114,7 @@ export default function BillingUpgradePage() {
               Why Choose Collab Tier?
             </h3>
             <p className="mb-6 text-gray-300">
-              For just $3.99/month, transform your profile into a talent magnet.
+              For just $6.99/month, transform your profile into a talent magnet.
               The hiring badge isn&apos;t just a visual indicator - it&apos;s
               your gateway to connecting with passionate co-founders and skilled
               employees who are ready to build something amazing with you.
