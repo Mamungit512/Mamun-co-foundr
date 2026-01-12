@@ -47,7 +47,7 @@ export default function BillingUpgradePage() {
           onAnimationComplete={handlePageLoaded}
         >
           <h1 className="mb-4 text-4xl font-bold text-yellow-300">
-            Upgrade to Collab Tier
+            Founders Pass
           </h1>
           <p className="text-xl text-gray-300">
             Unlock powerful hiring features to attract top talent
