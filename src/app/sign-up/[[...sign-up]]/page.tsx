@@ -13,6 +13,7 @@ export default function SignUpPage() {
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [fpRef, setFpRef] = useState<string | null>(null);
   const [fpTid, setFpTid] = useState<string | null>(null);
+  const [isReady, setIsReady] = useState(false);
   const hasTrackedRef = useRef(false);
 
   useEffect(() => {
@@ -25,11 +26,12 @@ export default function SignUpPage() {
       const fpRefValue = getFirstPromoterRef();
       const code = getSavedReferralCode();
 
-      // If we found FirstPromoter cookies or exhausted attempts, set state
+      // If we found FirstPromoter cookies or exhausted attempts, set state and mark ready
       if (fpTidValue || fpRefValue || attempts >= maxAttempts) {
         setFpTid(fpTidValue);
         setFpRef(fpRefValue);
         setReferralCode(code);
+        setIsReady(true);
 
         if (code || fpRefValue || fpTidValue) {
           console.log("📝 Sign up with referral:", {
@@ -63,6 +65,16 @@ export default function SignUpPage() {
       if (timeoutId) clearTimeout(timeoutId);
     };
   }, []);
+
+  // Don't render SignUp until cookies have been checked
+  // This ensures Clerk receives the correct unsafeMetadata values on mount
+  if (!isReady) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
