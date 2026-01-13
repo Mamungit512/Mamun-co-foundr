@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, ChangeEvent } from "react";
 import * as faceapi from "@vladmandic/face-api";
+import Image from "next/image";
 
 // Props definition
 interface FaceDetectionUploaderProps {
@@ -86,7 +87,7 @@ export default function FaceDetectionUploader({
     setPreviewUrl(objectUrl);
 
     // Create an HTML image element for face-api to use
-    const img = document.createElement("img");
+const img = new window.Image();
     img.src = objectUrl;
 
     // Wait for image to load before detection
@@ -186,7 +187,7 @@ export default function FaceDetectionUploader({
         )}
 
         {previewUrl && (
-          <img
+          <Image
             src={previewUrl}
             alt="Preview"
             className="h-32 w-32 rounded-full border-2 border-gray-300 object-cover"

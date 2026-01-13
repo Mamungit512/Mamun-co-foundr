@@ -111,7 +111,7 @@ export default function BillingUpgradePage() {
         >
           <div className="rounded-lg bg-gray-800/50 p-8">
             <h3 className="mb-4 text-xl font-semibold text-white">
-              Why Choose Collab Tier?
+            Founders Pass
             </h3>
             <p className="mb-6 text-gray-300">
               For just $6.99/month, transform your profile into a talent magnet.

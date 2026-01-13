@@ -1,17 +1,14 @@
 "use client";
 
-import { useClerk } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { MdCalendarToday } from "react-icons/md";
 
 export default function BookMe() {
-  const { openUserProfile } = useClerk();
-
   return (
     <section className="px-4 py-20 sm:px-6 sm:py-24 md:px-8 lg:px-12 xl:px-20 2xl:px-40">
       <motion.div
-        className="mx-auto max-w-4xl overflow-hidden rounded-2xl border border-white  bg-(--charcoal-black) p-6 sm:p-10 md:p-12"
+        className="mx-auto max-w-4xl overflow-hidden rounded-2xl border border-white bg-(--charcoal-black) p-6 sm:p-10 md:p-12"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
@@ -42,29 +39,11 @@ export default function BookMe() {
           </Link>
         </motion.button>
 
-        <motion.button
-          onClick={() => {
-            openUserProfile({
-              appearance: {
-                elements: {
-                  rootBox: "billing-focus",
-                  profileSection__profile: { display: "none" },
-                  profileSectionContent__profile: { display: "none" },
-                  avatarImage: { display: "none" },
-                  avatarImageActions: { display: "none" },
-                },
-              },
-            });
-          }}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+        <motion.div
+          whileHover={{ scale: 1.01 }}
           transition={{ duration: 0.2 }}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-yellow-300 bg-transparent px-6 py-3 font-semibold text-yellow-300 transition-colors hover:bg-yellow-300/10"
-        >
-          <MdCalendarToday className="text-xl" />
-          Upgrade to Collab+ for unlimited matching → Go to Account and
-          Billings.
-        </motion.button>
+          className="w-full"
+        ></motion.div>
       </motion.div>
     </section>
   );
