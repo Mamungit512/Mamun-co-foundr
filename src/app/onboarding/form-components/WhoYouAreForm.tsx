@@ -1,10 +1,10 @@
 "use client";
-// File to edit for redeployment
 
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
 import AIWriter from "@/components/ui/AIWriter";
+import LocationSelector from "@/components/ui/LocationSelector";
 
 function WhoYouAreForm({
   onNext,
@@ -86,31 +86,17 @@ function WhoYouAreForm({
           )}
         </div>
 
-        {/* City */}
-        <div className="flex w-full flex-col gap-x-20 gap-y-2">
-          <label htmlFor="city">City *</label>
-          <FormInput
-            type="text"
-            placeholder="e.g. Austin"
-            {...register("city", { required: true })}
-          />
-          {errors.city && (
-            <p className="text-sm text-red-500">City is required</p>
-          )}
-        </div>
-
-        {/* Country */}
-        <div className="flex w-full flex-col gap-x-20 gap-y-2">
-          <label htmlFor="country">Country *</label>
-          <FormInput
-            type="text"
-            placeholder="e.g. United States"
-            {...register("country", { required: true })}
-          />
-          {errors.country && (
-            <p className="text-sm text-red-500">Country is required</p>
-          )}
-        </div>
+        {/* LocationSelector */}
+        <LocationSelector
+          countryValue={watch("country") || ""}
+          cityValue={watch("city") || ""}
+          onCountryChange={(country) => setValue("country", country)}
+          onCityChange={(city) => setValue("city", city)}
+          errors={{
+            country: errors.country ? "Country is required" : undefined,
+            city: errors.city ? "City is required" : undefined,
+          }}
+        />
 
         {/* Current Occupation Satisfaction */}
         <div className="flex w-full flex-col gap-x-20 gap-y-2">
