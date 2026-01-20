@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, ChangeEvent } from "react";
 import * as faceapi from "@vladmandic/face-api";
+import Image from "next/image";
 
 // Props definition
 interface FaceDetectionUploaderProps {
@@ -186,7 +187,7 @@ export default function FaceDetectionUploader({
         )}
 
         {previewUrl && (
-          <img
+          <Image
             src={previewUrl}
             alt="Preview"
             className="h-32 w-32 rounded-full border-2 border-gray-300 object-cover"

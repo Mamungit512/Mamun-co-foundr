@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Country, State } from "country-state-city";
+import { Country, State, ICountry, IState } from "country-state-city";
 
 type LocationSelectorProps = {
   countryValue: string;
@@ -20,16 +20,14 @@ export default function LocationSelector({
   onCityChange,
   errors,
 }: LocationSelectorProps) {
-  const [countries, setCountries] = useState<any[]>([]);
-  const [cities, setCities] = useState<any[]>([]);
+  const [countries, setCountries] = useState<ICountry[]>([]);
+  const [cities, setCities] = useState<IState[]>([]);
   const [selectedCountryIso, setSelectedCountryIso] = useState("");
 
-  // Load countries
   useEffect(() => {
     setCountries(Country.getAllCountries());
   }, []);
 
-  // Load cities (state-level) when country changes
   useEffect(() => {
     if (!selectedCountryIso) {
       setCities([]);
@@ -39,9 +37,8 @@ export default function LocationSelector({
 
     const data = State.getStatesOfCountry(selectedCountryIso) || [];
     setCities(data);
-
     onCityChange("");
-  }, [selectedCountryIso]);
+  }, [selectedCountryIso, onCityChange]);
 
   const selectClass =
     "w-full rounded-lg border border-white/10 bg-[#1a1a1a] px-4 py-2.5 text-white " +
@@ -50,7 +47,6 @@ export default function LocationSelector({
 
   return (
     <div className="space-y-4">
-      {/* Country */}
       <div className="flex flex-col gap-y-2">
         <label className="text-sm font-medium text-gray-300">Country *</label>
         <select
@@ -59,9 +55,7 @@ export default function LocationSelector({
           onChange={(e) => {
             const iso = e.target.value;
             setSelectedCountryIso(iso);
-
             const country = countries.find((c) => c.isoCode === iso);
-
             onCountryChange(country?.name || "");
           }}
         >
@@ -77,7 +71,6 @@ export default function LocationSelector({
         )}
       </div>
 
-      {/* City */}
       <div className="flex flex-col gap-y-2">
         <label className="text-sm font-medium text-gray-300">City *</label>
         <select
@@ -89,14 +82,12 @@ export default function LocationSelector({
           <option value="">
             {!selectedCountryIso ? "First select a country" : "Select a city"}
           </option>
-
           {cities.map((city) => (
             <option key={city.isoCode} value={city.name}>
               {city.name}
             </option>
           ))}
         </select>
-
         {errors?.city && <p className="text-xs text-red-500">{errors.city}</p>}
       </div>
     </div>
