@@ -394,7 +394,9 @@ export default function EditProfile() {
                   countryValue={watch("country") || ""}
                   cityValue={watch("city") || ""}
                   onCountryChange={(country) => setValue("country", country)}
-                  onCityChange={(city) => setValue("city", city)}
+                  onCityChange={(city: string | undefined) =>
+                    setValue("city", city)
+                  }
                   errors={{
                     country: errors.country ? "Country is required" : undefined,
                     city: errors.city ? "City is required" : undefined,

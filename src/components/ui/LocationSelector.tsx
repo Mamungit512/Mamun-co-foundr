@@ -1,28 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Country, State, ICountry, IState } from "country-state-city";
+import { Country, City, ICountry, ICity } from "country-state-city";
 
 type LocationSelectorProps = {
   countryValue: string;
-  stateValue: string;
+  cityValue: string;
   onCountryChange: (country: string) => void;
-  onStateChange: (state: string) => void;
+  onCityChange: (city: string) => void;
   errors?: {
     country?: string;
-    state?: string;
+    city?: string;
   };
 };
 
 export default function LocationSelector({
   countryValue,
-  stateValue,
+  cityValue,
   onCountryChange,
-  onStateChange,
+  onCityChange,
   errors,
 }: LocationSelectorProps) {
   const [countries, setCountries] = useState<ICountry[]>([]);
-  const [states, setStates] = useState<IState[]>([]);
+  const [cities, setCities] = useState<ICity[]>([]);
   const [selectedCountryIso, setSelectedCountryIso] = useState("");
 
   useEffect(() => {
@@ -40,12 +40,12 @@ export default function LocationSelector({
 
   useEffect(() => {
     if (!selectedCountryIso) {
-      setStates([]);
+      setCities([]);
       return;
     }
 
-    const data = State.getStatesOfCountry(selectedCountryIso) || [];
-    setStates(data);
+    const data = City.getCitiesOfCountry(selectedCountryIso) || [];
+    setCities(data);
   }, [selectedCountryIso]);
 
   const selectClass =
@@ -65,7 +65,7 @@ export default function LocationSelector({
             setSelectedCountryIso(iso);
             const country = countries.find((c) => c.isoCode === iso);
             onCountryChange(country?.name || "");
-            onStateChange(""); 
+            onCityChange("");
           }}
         >
           <option value="">Select a country</option>
@@ -84,20 +84,23 @@ export default function LocationSelector({
         <label className="text-sm font-medium text-gray-300">City *</label>
         <select
           className={selectClass}
-          value={stateValue}
+          value={cityValue}
           disabled={!selectedCountryIso}
-          onChange={(e) => onStateChange(e.target.value)}
+          onChange={(e) => onCityChange(e.target.value)}
         >
           <option value="">
-            {!selectedCountryIso ? "First select a country" : "Select a state"}
+            {!selectedCountryIso ? "First select a country" : "Select a city"}
           </option>
-          {states.map((state) => (
-            <option key={state.isoCode} value={state.name}>
-              {state.name}
+          {cities.map((city, index) => (
+            <option
+              key={`${city.name}-${city.stateCode}-${index}`}
+              value={city.name}
+            >
+              {city.name}
             </option>
           ))}
         </select>
-        {errors?.state && <p className="text-xs text-red-500">{errors.state}</p>}
+        {errors?.city && <p className="text-xs text-red-500">{errors.city}</p>}
       </div>
     </div>
   );

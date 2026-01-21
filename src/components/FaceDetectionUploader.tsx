@@ -187,9 +187,11 @@ export default function FaceDetectionUploader({
         )}
 
         {previewUrl && (
-          <img
+          <Image
             src={previewUrl}
             alt="Preview"
+            width={128}
+            height={128}
             className="h-32 w-32 rounded-full border-2 border-gray-300 object-cover"
           />
         )}
