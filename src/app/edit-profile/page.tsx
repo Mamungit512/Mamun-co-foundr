@@ -13,6 +13,7 @@ import FormInput from "@/components/ui/FormInput";
 import AIWriter from "@/components/ui/AIWriter";
 import HiringSettings from "@/components/HiringSettings";
 import { trackEvent } from "@/lib/posthog-events";
+import LocationSelector from "@/components/ui/LocationSelector";
 
 // Dynamically import with SSR disabled (required for face-api.js)
 const FaceDetectionUploader = dynamic(
@@ -388,32 +389,17 @@ export default function EditProfile() {
                 )}
               </div>
 
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-300">
-                  City *
-                </label>
-                <FormInput
-                  placeholder="City"
-                  {...register("city", { required: "City is required" })}
+              <div className="sm:col-span-2">
+                <LocationSelector
+                  countryValue={watch("country") || ""}
+                  cityValue={watch("city") || ""}
+                  onCountryChange={(country) => setValue("country", country)}
+                  onCityChange={(city) => setValue("city", city)}
+                  errors={{
+                    country: errors.country ? "Country is required" : undefined,
+                    city: errors.city ? "City is required" : undefined,
+                  }}
                 />
-                {errors.city && (
-                  <p className="text-sm text-red-500">{errors.city.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-300">
-                  Country *
-                </label>
-                <FormInput
-                  placeholder="Country"
-                  {...register("country", { required: "Country is required" })}
-                />
-                {errors.country && (
-                  <p className="text-sm text-red-500">
-                    {errors.country.message}
-                  </p>
-                )}
               </div>
 
               <div className="space-y-2">
