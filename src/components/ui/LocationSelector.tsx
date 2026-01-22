@@ -122,7 +122,7 @@ export default function LocationSelector({
 
       <div className="flex flex-col gap-y-2">
         <label className="text-sm font-medium text-gray-300">
-          State / Province {states.length > 0 && "*"}
+          City / State  {states.length > 0 && "*"}
         </label>
         <select
           className={selectClass}
@@ -154,7 +154,7 @@ export default function LocationSelector({
         )}
       </div>
 
-      <div className="flex flex-col gap-y-2">
+      {/* <div className="flex flex-col gap-y-2">
         <label className="text-sm font-medium text-gray-300">City *</label>
         <select
           className={selectClass}
@@ -175,7 +175,7 @@ export default function LocationSelector({
           ))}
         </select>
         {errors?.city && <p className="text-xs text-red-500">{errors.city}</p>}
-      </div>
+      </div> */}
     </div>
   );
 }
