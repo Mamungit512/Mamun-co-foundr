@@ -392,8 +392,10 @@ export default function EditProfile() {
               <div className="sm:col-span-2">
                 <LocationSelector
                   countryValue={watch("country") || ""}
+                  stateValue=""
                   cityValue={watch("city") || ""}
                   onCountryChange={(country) => setValue("country", country)}
+                  onStateChange={() => {}}
                   onCityChange={(city: string | undefined) =>
                     setValue("city", city)
                   }

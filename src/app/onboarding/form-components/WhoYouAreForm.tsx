@@ -89,8 +89,10 @@ function WhoYouAreForm({
         {/* LocationSelector */}
         <LocationSelector
           countryValue={watch("country") || ""}
+          stateValue=""
           cityValue={watch("city") || ""}
           onCountryChange={(country) => setValue("country", country)}
+          onStateChange={() => {}}
           onCityChange={(city) => setValue("city", city)}
           errors={{
             country: errors.country ? "Country is required" : undefined,
