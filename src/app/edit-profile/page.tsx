@@ -393,15 +393,11 @@ export default function EditProfile() {
                 <LocationSelector
                   countryValue={watch("country") || ""}
                   stateValue=""
-                  cityValue={watch("city") || ""}
                   onCountryChange={(country) => setValue("country", country)}
                   onStateChange={() => {}}
-                  onCityChange={(city: string | undefined) =>
-                    setValue("city", city)
-                  }
                   errors={{
                     country: errors.country ? "Country is required" : undefined,
-                    city: errors.city ? "City is required" : undefined,
+                    // city: errors.city ? "City is required" : undefined,
                   }}
                 />
               </div>

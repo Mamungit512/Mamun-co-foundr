@@ -86,19 +86,17 @@ function WhoYouAreForm({
           )}
         </div>
 
-        {/* LocationSelector */}
-        <LocationSelector
-          countryValue={watch("country") || ""}
-          stateValue=""
-          cityValue={watch("city") || ""}
-          onCountryChange={(country) => setValue("country", country)}
-          onStateChange={() => {}}
-          onCityChange={(city) => setValue("city", city)}
-          errors={{
-            country: errors.country ? "Country is required" : undefined,
-            city: errors.city ? "City is required" : undefined,
-          }}
-        />
+       {/* LocationSelector */}
+<LocationSelector
+  countryValue={watch("country") || ""}
+  stateValue={watch("state") || ""}
+  onCountryChange={(country) => setValue("country", country)}
+  onStateChange={(state) => setValue("state", state)}
+  errors={{
+    country: errors.country ? "Country is required" : undefined,
+    state: errors.state ? "State is required" : undefined,
+  }}
+/>
 
         {/* Current Occupation Satisfaction */}
         <div className="flex w-full flex-col gap-x-20 gap-y-2">

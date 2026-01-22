@@ -92,6 +92,7 @@ declare global {
     title: string;
     city: string;
     country: string;
+     state: string;
     satisfaction: "Happy" | "Content" | "Browsing";
     batteryLevel: "Energized" | "Content" | "Burnt out";
     gender?: string;

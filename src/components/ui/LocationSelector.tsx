@@ -4,38 +4,30 @@ import { useEffect, useState } from "react";
 import {
   Country,
   State,
-  City,
   ICountry,
   IState,
-  ICity,
 } from "country-state-city";
 
 type LocationSelectorProps = {
   countryValue: string;
   stateValue: string;
-  cityValue: string;
   onCountryChange: (country: string) => void;
   onStateChange: (state: string) => void;
-  onCityChange: (city: string) => void;
   errors?: {
     country?: string;
     state?: string;
-    city?: string;
   };
 };
 
 export default function LocationSelector({
   countryValue,
   stateValue,
-  cityValue,
   onCountryChange,
   onStateChange,
-  onCityChange,
   errors,
 }: LocationSelectorProps) {
   const [countries, setCountries] = useState<ICountry[]>([]);
   const [states, setStates] = useState<IState[]>([]);
-  const [cities, setCities] = useState<ICity[]>([]);
   const [selectedCountryIso, setSelectedCountryIso] = useState("");
   const [selectedStateIso, setSelectedStateIso] = useState("");
 
@@ -64,7 +56,6 @@ export default function LocationSelector({
   useEffect(() => {
     if (!selectedCountryIso) {
       setStates([]);
-      setCities([]);
       return;
     }
 
@@ -72,19 +63,18 @@ export default function LocationSelector({
     setStates(data);
   }, [selectedCountryIso]);
 
-  useEffect(() => {
-    if (!selectedCountryIso) {
-      setCities([]);
-      return;
-    }
+  // useEffect(() => {
+  //   if (!selectedCountryIso) {
+  //     return;
+  //   }
 
-    // If a state is selected, get cities of that state
-    // Otherwise, get all cities of the country
-    const data = selectedStateIso
-      ? City.getCitiesOfState(selectedCountryIso, selectedStateIso) || []
-      : City.getCitiesOfCountry(selectedCountryIso) || [];
-    setCities(data);
-  }, [selectedCountryIso, selectedStateIso]);
+  //   // If a state is selected, get cities of that state
+  //   // Otherwise, get all cities of the country
+  //   const data = selectedStateIso
+  //     ? City.getCitiesOfState(selectedCountryIso, selectedStateIso) || []
+  //     : City.getCitiesOfCountry(selectedCountryIso) || [];
+  //   setCities(data);
+  // }, [selectedCountryIso, selectedStateIso]);
 
   const selectClass =
     "w-full rounded-lg border border-white/10 bg-[#1a1a1a] px-4 py-2.5 text-white " +
@@ -105,7 +95,6 @@ export default function LocationSelector({
             const country = countries.find((c) => c.isoCode === iso);
             onCountryChange(country?.name || "");
             onStateChange("");
-            onCityChange("");
           }}
         >
           <option value="">Select a country</option>
@@ -122,7 +111,7 @@ export default function LocationSelector({
 
       <div className="flex flex-col gap-y-2">
         <label className="text-sm font-medium text-gray-300">
-          City / State  {states.length > 0 && "*"}
+          City / State {states.length > 0 && "*"}
         </label>
         <select
           className={selectClass}
@@ -133,7 +122,6 @@ export default function LocationSelector({
             setSelectedStateIso(iso);
             const state = states.find((s) => s.isoCode === iso);
             onStateChange(state?.name || "");
-            onCityChange("");
           }}
         >
           <option value="">
