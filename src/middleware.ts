@@ -8,6 +8,8 @@ const isPublicRoute = createRouteMatcher([
   "/careers",
   "/contact-us",
   "/mission",
+  "/privacy-policy",
+  "/refund-policy",
   "/api/webhooks/clerk",
 ]);
 
