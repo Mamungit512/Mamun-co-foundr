@@ -89,7 +89,7 @@ function Header() {
           </li>
           <li className="translate-y text-sm font-semibold sm:text-base">
             <Link
-              href="/billing/upgrade"
+              href="/pricing"
               className="underline decoration-gray-300 underline-offset-4"
             >
               Pricing
@@ -315,7 +315,7 @@ function Header() {
                 </li>
                 <li>
                   <Link
-                    href="/billing/upgrade"
+                    href="/pricing"
                     target="_blank"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-all duration-200 hover:bg-gray-700/60 hover:text-white focus:bg-gray-700/60 focus:text-white"
