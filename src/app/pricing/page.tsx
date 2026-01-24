@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { motion } from "motion/react";
 import { FaCheck, FaUsers, FaEnvelope, FaEye } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
+import { useUser, SignUpButton } from "@clerk/nextjs";
 import { trackEvent } from "@/lib/posthog-events";
 
 export default function PricingPage() {
@@ -111,51 +111,172 @@ export default function PricingPage() {
           ))}
         </motion.div>
 
-        {/* Pricing Card */}
+        {/* Pricing Table */}
         <motion.div
           className="mb-16"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
         >
-          <div className="rounded-2xl border border-gray-700 bg-gray-800/30 p-8">
-            <div className="mb-8 text-center">
-              <h2 className="mb-2 text-2xl font-bold text-white">
-                Founders Pass
-              </h2>
-              <p className="text-gray-300">
-                Transform your profile into a talent magnet
-              </p>
+          <div className="mb-8 text-center">
+            <h2 className="mb-2 text-2xl font-bold text-white">
+              Select the plan that works best for your startup journey
+            </h2>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {/* Freemium Plan */}
+            <div className="relative rounded-2xl border border-gray-700 bg-gray-800/50 p-6">
+              <div className="mb-4">
+                <h3 className="mb-2 text-xl font-bold text-white">Freemium</h3>
+                <p className="text-sm text-gray-400">
+                  Join the Ummatic movement—no cost, no barriers. The Freemium
+                  tier lets you experience the foundation of Mamun: discover
+                  potential co-founders, browse ideas, and take your first step
+                  into a values-aligned entrepreneurial network.
+                </p>
+              </div>
+
+              <div className="mb-6">
+                <div className="mb-1">
+                  <span className="text-4xl font-bold text-white">$0</span>
+                </div>
+                <p className="text-sm text-gray-400">Always free</p>
+              </div>
+
+              <ul className="mb-6 space-y-3">
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+                  <span>10 thoughtful profile swipes per day.</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+                  <span>Basic profile with mission & values section.</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+                  <span>Access to Mamun Newsletter</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+                  <span>Access to AI profile writer</span>
+                </li>
+              </ul>
             </div>
 
-            {/* Pricing Display */}
-            <div className="mx-auto mb-8 max-w-md rounded-xl border-2 border-yellow-500/50 bg-gray-800/50 p-8 text-center">
+            {/* Monthly Plan */}
+            <div className="relative rounded-2xl border-2 border-yellow-500/50 bg-gray-800/50 p-6">
               <div className="mb-4">
-                <span className="text-5xl font-bold text-yellow-300">$6.99</span>
-                <span className="text-xl text-gray-300">/month</span>
+                <h3 className="mb-2 text-xl font-bold text-white">
+                  The Founders Monthly Pass
+                </h3>
+                <p className="text-sm text-gray-400">
+                  This tier is specifically designed for users who prefer a
+                  monthly subscription, allowing them to pay for their service
+                  on a month-to-month basis.
+                </p>
               </div>
-              <p className="mb-6 text-gray-400">
-                Cancel anytime, no long-term commitments
-              </p>
 
-              {/* CTA Button */}
-              <button
-                onClick={() => router.push("/sign-up")}
-                className="w-full rounded-lg bg-yellow-500 px-8 py-4 text-lg font-semibold text-gray-900 transition-all hover:bg-yellow-400 hover:shadow-lg"
-              >
+              <div className="mb-6">
+                <div className="mb-1">
+                  <span className="text-4xl font-bold text-yellow-300">
+                    $6.99
+                  </span>
+                  <span className="text-xl text-gray-300">/month</span>
+                </div>
+                <p className="text-sm text-gray-400">Only billed monthly</p>
+              </div>
+
+              <ul className="mb-6 space-y-3">
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-green-400" />
+                  <span>Hiring Badge</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-green-400" />
+                  <span>Unlimited swipes</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-green-400" />
+                  <span>Basic profile with mission & values section.</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-green-400" />
+                  <span>Access to Mamun Newsletter</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-green-400" />
+                  <span>Locked-In Lifetime Rate</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-green-400" />
+                  <span>Access to AI profile writer</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Annual Plan */}
+            <div className="relative rounded-2xl border border-gray-700 bg-gray-800/50 p-6">
+              <div className="mb-4">
+                <h3 className="mb-2 text-xl font-bold text-white">
+                  Founders Annual Pass
+                </h3>
+                <p className="text-sm text-gray-400">
+                  This tier is specifically designed for users who wish to opt
+                  for a one-time payment covering the entire year service.
+                </p>
+              </div>
+
+              <div className="mb-6">
+                <div className="mb-1 flex items-baseline gap-2">
+                  <span className="text-4xl font-bold text-white">$6.99</span>
+                  <span className="text-xl text-gray-300">/month</span>
+                </div>
+                <p className="text-sm text-gray-400">Billed annually</p>
+              </div>
+
+              <ul className="mb-6 space-y-3">
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-green-400" />
+                  <span>Hiring Badge</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-green-400" />
+                  <span>Access to Mamun Newsletter</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-green-400" />
+                  <span>Basic profile with mission & values section.</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-green-400" />
+                  <span>Unlimited swipes</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-green-400" />
+                  <span>Annual pass</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-green-400" />
+                  <span>Locked-In Lifetime Rate</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-gray-300">
+                  <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-green-400" />
+                  <span>Access to AI profile writer</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-8 text-center">
+            <p className="mb-4 text-lg text-gray-300">
+              Ready to unlock the full potential of Mamun?
+            </p>
+            <SignUpButton mode="modal">
+              <button className="rounded-lg bg-yellow-500 px-8 py-3 font-semibold text-gray-900 transition-all hover:bg-yellow-400 hover:shadow-lg">
                 Sign Up to Get Started
               </button>
-
-              <p className="mt-4 text-sm text-gray-400">
-                Already have an account?{" "}
-                <a
-                  href="/sign-in"
-                  className="text-yellow-300 hover:underline"
-                >
-                  Log in to subscribe
-                </a>
-              </p>
-            </div>
+            </SignUpButton>
           </div>
         </motion.div>
 
