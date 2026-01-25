@@ -30,6 +30,7 @@ declare global {
     city: string;
     cofounder_status: string | null;
     country: string;
+    state: string | null;
     created_at: string;
     deleted_at: string | null; // Soft delete timestamp
     permanent_delete_at: string | null; // Permanent delete timestamp
@@ -92,7 +93,7 @@ declare global {
     title: string;
     city: string;
     country: string;
-     state: string;
+    state?: string;
     satisfaction: "Happy" | "Content" | "Browsing";
     batteryLevel: "Energized" | "Content" | "Burnt out";
     gender?: string;
