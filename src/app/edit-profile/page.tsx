@@ -390,14 +390,34 @@ export default function EditProfile() {
               </div>
 
               <div className="sm:col-span-2">
+                {/* Hidden inputs for validation */}
+                <input
+                  type="hidden"
+                  {...register("country", { required: true })}
+                />
+                <input
+                  type="hidden"
+                  {...register("city", { required: true })}
+                />
+                <input type="hidden" {...register("state")} />
+
                 <LocationSelector
                   countryValue={watch("country") || ""}
-                  stateValue=""
-                  onCountryChange={(country) => setValue("country", country)}
-                  onStateChange={() => {}}
+                  stateValue={watch("state") || ""}
+                  cityValue={watch("city") || ""}
+                  onCountryChange={(country) =>
+                    setValue("country", country, { shouldValidate: true })
+                  }
+                  onStateChange={(state) =>
+                    setValue("state", state, { shouldValidate: true })
+                  }
+                  onCityChange={(city) =>
+                    setValue("city", city, { shouldValidate: true })
+                  }
                   errors={{
                     country: errors.country ? "Country is required" : undefined,
-                    // city: errors.city ? "City is required" : undefined,
+                    state: errors.state ? "State is required" : undefined,
+                    city: errors.city ? "City is required" : undefined,
                   }}
                 />
               </div>
