@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Country, State, ICountry, IState } from "country-state-city";
+import {
+  Country,
+  State,
+  City,
+  ICountry,
+  IState,
+  ICity,
+} from "country-state-city";
 
 type LocationSelectorProps = {
   countryValue: string;
@@ -28,6 +35,7 @@ export default function LocationSelector({
 }: LocationSelectorProps) {
   const [countries, setCountries] = useState<ICountry[]>([]);
   const [states, setStates] = useState<IState[]>([]);
+  const [cities, setCities] = useState<ICity[]>([]);
   const [selectedCountryIso, setSelectedCountryIso] = useState("");
   const [selectedStateIso, setSelectedStateIso] = useState("");
   const [isUS, setIsUS] = useState(false);
@@ -74,18 +82,21 @@ export default function LocationSelector({
     }
   }, [selectedCountryIso]);
 
-  // useEffect(() => {
-  //   if (!selectedCountryIso) {
-  //     return;
-  //   }
+  // Fetch cities based on country and state selection
+  useEffect(() => {
+    if (!selectedCountryIso) {
+      setCities([]);
+      return;
+    }
 
-  //   // If a state is selected, get cities of that state
-  //   // Otherwise, get all cities of the country
-  //   const data = selectedStateIso
-  //     ? City.getCitiesOfState(selectedCountryIso, selectedStateIso) || []
-  //     : City.getCitiesOfCountry(selectedCountryIso) || [];
-  //   setCities(data);
-  // }, [selectedCountryIso, selectedStateIso]);
+    // For US with a state selected, get cities of that state
+    // For US without state or non-US countries, get cities of the country
+    const data = selectedStateIso
+      ? City.getCitiesOfState(selectedCountryIso, selectedStateIso) || []
+      : City.getCitiesOfCountry(selectedCountryIso) || [];
+
+    setCities(data);
+  }, [selectedCountryIso, selectedStateIso]);
 
   const selectClass =
     "w-full rounded-lg border border-white/10 bg-[#1a1a1a] px-4 py-2.5 text-white " +
@@ -106,6 +117,8 @@ export default function LocationSelector({
             const country = countries.find((c) => c.isoCode === iso);
             onCountryChange(country?.name || "");
             onStateChange("");
+            // Reset city when country changes
+            onCityChange?.("");
           }}
         >
           <option value="">Select a country</option>
@@ -133,6 +146,8 @@ export default function LocationSelector({
               setSelectedStateIso(iso);
               const state = states.find((s) => s.isoCode === iso);
               onStateChange(state?.name || "");
+              // Reset city when state changes
+              onCityChange?.("");
             }}
           >
             <option value="">
@@ -150,19 +165,33 @@ export default function LocationSelector({
         </div>
       )}
 
-      {/* City input for all countries */}
+      {/* City dropdown for all countries */}
       <div className="flex flex-col gap-y-2">
         <label className="text-sm font-medium text-gray-300">City *</label>
-        <input
-          type="text"
+        <select
           className={selectClass}
           value={cityValue || ""}
-          placeholder={
-            !selectedCountryIso ? "First select a country" : "Enter city"
-          }
-          disabled={!selectedCountryIso}
+          disabled={!selectedCountryIso || (isUS && !selectedStateIso)}
           onChange={(e) => onCityChange?.(e.target.value)}
-        />
+        >
+          <option value="">
+            {!selectedCountryIso
+              ? "First select a country"
+              : isUS && !selectedStateIso
+                ? "First select a state"
+                : cities.length === 0
+                  ? "No cities available"
+                  : "Select a city"}
+          </option>
+          {cities.map((city, index) => (
+            <option
+              key={`${city.name}-${city.stateCode}-${index}`}
+              value={city.name}
+            >
+              {city.name}
+            </option>
+          ))}
+        </select>
         {errors?.city && <p className="text-xs text-red-500">{errors.city}</p>}
       </div>
     </div>
