@@ -139,7 +139,7 @@ export async function getProfiles(
   options?: {
     filterInactive?: boolean;
     inactivityThresholdDays?: number;
-  }
+  },
 ) {
   const supabase = createSupabaseClientWithToken(token);
 
@@ -172,7 +172,7 @@ export async function getProfiles(
       .select("user_id")
       .gte("last_active_at", thresholdDate.toISOString());
 
-    const activeUserIds = activeUsers?.map(u => u.user_id) || [];
+    const activeUserIds = activeUsers?.map((u) => u.user_id) || [];
 
     if (activeUserIds.length > 0) {
       // Get profiles for active users
@@ -221,19 +221,17 @@ export async function getProfiles(
   if (!profiles) return [];
 
   // Fetch activity data for the profiles to include in the response
-  const profileUserIds = profiles.map(p => p.user_id);
+  const profileUserIds = profiles.map((p) => p.user_id);
   const { data: activityData } = await supabase
     .from("user_activity_summary")
     .select("*")
     .in("user_id", profileUserIds);
 
   // Create a map of activity data
-  const activityMap = new Map(
-    activityData?.map(a => [a.user_id, a]) || []
-  );
+  const activityMap = new Map(activityData?.map((a) => [a.user_id, a]) || []);
 
   // Map profiles and merge with activity data
-  const mappedProfiles = profiles.map(profile => {
+  const mappedProfiles = profiles.map((profile) => {
     const activity = activityMap.get(profile.user_id);
     return {
       ...mapProfileToOnboardingData(profile),
