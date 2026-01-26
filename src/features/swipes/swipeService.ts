@@ -1,5 +1,3 @@
-import { createSupabaseClientWithToken } from "../../lib/supabaseClient";
-
 // Get today's swipe count for a user
 export async function getTodaySwipeCount(
   userId: string,
@@ -9,65 +7,24 @@ export async function getTodaySwipeCount(
     return { count: 0, error: "Missing user ID" };
   }
 
-  const supabase = createSupabaseClientWithToken(token);
-
-  // Get today's date in UTC
-  const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
-  const todayISO = today.toISOString();
-
-  console.log("Checking swipe count for user:", userId, "since:", todayISO);
-
   try {
-    // Get user's internal profile ID first
-    const { data: userProfile, error: profileError } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("user_id", userId)
-      .single();
+    // Call the API route instead of directly accessing Supabase
+    // This allows us to use the service role key server-side to bypass RLS
+    const response = await fetch("/api/swipe-count", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-    if (profileError || !userProfile) {
-      console.error("Error fetching user profile:", profileError);
-      return { count: 0, error: "User profile not found" };
+    if (!response.ok) {
+      const error = await response.json();
+      console.error("Error from swipe count API:", error);
+      return { count: 0, error: error.error || "Failed to fetch swipe count" };
     }
 
-    const userProfileId = userProfile.id;
-
-    // Count likes from likes table
-    const { count: likesCount, error: likesError } = await supabase
-      .from("likes")
-      .select("*", { count: "exact", head: true })
-      .eq("liker_id", userId)
-      .gte("created_at", todayISO);
-
-    if (likesError) {
-      console.error("Error counting likes:", likesError);
-      return { count: 0, error: "Failed to count likes" };
-    }
-
-    // Count skips from user_profile_actions table
-    const { count: skipsCount, error: skipsError } = await supabase
-      .from("user_profile_actions")
-      .select("*", { count: "exact", head: true })
-      .eq("user_id", userProfileId)
-      .eq("action_type", "skip")
-      .gte("created_at", todayISO);
-
-    if (skipsError) {
-      console.error("Error counting skips:", skipsError);
-      return { count: 0, error: "Failed to count skips" };
-    }
-
-    const totalSwipes = (likesCount || 0) + (skipsCount || 0);
-    console.log(
-      "Likes count:",
-      likesCount,
-      "Skips count:",
-      skipsCount,
-      "Total:",
-      totalSwipes,
-    );
-    return { count: totalSwipes };
+    const data = await response.json();
+    return { count: data.count };
   } catch (error) {
     console.error("Unexpected error in getTodaySwipeCount:", error);
     return { count: 0, error: "Unexpected error occurred" };
@@ -84,16 +41,49 @@ export async function hasReachedSwipeLimit(
   limit: number;
   error?: string;
 }> {
-  const { count, error } = await getTodaySwipeCount(userId, token);
-
-  if (error) {
-    return { hasReachedLimit: false, currentCount: 0, limit: 10, error };
+  if (!userId) {
+    return {
+      hasReachedLimit: false,
+      currentCount: 0,
+      limit: 10,
+      error: "Missing user ID",
+    };
   }
 
-  const limit = 10; // Free plan limit
-  return {
-    hasReachedLimit: count >= limit,
-    currentCount: count,
-    limit,
-  };
+  try {
+    // Call the API route instead of directly accessing Supabase
+    // This allows us to use the service role key server-side to bypass RLS
+    const response = await fetch("/api/swipe-count", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error("Error from swipe count API:", error);
+      return {
+        hasReachedLimit: false,
+        currentCount: 0,
+        limit: 10,
+        error: error.error,
+      };
+    }
+
+    const data = await response.json();
+    return {
+      hasReachedLimit: data.hasReachedLimit,
+      currentCount: data.currentCount,
+      limit: data.limit,
+    };
+  } catch (error) {
+    console.error("Unexpected error in hasReachedSwipeLimit:", error);
+    return {
+      hasReachedLimit: false,
+      currentCount: 0,
+      limit: 10,
+      error: "Unexpected error occurred",
+    };
+  }
 }
