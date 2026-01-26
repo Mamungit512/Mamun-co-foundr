@@ -18,35 +18,21 @@ export async function likeProfile({
     return { success: false, error: "Cannot like your own profile" };
   }
 
-  const supabase = createSupabaseClientWithToken(token);
-
-  // Check if like already exists
-  const { data: existingLike, error: checkError } = await supabase
-    .from("likes")
-    .select("id")
-    .eq("liker_id", likerId)
-    .eq("liked_id", likedId)
-    .single();
-
-  if (checkError && checkError.code !== "PGRST116") {
-    // PGRST116 is "not found" error, which is expected if no like exists
-    console.error("Error checking existing like:", checkError);
-    return { success: false, error: "Failed to check like status" };
-  }
-
-  if (existingLike) {
-    return { success: false, error: "Profile already liked" };
-  }
-
-  // Insert the like
-  const { error: insertError } = await supabase.from("likes").insert({
-    liker_id: likerId,
-    liked_id: likedId,
+  // Call the API route instead of directly accessing Supabase
+  // This allows us to use the service role key server-side to bypass RLS
+  const response = await fetch("/api/like", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ likedId }),
   });
 
-  if (insertError) {
-    console.error("Error inserting like:", insertError);
-    return { success: false, error: "Failed to like profile" };
+  if (!response.ok) {
+    const error = await response.json();
+    console.error("Error from like API:", error);
+    return { success: false, error: error.error || "Failed to like profile" };
   }
 
   return { success: true };
@@ -66,17 +52,21 @@ export async function unlikeProfile({
     return { success: false, error: "Missing liker or liked user ID" };
   }
 
-  const supabase = createSupabaseClientWithToken(token);
+  // Call the API route instead of directly accessing Supabase
+  // This allows us to use the service role key server-side to bypass RLS
+  const response = await fetch("/api/like", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ likedId }),
+  });
 
-  const { error: deleteError } = await supabase
-    .from("likes")
-    .delete()
-    .eq("liker_id", likerId)
-    .eq("liked_id", likedId);
-
-  if (deleteError) {
-    console.error("Error deleting like:", deleteError);
-    return { success: false, error: "Failed to unlike profile" };
+  if (!response.ok) {
+    const error = await response.json();
+    console.error("Error from unlike API:", error);
+    return { success: false, error: error.error || "Failed to unlike profile" };
   }
 
   return { success: true };
