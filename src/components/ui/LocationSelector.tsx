@@ -63,7 +63,7 @@ export default function LocationSelector({
             const iso = e.target.value;
             const country = countries.find((c) => c.isoCode === iso);
             onCountryChange(country?.name || "");
-            onStateChange(""); 
+            onStateChange("");
           }}
         >
           <option value="">Select a Country</option>

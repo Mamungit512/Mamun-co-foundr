@@ -87,7 +87,7 @@ function WhoYouAreForm({
         </div>
 
         {/* LocationSelector */}
-                {/* Hidden inputs for validation */}
+        {/* Hidden inputs for validation */}
         <input type="hidden" {...register("country", { required: true })} />
         <input type="hidden" {...register("state", { required: true })} />
 
