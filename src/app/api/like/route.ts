@@ -36,10 +36,9 @@ export async function POST(request: NextRequest) {
       .select("id")
       .eq("liker_id", userId)
       .eq("liked_id", likedId)
-      .single();
+      .maybeSingle();
 
-    if (checkError && checkError.code !== "PGRST116") {
-      // PGRST116 is "not found" error, which is expected if no like exists
+    if (checkError) {
       console.error("Error checking existing like:", checkError);
       return NextResponse.json(
         { error: "Failed to check like status" },
@@ -47,14 +46,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // If like already exists, return success without inserting
     if (existingLike) {
-      return NextResponse.json(
-        { error: "Profile already liked" },
-        { status: 400 },
-      );
+      console.log("Profile already liked, skipping duplicate insert");
+      return NextResponse.json({
+        success: true,
+        alreadyLiked: true,
+      });
     }
 
-    // Insert the like
+    // Insert the like (only if doesn't exist)
     const { error: insertError } = await supabase.from("likes").insert({
       liker_id: userId,
       liked_id: likedId,
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
       likedId,
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, alreadyLiked: false });
   } catch (error) {
     console.error("Error in like API:", error);
     return NextResponse.json(

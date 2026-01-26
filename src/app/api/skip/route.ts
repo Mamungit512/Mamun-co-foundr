@@ -55,7 +55,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Store skip in user_profile_actions table
+    // Check if skip already exists
+    const { data: existingSkip, error: checkError } = await supabase
+      .from("user_profile_actions")
+      .select("id")
+      .eq("user_id", userProfile.id)
+      .eq("other_profile_id", skippedProfile.id)
+      .eq("action_type", "skip")
+      .maybeSingle();
+
+    if (checkError) {
+      console.error("Error checking existing skip:", checkError);
+      return NextResponse.json(
+        { error: "Failed to check skip status" },
+        { status: 500 },
+      );
+    }
+
+    // If skip already exists, return success without inserting
+    if (existingSkip) {
+      console.log("Profile already skipped, skipping duplicate insert");
+      return NextResponse.json({
+        success: true,
+        alreadySkipped: true,
+      });
+    }
+
+    // Store skip in user_profile_actions table (only if doesn't exist)
     const { error: createSkipError } = await supabase
       .from("user_profile_actions")
       .insert({
@@ -72,16 +98,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(
-      "Skip action created successfully in user_profile_actions table:",
-      {
-        userId: userProfile.id,
-        otherProfileId: skippedProfile.id,
-        actionType: "skip",
-      },
-    );
-
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, alreadySkipped: false });
   } catch (error) {
     console.error("Error in skip API:", error);
     return NextResponse.json(
