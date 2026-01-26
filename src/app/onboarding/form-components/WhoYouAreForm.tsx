@@ -86,25 +86,25 @@ function WhoYouAreForm({
           )}
         </div>
 
-       {/* LocationSelector */}
-        {/* Hidden inputs for validation */}
+        {/* LocationSelector */}
+                {/* Hidden inputs for validation */}
         <input type="hidden" {...register("country", { required: true })} />
-        <input type="hidden" {...register("city", { required: true })} />
-        <input type="hidden" {...register("state")} />
+        <input type="hidden" {...register("state", { required: true })} />
 
-<LocationSelector
-  countryValue={watch("country") || ""}
-  stateValue={watch("state") || ""}
-  cityValue={watch("city") || ""}
-  onCountryChange={(country) => setValue("country", country, { shouldValidate: true })}
-  onStateChange={(state) => setValue("state", state, { shouldValidate: true })}
-  onCityChange={(city) => setValue("city", city, { shouldValidate: true })}
-  errors={{
-    country: errors.country ? "Country is required" : undefined,
-    state: errors.state ? "State is required" : undefined,
-    city: errors.city ? "City is required" : undefined,
-  }}
-/>
+        <LocationSelector
+          countryValue={watch("country") || ""}
+          stateValue={watch("state") || ""}
+          onCountryChange={(country) =>
+            setValue("country", country, { shouldValidate: true })
+          }
+          onStateChange={(state) =>
+            setValue("state", state, { shouldValidate: true })
+          }
+          errors={{
+            country: errors.country ? "Country is required" : undefined,
+            state: errors.state ? "City/State is required" : undefined,
+          }}
+        />
 
         {/* Current Occupation Satisfaction */}
         <div className="flex w-full flex-col gap-x-20 gap-y-2">
