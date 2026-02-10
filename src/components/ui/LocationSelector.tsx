@@ -26,7 +26,6 @@ type LocationSelectorProps = {
 
 export default function LocationSelector({
   countryValue,
-  stateValue,
   cityValue,
   onCountryChange,
   onStateChange,
@@ -37,161 +36,180 @@ export default function LocationSelector({
   const [states, setStates] = useState<IState[]>([]);
   const [cities, setCities] = useState<ICity[]>([]);
   const [selectedCountryIso, setSelectedCountryIso] = useState("");
-  const [selectedStateIso, setSelectedStateIso] = useState("");
-  const [isUS, setIsUS] = useState(false);
+  const [useManualInput, setUseManualInput] = useState(false);
+  const [useStatesAsSecondLevel, setUseStatesAsSecondLevel] = useState(false);
+  const [manualCountryInput, setManualCountryInput] = useState(false);
+  const [manualCityInput, setManualCityInput] = useState(false);
 
   useEffect(() => {
     setCountries(Country.getAllCountries());
   }, []);
 
   useEffect(() => {
-    if (countryValue && countries.length > 0) {
+    if (countryValue && countries.length > 0 && !manualCountryInput) {
       const country = countries.find((c) => c.name === countryValue);
       if (country) {
         setSelectedCountryIso(country.isoCode);
       }
     }
-  }, [countryValue, countries]);
+  }, [countryValue, countries, manualCountryInput]);
 
   useEffect(() => {
-    if (stateValue && states.length > 0) {
-      const state = states.find((s) => s.name === stateValue);
-      if (state) {
-        setSelectedStateIso(state.isoCode);
-      }
-    }
-  }, [stateValue, states]);
-
-  useEffect(() => {
-    if (!selectedCountryIso) {
+    if (!selectedCountryIso || manualCountryInput) {
       setStates([]);
-      setIsUS(false);
-      return;
-    }
-
-    // Check if the selected country is US
-    const countryIsUS = selectedCountryIso === "US";
-    setIsUS(countryIsUS);
-
-    // Only fetch states if country is US
-    if (countryIsUS) {
-      const data = State.getStatesOfCountry(selectedCountryIso) || [];
-      setStates(data);
-    } else {
-      setStates([]);
-    }
-  }, [selectedCountryIso]);
-
-  // Fetch cities based on country and state selection
-  useEffect(() => {
-    if (!selectedCountryIso) {
       setCities([]);
+      setUseManualInput(false);
+      setUseStatesAsSecondLevel(false);
       return;
     }
 
-    // For US with a state selected, get cities of that state
-    // For US without state or non-US countries, get cities of the country
-    const data = selectedStateIso
-      ? City.getCitiesOfState(selectedCountryIso, selectedStateIso) || []
-      : City.getCitiesOfCountry(selectedCountryIso) || [];
+    const statesData = State.getStatesOfCountry(selectedCountryIso) || [];
+    if (statesData.length > 0) {
+      setStates(statesData);
+      setCities([]);
+      setUseStatesAsSecondLevel(true);
+      setUseManualInput(false);
+      return;
+    }
+
+    const data = City.getCitiesOfCountry(selectedCountryIso) || [];
 
     setCities(data);
-  }, [selectedCountryIso, selectedStateIso]);
+    setStates([]);
+    setUseStatesAsSecondLevel(false);
+
+    setUseManualInput(data.length === 0);
+  }, [selectedCountryIso, manualCountryInput]);
 
   const selectClass =
     "w-full rounded-lg border border-white/10 bg-[#1a1a1a] px-4 py-2.5 text-white " +
     "focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none " +
     "disabled:opacity-50 disabled:cursor-not-allowed";
 
+  const buttonClass =
+    "text-xs text-blue-400 hover:text-blue-300 underline cursor-pointer";
+
   return (
     <div className="space-y-4">
+      {/* Country Field */}
       <div className="flex flex-col gap-y-2">
-        <label className="text-sm font-medium text-gray-300">Country *</label>
-        <select
-          className={selectClass}
-          value={selectedCountryIso}
-          onChange={(e) => {
-            const iso = e.target.value;
-            setSelectedCountryIso(iso);
-            setSelectedStateIso("");
-            const country = countries.find((c) => c.isoCode === iso);
-            onCountryChange(country?.name || "");
-            onStateChange("");
-            // Reset city when country changes
-            onCityChange?.("");
-          }}
-        >
-          <option value="">Select a country</option>
-          {countries.map((c) => (
-            <option key={c.isoCode} value={c.isoCode}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-medium text-gray-300">Country *</label>
+          <button
+            type="button"
+            className={buttonClass}
+            onClick={() => {
+              setManualCountryInput(!manualCountryInput);
+              setSelectedCountryIso("");
+              onCountryChange("");
+              onStateChange("");
+              onCityChange?.("");
+              setManualCityInput(false);
+            }}
+          >
+            {manualCountryInput ? "Select from list" : "Enter manually"}
+          </button>
+        </div>
+
+        {manualCountryInput ? (
+          <input
+            className={selectClass}
+            value={countryValue}
+            placeholder="Type your country"
+            onChange={(e) => onCountryChange(e.target.value)}
+          />
+        ) : (
+          <select
+            className={selectClass}
+            value={selectedCountryIso}
+            onChange={(e) => {
+              const iso = e.target.value;
+              setSelectedCountryIso(iso);
+              const country = countries.find((c) => c.isoCode === iso);
+              onCountryChange(country?.name || "");
+              onStateChange("");
+              onCityChange?.("");
+            }}
+          >
+            <option value="">Select a country</option>
+            {countries.map((c) => (
+              <option key={c.isoCode} value={c.isoCode}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        )}
         {errors?.country && (
           <p className="text-xs text-red-500">{errors.country}</p>
         )}
       </div>
 
-      {/* Only show State dropdown for US */}
-      {isUS && (
-        <div className="flex flex-col gap-y-2">
-          <label className="text-sm font-medium text-gray-300">State *</label>
-          <select
-            className={selectClass}
-            value={selectedStateIso}
-            disabled={states.length === 0}
-            onChange={(e) => {
-              const iso = e.target.value;
-              setSelectedStateIso(iso);
-              const state = states.find((s) => s.isoCode === iso);
-              onStateChange(state?.name || "");
-              // Reset city when state changes
-              onCityChange?.("");
-            }}
-          >
-            <option value="">
-              {states.length === 0 ? "No states available" : "Select a state"}
-            </option>
-            {states.map((state) => (
-              <option key={state.isoCode} value={state.isoCode}>
-                {state.name}
-              </option>
-            ))}
-          </select>
-          {errors?.state && (
-            <p className="text-xs text-red-500">{errors.state}</p>
+      {/* State/City Field */}
+      <div className="flex flex-col gap-y-2">
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-medium text-gray-300">
+            State / City *
+          </label>
+          {!manualCountryInput && selectedCountryIso && !useManualInput && (
+            <button
+              type="button"
+              className={buttonClass}
+              onClick={() => {
+                setManualCityInput(!manualCityInput);
+                if (!manualCityInput) {
+                  onCityChange?.("");
+                }
+              }}
+            >
+              {manualCityInput ? "Select from list" : "Enter manually"}
+            </button>
           )}
         </div>
-      )}
 
-      {/* City dropdown for all countries */}
-      <div className="flex flex-col gap-y-2">
-        <label className="text-sm font-medium text-gray-300">City *</label>
-        <select
-          className={selectClass}
-          value={cityValue || ""}
-          disabled={!selectedCountryIso || (isUS && !selectedStateIso)}
-          onChange={(e) => onCityChange?.(e.target.value)}
-        >
-          <option value="">
-            {!selectedCountryIso
-              ? "First select a country"
-              : isUS && !selectedStateIso
-                ? "First select a state"
-                : cities.length === 0
-                  ? "No cities available"
-                  : "Select a city"}
-          </option>
-          {cities.map((city, index) => (
-            <option
-              key={`${city.name}-${city.stateCode}-${index}`}
-              value={city.name}
-            >
-              {city.name}
+        {useManualInput || manualCityInput || manualCountryInput ? (
+          <input
+            className={selectClass}
+            value={cityValue || ""}
+            disabled={!selectedCountryIso && !manualCountryInput}
+            placeholder={
+              !selectedCountryIso && !manualCountryInput
+                ? "First select a country"
+                : "Type your state or city"
+            }
+            onChange={(e) => onCityChange?.(e.target.value)}
+          />
+        ) : (
+          <select
+            className={selectClass}
+            value={cityValue || ""}
+            disabled={!selectedCountryIso}
+            onChange={(e) => onCityChange?.(e.target.value)}
+          >
+            <option value="">
+              {!selectedCountryIso
+                ? "First select a country"
+                : useStatesAsSecondLevel
+                  ? "Select a state/province"
+                  : cities.length === 0
+                    ? "No options available"
+                    : "Select a city"}
             </option>
-          ))}
-        </select>
+            {useStatesAsSecondLevel
+              ? states.map((s) => (
+                  <option key={s.isoCode} value={s.name}>
+                    {s.name}
+                  </option>
+                ))
+              : cities.map((city, index) => (
+                  <option
+                    key={`${city.name}-${city.stateCode}-${index}`}
+                    value={city.name}
+                  >
+                    {city.name}
+                  </option>
+                ))}
+          </select>
+        )}
         {errors?.city && <p className="text-xs text-red-500">{errors.city}</p>}
       </div>
     </div>
