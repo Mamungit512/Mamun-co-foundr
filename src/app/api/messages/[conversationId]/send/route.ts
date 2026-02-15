@@ -107,7 +107,7 @@ export async function POST(
         sender_id: userId,
         content: content.trim(),
       })
-      .select()
+      .select("id, conversation_id, sender_id, content, created_at")
       .single();
 
     if (messageError) {
