@@ -229,7 +229,7 @@ export default function PricingPage() {
 
               <div className="mb-6">
                 <div className="mb-1 flex items-baseline gap-2">
-                  <span className="text-4xl font-bold text-white">$6.99</span>
+                  <span className="text-4xl font-bold text-white">$10.99</span>
                   <span className="text-xl text-gray-300">/month</span>
                 </div>
                 <p className="text-sm text-gray-400">Billed annually</p>
