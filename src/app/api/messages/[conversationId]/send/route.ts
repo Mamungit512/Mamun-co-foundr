@@ -118,6 +118,17 @@ export async function POST(
       );
     }
 
+    // Update the conversation's last_message_at timestamp
+    const { error: updateError } = await supabase
+      .from("conversations")
+      .update({ last_message_at: new Date().toISOString() })
+      .eq("id", conversationId);
+
+    if (updateError) {
+      console.error("Error updating conversation timestamp:", updateError);
+      // Don't fail the request if timestamp update fails - message was sent successfully
+    }
+
     // Send email notification to recipient (daily digest batching)
     try {
       const { data: participants, error: participantsError } = await supabase
