@@ -32,8 +32,8 @@ export async function getAllConnections(
   const supabase = supabaseClient;
 
   try {
-    // 1. Fetch all conversations that have at least one message
-    const { data: conversationsWithMessages, error: conversationsError } =
+    // 1. Fetch all conversations
+    const { data: allConversations, error: conversationsError } =
       await supabase
         .from("conversations")
         .select(
@@ -43,7 +43,6 @@ export async function getAllConnections(
           last_message_at
         `,
         )
-        .not("last_message_at", "is", null)
         .order("created_at", { ascending: false });
 
     if (conversationsError) {
@@ -55,7 +54,7 @@ export async function getAllConnections(
       };
     }
 
-    if (!conversationsWithMessages || conversationsWithMessages.length === 0) {
+    if (!allConversations || allConversations.length === 0) {
       return {
         connections: [],
         total_connections: 0,
@@ -65,7 +64,26 @@ export async function getAllConnections(
     // 2. For each conversation, get participants and message count
     const connections: Connection[] = [];
 
-    for (const conversation of conversationsWithMessages) {
+    for (const conversation of allConversations) {
+      // Count messages in this conversation first
+      const { count: messageCount, error: countError } = await supabase
+        .from("messages")
+        .select("*", { count: "exact", head: true })
+        .eq("conversation_id", conversation.id);
+
+      if (countError) {
+        console.error(
+          `Error counting messages for conversation ${conversation.id}:`,
+          countError,
+        );
+        continue;
+      }
+
+      // Skip conversations with no messages
+      if (!messageCount || messageCount === 0) {
+        continue;
+      }
+
       // Get all participants for this conversation
       const { data: participants, error: participantsError } = await supabase
         .from("conversation_participants")
@@ -110,20 +128,6 @@ export async function getAllConnections(
         continue; // Skip if either profile is missing
       }
 
-      // Count messages in this conversation
-      const { count: messageCount, error: countError } = await supabase
-        .from("messages")
-        .select("*", { count: "exact", head: true })
-        .eq("conversation_id", conversation.id);
-
-      if (countError) {
-        console.error(
-          `Error counting messages for conversation ${conversation.id}:`,
-          countError,
-        );
-        continue;
-      }
-
       connections.push({
         conversation_id: conversation.id,
         user1: {
@@ -140,7 +144,7 @@ export async function getAllConnections(
           pfp_url: user2Profile.pfp_url,
           title: user2Profile.title,
         },
-        message_count: messageCount || 0,
+        message_count: messageCount,
         created_at: conversation.created_at,
         last_message_at: conversation.last_message_at,
       });
