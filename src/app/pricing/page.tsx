@@ -6,6 +6,7 @@ import { FaUsers, FaEnvelope, FaEye } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useUser, PricingTable } from "@clerk/nextjs";
 import { trackEvent } from "@/lib/posthog-events";
+import { FaCheck } from "react-icons/fa6";
 
 export default function PricingPage() {
   const router = useRouter();
@@ -129,6 +130,59 @@ export default function PricingPage() {
             </div>
             <PricingTable />
           </div>
+           <motion.div
+                    className="text-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                  >
+                    <div className="rounded-lg bg-gray-800/50 p-8">
+                      <h3 className="mb-4 text-xl font-semibold text-white">
+                      Founders Pass
+                      </h3>
+                      <p className="mb-6 text-gray-300">
+                        For just $6.99/month, transform your profile into a talent magnet.
+                        The hiring badge isn&apos;t just a visual indicator - it&apos;s
+                        your gateway to connecting with passionate co-founders and skilled
+                        employees who are ready to build something amazing with you.
+                      </p>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <div className="flex items-center gap-3">
+                          <FaCheck className="h-5 w-5 text-green-400" />
+                          <span className="text-gray-300">
+                            Cancel anytime, no long-term commitments
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <FaCheck className="h-5 w-5 text-green-400" />
+                          <span className="text-gray-300">
+                            Instant activation of hiring features
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <FaCheck className="h-5 w-5 text-green-400" />
+                          <span className="text-gray-300">
+                            Professional hiring badge on your profile
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <FaCheck className="h-5 w-5 text-green-400" />
+                          <span className="text-gray-300">
+                            Direct email inquiries from candidates
+                          </span>
+                        </div>
+                      </div>
+                      <p className="mt-6 text-sm text-gray-500">
+                        View our{" "}
+                        <a
+                          href="/refund-policy"
+                          className="text-yellow-300 hover:underline"
+                        >
+                          Refund Policy
+                        </a>
+                      </p>
+                    </div>
+                  </motion.div>
         </motion.div>
       </div>
     </div>
