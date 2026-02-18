@@ -53,7 +53,7 @@ function page() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
             >
-              Muslim Co-Foundr Matching
+             Co-Foundr Matching
             </motion.p>
           </motion.div>
 
@@ -65,7 +65,7 @@ function page() {
               transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
             >
               <b>
-                <i>Where Muslim founders find each other</i>
+                <i>Where founders find each other</i>
               </b>
             </motion.p>
 

@@ -76,7 +76,7 @@ function CofoundrMatching() {
           >
             <div className="mx-auto max-w-7xl">
               <h1 className="heading-4 mb-2 text-center">
-                Muslim Co-Foundr Matching
+               Co-Foundr Matching
               </h1>
               <p className="text-center text-gray-300">
                 Discover your perfect co-founder match
@@ -322,7 +322,7 @@ function CofoundrMatching() {
         >
           <div className="mx-auto max-w-7xl">
             <h1 className="mb-2 text-center text-2xl font-bold sm:text-3xl md:text-4xl lg:text-5xl">
-              Muslim Co-Foundr Matching
+             Co-Foundr Matching
             </h1>
             <p className="text-center text-sm text-gray-300 sm:text-base md:text-lg">
               Discover your perfect co-founder match
