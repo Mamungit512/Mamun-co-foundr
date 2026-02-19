@@ -3,6 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/next";
 import { Suspense } from "react";
+import Script from "next/script";
 
 import "./globals.css";
 import Header from "@/components/header_footer/Header";
@@ -37,6 +38,11 @@ export default function RootLayout({
         <body
           className={`${satoshi.className} scroll-smooth bg-(--charcoal-black) antialiased lg:text-lg`}
         >
+          <Script
+            src="https://elfsightcdn.com/platform.js"
+            strategy="lazyOnload"
+          />
+
           <Suspense fallback={null}>
             <PostHogProvider>
               <QueryProvider>
