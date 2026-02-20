@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import { FaCheck, FaUsers, FaEnvelope, FaEye } from "react-icons/fa";
 import { PricingTable } from "@clerk/nextjs";
 import { trackEvent } from "@/lib/posthog-events";
+import ElfsightCounter from "@/components/Elfsightcounter";
 
 export default function BillingUpgradePage() {
   // Track page view when component mounts - using motion.div onAnimationComplete as event handler
@@ -40,7 +41,7 @@ export default function BillingUpgradePage() {
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
-          className="mb-16 text-center"
+          className="mb-10 text-center"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
@@ -82,6 +83,16 @@ export default function BillingUpgradePage() {
           ))}
         </motion.div>
 
+        {/* Elfsight Co-Founder Match Counter */}
+        <motion.div
+          className="mb-12 flex justify-center"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
+        >
+          <ElfsightCounter />
+        </motion.div>
+
         {/* Pricing Table */}
         <motion.div
           className="mb-16"
@@ -111,7 +122,7 @@ export default function BillingUpgradePage() {
         >
           <div className="rounded-lg bg-gray-800/50 p-8">
             <h3 className="mb-4 text-xl font-semibold text-white">
-            Founders Pass
+              Founders Pass
             </h3>
             <p className="mb-6 text-gray-300">
               For just $6.99/month, transform your profile into a talent magnet.
