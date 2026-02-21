@@ -85,10 +85,10 @@ export default function BillingUpgradePage() {
 
         {/* Elfsight Co-Founder Match Counter */}
         <motion.div
-          className="mb-12 flex justify-center"
-          initial={{ opacity: 0, y: 10 }}
+          className="mt-8 flex w-full justify-center px-4 sm:mt-10 md:mt-24 md:mb-20"
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
+          transition={{ duration: 0.8, delay: 2.2, ease: "easeOut" }}
         >
           <ElfsightCounter />
         </motion.div>

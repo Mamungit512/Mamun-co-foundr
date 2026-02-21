@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useUser, PricingTable } from "@clerk/nextjs";
 import { trackEvent } from "@/lib/posthog-events";
 import { FaCheck } from "react-icons/fa6";
+import ElfsightCounter from "@/components/Elfsightcounter";
 
 export default function PricingPage() {
   const router = useRouter();
@@ -111,7 +112,14 @@ export default function PricingPage() {
             </motion.div>
           ))}
         </motion.div>
-
+        <motion.div
+          className="mt-8 flex w-full justify-center px-4 sm:mt-10 md:mt-24 md:mb-20"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 2.2, ease: "easeOut" }}
+        >
+          <ElfsightCounter />
+        </motion.div>
         {/* Pricing Table */}
         <motion.div
           className="mb-16"

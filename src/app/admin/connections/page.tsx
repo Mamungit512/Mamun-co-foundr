@@ -2,6 +2,7 @@
 
 import { isUserAdmin } from "@/features/auth/authService";
 import { useSession, useUser } from "@clerk/nextjs";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 type Connection = {
@@ -183,7 +184,7 @@ export default function AdminConnectionsPage() {
     <div className="flex items-center gap-3">
       <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
         {user.pfp_url ? (
-          <img
+          <Image
             src={user.pfp_url}
             alt={`${user.first_name} ${user.last_name}`}
             className="w-full h-full object-cover"
