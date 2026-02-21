@@ -14,6 +14,7 @@ import NewsletterCTA from "@/components/home/NewsletterCTA";
 import Vision from "@/components/home/Vision";
 import BookMe from "@/components/home/BookMe";
 import EventsSection from "@/components/EventsSection";
+import ElfsightCounter from "@/components/Elfsightcounter";
 
 /* ------
 HOME PAGE
@@ -53,7 +54,7 @@ function page() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
             >
-             Co-Foundr Matching
+              Co-Foundr Matching
             </motion.p>
           </motion.div>
 
@@ -174,6 +175,14 @@ function page() {
                   (Actual founders who found their co-founders on Mamun)
                 </motion.p>
               </div>
+            </motion.div>
+            <motion.div
+              className="mt-8 flex w-full justify-center px-4 sm:mt-10 md:mt-24 md:mb-20"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 2.2, ease: "easeOut" }}
+            >
+              <ElfsightCounter />
             </motion.div>
           </div>
         </section>
@@ -350,7 +359,7 @@ function page() {
         >
           <CTA />
         </motion.div>
-         <motion.div
+        <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
