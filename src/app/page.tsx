@@ -22,7 +22,7 @@ HOME PAGE
 Page the user first sees when navigating to the root url of the site
 ------ */
 
-function page() {
+function Page() {
   const { isSignedIn } = useAuth();
 
   // const [accessGranted, setAccessGranted] = useState(false);
@@ -377,4 +377,4 @@ function page() {
   );
 }
 
-export default page;
+export default Page;
