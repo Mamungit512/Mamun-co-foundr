@@ -1,6 +1,6 @@
 "use client";
 
-import { SignInButton } from "@clerk/nextjs";
+import { SignInButton, useAuth } from "@clerk/nextjs";
 import ReactLenis from "lenis/react";
 import Image from "next/image";
 import React from "react";
@@ -23,6 +23,8 @@ Page the user first sees when navigating to the root url of the site
 ------ */
 
 function page() {
+  const { isSignedIn } = useAuth();
+
   // const [accessGranted, setAccessGranted] = useState(false);
 
   // if (!accessGranted) {
@@ -176,14 +178,17 @@ function page() {
                 </motion.p>
               </div>
             </motion.div>
-            <motion.div
-              className="mt-8 flex w-full justify-center px-4 sm:mt-10 md:mt-24 md:mb-20"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 2.2, ease: "easeOut" }}
-            >
-              <ElfsightCounter />
-            </motion.div>
+
+            {isSignedIn && (
+              <motion.div
+                className="mt-8 flex w-full justify-center px-4 sm:mt-10 md:mt-24 md:mb-20"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 2.2, ease: "easeOut" }}
+              >
+                <ElfsightCounter />
+              </motion.div>
+            )}
           </div>
         </section>
         {/* Newsletter CTA Section */}
