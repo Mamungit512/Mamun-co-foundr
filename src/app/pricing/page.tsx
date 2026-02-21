@@ -9,7 +9,6 @@ import { trackEvent } from "@/lib/posthog-events";
 import { FaCheck } from "react-icons/fa6";
 import ElfsightCounter from "@/components/Elfsightcounter";
 
-
 export default function PricingPage() {
   const router = useRouter();
   const { isSignedIn, isLoaded } = useUser();

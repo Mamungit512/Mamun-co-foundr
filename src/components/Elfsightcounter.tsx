@@ -19,10 +19,8 @@ export default function FounderMatchCounter() {
 
   return (
     <div className="text-center">
-      <div className="text-5xl font-bold text-yellow-300">
-        {display}+
-      </div>
-      <p className="mt-2 text-gray-300 text-lg">Co-Founder Matches Made</p>
+      <div className="text-5xl font-bold text-yellow-300">{display}+</div>
+      <p className="mt-2 text-lg text-gray-300">Co-Founder Matches Made</p>
     </div>
   );
 }
