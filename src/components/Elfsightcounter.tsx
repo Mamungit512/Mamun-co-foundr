@@ -1,26 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion, useMotionValue, useTransform, animate } from "motion/react";
+import React from "react";
 
-export default function FounderMatchCounter() {
-  const count = useMotionValue(0);
-  const rounded = useTransform(count, (v) => Math.floor(v));
-  const [display, setDisplay] = useState(0);
+interface CounterProps {
+  count?: string;
+  label?: string;
+}
 
-  useEffect(() => {
-    const unsubscribe = rounded.on("change", setDisplay);
-    const controls = animate(count, 6, { duration: 2, ease: "easeOut" });
-    return () => {
-      controls.stop();
-      unsubscribe();
-    };
-  }, []);
-
+export default function CoFounderCounter({ 
+  count = "6+", 
+  label = "Co-Founder Matches Made" 
+}: CounterProps) {
   return (
-    <div className="text-center">
-      <div className="text-5xl font-bold text-yellow-300">{display}+</div>
-      <p className="mt-2 text-lg text-gray-300">Co-Founder Matches Made</p>
+    <div className="flex flex-col items-center justify-center py-12 bg-transparent">
+      <h2 className="text-5xl md:text-6xl font-bold text-[#FACC15] mb-2">
+        {count}
+      </h2>
+      
+      <p className="text-white text-lg md:text-xl font-medium opacity-90">
+        {label}
+      </p>
     </div>
   );
 }
