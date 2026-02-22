@@ -247,46 +247,6 @@ export async function getProfiles(
   return sorted;
 }
 
-// Fetch profiles (excluding skipped)
-export async function getProfilesNoSkipped({ token }: { token: string }) {
-  const supabase = createSupabaseClientWithToken(token);
-
-  // --- Get User ID ---
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError) throw userError;
-  if (!user) throw new Error("User not found");
-
-  const currentUserId = user.id;
-
-  // --- Fetch Profiles ---
-  const { data: profiles, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .neq("id", currentUserId)
-    .is("deleted_at", null) // Exclude soft-deleted profiles
-    .not(
-      "id",
-      "in",
-      supabase
-        .from("user_profile_actions")
-        .select("other_profile_id")
-        .eq("user_id", currentUserId)
-        .eq("action_type", "skip"),
-    )
-    .limit(1);
-
-  if (error) {
-    throw error;
-    console.error(error);
-  }
-
-  return profiles;
-}
-
 // Upsert profile data
 export async function upsertUserProfile({
   userId,
