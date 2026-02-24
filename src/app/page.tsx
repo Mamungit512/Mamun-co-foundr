@@ -68,7 +68,7 @@ function Page() {
               transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
             >
               <b>
-                <i>Where founders find each other</i>
+                <i>Build with leverage</i>
               </b>
             </motion.p>
 
