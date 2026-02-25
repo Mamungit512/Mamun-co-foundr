@@ -4,12 +4,8 @@ import React, { useEffect } from "react";
 
 export default function CoFounderCounter() {
   useEffect(() => {
-    if (
-      document.querySelector(
-        'script[src="https://elfsightcdn.com/platform.js"]',
-      )
-    ) {
-      // @ts-ignore
+    if (document.querySelector('script[src="https://elfsightcdn.com/platform.js"]')) {
+      // @ts-expect-error window.eapps is injected by Elfsight
       if (window.eapps) window.eapps.AppsManager.reload();
       return;
     }
