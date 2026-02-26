@@ -88,7 +88,7 @@ function Page() {
                   src="/img/woman-profile.png"
                   height={200}
                   width={200}
-                  alt="Side profile of woman wearing a hijab"
+                  alt="Side profile of woman "
                 />
               </motion.div>
 

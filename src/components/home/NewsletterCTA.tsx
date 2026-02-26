@@ -47,7 +47,7 @@ export default function ECCWaitlist() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            Join the ECC funding waitlist
+            Join the Made in Mamun Funding Waitlist
           </motion.h2>
 
           <motion.p

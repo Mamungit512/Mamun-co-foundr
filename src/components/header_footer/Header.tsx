@@ -84,7 +84,7 @@ function Header() {
               href="/contact-us"
               className="underline decoration-gray-300 underline-offset-4"
             >
-              Contact Us
+              Contact Support
             </Link>
           </li>
           <li className="translate-y text-sm font-semibold sm:text-base">
@@ -310,7 +310,7 @@ function Header() {
                         d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                       />
                     </svg>
-                    Contact Us
+                    Contact Support
                   </Link>
                 </li>
                 <li>

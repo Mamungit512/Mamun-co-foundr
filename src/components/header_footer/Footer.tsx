@@ -28,7 +28,7 @@ function Footer() {
           href="/contact-us"
           className="translate-y text-sm hover:underline hover:underline-offset-4 sm:text-base"
         >
-          Contact Us
+          Contact Support
         </Link>
         <a
           href="https://mamun-cofoundr.kit.com/d7eb029da2"
@@ -48,6 +48,9 @@ function Footer() {
           alt="Mamun Logo. Circle with a line through it next to Mamun in all capital letters"
         />
       </Link>
+      <p className=" opacity-70 sm:text-sm text-[#D0FE1D]">
+        Inspired by Islamic Ethics
+      </p>
     </footer>
   );
 }
