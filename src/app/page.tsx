@@ -88,7 +88,7 @@ function Page() {
                   src="/img/woman-profile.png"
                   height={200}
                   width={200}
-                  alt="Side profile of woman wearing a hijab"
+                  alt="Side profile of woman "
                 />
               </motion.div>
 
@@ -181,7 +181,7 @@ function Page() {
 
             {isSignedIn && (
               <motion.div
-                className="mt-8 flex w-full justify-center px-4 sm:mt-10 md:mt-24 md:mb-20"
+                className="mt-8 flex w-full justify-center px-4 sm:mt-10 md:mt-12 md:mb-12"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 2.2, ease: "easeOut" }}

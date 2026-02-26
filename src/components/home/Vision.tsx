@@ -15,10 +15,10 @@ function Vision() {
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <p className="heading-6 lg:heading-5 font-semibold text-gray-200">
+          {/* <p className="heading-6 lg:heading-5 font-semibold text-gray-200">
             Vision: Removing barriers to usher in the{" "}
             <span className="text-yellow-300">Islamic Renaissance 2.0</span>
-          </p>
+          </p> */}
         </motion.div>
 
         {/* Three Pillars */}
