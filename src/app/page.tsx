@@ -97,12 +97,12 @@ function Page() {
                 animate={{ opacity: 1, x: 0, rotate: 0 }}
                 transition={{ duration: 0.8, delay: 1.2, ease: "easeOut" }}
               >
-                <Image
+                 <Image
                   className="aspect-square rounded-full object-cover"
-                  src="/img/man-profile.png"
+                  src="/img/man-profile-2.png"
                   height={200}
                   width={200}
-                  alt="Side profile of a bearded man wearing a nike cap"
+                  alt="Side profile of man wearing kufi"
                 />
               </motion.div>
 
@@ -125,12 +125,12 @@ function Page() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.8, delay: 1.6, ease: "easeOut" }}
               >
-                <Image
+                    <Image
                   className="-mt-3 aspect-square rounded-full object-cover"
-                  src="/img/man-profile-2.png"
+                  src="/img/woman-profile2.jpg"
                   height={200}
                   width={200}
-                  alt="Side profile of man wearing kufi"
+                  alt="Side profile of a bearded man wearing a nike cap"
                 />
               </motion.div>
             </motion.div>

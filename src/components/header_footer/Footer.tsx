@@ -48,7 +48,7 @@ function Footer() {
           alt="Mamun Logo. Circle with a line through it next to Mamun in all capital letters"
         />
       </Link>
-      <p className=" opacity-70 sm:text-sm text-[#D0FE1D]">
+      <p className=" font-bold opacity-70 sm:text-sm text-[#D0FE1D]">
         Inspired by Islamic Ethics
       </p>
     </footer>

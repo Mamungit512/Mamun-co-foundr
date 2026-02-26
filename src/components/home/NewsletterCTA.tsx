@@ -41,7 +41,7 @@ export default function ECCWaitlist() {
           </motion.div>
 
           <motion.h2
-            className="mb-3 text-3xl font-bold text-white sm:mb-4 sm:text-3xl md:text-4xl lg:text-5xl"
+            className="mb-3 text-xl font-bold text-white sm:mb-4 sm:text-2xl md:text-3xl lg:text-4xl"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
