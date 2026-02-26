@@ -99,10 +99,10 @@ function Page() {
               >
                 <Image
                   className="aspect-square rounded-full object-cover"
-                  src="/img/man-profile.png"
+                  src="/img/man-profile-2.png"
                   height={200}
                   width={200}
-                  alt="Side profile of a bearded man wearing a nike cap"
+                  alt="Side profile of man wearing kufi"
                 />
               </motion.div>
 
@@ -127,10 +127,10 @@ function Page() {
               >
                 <Image
                   className="-mt-3 aspect-square rounded-full object-cover"
-                  src="/img/man-profile-2.png"
+                  src="/img/woman-profile2.jpg"
                   height={200}
                   width={200}
-                  alt="Side profile of man wearing kufi"
+                  alt="Side profile of a bearded man wearing a nike cap"
                 />
               </motion.div>
             </motion.div>
