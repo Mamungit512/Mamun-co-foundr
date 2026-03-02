@@ -13,9 +13,12 @@ type AboutYouData = {
   city: string;
   country: string;
   state?: string;
+  education: string;
+  experience: string;
+  personalIntro: string;
+  ummah: string;
   satisfaction: "Happy" | "Content" | "Browsing";
   batteryLevel: "Energized" | "Content" | "Burnt out";
-  personalIntro: string;
   isTechnical: "yes" | "no";
 };
 
@@ -40,7 +43,10 @@ function AboutYouForm({
   });
 
   const titleValue = watch("title") || "";
+  const educationValue = watch("education") || "";
+  const experienceValue = watch("experience") || "";
   const personalIntroValue = watch("personalIntro") || "";
+  const ummahValue = watch("ummah") || "";
   const isTechnicalValue = watch("isTechnical");
 
   useEffect(() => {
@@ -57,6 +63,7 @@ function AboutYouForm({
     <form onSubmit={handleSubmit(onSubmit)}>
       <h2 className="heading-6 mb-6">About You</h2>
       <div className="flex flex-col gap-y-3">
+        {/* Name */}
         <div className="flex gap-x-6">
           <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
             <label>First Name *</label>
@@ -83,6 +90,7 @@ function AboutYouForm({
           </div>
         </div>
 
+        {/* Job Title */}
         <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
           <label htmlFor="title">Job Title *</label>
           <FormInput
@@ -100,6 +108,7 @@ function AboutYouForm({
           )}
         </div>
 
+        {/* Location */}
         <input type="hidden" {...register("country", { required: true })} />
         <input type="hidden" {...register("city", { required: true })} />
         <input type="hidden" {...register("state")} />
@@ -124,6 +133,49 @@ function AboutYouForm({
           }}
         />
 
+        {/* Education */}
+        <div className="flex flex-col gap-y-2">
+          <label htmlFor="education">Education *</label>
+          <textarea
+            id="education"
+            {...register("education", { required: "Education is required" })}
+            className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white placeholder-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none"
+            rows={3}
+            placeholder="Your degree, school, etc."
+          />
+          <AIWriter
+            text={educationValue}
+            fieldType="education"
+            onAccept={(suggestion) => setValue("education", suggestion)}
+          />
+          {errors.education && (
+            <p className="text-sm text-red-500">{errors.education.message}</p>
+          )}
+        </div>
+
+        {/* Work Experience */}
+        <div className="flex flex-col gap-y-2">
+          <label htmlFor="experience">Work Experience *</label>
+          <textarea
+            id="experience"
+            {...register("experience", {
+              required: "Work experience is required",
+            })}
+            className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white placeholder-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none"
+            rows={3}
+            placeholder="Current/previous job title(s)"
+          />
+          <AIWriter
+            text={experienceValue}
+            fieldType="experience"
+            onAccept={(suggestion) => setValue("experience", suggestion)}
+          />
+          {errors.experience && (
+            <p className="text-sm text-red-500">{errors.experience.message}</p>
+          )}
+        </div>
+
+        {/* Personal Intro */}
         <div className="flex flex-col gap-y-2">
           <label htmlFor="personalIntro">Personal Introduction *</label>
           <textarea
@@ -152,6 +204,28 @@ function AboutYouForm({
           )}
         </div>
 
+        {/* Ummah */}
+        <div className="flex flex-col gap-y-2">
+          <label htmlFor="ummah">
+            If you were a civilizational engineer for the Ummah, what idea would
+            you bring? *
+          </label>
+          <FormInput
+            {...register("ummah", { required: "This field is required" })}
+            type="text"
+            placeholder="Your idea here"
+          />
+          <AIWriter
+            text={ummahValue}
+            fieldType="ummah"
+            onAccept={(suggestion) => setValue("ummah", suggestion)}
+          />
+          {errors.ummah && (
+            <p className="text-sm text-red-500">{errors.ummah.message}</p>
+          )}
+        </div>
+
+        {/* Satisfaction */}
         <div className="flex w-full flex-col gap-x-20 gap-y-2">
           <label htmlFor="satisfaction">
             Current Occupation Satisfaction *
@@ -176,6 +250,7 @@ function AboutYouForm({
           )}
         </div>
 
+        {/* Battery Level */}
         <div className="flex w-full flex-col gap-x-20 gap-y-2">
           <label htmlFor="batteryLevel">Founder&apos;s Battery Level *</label>
           <div className="flex flex-col gap-y-2">
@@ -198,6 +273,7 @@ function AboutYouForm({
           )}
         </div>
 
+        {/* Technical */}
         <div className="flex flex-col gap-y-2">
           <label>Do you have a technical background? *</label>
           <div className="flex gap-x-4">

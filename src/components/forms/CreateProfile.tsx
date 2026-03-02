@@ -1,13 +1,11 @@
 "use client";
 
 import AboutYouForm from "@/app/onboarding/form-components/AboutYouForm";
+import BackgroundAndSocialsForm from "@/app/onboarding/form-components/BackgroundAndSocialsForm";
 import InterestsAndValuesForm from "@/app/onboarding/form-components/InterestsAndValuesForm";
-import OnboardingSocialsForm from "@/app/onboarding/form-components/OnboardingSocialsForm";
 import ProfilePhotoForm from "@/app/onboarding/form-components/ProfilePhotoForm";
 import ReviewForm from "@/app/onboarding/form-components/ReviewForm";
-import StartupDetailsForm from "@/app/onboarding/form-components/StartupDetailsForm";
-import StartupEssentialsForm from "@/app/onboarding/form-components/StartupEssentialsForm";
-import YourBackgroundForm from "@/app/onboarding/form-components/YourBackgroundForm";
+import StartupForm from "@/app/onboarding/form-components/StartupForm";
 import OnboardingProgressBar from "@/components/ui/OnboardingProgressBar";
 import { useOnboardingDraft } from "@/hooks/useOnboardingDraft";
 import React, { useState, useEffect } from "react";
@@ -22,18 +20,14 @@ type CreateProfileProps = {
 };
 
 /*
- * Step flow (8 internal steps, step 6 auto-skipped if no startup):
- *
  * 1. Photo
- * 2. About You (essential personal + intro)
- * 3. Startup Essentials (hasStartup + name/description)
- * 4. Your Background (deferred personal fields)
- * 5. Socials
- * 6. Startup Details (deferred startup fields — skipped if no startup)
- * 7. Interests & Values
- * 8. Review
+ * 2. About You (name, title, location, education, experience, intro, ummah, mindset, isTechnical)
+ * 3. Startup (essentials + conditional detailed fields on one page)
+ * 4. Additional Details (optional background + socials)
+ * 5. Interests & Values
+ * 6. Review
  */
-const MAX_STEPS = 8;
+const TOTAL_STEPS = 6;
 
 function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
   const draft = useOnboardingDraft();
@@ -50,11 +44,6 @@ function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const hasStartupDetails = formData.hasStartup === "yes";
-  const totalSteps = hasStartupDetails ? MAX_STEPS : MAX_STEPS - 1;
-  const displayStep =
-    !hasStartupDetails && stepNumber > 5 ? stepNumber - 1 : stepNumber;
-
   const advanceStep = (newData: Partial<OnboardingData>, nextStep: number) => {
     const merged = { ...formData, ...newData };
     setFormData(merged);
@@ -63,10 +52,7 @@ function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
   };
 
   const handleBack = () => {
-    let prevStep = stepNumber - 1;
-    if (stepNumber === 7 && !hasStartupDetails) {
-      prevStep = 5;
-    }
+    const prevStep = stepNumber - 1;
     setStepNumber(prevStep);
     draft.save(prevStep, formData);
   };
@@ -87,22 +73,12 @@ function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
     }
   };
 
-  // Display steps collapse step 6 (Startup Details) when no startup, so we
-  // need to map a clicked display step back to the correct internal step.
-  const handleProgressBarClick = (displayStepClicked: number) => {
-    const internalStep =
-      !hasStartupDetails && displayStepClicked >= 6
-        ? displayStepClicked + 1
-        : displayStepClicked;
-    handleEditStep(internalStep);
-  };
-
   return (
     <>
       <OnboardingProgressBar
-        currentStep={displayStep}
-        totalSteps={totalSteps}
-        onStepClick={handleProgressBarClick}
+        currentStep={stepNumber}
+        totalSteps={TOTAL_STEPS}
+        onStepClick={handleEditStep}
       />
       {stepNumber === 1 && (
         <ProfilePhotoForm
@@ -118,44 +94,27 @@ function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
         />
       )}
       {stepNumber === 3 && (
-        <StartupEssentialsForm
+        <StartupForm
           onBack={handleBack}
           onNext={(newData) => advanceStep(newData, 4)}
           defaultValues={formData}
         />
       )}
       {stepNumber === 4 && (
-        <YourBackgroundForm
+        <BackgroundAndSocialsForm
           onBack={handleBack}
           onNext={(newData) => advanceStep(newData, 5)}
           defaultValues={formData}
         />
       )}
       {stepNumber === 5 && (
-        <OnboardingSocialsForm
+        <InterestsAndValuesForm
           onBack={handleBack}
-          onNext={(newData) => {
-            const nextStep = formData.hasStartup === "yes" ? 6 : 7;
-            advanceStep(newData, nextStep);
-          }}
+          onNext={(newData) => advanceStep(newData, 6)}
           defaultValues={formData}
         />
       )}
       {stepNumber === 6 && (
-        <StartupDetailsForm
-          onBack={handleBack}
-          onNext={(newData) => advanceStep(newData, 7)}
-          defaultValues={formData}
-        />
-      )}
-      {stepNumber === 7 && (
-        <InterestsAndValuesForm
-          onBack={handleBack}
-          onNext={(newData) => advanceStep(newData, 8)}
-          defaultValues={formData}
-        />
-      )}
-      {stepNumber === 8 && (
         <ReviewForm
           data={formData}
           onBack={handleBack}

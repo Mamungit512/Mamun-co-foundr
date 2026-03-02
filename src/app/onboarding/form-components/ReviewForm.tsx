@@ -21,6 +21,7 @@ export default function ReviewForm({
       <p className="text-sm text-gray-400">Double check before continuing.</p>
 
       <div className="space-y-4">
+        {/* Step 2 — About You */}
         <Section
           title="About You"
           fields={[
@@ -34,7 +35,10 @@ export default function ReviewForm({
                   ? `${data.city}, ${data.country}`
                   : data.city || data.country || "—",
             },
+            { label: "Education", value: data.education || "—" },
+            { label: "Experience", value: data.experience || "—" },
             { label: "Personal Intro", value: data.personalIntro || "—" },
+            { label: "Ummah Vision", value: data.ummah || "—" },
             {
               label: "Current Satisfaction",
               value: data.satisfaction || "—",
@@ -51,6 +55,7 @@ export default function ReviewForm({
           onEdit={() => onEdit(2)}
         />
 
+        {/* Step 3 — Startup */}
         <Section
           title="Startup"
           fields={[
@@ -68,26 +73,53 @@ export default function ReviewForm({
                     label: "Description",
                     value: data.startupDescription || "—",
                   },
+                  {
+                    label: "Time Spent & Progress",
+                    value: data.startupTimeSpent || "—",
+                  },
+                  {
+                    label: "Funding Info",
+                    value: data.startupFunding || "—",
+                  },
+                  {
+                    label: "Co-Founder Status",
+                    value: data.coFounderStatus || "—",
+                  },
+                  {
+                    label: "Full-Time Timeline",
+                    value: data.fullTimeTimeline || "—",
+                  },
+                  {
+                    label: "Equity Expectation",
+                    value: data.equityExpectation
+                      ? `${data.equityExpectation}%`
+                      : "—",
+                  },
+                  {
+                    label: "Responsibilities",
+                    value: data.responsibilities?.length
+                      ? data.responsibilities.join(", ")
+                      : "—",
+                  },
                 ]
               : []),
           ]}
           onEdit={() => onEdit(3)}
         />
 
+        {/* Step 4 — Your Background */}
         <Section
           title="Your Background"
           fields={[
             { label: "Gender", value: data.gender || "—" },
             { label: "Birthdate", value: data.birthdate || "—" },
-            { label: "Education", value: data.education || "—" },
-            { label: "Experience", value: data.experience || "—" },
             { label: "Accomplishments", value: data.accomplishments || "—" },
-            { label: "Ummah Vision", value: data.ummah || "—" },
             { label: "Scheduling Link", value: data.schedulingUrl || "—" },
           ]}
           onEdit={() => onEdit(4)}
         />
 
+        {/* Step 4 — Socials (same page, separate section in review) */}
         <Section
           title="Socials"
           fields={[
@@ -96,43 +128,10 @@ export default function ReviewForm({
             { label: "GitHub/GitLab", value: data.git || "—" },
             { label: "Personal Website", value: data.personalWebsite || "—" },
           ]}
-          onEdit={() => onEdit(5)}
+          onEdit={() => onEdit(4)}
         />
 
-        {hasStartup && (
-          <Section
-            title="Startup Details"
-            fields={[
-              {
-                label: "Time Spent & Progress",
-                value: data.startupTimeSpent || "—",
-              },
-              { label: "Funding Info", value: data.startupFunding || "—" },
-              {
-                label: "Co-Founder Status",
-                value: data.coFounderStatus || "—",
-              },
-              {
-                label: "Full-Time Timeline",
-                value: data.fullTimeTimeline || "—",
-              },
-              {
-                label: "Equity Expectation",
-                value: data.equityExpectation
-                  ? `${data.equityExpectation}%`
-                  : "—",
-              },
-              {
-                label: "Responsibilities",
-                value: data.responsibilities?.length
-                  ? data.responsibilities.join(", ")
-                  : "—",
-              },
-            ]}
-            onEdit={() => onEdit(6)}
-          />
-        )}
-
+        {/* Step 5 — Interests & Values */}
         <Section
           title="Interests & Values"
           fields={[
@@ -145,7 +144,7 @@ export default function ReviewForm({
             },
             { label: "Hobbies", value: data.hobbies || "—" },
           ]}
-          onEdit={() => onEdit(7)}
+          onEdit={() => onEdit(5)}
         />
       </div>
 
