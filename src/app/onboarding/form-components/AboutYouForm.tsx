@@ -6,12 +6,27 @@ import FormInput from "@/components/ui/FormInput";
 import AIWriter from "@/components/ui/AIWriter";
 import LocationSelector from "@/components/ui/LocationSelector";
 
-function WhoYouAreForm({
+type AboutYouData = {
+  firstName: string;
+  lastName: string;
+  title: string;
+  city: string;
+  country: string;
+  state?: string;
+  satisfaction: "Happy" | "Content" | "Browsing";
+  batteryLevel: "Energized" | "Content" | "Burnt out";
+  personalIntro: string;
+  isTechnical: "yes" | "no";
+};
+
+function AboutYouForm({
   onNext,
+  onBack,
   defaultValues,
 }: {
-  onNext: (data: WhoYouAreFormData) => void;
-  defaultValues?: Partial<WhoYouAreFormData>;
+  onNext: (data: AboutYouData) => void;
+  onBack: () => void;
+  defaultValues?: Partial<AboutYouData>;
 }) {
   const {
     register,
@@ -20,11 +35,13 @@ function WhoYouAreForm({
     reset,
     watch,
     setValue,
-  } = useForm<WhoYouAreFormData>({
+  } = useForm<AboutYouData>({
     defaultValues,
   });
 
   const titleValue = watch("title") || "";
+  const personalIntroValue = watch("personalIntro") || "";
+  const isTechnicalValue = watch("isTechnical");
 
   useEffect(() => {
     if (defaultValues) {
@@ -32,16 +49,15 @@ function WhoYouAreForm({
     }
   }, [defaultValues, reset]);
 
-  const onSubmit = (data: WhoYouAreFormData) => {
+  const onSubmit = (data: AboutYouData) => {
     onNext(data);
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <h2 className="heading-6 mb-6">Your Profile Basics</h2>
+      <h2 className="heading-6 mb-6">About You</h2>
       <div className="flex flex-col gap-y-3">
         <div className="flex gap-x-6">
-          {/* First Name */}
           <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
             <label>First Name *</label>
             <FormInput
@@ -54,7 +70,6 @@ function WhoYouAreForm({
             )}
           </div>
 
-          {/* Last Name */}
           <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
             <label htmlFor="lastName">Last Name *</label>
             <FormInput
@@ -68,45 +83,75 @@ function WhoYouAreForm({
           </div>
         </div>
 
-        {/* Job Title with AI Writer */}
         <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
           <label htmlFor="title">Job Title *</label>
-          <AIWriter
-            text={titleValue}
-            fieldType="title"
-            onAccept={(suggestion) => setValue("title", suggestion)}
-          />
           <FormInput
             type="text"
             placeholder="e.g. UX Designer, Software Engineer, etc"
             {...register("title", { required: true })}
+          />
+          <AIWriter
+            text={titleValue}
+            fieldType="title"
+            onAccept={(suggestion) => setValue("title", suggestion)}
           />
           {errors.title && (
             <p className="text-sm text-red-500">Job title is required</p>
           )}
         </div>
 
-       {/* LocationSelector */}
-        {/* Hidden inputs for validation */}
         <input type="hidden" {...register("country", { required: true })} />
         <input type="hidden" {...register("city", { required: true })} />
         <input type="hidden" {...register("state")} />
 
-<LocationSelector
-  countryValue={watch("country") || ""}
-  stateValue={watch("state") || ""}
-  cityValue={watch("city") || ""}
-  onCountryChange={(country) => setValue("country", country, { shouldValidate: true })}
-  onStateChange={(state) => setValue("state", state, { shouldValidate: true })}
-  onCityChange={(city) => setValue("city", city, { shouldValidate: true })}
-  errors={{
-    country: errors.country ? "Country is required" : undefined,
-    state: errors.state ? "State is required" : undefined,
-    city: errors.city ? "City is required" : undefined,
-  }}
-/>
+        <LocationSelector
+          countryValue={watch("country") || ""}
+          stateValue={watch("state") || ""}
+          cityValue={watch("city") || ""}
+          onCountryChange={(country) =>
+            setValue("country", country, { shouldValidate: true })
+          }
+          onStateChange={(state) =>
+            setValue("state", state, { shouldValidate: true })
+          }
+          onCityChange={(city) =>
+            setValue("city", city, { shouldValidate: true })
+          }
+          errors={{
+            country: errors.country ? "Country is required" : undefined,
+            state: errors.state ? "State is required" : undefined,
+            city: errors.city ? "City is required" : undefined,
+          }}
+        />
 
-        {/* Current Occupation Satisfaction */}
+        <div className="flex flex-col gap-y-2">
+          <label htmlFor="personalIntro">Personal Introduction *</label>
+          <textarea
+            id="personalIntro"
+            {...register("personalIntro", {
+              required:
+                "Your bio/introduction cannot be empty. Please write a short paragraph introducing yourself.",
+              minLength: {
+                value: 10,
+                message: "Your bio must be at least 10 characters long.",
+              },
+            })}
+            className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white placeholder-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none"
+            rows={4}
+            placeholder="Write a short paragraph or two introducing yourself..."
+          />
+          <AIWriter
+            text={personalIntroValue}
+            fieldType="personalIntro"
+            onAccept={(suggestion) => setValue("personalIntro", suggestion)}
+          />
+          {errors.personalIntro && (
+            <p className="text-sm text-red-500">
+              {errors.personalIntro.message}
+            </p>
+          )}
+        </div>
+
         <div className="flex w-full flex-col gap-x-20 gap-y-2">
           <label htmlFor="satisfaction">
             Current Occupation Satisfaction *
@@ -131,7 +176,6 @@ function WhoYouAreForm({
           )}
         </div>
 
-        {/* Battery Level */}
         <div className="flex w-full flex-col gap-x-20 gap-y-2">
           <label htmlFor="batteryLevel">Founder&apos;s Battery Level *</label>
           <div className="flex flex-col gap-y-2">
@@ -154,36 +198,51 @@ function WhoYouAreForm({
           )}
         </div>
 
-        {/* Gender */}
-        <div className="flex gap-x-6">
-          <div className="flex w-full flex-col gap-x-20 gap-y-2">
-            <label htmlFor="gender">Gender (Optional)</label>
-            <FormInput
-              type="text"
-              placeholder="e.g. Female, Male, Non-binary"
-              {...register("gender")}
-            />
+        <div className="flex flex-col gap-y-2">
+          <label>Do you have a technical background? *</label>
+          <div className="flex gap-x-4">
+            <label>
+              <input
+                type="radio"
+                value="yes"
+                {...register("isTechnical", { required: true })}
+                checked={isTechnicalValue === "yes"}
+              />
+              <span className="ml-2">Yes</span>
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="no"
+                {...register("isTechnical", { required: true })}
+                checked={isTechnicalValue === "no"}
+              />
+              <span className="ml-2">No</span>
+            </label>
           </div>
-
-          {/* Birthdate */}
-          <div className="flex w-full flex-col gap-x-20 gap-y-2">
-            <label htmlFor="birthdate">Birthdate (Optional)</label>
-            <FormInput
-              type="text"
-              placeholder="MM/DD/YYYY"
-              {...register("birthdate")}
-            />
-          </div>
+          {errors.isTechnical && (
+            <p className="text-sm text-red-500">Please select an option</p>
+          )}
         </div>
       </div>
-      <button
-        type="submit"
-        className="mt-6 cursor-pointer rounded bg-(--mist-white) px-4 py-2 text-(--charcoal-black)"
-      >
-        Next
-      </button>
+
+      <div className="mt-8 flex justify-between">
+        <button
+          type="button"
+          onClick={onBack}
+          className="cursor-pointer rounded border border-white px-4 py-2 text-white"
+        >
+          Back
+        </button>
+        <button
+          type="submit"
+          className="cursor-pointer rounded bg-(--mist-white) px-4 py-2 text-(--charcoal-black)"
+        >
+          Next
+        </button>
+      </div>
     </form>
   );
 }
 
-export default WhoYouAreForm;
+export default AboutYouForm;

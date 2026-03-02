@@ -75,15 +75,15 @@ function InterestsAndValuesForm({
         <label htmlFor="interests">
           Topics or Industries You&apos;re Interested In
         </label>
-        <AIWriter
-          text={interestsValue}
-          fieldType="interests"
-          onAccept={(suggestion) => setValue("interests", suggestion)}
-        />
         <FormInput
           type="text"
           placeholder="e.g. AI in mental health, fintech for creators"
           {...register("interests")}
+        />
+        <AIWriter
+          text={interestsValue}
+          fieldType="interests"
+          onAccept={(suggestion) => setValue("interests", suggestion)}
         />
       </div>
 
@@ -127,16 +127,16 @@ function InterestsAndValuesForm({
       {/* Hobbies and Interests */}
       <div className="flex flex-col gap-y-2">
         <label htmlFor="hobbies">Hobbies and Interests</label>
-        <AIWriter
-          text={hobbiesValue}
-          fieldType="hobbies"
-          onAccept={(suggestion) => setValue("hobbies", suggestion)}
-        />
         <textarea
           rows={2}
           placeholder="e.g. Rock climbing, journaling, strategy games"
           className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white placeholder-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none"
           {...register("hobbies")}
+        />
+        <AIWriter
+          text={hobbiesValue}
+          fieldType="hobbies"
+          onAccept={(suggestion) => setValue("hobbies", suggestion)}
         />
       </div>
 
@@ -153,7 +153,7 @@ function InterestsAndValuesForm({
           type="submit"
           className="cursor-pointer rounded bg-white px-4 py-2 text-black"
         >
-          Finish
+          Next
         </button>
       </div>
     </form>
