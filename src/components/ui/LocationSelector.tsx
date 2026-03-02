@@ -63,6 +63,8 @@ export default function LocationSelector({
     if (countryValue && countries.length > 0) {
       const country = countries.find((c) => c.name === countryValue);
       if (country) setSelectedCountryIso(country.isoCode);
+    } else {
+      setSelectedCountryIso("");
     }
   }, [countryValue, countries]);
 
