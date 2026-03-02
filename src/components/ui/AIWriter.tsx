@@ -97,6 +97,7 @@ export default function AIWriter({ text, onAccept, fieldType }: AIWriterProps) {
         >
           {!aiSuggestion && !suggestionMessage && (
             <button
+              type="button"
               onClick={fetchAiSuggestion}
               disabled={isLoadingSuggestion}
               className="flex w-full items-center justify-center gap-2 rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
@@ -128,6 +129,7 @@ export default function AIWriter({ text, onAccept, fieldType }: AIWriterProps) {
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-400">{suggestionMessage}</p>
               <button
+                type="button"
                 onClick={rejectSuggestion}
                 className="rounded-md p-1.5 text-gray-400 transition-colors hover:bg-gray-700 hover:text-white"
               >
@@ -143,6 +145,7 @@ export default function AIWriter({ text, onAccept, fieldType }: AIWriterProps) {
               </div>
               <div className="flex gap-2">
                 <button
+                  type="button"
                   onClick={acceptSuggestion}
                   className="flex flex-1 items-center justify-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700"
                 >
@@ -150,6 +153,7 @@ export default function AIWriter({ text, onAccept, fieldType }: AIWriterProps) {
                   <span>Accept</span>
                 </button>
                 <button
+                  type="button"
                   onClick={rejectSuggestion}
                   className="flex flex-1 items-center justify-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
                 >

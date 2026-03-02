@@ -30,18 +30,60 @@ type CreateProfileProps = {
  */
 const TOTAL_STEPS = 6;
 
+/**
+ * Returns which steps show a checkmark.
+ * - Steps 1–3 have required fields: complete only when those fields are filled.
+ * - Steps 4–5 are optional: complete once the user has visited them.
+ */
+function getCompletedSteps(
+  data: OnboardingData,
+  visited: Set<number>,
+): Set<number> {
+  const completed = new Set<number>();
+
+  if (data.pfp_url) completed.add(1);
+
+  if (
+    data.firstName &&
+    data.lastName &&
+    data.title &&
+    data.country &&
+    data.city &&
+    data.education &&
+    data.experience &&
+    data.personalIntro &&
+    data.ummah &&
+    data.satisfaction &&
+    data.batteryLevel &&
+    data.isTechnical
+  )
+    completed.add(2);
+
+  if (data.hasStartup) completed.add(3);
+
+  if (visited.has(4)) completed.add(4);
+  if (visited.has(5)) completed.add(5);
+
+  return completed;
+}
+
 function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
   const draft = useOnboardingDraft();
   const { containerRef, transition } = useStepTransition();
 
   const [stepNumber, setStepNumber] = useState(1);
   const [formData, setFormData] = useState<OnboardingData>({});
+  const [visitedSteps, setVisitedSteps] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     const savedDraft = draft.load();
     if (savedDraft) {
       setStepNumber(savedDraft.step);
       setFormData(savedDraft.data);
+      // Treat every step before the saved step as already visited
+      const visited = new Set<number>();
+      for (let i = 1; i < savedDraft.step; i++) visited.add(i);
+      setVisitedSteps(visited);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -61,6 +103,11 @@ function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
   };
 
   const advanceStep = (newData: Partial<OnboardingData>, nextStep: number) => {
+    setVisitedSteps((prev) => {
+      const next = new Set(prev);
+      next.add(stepNumber);
+      return next;
+    });
     goToStep(nextStep, "forward", newData);
   };
 
@@ -89,6 +136,7 @@ function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
         currentStep={stepNumber}
         totalSteps={TOTAL_STEPS}
         onStepClick={handleEditStep}
+        completedSteps={getCompletedSteps(formData, visitedSteps)}
       />
 
       {/* Step container — GSAP slides this div between steps */}

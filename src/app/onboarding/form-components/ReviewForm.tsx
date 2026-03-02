@@ -20,9 +20,9 @@ export default function ReviewForm({
   const hasStartup = data.hasStartup === "yes";
 
   return (
-    <div ref={fieldsRef} className="flex flex-col gap-y-6">
+    <div ref={fieldsRef} className="flex flex-col gap-y-8">
       {/* Header */}
-      <div>
+      <div className="pb-4">
         <p className="mb-1 text-xs font-semibold tracking-widest text-white/40 uppercase">
           Step 6 of 6
         </p>
@@ -151,16 +151,16 @@ export default function ReviewForm({
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between gap-4 pt-2">
+      <div className="flex items-center justify-between gap-4 pt-10 border-t border-white/8">
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-medium text-white/60 transition-all duration-200 hover:border-white/30 hover:text-white"
+          className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-medium text-white/60 transition-all duration-200 hover:border-white/30 hover:text-white"
         >
           ← Back
         </button>
         <button
           onClick={onSubmit}
-          className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-500 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:bg-emerald-400 active:scale-[0.98] sm:flex-none"
+          className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-500 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:bg-emerald-400 active:scale-[0.98] sm:flex-none"
         >
           Confirm &amp; Submit ✓
         </button>
@@ -186,7 +186,7 @@ function Section({
         </h3>
         <button
           onClick={onEdit}
-          className="rounded-lg px-2.5 py-1 text-xs font-medium text-white/40 transition-all duration-150 hover:bg-white/8 hover:text-white"
+          className="cursor-pointer rounded-lg px-2.5 py-1 text-xs font-medium text-white/40 transition-all duration-150 hover:bg-white/8 hover:text-white"
         >
           Edit
         </button>

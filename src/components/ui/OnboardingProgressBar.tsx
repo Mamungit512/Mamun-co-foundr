@@ -7,6 +7,7 @@ type OnboardingProgressBarProps = {
   currentStep: number;
   totalSteps: number;
   onStepClick?: (step: number) => void;
+  completedSteps?: Set<number>;
 };
 
 const STEP_LABELS = [
@@ -22,6 +23,7 @@ export default function OnboardingProgressBar({
   currentStep,
   totalSteps,
   onStepClick,
+  completedSteps,
 }: OnboardingProgressBarProps) {
   const dotRefs = useRef<(HTMLButtonElement | null)[]>([]);
   // One connector line per gap between dots (totalSteps - 1)
@@ -58,9 +60,12 @@ export default function OnboardingProgressBar({
       <div className="flex items-center">
         {Array.from({ length: totalSteps }).map((_, i) => {
           const stepNum = i + 1;
-          const isComplete = stepNum < currentStep;
+          const isComplete = completedSteps
+            ? completedSteps.has(stepNum)
+            : stepNum < currentStep;
           const isActive = stepNum === currentStep;
-          const isClickable = isComplete && !!onStepClick;
+          // All non-active steps are navigable when a click handler is provided
+          const isClickable = !isActive && !!onStepClick;
 
           return (
             <React.Fragment key={i}>
@@ -93,7 +98,9 @@ export default function OnboardingProgressBar({
                     ? "cursor-pointer bg-white text-black hover:bg-white/80"
                     : isActive
                       ? "cursor-default bg-white/15 text-white ring-2 ring-white/50 ring-offset-2 ring-offset-transparent"
-                      : "cursor-default bg-white/8 text-white/25",
+                      : isClickable
+                        ? "cursor-pointer bg-white/8 text-white/30 hover:bg-white/12 hover:text-white/50"
+                        : "cursor-default bg-white/8 text-white/25",
                 ].join(" ")}
               >
                 {isComplete ? (

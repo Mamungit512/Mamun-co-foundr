@@ -116,9 +116,9 @@ function ProfilePhotoForm({ onNext, defaultValues }: ProfilePhotoFormProps) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div ref={fieldsRef} className="flex flex-col gap-y-6">
+      <div ref={fieldsRef} className="flex flex-col gap-y-8">
         {/* Header */}
-        <div>
+        <div className="pb-4">
           <p className="mb-1 text-xs font-semibold tracking-widest text-white/40 uppercase">
             Step 1 of 6
           </p>
@@ -175,11 +175,11 @@ function ProfilePhotoForm({ onNext, defaultValues }: ProfilePhotoFormProps) {
         )}
 
         {/* Action */}
-        <div>
+        <div className="pt-10 border-t border-white/8">
           <button
             type="submit"
             disabled={isUploading || (!validatedPhotoFile && !uploadSuccess)}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-black shadow-lg shadow-white/10 transition-all duration-200 hover:bg-white/90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+            className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-black shadow-lg shadow-white/10 transition-all duration-200 hover:bg-white/90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
           >
             {isUploading ? (
               <>

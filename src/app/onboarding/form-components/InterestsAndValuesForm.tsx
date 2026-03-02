@@ -9,7 +9,7 @@ import { useStepEntry, useErrorShake } from "@/hooks/useOnboardingAnimation";
 const TEXTAREA_CLS =
   "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-white/90 placeholder-white/30 transition-all duration-200 focus:border-white/25 focus:bg-white/8 focus:ring-2 focus:ring-white/15 focus:outline-none hover:border-white/20 resize-none";
 
-const LABEL_CLS = "text-sm font-medium text-white/60 uppercase tracking-wide";
+const LABEL_CLS = "text-xs font-semibold tracking-widest text-white/45 uppercase";
 
 function InterestsAndValuesForm({
   onBack,
@@ -40,8 +40,14 @@ function InterestsAndValuesForm({
   const [showOtherInput, setShowOtherInput] = React.useState(false);
   const [otherPriority, setOtherPriority] = React.useState("");
 
-  const { register, handleSubmit, reset, watch, setValue, formState: { errors } } =
-    useForm<InterestsAndValuesFormData>({ defaultValues });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<InterestsAndValuesFormData>({ defaultValues });
 
   const interestsValue = watch("interests") || "";
   const hobbiesValue = watch("hobbies") || "";
@@ -78,9 +84,10 @@ function InterestsAndValuesForm({
 
   return (
     <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
-      <div ref={fieldsRef} className="flex flex-col gap-y-5">
-        {/* Header */}
-        <div>
+      <div ref={fieldsRef} className="flex flex-col gap-y-8">
+
+        {/* ── Header ── */}
+        <div className="pb-4">
           <p className="mb-1 text-xs font-semibold tracking-widest text-white/40 uppercase">
             Step 5 of 6
           </p>
@@ -92,8 +99,8 @@ function InterestsAndValuesForm({
           </p>
         </div>
 
-        {/* Topics of interest */}
-        <div className="flex flex-col gap-y-2">
+        {/* ── Topics of interest ── */}
+        <div className="flex flex-col gap-y-1.5">
           <label className={LABEL_CLS}>Topics or Industries</label>
           <FormInput
             type="text"
@@ -107,14 +114,14 @@ function InterestsAndValuesForm({
           />
         </div>
 
-        {/* Priority Areas */}
+        {/* ── Priority Areas ── */}
         <div className="flex flex-col gap-y-3">
-          <label className={LABEL_CLS}>
-            MAMUN Priority Areas
-            <span className="ml-1 text-white/30 normal-case">
-              (select any that apply)
-            </span>
-          </label>
+          <div>
+            <label className={LABEL_CLS}>MAMUN Priority Areas</label>
+            <p className="mt-1 text-xs text-white/35">
+              Select any that apply to your work.
+            </p>
+          </div>
           <div className="flex flex-wrap gap-2">
             {priorityOptions.map((area) => {
               const checked = selectedAreas.includes(area);
@@ -131,9 +138,7 @@ function InterestsAndValuesForm({
                     type="checkbox"
                     value={area}
                     {...register("priorityAreas")}
-                    defaultChecked={defaultValues?.priorityAreas?.includes(
-                      area,
-                    )}
+                    defaultChecked={defaultValues?.priorityAreas?.includes(area)}
                     className="sr-only"
                   />
                   {area}
@@ -169,11 +174,11 @@ function InterestsAndValuesForm({
           )}
         </div>
 
-        {/* Hobbies */}
-        <div className="flex flex-col gap-y-2">
+        {/* ── Hobbies ── */}
+        <div className="flex flex-col gap-y-1.5">
           <label className={LABEL_CLS}>Hobbies &amp; Interests</label>
           <textarea
-            rows={2}
+            rows={3}
             placeholder="e.g. Rock climbing, journaling, strategy games"
             className={TEXTAREA_CLS}
             {...register("hobbies")}
@@ -185,22 +190,23 @@ function InterestsAndValuesForm({
           />
         </div>
 
-        {/* Navigation */}
-        <div className="flex items-center justify-between gap-4 pt-3">
+        {/* ── Navigation ── */}
+        <div className="flex items-center justify-between gap-4 pt-10 border-t border-white/8">
           <button
             type="button"
             onClick={onBack}
-            className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-medium text-white/60 transition-all duration-200 hover:border-white/30 hover:text-white"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-medium text-white/60 transition-all duration-200 hover:border-white/30 hover:text-white"
           >
             ← Back
           </button>
           <button
             type="submit"
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-black shadow-lg shadow-white/10 transition-all duration-200 hover:bg-white/90 active:scale-[0.98] sm:flex-none"
+            className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-black shadow-lg shadow-white/10 transition-all duration-200 hover:bg-white/90 active:scale-[0.98] sm:flex-none"
           >
             Review →
           </button>
         </div>
+
       </div>
     </form>
   );

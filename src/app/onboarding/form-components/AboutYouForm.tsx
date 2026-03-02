@@ -26,7 +26,7 @@ type AboutYouData = {
 const TEXTAREA_CLS =
   "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-white/90 placeholder-white/30 transition-all duration-200 focus:border-white/25 focus:bg-white/8 focus:ring-2 focus:ring-white/15 focus:outline-none hover:border-white/20 resize-none";
 
-const LABEL_CLS = "text-sm font-medium text-white/60 uppercase tracking-wide";
+const LABEL_CLS = "text-xs font-semibold tracking-widest text-white/45 uppercase";
 
 const PILL_RADIO_CLS =
   "flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition-all duration-150 hover:border-white/20 hover:bg-white/8 has-[:checked]:border-white/40 has-[:checked]:bg-white/15 has-[:checked]:text-white";
@@ -63,7 +63,6 @@ function AboutYouForm({
     if (defaultValues) reset(defaultValues);
   }, [defaultValues, reset]);
 
-  // Shake the form when validation errors appear
   const errCount = Object.keys(errors).length;
   useEffect(() => {
     if (errCount > 0) triggerShake();
@@ -73,9 +72,15 @@ function AboutYouForm({
 
   return (
     <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
-      <div ref={fieldsRef} className="flex flex-col gap-y-5">
-        {/* Header */}
-        <div>
+      {/*
+       * Outer container: gap-y-8 (32px) between logical groups.
+       * Header gets pb-4 → effective opener = 32+16 = 48px.
+       * Nav gets pt-10 → effective CTA gap = 32+40 = 72px.
+       */}
+      <div ref={fieldsRef} className="flex flex-col gap-y-8">
+
+        {/* ── Header ── */}
+        <div className="pb-4">
           <p className="mb-1 text-xs font-semibold tracking-widest text-white/40 uppercase">
             Step 2 of 6
           </p>
@@ -85,56 +90,56 @@ function AboutYouForm({
           </p>
         </div>
 
-        {/* Name row */}
-        <div className="flex gap-x-4">
-          <div className="flex w-full flex-col gap-y-2">
-            <label className={LABEL_CLS}>First Name *</label>
-            <FormInput
-              type="text"
-              placeholder="e.g. Teslim"
-              {...register("firstName", { required: true })}
-            />
-            {errors.firstName && (
-              <p className="text-xs text-red-400">First name is required</p>
-            )}
+        {/* ── Identity: Name + Title ── */}
+        <div className="flex flex-col gap-y-5">
+          {/* Name row */}
+          <div className="flex gap-x-4">
+            <div className="flex w-full flex-col gap-y-1.5">
+              <label className={LABEL_CLS}>First Name *</label>
+              <FormInput
+                type="text"
+                placeholder="e.g. Teslim"
+                {...register("firstName", { required: true })}
+              />
+              {errors.firstName && (
+                <p className="text-xs text-red-400">First name is required</p>
+              )}
+            </div>
+            <div className="flex w-full flex-col gap-y-1.5">
+              <label className={LABEL_CLS}>Last Name *</label>
+              <FormInput
+                type="text"
+                placeholder="e.g. Deen"
+                {...register("lastName", { required: true })}
+              />
+              {errors.lastName && (
+                <p className="text-xs text-red-400">Last name is required</p>
+              )}
+            </div>
           </div>
-          <div className="flex w-full flex-col gap-y-2">
-            <label className={LABEL_CLS}>Last Name *</label>
+
+          {/* Job Title */}
+          <div className="flex flex-col gap-y-1.5">
+            <label className={LABEL_CLS}>Job Title *</label>
             <FormInput
               type="text"
-              placeholder="e.g. Deen"
-              {...register("lastName", { required: true })}
+              placeholder="e.g. UX Designer, Software Engineer"
+              {...register("title", { required: true })}
             />
-            {errors.lastName && (
-              <p className="text-xs text-red-400">Last name is required</p>
+            <AIWriter
+              text={titleValue}
+              fieldType="title"
+              onAccept={(s) => setValue("title", s)}
+            />
+            {errors.title && (
+              <p className="text-xs text-red-400">Job title is required</p>
             )}
           </div>
         </div>
 
-        {/* Job Title */}
-        <div className="flex flex-col gap-y-2">
-          <label className={LABEL_CLS}>Job Title *</label>
-          <FormInput
-            type="text"
-            placeholder="e.g. UX Designer, Software Engineer"
-            {...register("title", { required: true })}
-          />
-          <AIWriter
-            text={titleValue}
-            fieldType="title"
-            onAccept={(s) => setValue("title", s)}
-          />
-          {errors.title && (
-            <p className="text-xs text-red-400">Job title is required</p>
-          )}
-        </div>
-
-        {/* Location */}
-        <div className="flex flex-col gap-y-2">
-          <input
-            type="hidden"
-            {...register("country", { required: true })}
-          />
+        {/* ── Location ── */}
+        <div className="flex flex-col gap-y-1.5">
+          <input type="hidden" {...register("country", { required: true })} />
           <input type="hidden" {...register("city", { required: true })} />
           <input type="hidden" {...register("state")} />
           <LocationSelector
@@ -158,48 +163,51 @@ function AboutYouForm({
           />
         </div>
 
-        {/* Education */}
-        <div className="flex flex-col gap-y-2">
-          <label className={LABEL_CLS}>Education *</label>
-          <textarea
-            {...register("education", { required: "Education is required" })}
-            className={TEXTAREA_CLS}
-            rows={3}
-            placeholder="Your degree, school, etc."
-          />
-          <AIWriter
-            text={educationValue}
-            fieldType="education"
-            onAccept={(s) => setValue("education", s)}
-          />
-          {errors.education && (
-            <p className="text-xs text-red-400">{errors.education.message}</p>
-          )}
+        {/* ── Professional Background: Education + Experience ── */}
+        <div className="flex flex-col gap-y-5">
+          <div className="flex flex-col gap-y-1.5">
+            <label className={LABEL_CLS}>Education *</label>
+            <textarea
+              {...register("education", { required: "Education is required" })}
+              className={TEXTAREA_CLS}
+              rows={3}
+              placeholder="Your degree, school, etc."
+            />
+            <AIWriter
+              text={educationValue}
+              fieldType="education"
+              onAccept={(s) => setValue("education", s)}
+            />
+            {errors.education && (
+              <p className="text-xs text-red-400">{errors.education.message}</p>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-y-1.5">
+            <label className={LABEL_CLS}>Work Experience *</label>
+            <textarea
+              {...register("experience", {
+                required: "Work experience is required",
+              })}
+              className={TEXTAREA_CLS}
+              rows={3}
+              placeholder="Current/previous job title(s)"
+            />
+            <AIWriter
+              text={experienceValue}
+              fieldType="experience"
+              onAccept={(s) => setValue("experience", s)}
+            />
+            {errors.experience && (
+              <p className="text-xs text-red-400">
+                {errors.experience.message}
+              </p>
+            )}
+          </div>
         </div>
 
-        {/* Work Experience */}
-        <div className="flex flex-col gap-y-2">
-          <label className={LABEL_CLS}>Work Experience *</label>
-          <textarea
-            {...register("experience", {
-              required: "Work experience is required",
-            })}
-            className={TEXTAREA_CLS}
-            rows={3}
-            placeholder="Current/previous job title(s)"
-          />
-          <AIWriter
-            text={experienceValue}
-            fieldType="experience"
-            onAccept={(s) => setValue("experience", s)}
-          />
-          {errors.experience && (
-            <p className="text-xs text-red-400">{errors.experience.message}</p>
-          )}
-        </div>
-
-        {/* Personal Intro */}
-        <div className="flex flex-col gap-y-2">
+        {/* ── Personal Intro ── */}
+        <div className="flex flex-col gap-y-1.5">
           <label className={LABEL_CLS}>Personal Introduction *</label>
           <textarea
             {...register("personalIntro", {
@@ -225,10 +233,10 @@ function AboutYouForm({
           )}
         </div>
 
-        {/* Ummah Vision */}
-        <div className="flex flex-col gap-y-2">
+        {/* ── Ummah Vision ── */}
+        <div className="flex flex-col gap-y-1.5">
           <label className={LABEL_CLS}>Ummah Vision *</label>
-          <p className="text-xs text-white/40">
+          <p className="text-xs leading-relaxed text-white/40">
             If you were a civilizational engineer for the Ummah, what idea would
             you bring?
           </p>
@@ -247,106 +255,112 @@ function AboutYouForm({
           )}
         </div>
 
-        {/* Satisfaction */}
-        <div className="flex flex-col gap-y-3">
-          <label className={LABEL_CLS}>Current Occupation Satisfaction *</label>
-          <div className="flex flex-col gap-y-2">
-            {(["Happy", "Content", "Browsing"] as const).map((option) => (
-              <label key={option} className={PILL_RADIO_CLS}>
-                <input
-                  type="radio"
-                  value={option}
-                  {...register("satisfaction", { required: true })}
-                  className="sr-only"
-                />
-                <span
-                  className={`h-4 w-4 shrink-0 rounded-full border-2 transition-all duration-150 ${
-                    watch("satisfaction") === option
-                      ? "border-white bg-white"
-                      : "border-white/30 bg-transparent"
+        {/* ── Mindset: Satisfaction + Battery + Technical ── */}
+        <div className="flex flex-col gap-y-5">
+          {/* Satisfaction */}
+          <div className="flex flex-col gap-y-3">
+            <label className={LABEL_CLS}>Current Occupation Satisfaction *</label>
+            <div className="flex flex-col gap-y-2">
+              {(["Happy", "Content", "Browsing"] as const).map((option) => (
+                <label key={option} className={PILL_RADIO_CLS}>
+                  <input
+                    type="radio"
+                    value={option}
+                    {...register("satisfaction", { required: true })}
+                    className="sr-only"
+                  />
+                  <span
+                    className={`h-4 w-4 shrink-0 rounded-full border-2 transition-all duration-150 ${
+                      watch("satisfaction") === option
+                        ? "border-white bg-white"
+                        : "border-white/30 bg-transparent"
+                    }`}
+                  />
+                  {option}
+                </label>
+              ))}
+            </div>
+            {errors.satisfaction && (
+              <p className="text-xs text-red-400">Please select an option</p>
+            )}
+          </div>
+
+          {/* Battery Level */}
+          <div className="flex flex-col gap-y-3">
+            <label className={LABEL_CLS}>Founder&apos;s Battery Level *</label>
+            <div className="flex flex-col gap-y-2">
+              {(["Energized", "Content", "Burnt out"] as const).map(
+                (option) => (
+                  <label key={option} className={PILL_RADIO_CLS}>
+                    <input
+                      type="radio"
+                      value={option}
+                      {...register("batteryLevel", { required: true })}
+                      className="sr-only"
+                    />
+                    <span
+                      className={`h-4 w-4 shrink-0 rounded-full border-2 transition-all duration-150 ${
+                        watch("batteryLevel") === option
+                          ? "border-white bg-white"
+                          : "border-white/30 bg-transparent"
+                      }`}
+                    />
+                    {option}
+                  </label>
+                ),
+              )}
+            </div>
+            {errors.batteryLevel && (
+              <p className="text-xs text-red-400">Please select an option</p>
+            )}
+          </div>
+
+          {/* Technical */}
+          <div className="flex flex-col gap-y-3">
+            <label className={LABEL_CLS}>Technical Background? *</label>
+            <div className="flex gap-x-3">
+              {(["yes", "no"] as const).map((val) => (
+                <label
+                  key={val}
+                  className={`flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition-all duration-150 ${
+                    isTechnicalValue === val
+                      ? "border-white/40 bg-white/15 text-white"
+                      : "border-white/10 bg-white/5 text-white/50 hover:border-white/20 hover:text-white/70"
                   }`}
-                />
-                {option}
-              </label>
-            ))}
+                >
+                  <input
+                    type="radio"
+                    value={val}
+                    {...register("isTechnical", { required: true })}
+                    className="sr-only"
+                  />
+                  {val === "yes" ? "Yes" : "No"}
+                </label>
+              ))}
+            </div>
+            {errors.isTechnical && (
+              <p className="text-xs text-red-400">Please select an option</p>
+            )}
           </div>
-          {errors.satisfaction && (
-            <p className="text-xs text-red-400">Please select an option</p>
-          )}
         </div>
 
-        {/* Battery Level */}
-        <div className="flex flex-col gap-y-3">
-          <label className={LABEL_CLS}>Founder&apos;s Battery Level *</label>
-          <div className="flex flex-col gap-y-2">
-            {(["Energized", "Content", "Burnt out"] as const).map((option) => (
-              <label key={option} className={PILL_RADIO_CLS}>
-                <input
-                  type="radio"
-                  value={option}
-                  {...register("batteryLevel", { required: true })}
-                  className="sr-only"
-                />
-                <span
-                  className={`h-4 w-4 shrink-0 rounded-full border-2 transition-all duration-150 ${
-                    watch("batteryLevel") === option
-                      ? "border-white bg-white"
-                      : "border-white/30 bg-transparent"
-                  }`}
-                />
-                {option}
-              </label>
-            ))}
-          </div>
-          {errors.batteryLevel && (
-            <p className="text-xs text-red-400">Please select an option</p>
-          )}
-        </div>
-
-        {/* Technical */}
-        <div className="flex flex-col gap-y-3">
-          <label className={LABEL_CLS}>Technical Background? *</label>
-          <div className="flex gap-x-3">
-            {(["yes", "no"] as const).map((val) => (
-              <label
-                key={val}
-                className={`flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition-all duration-150 ${
-                  isTechnicalValue === val
-                    ? "border-white/40 bg-white/15 text-white"
-                    : "border-white/10 bg-white/5 text-white/50 hover:border-white/20 hover:text-white/70"
-                }`}
-              >
-                <input
-                  type="radio"
-                  value={val}
-                  {...register("isTechnical", { required: true })}
-                  className="sr-only"
-                />
-                {val === "yes" ? "Yes" : "No"}
-              </label>
-            ))}
-          </div>
-          {errors.isTechnical && (
-            <p className="text-xs text-red-400">Please select an option</p>
-          )}
-        </div>
-
-        {/* Navigation */}
-        <div className="flex items-center justify-between gap-4 pt-3">
+        {/* ── Navigation ── */}
+        <div className="flex items-center justify-between gap-4 pt-10 border-t border-white/8">
           <button
             type="button"
             onClick={onBack}
-            className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-medium text-white/60 transition-all duration-200 hover:border-white/30 hover:text-white"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-medium text-white/60 transition-all duration-200 hover:border-white/30 hover:text-white"
           >
             ← Back
           </button>
           <button
             type="submit"
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-black shadow-lg shadow-white/10 transition-all duration-200 hover:bg-white/90 active:scale-[0.98] sm:flex-none"
+            className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-black shadow-lg shadow-white/10 transition-all duration-200 hover:bg-white/90 active:scale-[0.98] sm:flex-none"
           >
             Continue →
           </button>
         </div>
+
       </div>
     </form>
   );
