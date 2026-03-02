@@ -26,6 +26,13 @@ type LocationSelectorProps = {
 
 const MAX_SUGGESTIONS = 100;
 
+// Cities that are absent from the country-state-city dataset due to
+// province/city naming conflicts in the underlying GeoNames data.
+const MISSING_CITIES: Record<string, string[]> = {
+  TR: ["Istanbul"],
+  AE: ["Abu Dhabi"],
+};
+
 export default function LocationSelector({
   countryValue,
   stateValue,
@@ -96,7 +103,16 @@ export default function LocationSelector({
     const data = selectedStateIso
       ? City.getCitiesOfState(selectedCountryIso, selectedStateIso) || []
       : City.getCitiesOfCountry(selectedCountryIso) || [];
-    setCities(data);
+
+    const overrides = (MISSING_CITIES[selectedCountryIso] || []).map(
+      (name) => ({ name, countryCode: selectedCountryIso, stateCode: "" }),
+    );
+    const existingNames = new Set(data.map((c) => c.name.toLowerCase()));
+    const newOverrides = overrides.filter(
+      (o) => !existingNames.has(o.name.toLowerCase()),
+    );
+
+    setCities([...newOverrides, ...data]);
   }, [selectedCountryIso, selectedStateIso]);
 
   // Close dropdown on outside click
