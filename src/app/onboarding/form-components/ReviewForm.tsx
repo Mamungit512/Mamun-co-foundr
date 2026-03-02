@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { useStepEntry } from "@/hooks/useOnboardingAnimation";
 
 type ReviewFormProps = {
   data: OnboardingData;
@@ -13,15 +16,24 @@ export default function ReviewForm({
   onEdit,
   onSubmit,
 }: ReviewFormProps) {
+  const fieldsRef = useStepEntry();
   const hasStartup = data.hasStartup === "yes";
 
   return (
-    <div className="space-y-6">
-      <h2 className="heading-5">Review Your Info</h2>
-      <p className="text-sm text-gray-400">Double check before continuing.</p>
+    <div ref={fieldsRef} className="flex flex-col gap-y-6">
+      {/* Header */}
+      <div>
+        <p className="mb-1 text-xs font-semibold tracking-widest text-white/40 uppercase">
+          Step 6 of 6
+        </p>
+        <h2 className="text-2xl font-bold text-white">Review your info</h2>
+        <p className="mt-1.5 text-sm text-white/50">
+          Double-check everything before submitting.
+        </p>
+      </div>
 
-      <div className="space-y-4">
-        {/* Step 2 — About You */}
+      {/* Sections */}
+      <div className="flex flex-col gap-y-3">
         <Section
           title="About You"
           fields={[
@@ -39,34 +51,27 @@ export default function ReviewForm({
             { label: "Experience", value: data.experience || "—" },
             { label: "Personal Intro", value: data.personalIntro || "—" },
             { label: "Ummah Vision", value: data.ummah || "—" },
+            { label: "Satisfaction", value: data.satisfaction || "—" },
+            { label: "Battery Level", value: data.batteryLevel || "—" },
             {
-              label: "Current Satisfaction",
-              value: data.satisfaction || "—",
-            },
-            {
-              label: "Battery Level",
-              value: data.batteryLevel || "—",
-            },
-            {
-              label: "Are you technical?",
+              label: "Technical",
               value: data.isTechnical === "yes" ? "Yes" : "No",
             },
           ]}
           onEdit={() => onEdit(2)}
         />
 
-        {/* Step 3 — Startup */}
         <Section
           title="Startup"
           fields={[
             {
-              label: "Have Startup or Idea",
+              label: "Has startup",
               value: hasStartup ? "Yes" : "No",
             },
             ...(hasStartup
               ? [
                   {
-                    label: "Company/Project Name",
+                    label: "Name",
                     value: data.startupName || "—",
                   },
                   {
@@ -74,13 +79,10 @@ export default function ReviewForm({
                     value: data.startupDescription || "—",
                   },
                   {
-                    label: "Time Spent & Progress",
+                    label: "Time Spent",
                     value: data.startupTimeSpent || "—",
                   },
-                  {
-                    label: "Funding Info",
-                    value: data.startupFunding || "—",
-                  },
+                  { label: "Funding", value: data.startupFunding || "—" },
                   {
                     label: "Co-Founder Status",
                     value: data.coFounderStatus || "—",
@@ -90,7 +92,7 @@ export default function ReviewForm({
                     value: data.fullTimeTimeline || "—",
                   },
                   {
-                    label: "Equity Expectation",
+                    label: "Equity",
                     value: data.equityExpectation
                       ? `${data.equityExpectation}%`
                       : "—",
@@ -107,31 +109,31 @@ export default function ReviewForm({
           onEdit={() => onEdit(3)}
         />
 
-        {/* Step 4 — Your Background */}
         <Section
-          title="Your Background"
+          title="Background"
           fields={[
             { label: "Gender", value: data.gender || "—" },
             { label: "Birthdate", value: data.birthdate || "—" },
-            { label: "Accomplishments", value: data.accomplishments || "—" },
-            { label: "Scheduling Link", value: data.schedulingUrl || "—" },
+            {
+              label: "Accomplishments",
+              value: data.accomplishments || "—",
+            },
+            { label: "Scheduling", value: data.schedulingUrl || "—" },
           ]}
           onEdit={() => onEdit(4)}
         />
 
-        {/* Step 4 — Socials (same page, separate section in review) */}
         <Section
           title="Socials"
           fields={[
             { label: "LinkedIn", value: data.linkedin || "—" },
             { label: "Twitter", value: data.twitter || "—" },
             { label: "GitHub/GitLab", value: data.git || "—" },
-            { label: "Personal Website", value: data.personalWebsite || "—" },
+            { label: "Website", value: data.personalWebsite || "—" },
           ]}
           onEdit={() => onEdit(4)}
         />
 
-        {/* Step 5 — Interests & Values */}
         <Section
           title="Interests & Values"
           fields={[
@@ -148,18 +150,19 @@ export default function ReviewForm({
         />
       </div>
 
-      <div className="flex justify-between pt-6">
+      {/* Navigation */}
+      <div className="flex items-center justify-between gap-4 pt-2">
         <button
-          className="cursor-pointer rounded bg-gray-600 px-4 py-2 text-white"
           onClick={onBack}
+          className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-medium text-white/60 transition-all duration-200 hover:border-white/30 hover:text-white"
         >
-          Back
+          ← Back
         </button>
         <button
-          className="cursor-pointer rounded bg-green-600 px-4 py-2 text-white"
           onClick={onSubmit}
+          className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-500 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:bg-emerald-400 active:scale-[0.98] sm:flex-none"
         >
-          Confirm & Submit
+          Confirm &amp; Submit ✓
         </button>
       </div>
     </div>
@@ -176,18 +179,23 @@ function Section({
   onEdit: () => void;
 }) {
   return (
-    <div className="rounded-lg bg-gray-800 p-4">
-      <div className="mb-2 flex items-center justify-between">
-        <h3 className="font-semibold text-white">{title}</h3>
-        <button className="text-sm text-blue-400" onClick={onEdit}>
+    <div className="rounded-xl border border-white/8 bg-white/4 p-4">
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-sm font-semibold tracking-wide text-white">
+          {title}
+        </h3>
+        <button
+          onClick={onEdit}
+          className="rounded-lg px-2.5 py-1 text-xs font-medium text-white/40 transition-all duration-150 hover:bg-white/8 hover:text-white"
+        >
           Edit
         </button>
       </div>
-      <ul className="space-y-1 text-sm text-gray-300">
+      <ul className="space-y-1.5">
         {fields.map((f, i) => (
-          <li key={i}>
-            <span className="font-medium text-white">{f.label}:</span>{" "}
-            {f.value || "—"}
+          <li key={i} className="flex gap-2 text-sm">
+            <span className="w-36 shrink-0 text-white/40">{f.label}</span>
+            <span className="text-white/80">{f.value || "—"}</span>
           </li>
         ))}
       </ul>

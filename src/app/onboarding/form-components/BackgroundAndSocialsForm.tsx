@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
 import AIWriter from "@/components/ui/AIWriter";
+import { useStepEntry, useErrorShake } from "@/hooks/useOnboardingAnimation";
 
 type BackgroundAndSocialsData = {
   gender?: string;
@@ -16,6 +17,21 @@ type BackgroundAndSocialsData = {
   personalWebsite?: string;
 };
 
+const TEXTAREA_CLS =
+  "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-white/90 placeholder-white/30 transition-all duration-200 focus:border-white/25 focus:bg-white/8 focus:ring-2 focus:ring-white/15 focus:outline-none hover:border-white/20 resize-none";
+
+const LABEL_CLS = "text-sm font-medium text-white/60 uppercase tracking-wide";
+
+const SECTION_DIVIDER = (label: string) => (
+  <div className="flex items-center gap-3 pt-2">
+    <div className="h-px flex-1 bg-white/8" />
+    <span className="text-xs font-semibold tracking-widest text-white/30 uppercase">
+      {label}
+    </span>
+    <div className="h-px flex-1 bg-white/8" />
+  </div>
+);
+
 function BackgroundAndSocialsForm({
   onNext,
   onBack,
@@ -25,126 +41,141 @@ function BackgroundAndSocialsForm({
   onBack: () => void;
   defaultValues?: Partial<BackgroundAndSocialsData>;
 }) {
-  const { register, handleSubmit, watch, setValue } =
-    useForm<BackgroundAndSocialsData>({
-      defaultValues,
-    });
+  const fieldsRef = useStepEntry();
+  const { formRef, triggerShake } = useErrorShake();
+
+  const { register, handleSubmit, watch, setValue, formState: { errors } } =
+    useForm<BackgroundAndSocialsData>({ defaultValues });
 
   const accomplishmentsValue = watch("accomplishments") || "";
 
-  const onSubmit = (data: BackgroundAndSocialsData) => {
-    onNext(data);
-  };
+  const errCount = Object.keys(errors).length;
+  useEffect(() => {
+    if (errCount > 0) triggerShake();
+  }, [errCount, triggerShake]);
+
+  const onSubmit = (data: BackgroundAndSocialsData) => onNext(data);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mt-10 space-y-6">
-      <h2 className="heading-6">Additional Details</h2>
-      <p className="text-sm text-gray-400">
-        All fields on this page are optional.
-      </p>
+    <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
+      <div ref={fieldsRef} className="flex flex-col gap-y-5">
+        {/* Header */}
+        <div>
+          <p className="mb-1 text-xs font-semibold tracking-widest text-white/40 uppercase">
+            Step 4 of 6
+          </p>
+          <h2 className="text-2xl font-bold text-white">Additional details</h2>
+          <p className="mt-1.5 text-sm text-white/50">
+            All fields are optional — add what feels relevant.
+          </p>
+        </div>
 
-      {/* --- Your Background --- */}
-      <h3 className="heading-6 text-base">Your Background</h3>
+        {/* Your Background */}
+        {SECTION_DIVIDER("Your Background")}
 
-      <div className="flex gap-x-6">
-        <div className="flex w-full flex-col gap-x-20 gap-y-2">
-          <label htmlFor="gender">Gender</label>
-          <FormInput
-            type="text"
-            placeholder="e.g. Female, Male, Non-binary"
-            {...register("gender")}
+        <div className="flex gap-x-4">
+          <div className="flex w-full flex-col gap-y-2">
+            <label className={LABEL_CLS}>Gender</label>
+            <FormInput
+              type="text"
+              placeholder="e.g. Female, Male, Non-binary"
+              {...register("gender")}
+            />
+          </div>
+          <div className="flex w-full flex-col gap-y-2">
+            <label className={LABEL_CLS}>Birthdate</label>
+            <FormInput
+              type="text"
+              placeholder="MM/DD/YYYY"
+              {...register("birthdate")}
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-y-2">
+          <label className={LABEL_CLS}>Impressive Accomplishments</label>
+          <textarea
+            {...register("accomplishments")}
+            className={TEXTAREA_CLS}
+            rows={4}
+            placeholder={`Built an app used by 10k+ users\nLaunched a startup\nTop 5% LeetCode`}
+          />
+          <AIWriter
+            text={accomplishmentsValue}
+            fieldType="accomplishments"
+            onAccept={(s) => setValue("accomplishments", s)}
           />
         </div>
-        <div className="flex w-full flex-col gap-x-20 gap-y-2">
-          <label htmlFor="birthdate">Birthdate</label>
+
+        <div className="flex flex-col gap-y-2">
+          <label className={LABEL_CLS}>
+            Scheduling Link
+            <span className="ml-1 text-white/30 normal-case">
+              (Calendly, Cal.com…)
+            </span>
+          </label>
           <FormInput
-            type="text"
-            placeholder="MM/DD/YYYY"
-            {...register("birthdate")}
+            {...register("schedulingUrl")}
+            type="url"
+            placeholder="https://calendly.com/your-link"
           />
         </div>
-      </div>
 
-      <div className="flex flex-col gap-y-2">
-        <label htmlFor="accomplishments">Impressive Accomplishments</label>
-        <textarea
-          id="accomplishments"
-          {...register("accomplishments")}
-          className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white placeholder-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none"
-          rows={4}
-          placeholder={`Built an app used by 10k+ users\nLaunched a startup\nTop 5% LeetCode`}
-        />
-        <AIWriter
-          text={accomplishmentsValue}
-          fieldType="accomplishments"
-          onAccept={(suggestion) => setValue("accomplishments", suggestion)}
-        />
-      </div>
+        {/* Socials */}
+        {SECTION_DIVIDER("Socials")}
 
-      <div className="flex flex-col gap-y-2">
-        <label htmlFor="schedulingUrl">
-          Scheduling Link (Calendly, Google Calendar)
-        </label>
-        <FormInput
-          {...register("schedulingUrl")}
-          type="url"
-          placeholder="https://calendly.com/your-link"
-        />
-      </div>
+        <div className="flex flex-col gap-y-2">
+          <label className={LABEL_CLS}>LinkedIn</label>
+          <FormInput
+            type="text"
+            placeholder="https://linkedin.com/in/your-name"
+            {...register("linkedin")}
+          />
+        </div>
 
-      {/* --- Socials --- */}
-      <h3 className="heading-6 mt-4 text-base">Socials</h3>
+        <div className="flex flex-col gap-y-2">
+          <label className={LABEL_CLS}>Twitter / X</label>
+          <FormInput
+            type="text"
+            placeholder="https://twitter.com/yourhandle"
+            {...register("twitter")}
+          />
+        </div>
 
-      <div className="flex w-full flex-col gap-x-20 gap-y-2">
-        <label htmlFor="linkedin">LinkedIn URL</label>
-        <FormInput
-          type="text"
-          placeholder="https://www.linkedin.com/in/your-name"
-          {...register("linkedin")}
-        />
-      </div>
+        <div className="flex flex-col gap-y-2">
+          <label className={LABEL_CLS}>GitHub / GitLab</label>
+          <FormInput
+            type="text"
+            placeholder="https://github.com/yourusername"
+            {...register("git")}
+          />
+        </div>
 
-      <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
-        <label htmlFor="twitter">Twitter URL</label>
-        <FormInput
-          type="text"
-          placeholder="https://twitter.com/yourhandle"
-          {...register("twitter")}
-        />
-      </div>
+        <div className="flex flex-col gap-y-2">
+          <label className={LABEL_CLS}>Personal Website</label>
+          <FormInput
+            type="text"
+            placeholder="https://yourportfolio.com"
+            {...register("personalWebsite")}
+          />
+        </div>
 
-      <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
-        <label htmlFor="git">GitHub/GitLab URL</label>
-        <FormInput
-          type="text"
-          placeholder="https://github.com/yourusername"
-          {...register("git")}
-        />
-      </div>
-
-      <div className="flex w-full flex-col justify-between gap-x-20 gap-y-2">
-        <label htmlFor="personalWebsite">Personal Website URL</label>
-        <FormInput
-          type="text"
-          placeholder="https://yourportfolio.com"
-          {...register("personalWebsite")}
-        />
-      </div>
-
-      <div className="mt-6 flex justify-between">
-        <button
-          type="button"
-          onClick={onBack}
-          className="cursor-pointer rounded border border-white px-4 py-2 text-white"
-        >
-          Back
-        </button>
-        <button
-          type="submit"
-          className="cursor-pointer rounded bg-white px-4 py-2 text-black"
-        >
-          Next
-        </button>
+        {/* Navigation */}
+        <div className="flex items-center justify-between gap-4 pt-3">
+          <button
+            type="button"
+            onClick={onBack}
+            className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-medium text-white/60 transition-all duration-200 hover:border-white/30 hover:text-white"
+          >
+            ← Back
+          </button>
+          <button
+            type="submit"
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-black shadow-lg shadow-white/10 transition-all duration-200 hover:bg-white/90 active:scale-[0.98] sm:flex-none"
+          >
+            Continue →
+          </button>
+        </div>
       </div>
     </form>
   );

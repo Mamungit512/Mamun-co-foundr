@@ -8,6 +8,7 @@ import ReviewForm from "@/app/onboarding/form-components/ReviewForm";
 import StartupForm from "@/app/onboarding/form-components/StartupForm";
 import OnboardingProgressBar from "@/components/ui/OnboardingProgressBar";
 import { useOnboardingDraft } from "@/hooks/useOnboardingDraft";
+import { useStepTransition } from "@/hooks/useOnboardingAnimation";
 import React, { useState, useEffect } from "react";
 
 type CreateProfileProps = {
@@ -31,6 +32,7 @@ const TOTAL_STEPS = 6;
 
 function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
   const draft = useOnboardingDraft();
+  const { containerRef, transition } = useStepTransition();
 
   const [stepNumber, setStepNumber] = useState(1);
   const [formData, setFormData] = useState<OnboardingData>({});
@@ -41,25 +43,33 @@ function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
       setStepNumber(savedDraft.step);
       setFormData(savedDraft.data);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const advanceStep = (newData: Partial<OnboardingData>, nextStep: number) => {
+  const goToStep = (
+    newStep: number,
+    dir: "forward" | "back",
+    newData: Partial<OnboardingData> = {},
+  ) => {
     const merged = { ...formData, ...newData };
-    setFormData(merged);
-    setStepNumber(nextStep);
-    draft.save(nextStep, merged);
+
+    transition(dir, () => {
+      setFormData(merged);
+      setStepNumber(newStep);
+      draft.save(newStep, merged);
+    });
+  };
+
+  const advanceStep = (newData: Partial<OnboardingData>, nextStep: number) => {
+    goToStep(nextStep, "forward", newData);
   };
 
   const handleBack = () => {
-    const prevStep = stepNumber - 1;
-    setStepNumber(prevStep);
-    draft.save(prevStep, formData);
+    goToStep(stepNumber - 1, "back");
   };
 
   const handleEditStep = (step: number) => {
-    setStepNumber(step);
-    draft.save(step, formData);
+    goToStep(step, step < stepNumber ? "back" : "forward");
   };
 
   const handleSubmit = async () => {
@@ -80,48 +90,52 @@ function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
         totalSteps={TOTAL_STEPS}
         onStepClick={handleEditStep}
       />
-      {stepNumber === 1 && (
-        <ProfilePhotoForm
-          onNext={(newData) => advanceStep(newData, 2)}
-          defaultValues={formData}
-        />
-      )}
-      {stepNumber === 2 && (
-        <AboutYouForm
-          onBack={handleBack}
-          onNext={(newData) => advanceStep(newData, 3)}
-          defaultValues={formData}
-        />
-      )}
-      {stepNumber === 3 && (
-        <StartupForm
-          onBack={handleBack}
-          onNext={(newData) => advanceStep(newData, 4)}
-          defaultValues={formData}
-        />
-      )}
-      {stepNumber === 4 && (
-        <BackgroundAndSocialsForm
-          onBack={handleBack}
-          onNext={(newData) => advanceStep(newData, 5)}
-          defaultValues={formData}
-        />
-      )}
-      {stepNumber === 5 && (
-        <InterestsAndValuesForm
-          onBack={handleBack}
-          onNext={(newData) => advanceStep(newData, 6)}
-          defaultValues={formData}
-        />
-      )}
-      {stepNumber === 6 && (
-        <ReviewForm
-          data={formData}
-          onBack={handleBack}
-          onEdit={handleEditStep}
-          onSubmit={handleSubmit}
-        />
-      )}
+
+      {/* Step container — GSAP slides this div between steps */}
+      <div ref={containerRef} className="will-change-transform">
+        {stepNumber === 1 && (
+          <ProfilePhotoForm
+            onNext={(newData) => advanceStep(newData, 2)}
+            defaultValues={formData}
+          />
+        )}
+        {stepNumber === 2 && (
+          <AboutYouForm
+            onBack={handleBack}
+            onNext={(newData) => advanceStep(newData, 3)}
+            defaultValues={formData}
+          />
+        )}
+        {stepNumber === 3 && (
+          <StartupForm
+            onBack={handleBack}
+            onNext={(newData) => advanceStep(newData, 4)}
+            defaultValues={formData}
+          />
+        )}
+        {stepNumber === 4 && (
+          <BackgroundAndSocialsForm
+            onBack={handleBack}
+            onNext={(newData) => advanceStep(newData, 5)}
+            defaultValues={formData}
+          />
+        )}
+        {stepNumber === 5 && (
+          <InterestsAndValuesForm
+            onBack={handleBack}
+            onNext={(newData) => advanceStep(newData, 6)}
+            defaultValues={formData}
+          />
+        )}
+        {stepNumber === 6 && (
+          <ReviewForm
+            data={formData}
+            onBack={handleBack}
+            onEdit={handleEditStep}
+            onSubmit={handleSubmit}
+          />
+        )}
+      </div>
     </>
   );
 }
