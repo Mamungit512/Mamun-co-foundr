@@ -93,14 +93,24 @@ export default function OnboardingComponent() {
       <FirstPromoterSignup />
       <section className="section-height section-padding bg-(--charcoal-black) text-(--mist-white)">
         <div className="mx-auto max-w-4xl">
-          <h1 className="mb-4 text-2xl font-bold sm:text-3xl md:text-4xl lg:text-5xl">
-            Welcome to Mamun Cofoundr Matching!
-          </h1>
-          <p className="mb-8 text-lg text-gray-500 sm:text-xl md:text-2xl">
-            To get started, tell us more about yourself
-          </p>
+          {/* Page-level header */}
+          <div className="mb-10">
+            <p className="mb-2 text-xs font-semibold tracking-widest text-white/30 uppercase">
+              Mamun Co-Foundr
+            </p>
+            <h1 className="text-3xl font-bold text-white sm:text-4xl">
+              Build your profile
+            </h1>
+            <p className="mt-2 text-base text-white/50">
+              6 quick steps to find your ideal co-founder match.
+            </p>
+          </div>
 
-          {error && <p className="mb-4 text-red-500">{error}</p>}
+          {error && (
+            <div className="mb-6 rounded-xl border border-red-500/30 bg-red-500/8 px-4 py-3">
+              <p className="text-sm text-red-400">{error}</p>
+            </div>
+          )}
 
           <CreateProfile onSubmit={handleSubmit} onError={(e) => setError(e)} />
         </div>
