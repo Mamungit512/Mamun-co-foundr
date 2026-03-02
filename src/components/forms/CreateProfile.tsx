@@ -7,6 +7,7 @@ import ProfilePhotoForm from "@/app/onboarding/form-components/ProfilePhotoForm"
 import ReviewForm from "@/app/onboarding/form-components/ReviewForm";
 import StartupDetailsForm from "@/app/onboarding/form-components/StartupDetailsForm";
 import WhoYouAreForm from "@/app/onboarding/form-components/WhoYouAreForm";
+import OnboardingProgressBar from "@/components/ui/OnboardingProgressBar";
 import { useOnboardingDraft } from "@/hooks/useOnboardingDraft";
 import React, { useState, useEffect } from "react";
 
@@ -18,6 +19,8 @@ type CreateProfileProps = {
   onSuccess?: () => void;
   onError?: (error: string) => void;
 };
+
+const TOTAL_STEPS = 7;
 
 function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
   const draft = useOnboardingDraft();
@@ -65,6 +68,7 @@ function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
 
   return (
     <>
+      <OnboardingProgressBar currentStep={stepNumber} totalSteps={TOTAL_STEPS} />
       {stepNumber === 1 && (
         <ProfilePhotoForm
           onNext={(newData) => advanceStep(newData, 2)}
