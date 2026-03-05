@@ -169,7 +169,7 @@ function Header() {
                     }
                   />
                   <UserButton.Link
-                    label="Edit your ummatic passport"
+                    label="Edit your ID"
                     href="/edit-profile"
                     labelIcon={<FaPassport />}
                   />

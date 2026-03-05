@@ -39,7 +39,7 @@ function Vision() {
                 <CiGlobe className="size-8" />
               </div>
             </motion.div>
-            <h2 className="heading-6 mb-4 font-bold">Ummatic Reach</h2>
+            <h2 className="heading-6 mb-4 font-bold">Global Reach</h2>
             <p className="leading-relaxed text-gray-400">
               Engage with innovators and visionaries from around the globe, and
               transcend borders. Your ideal founder awaits you.

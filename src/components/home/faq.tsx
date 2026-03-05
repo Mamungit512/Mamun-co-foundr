@@ -75,9 +75,9 @@ function FAQ() {
     {
       id: 11,
       question:
-        "Can I connect with co-founders who want to launch Sharia-compliant ventures?",
+        "Can I connect with co-founders who want to launch Ethical compliant ventures?",
       answer:
-        "Yes, you can specify your interest in Sharia-compliant ventures in your profile and  preferences. Mamun might also explore integrating with Islamic financial institutions in  the future to facilitate access to Sharia-compliant funding.",
+        "Yes, you can specify your interest in Ethical compliant ventures in your profile and  preferences. Mamun might also explore integrating with financial institutions in  the future to facilitate access to Ethical compliant ventures.",
     },
   ];
 

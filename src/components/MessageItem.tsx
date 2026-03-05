@@ -51,10 +51,12 @@ function MessageItem({ message, isOwnMessage }: MessageItemProps) {
           className={`flex flex-col ${isOwnMessage ? "items-end" : "items-start"}`}
         >
           <div
-            className={`rounded-2xl px-4 py-2 ${
-              isOwnMessage ? "bg-blue-500 text-white" : "bg-gray-700 text-white"
-            }`}
-          >
+  className={`rounded-2xl px-4 py-2 ${
+    isOwnMessage
+      ? "bg-black text-white border border-white/40"
+      : "bg-white text-black"
+  }`}
+>
             <p className="text-sm leading-relaxed">{message.content}</p>
           </div>
 
