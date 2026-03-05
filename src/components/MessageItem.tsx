@@ -52,7 +52,9 @@ function MessageItem({ message, isOwnMessage }: MessageItemProps) {
         >
           <div
             className={`rounded-2xl px-4 py-2 ${
-              isOwnMessage ? "bg-blue-500 text-white" : "bg-gray-700 text-white"
+              isOwnMessage
+                ? "border border-white/40 bg-black text-white"
+                : "bg-white text-black"
             }`}
           >
             <p className="text-sm leading-relaxed">{message.content}</p>

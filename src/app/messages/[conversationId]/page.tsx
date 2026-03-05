@@ -168,7 +168,7 @@ function ConversationPage({ params }: ConversationPageProps) {
         {/* Notifications - Always Visible */}
         <div className="space-y-3">
           {/* Privacy Notice */}
-          <div className="rounded-lg border border-gray-700 bg-(--charcoal-black) p-3">
+          <div className="rounded-lg border border-white bg-(--charcoal-black) p-3">
             <div className="mb-2 flex items-center gap-2 text-yellow-400">
               <div className="h-4 w-4 rounded-full bg-blue-500"></div>
               <span className="text-sm font-medium">Privacy Notice</span>
@@ -218,30 +218,32 @@ function ConversationPage({ params }: ConversationPageProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex h-[600px] flex-col rounded-lg border border-gray-700 bg-gray-800/50"
+          className="flex h-[600px] flex-col rounded-sm border border-white bg-black"
         >
           {/* Messages Container */}
           <div className="chat-scroll h-[500px] bg-(--charcoal-black) p-4">
             {isLoading ? (
               <div className="flex h-full items-center justify-center">
                 <div className="flex items-center gap-2 text-gray-400">
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-400 border-t-transparent"></div>
-                  <span className="text-sm">Loading messages...</span>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                  <span className="text-sm text-white/60">
+                    Loading messages...
+                  </span>
                 </div>
               </div>
             ) : error ? (
               <div className="flex h-full items-center justify-center">
                 <div className="text-center">
-                  <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/20 text-red-400">
+                  <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 text-white/60">
                     <FaEnvelope className="h-6 w-6" />
                   </div>
                   <h3 className="mb-2 text-lg font-semibold text-white">
                     Error Loading Messages
                   </h3>
-                  <p className="mb-4 text-sm text-red-400">{error.message}</p>
+                  <p className="mb-4 text-sm text-white/50">{error.message}</p>
                   <button
                     onClick={() => window.location.reload()}
-                    className="rounded-lg bg-blue-500/20 px-4 py-2 text-blue-400 transition-colors hover:bg-blue-500/30"
+                    className="rounded-lg border border-white px-4 py-2 text-white transition-colors hover:bg-white hover:text-black"
                   >
                     Try Again
                   </button>
@@ -250,13 +252,13 @@ function ConversationPage({ params }: ConversationPageProps) {
             ) : messages.length === 0 ? (
               <div className="flex h-full items-center justify-center">
                 <div className="text-center">
-                  <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-500/20 text-blue-400">
+                  <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 text-white/60">
                     <FaEnvelope className="h-6 w-6" />
                   </div>
                   <h3 className="mb-2 text-lg font-semibold text-white">
                     No Messages Yet
                   </h3>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-white/50">
                     Start the conversation by sending your first message!
                   </p>
                 </div>
@@ -271,11 +273,12 @@ function ConversationPage({ params }: ConversationPageProps) {
               ))
             )}
             {/* Scroll anchor */}
+
             <div ref={messagesEndRef} />
           </div>
 
           {/* Message Input Area */}
-          <div className="border-t border-gray-700 bg-(--charcoal-black) p-4">
+          <div className="border-xl border-white/20 bg-[var(--charcoal-black)] p-4">
             {/*AI WRITER*/}
             <div className="mb-2">
               <AIWriter
@@ -284,7 +287,6 @@ function ConversationPage({ params }: ConversationPageProps) {
                 onAccept={(suggestion) => setMessageInput(suggestion)}
               />
             </div>
-            {/* -------------------------- */}
 
             <form
               onSubmit={handleSendMessage}
@@ -295,26 +297,26 @@ function ConversationPage({ params }: ConversationPageProps) {
                   type="text"
                   placeholder={
                     messages.length >= 20
-                      ? "Message limit reached - This is a starting point to connect outside of Mamun"
+                      ? "Message limit reached"
                       : "Type a message..."
                   }
                   value={messageInput}
                   onChange={(e) => setMessageInput(e.target.value)}
-                  className="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none"
+                  className="w-full rounded-lg border border-white/30 bg-[var(--charcoal-black)] px-4 py-2 text-white placeholder-white/30 transition-colors focus:border-white focus:outline-none"
                   disabled={isSending || messages.length >= 20}
                   maxLength={1000}
                 />
               </div>
               <button
                 type="submit"
-                className="rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg border border-white bg-white px-4 py-2 font-medium text-black transition-all hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
                 disabled={
                   !messageInput.trim() || isSending || messages.length >= 20
                 }
               >
                 {isSending ? (
                   <div className="flex items-center gap-2">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent"></div>
                     <span>Sending...</span>
                   </div>
                 ) : (
@@ -322,7 +324,7 @@ function ConversationPage({ params }: ConversationPageProps) {
                 )}
               </button>
             </form>
-            <p className="mt-2 text-center text-xs text-gray-500">
+            <p className="mt-2 text-center text-xs text-white/30">
               Press Enter or click Send to send your message
             </p>
           </div>
