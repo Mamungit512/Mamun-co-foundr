@@ -214,7 +214,6 @@ function ConversationPage({ params }: ConversationPageProps) {
         </div>
 
         {/* Messages Content */}
-        {/* Messages Content */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -273,11 +272,14 @@ function ConversationPage({ params }: ConversationPageProps) {
                 />
               ))
             )}
+            {/* Scroll anchor */}
+
             <div ref={messagesEndRef} />
           </div>
 
           {/* Message Input Area */}
           <div className="border-xl border-white/20 bg-[var(--charcoal-black)] p-4">
+            {/*AI WRITER*/}
             <div className="mb-2">
               <AIWriter
                 text={messageInput}
