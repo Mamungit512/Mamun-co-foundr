@@ -99,7 +99,7 @@ function Header() {
             <Link
               href="https://calendly.com/mcfm-mamuncofoundr/30min"
               target="_blank"
-              className="underline underline-offset-4 transition hover:text-gray-300"
+              className="underline underline-offset-4 transition hover:text-white"
             >
               Book a Demo
             </Link>
@@ -120,7 +120,7 @@ function Header() {
             <li>
               <button
                 onClick={() => setIsLikedProfilesOpen(true)}
-                className="group relative cursor-pointer rounded-full p-3 text-gray-300 transition-all duration-200 hover:bg-pink-500/20 hover:text-pink-400"
+                className="group relative cursor-pointer rounded-full p-3 text-white transition-all duration-200 hover:bg-pink-500/20 hover:text-pink-400"
                 title="View Liked Profiles"
               >
                 <FaHeart className="h-5 w-5 transition-transform group-hover:scale-110" />
@@ -230,7 +230,7 @@ function Header() {
         <SignedIn>
           <button
             onClick={() => setIsLikedProfilesOpen(true)}
-            className="group relative cursor-pointer rounded-full p-2 text-gray-300 transition-all duration-200 hover:bg-pink-500/20 hover:text-pink-400"
+            className="group relative cursor-pointer rounded-full p-2 text-white transition-all duration-200 hover:bg-pink-500/20 hover:text-pink-400"
             title="View Liked Profiles"
           >
             <FaHeart className="h-4 w-4 transition-transform group-hover:scale-110" />
@@ -242,7 +242,7 @@ function Header() {
           </button>
           <button
             onClick={() => router.push("/messages")}
-            className="group relative cursor-pointer rounded-full p-2 text-gray-300 transition-all duration-200 hover:bg-blue-500/20 hover:text-blue-400"
+            className="group relative cursor-pointer rounded-full p-2 text-white transition-all duration-200 hover:bg-blue-500/20 hover:text-blue-400"
             title="Messages"
           >
             <FaEnvelope className="h-4 w-4 transition-transform group-hover:scale-110" />
@@ -251,7 +251,7 @@ function Header() {
 
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="cursor-pointer rounded-lg p-2 text-gray-300 transition-all duration-200 hover:bg-gray-700/50"
+          className="cursor-pointer rounded-lg p-2 text-white transition-all duration-200 hover:bg-gray-700/50"
           aria-label="Toggle mobile menu"
         >
           <motion.div
@@ -276,29 +276,28 @@ function Header() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute top-full right-4 z-50 mt-2 w-64 rounded-lg border border-gray-700 bg-gray-800 shadow-xl backdrop-blur-sm"
+            className="absolute top-full right-4 z-50 mt-2 w-56 rounded-xl border border-gray-700/60 bg-(--charcoal-black) shadow-xl backdrop-blur-sm"
           >
-            <div className="p-4">
-              <ul className="space-y-3">
+            <div className="max-h-[75vh] overflow-y-auto overscroll-contain p-2">
+              <ul className="space-y-0.5">
                 <li>
                   <Link
                     href="/cofoundr-matching"
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
+                    className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700/50 hover:text-white"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <FaUsers className="h-4 w-4" />
+                    <FaUsers className="h-3.5 w-3.5 text-gray-400" />
                     Co-Foundr Matching
                   </Link>
                 </li>
-
                 <li>
                   <Link
                     href="/contact-us"
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
+                    className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700/50 hover:text-white"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <svg
-                      className="h-4 w-4"
+                      className="h-3.5 w-3.5 text-gray-400"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -318,10 +317,10 @@ function Header() {
                     href="/pricing"
                     target="_blank"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-all duration-200 hover:bg-gray-700/60 hover:text-white focus:bg-gray-700/60 focus:text-white"
+                    className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700/50 hover:text-white"
                   >
                     <svg
-                      className="h-5 w-5 text-gray-400 transition-colors duration-200 group-hover:text-green-400"
+                      className="h-3.5 w-3.5 text-gray-400"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth={2}
@@ -330,74 +329,21 @@ function Header() {
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        d="M7 7h10l3 5-3 5H7l-3-5 3-5z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 11h.01"
+                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-
-                    <span>Pricing</span>
+                    Pricing
                   </Link>
                 </li>
-
-                {/* <li>
-                  <Link
-                    href="https://calendly.com/mcfm-mamuncofoundr/30min"
-                    target="_blank"
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7v10m4-6v6m4-2v2M3 3h18M3 3v18M3 3l18 18"
-                      />
-                    </svg>
-                    Book a Demo
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="https://luma.com/user/usr-eZsILDku7ToYtZZ"
-                    target="_blank"
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                    Events
-                  </Link>
-                </li> */}
 
                 <SignedIn>
                   <li>
                     <Link
                       href="/dashboard/referrals"
-                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
+                      className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700/50 hover:text-white"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <FaGift className="h-4 w-4" />
+                      <FaGift className="h-3.5 w-3.5 text-gray-400" />
                       Ambassador Only
                     </Link>
                   </li>
@@ -418,20 +364,20 @@ function Header() {
                           },
                         });
                       }}
-                      className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
+                      className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium text-white transition-colors hover:bg-gray-700/50 hover:text-white"
                     >
-                      <FaCreditCard className="h-4 w-4" />
+                      <FaCreditCard className="h-3.5 w-3.5 text-gray-400" />
                       Account and Billings
                     </button>
                   </li>
                   <li>
                     <Link
                       href="/edit-profile"
-                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
+                      className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700/50 hover:text-white"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <FaPassport className="h-4 w-4" />
-                      Edit Ummatic Passport
+                      <FaPassport className="h-3.5 w-3.5 text-gray-400" />
+                      Edit Profile
                     </Link>
                   </li>
                   <li>
@@ -440,10 +386,10 @@ function Header() {
                         setIsMobileMenuOpen(false);
                         signOut({ redirectUrl: "/" });
                       }}
-                      className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700/50 hover:text-white"
+                      className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium text-white transition-colors hover:bg-gray-700/50 hover:text-white"
                     >
                       <svg
-                        className="h-4 w-4"
+                        className="h-3.5 w-3.5 text-gray-400"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -474,7 +420,6 @@ function Header() {
                                 headers: { "Content-Type": "application/json" },
                               },
                             );
-
                             if (response.ok) {
                               alert(
                                 "Your account has been permanently deleted.",
@@ -494,9 +439,9 @@ function Header() {
                           }
                         }
                       }}
-                      className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300"
+                      className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300"
                     >
-                      <FaTrash className="h-4 w-4" />
+                      <FaTrash className="h-3.5 w-3.5" />
                       Delete Account
                     </button>
                   </li>
