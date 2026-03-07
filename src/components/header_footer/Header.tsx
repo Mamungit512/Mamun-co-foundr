@@ -169,7 +169,7 @@ function Header() {
                     }
                   />
                   <UserButton.Link
-                    label="Edit your ID"
+                    label="Edit your profile"
                     href="/edit-profile"
                     labelIcon={<FaPassport />}
                   />
