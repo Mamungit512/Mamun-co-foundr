@@ -30,13 +30,19 @@ describe("getProfileByUserId", () => {
   const mockFrom = vi.fn().mockReturnThis(); // mockReturnThis: allows us to chain methods. Returns the supabase client instead of result of api call
   const mockSelect = vi.fn().mockReturnThis();
   const mockEq = vi.fn().mockReturnThis();
+  const mockIs = vi.fn().mockReturnThis();
   const mockSingle = vi.fn(); // mockSingle: Returns a promise with {data, error}
+  const mockGetUser = vi.fn();
 
   const mockSupabase = {
     from: mockFrom,
     select: mockSelect,
     eq: mockEq,
+    is: mockIs,
     single: mockSingle,
+    auth: {
+      getUser: mockGetUser,
+    },
   } as unknown as SupabaseClient;
 
   // beforeEach: sets up predictable testing environment before running test
@@ -52,6 +58,10 @@ describe("getProfileByUserId", () => {
     const fakeMapped = { id: "123", firstName: "Alice" };
 
     // Act - configure mocks and call function
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "123" } },
+      error: null,
+    });
     mockSingle.mockResolvedValue({ data: fakeDbData, error: null });
     mockMapProfileToOnboardingData.mockReturnValue(fakeMapped);
 
@@ -72,6 +82,10 @@ describe("getProfileByUserId", () => {
     const fakeError = new Error("DB error");
 
     // Act
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "123" } },
+      error: null,
+    });
     mockSingle.mockResolvedValue({ data: null, error: fakeError });
 
     // Assert
@@ -83,6 +97,10 @@ describe("getProfileByUserId", () => {
   //   --- Test 3: No Profile Found ---
   it("should handle case when no profile is found", async () => {
     // Arrange
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "123" } },
+      error: null,
+    });
     mockSingle.mockResolvedValue({ data: null, error: null });
 
     // Act & Assert
@@ -95,6 +113,10 @@ describe("getProfileByUserId", () => {
     const fakeDbData = { id: "456", first_name: "Bob" };
     const fakeMapped = { id: "456", firstName: "Bob" };
 
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "456" } },
+      error: null,
+    });
     mockSingle.mockResolvedValue({ data: fakeDbData, error: null });
     mockMapProfileToOnboardingData.mockReturnValue(fakeMapped);
 
@@ -106,12 +128,16 @@ describe("getProfileByUserId", () => {
   });
 
   //   --- Test 4: Token Verification ---
-  it("should pass the correct token to Supabase client", async () => {
+  it("should pass the correct token to Supabase client (duplicate)", async () => {
     // Arrange
     const testToken = "test-auth-token";
     const fakeDbData = { id: "456", first_name: "Bob" };
     const fakeMapped = { id: "456", firstName: "Bob" };
 
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "456" } },
+      error: null,
+    });
     mockSingle.mockResolvedValue({ data: fakeDbData, error: null });
     mockMapProfileToOnboardingData.mockReturnValue(fakeMapped);
 
