@@ -120,12 +120,12 @@ export default function PreferencesPanel({
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="overflow-hidden mt-4"
+            className="mt-4 overflow-hidden"
           >
-            <div className="rounded-lg bg-(--charcoal-black) border border-white p-6  backdrop-blur-sm">
+            <div className="rounded-lg border border-white bg-(--charcoal-black) p-6 backdrop-blur-sm">
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 {/* Looking For Section */}
-                <div className="space-y-3 ">
+                <div className="space-y-3">
                   <label className="block text-sm font-medium text-gray-300">
                     Looking for co-founder who is:
                   </label>
