@@ -57,7 +57,7 @@ export default function BillingUpgradePage() {
 
         {/* Value Propositions */}
         <motion.div
-          className="mb-16 grid gap-8 md:grid-cols-3"
+          className="mb-16 grid gap-8 md:grid-cols-3 bg-(--charcoal-black)"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
@@ -100,7 +100,7 @@ export default function BillingUpgradePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
         >
-          <div className="rounded-2xl border border-gray-700 bg-gray-800/30 p-8">
+          <div className="rounded-2xl border border-gray-700 bg-(--charcoal-black) p-8">
             <div className="mb-6 text-center">
               <h2 className="mb-2 text-2xl font-bold text-white">
                 Choose Your Plan
@@ -120,7 +120,7 @@ export default function BillingUpgradePage() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <div className="rounded-lg bg-gray-800/50 p-8">
+          <div className="rounded-lg bg-(--charcoal-black) p-8">
             <h3 className="mb-4 text-xl font-semibold text-white">
               Founders Pass
             </h3>

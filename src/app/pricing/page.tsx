@@ -95,7 +95,7 @@ export default function PricingPage() {
           {valueProps.map((prop, index) => (
             <motion.div
               key={prop.title}
-              className="rounded-lg bg-gray-800/50 p-6 text-center"
+              className="rounded-lg bg-(--charcoal-black) border border-white p-6 text-center "
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
@@ -127,7 +127,7 @@ export default function PricingPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
         >
-          <div className="rounded-2xl border border-gray-700 bg-gray-800/30 p-8">
+          <div className="rounded-2xl border border-gray-700 bg-(--charcoal-black) p-8">
             <div className="mb-6 text-center">
               <h2 className="mb-2 text-2xl font-bold text-white">
                 Choose Your Plan
@@ -144,7 +144,7 @@ export default function PricingPage() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            <div className="rounded-lg bg-gray-800/50 p-8">
+            <div className="rounded-lg bg-(--charcoal-black) p-8">
               <h3 className="mb-4 text-xl font-semibold text-white">
                 Founders Pass
               </h3>
