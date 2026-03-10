@@ -95,7 +95,7 @@ export default function PricingPage() {
           {valueProps.map((prop, index) => (
             <motion.div
               key={prop.title}
-              className="rounded-lg bg-(--charcoal-black) border border-white p-6 text-center "
+              className="rounded-lg border border-white bg-(--charcoal-black) p-6 text-center"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
