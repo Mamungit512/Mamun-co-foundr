@@ -1,10 +1,7 @@
 import React from "react";
 import {
-  FaInstagram,
   FaLinkedin,
-  FaReddit,
-  FaTiktok,
-  FaYoutube,
+ 
 } from "react-icons/fa6";
 
 /* ------

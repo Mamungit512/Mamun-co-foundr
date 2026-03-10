@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import { useForm } from "react-hook-form";
 import {
   useProfileUpsert,
@@ -23,7 +23,7 @@ export default function PreferencesPanel({
   currentPreferences,
   onPreferencesChange,
 }: PreferencesPanelProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  // const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const { mutateAsync: upsertProfileMutationFn } = useProfileUpsert();
   const { data: currentUserProfile } = useUserProfile();
