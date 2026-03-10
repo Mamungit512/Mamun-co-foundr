@@ -65,7 +65,7 @@ export default function BillingUpgradePage() {
           {valueProps.map((prop, index) => (
             <motion.div
               key={prop.title}
-              className="rounded-lg bg-gray-800/50 p-6 text-center"
+              className="rounded-lg border border-white bg-(--charcoal-black) p-6 text-center"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}

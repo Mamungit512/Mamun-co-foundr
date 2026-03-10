@@ -30,14 +30,14 @@ function Footer() {
         >
           Contact Support
         </Link>
-        <a
+        {/* <a
           href="https://mamun-cofoundr.kit.com/d7eb029da2"
           target="_blank"
           rel="noopener noreferrer"
           className="translate-y text-sm hover:underline hover:underline-offset-4 sm:text-base"
         >
           Newsletter
-        </a>
+        </a> */}
       </div>
       <Link href="/">
         <Image
