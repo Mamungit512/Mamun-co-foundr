@@ -135,11 +135,6 @@ function CofoundrMatching() {
     return null;
   }
 
-  const handleNextProfile = () => {
-    if (!profiles || profiles.length === 0) return;
-    setCurProfileIdx((prev) => (prev + 1 < profiles.length ? prev + 1 : 0));
-  };
-
   const handleSkip = async () => {
     if (!curProfile?.user_id) return;
 
@@ -178,7 +173,12 @@ function CofoundrMatching() {
         icon: "👋",
       });
 
-      handleNextProfile();
+      queryClient.setQueryData(["profiles"], (oldProfiles: { user_id: string | number }[] | undefined) => {
+        if (!Array.isArray(oldProfiles)) return [];
+        return oldProfiles.filter((p) => p.user_id !== curProfile.user_id);
+      });
+      setCurProfileIdx(0);
+
     } catch (error) {
       console.error("Error skipping profile:", error);
       // Keep direct posthog.captureException for error tracking
@@ -263,7 +263,14 @@ function CofoundrMatching() {
       }
 
       // Move to next profile after liking
-      handleNextProfile();
+     
+      queryClient.setQueryData(["profiles"], (oldProfiles: { user_id: string | number }[] | undefined) => {
+        if (!Array.isArray(oldProfiles)) return [];
+        return oldProfiles.filter((p) => p.user_id !== curProfile.user_id);
+      });
+      setCurProfileIdx(0);
+    
+  
     } catch (error) {
       console.error("Error liking profile:", error);
       // Keep direct posthog.captureException for error tracking
