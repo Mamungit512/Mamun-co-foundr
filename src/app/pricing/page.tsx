@@ -127,7 +127,7 @@ export default function PricingPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
         >
-          <div className="rounded-2xl border border-gray-700 bg-(--charcoal-black) p-8">
+          <div className="rounded-2xl border border-white bg-(--charcoal-black) p-8">
             <div className="mb-6 text-center">
               <h2 className="mb-2 text-2xl font-bold text-white">
                 Choose Your Plan
@@ -138,13 +138,14 @@ export default function PricingPage() {
             </div>
             <PricingTable />
           </div>
+          <div className="mt-12" />
           <motion.div
             className="text-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            <div className="rounded-lg bg-(--charcoal-black) p-8">
+            <div className="rounded-lg border border-white bg-(--charcoal-black) p-8">
               <h3 className="mb-4 text-xl font-semibold text-white">
                 Founders Pass
               </h3>
