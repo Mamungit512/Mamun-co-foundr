@@ -57,7 +57,7 @@ export default function BillingUpgradePage() {
 
         {/* Value Propositions */}
         <motion.div
-          className="mb-16 grid gap-8 md:grid-cols-3"
+          className="mb-16 grid gap-8 bg-(--charcoal-black) md:grid-cols-3"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
