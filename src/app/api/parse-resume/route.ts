@@ -36,19 +36,37 @@ function incrementRateLimit(userId: string): void {
 
 type AffindaWorkExperience = {
   jobTitle?: string;
+  job_title?: string;
+  workExperienceJobTitle?: string;
+  work_experience_job_title?: string;
   workExperienceOrganization?: string;
+  work_experience_organization?: string;
   workExperienceDateRange?: string;
+  work_experience_date_range?: string;
+  workExperienceDates?: unknown;
+  organization?: string;
+  dates?: string;
 };
 
 type AffindaEducation = {
   educationAccreditation?: string;
+  education_accreditation?: string;
   educationOrganization?: string;
+  education_organization?: string;
   educationDateRange?: string;
+  education_date_range?: string;
+  accreditation?: string;
+  organization?: string;
+  dateRange?: string;
 };
 
 type AffindaWebsite = {
   websiteType?: string;
+  website_type?: string;
   websiteUrl?: string;
+  website_url?: string;
+  url?: string;
+  type?: string;
 };
 
 type AffindaLocation = {
@@ -57,18 +75,35 @@ type AffindaLocation = {
   country?: string;
 };
 
+type AffindaName = {
+  candidateNameFirst?: string;
+  candidate_name_first?: string;
+  firstName?: string;
+  first_name?: string;
+  first?: string;
+  givenName?: string;
+  candidateNameFamily?: string;
+  candidate_name_family?: string;
+  familyName?: string;
+  family_name?: string;
+  family?: string;
+  last?: string;
+};
+
 type AffindaResumeData = {
-  candidateName?: {
-    candidateNameFirst?: string;
-    candidateNameFamily?: string;
-  };
+  candidateName?: AffindaName;
+  candidate_name?: AffindaName;
+  name?: AffindaName;
   workExperience?: AffindaWorkExperience[];
+  work_experience?: AffindaWorkExperience[];
   education?: AffindaEducation[];
   location?: AffindaLocation | null;
   summary?: string | Record<string, unknown> | null;
   objective?: string | Record<string, unknown> | null;
   website?: AffindaWebsite[] | null;
+  websites?: AffindaWebsite[] | null;
   achievement?: string[] | null;
+  achievements?: string[] | null;
 };
 
 function extractText(
@@ -86,20 +121,59 @@ function extractText(
   return "";
 }
 
+/** Get first non-empty string from multiple possible keys (camelCase + snake_case) */
+function firstOf<T extends Record<string, unknown>>(
+  obj: T | null | undefined,
+  ...keys: (keyof T)[]
+): string {
+  if (!obj) return "";
+  for (const k of keys) {
+    const v = obj[k];
+    if (typeof v === "string" && v.trim()) return v.trim();
+  }
+  return "";
+}
+
 function mapAffindaToFields(data: AffindaResumeData): Partial<OnboardingData> {
   const mapped: Partial<OnboardingData> = {};
 
-  if (data.candidateName?.candidateNameFirst) {
-    mapped.firstName = data.candidateName.candidateNameFirst;
-  }
-  if (data.candidateName?.candidateNameFamily) {
-    mapped.lastName = data.candidateName.candidateNameFamily;
+  const name =
+    data.candidateName ?? data.candidate_name ?? data.name;
+  if (name) {
+    const first = firstOf(
+      name,
+      "firstName",
+      "first_name",
+      "candidateNameFirst",
+      "candidate_name_first",
+      "first",
+      "givenName",
+    );
+    const last = firstOf(
+      name,
+      "familyName",
+      "family_name",
+      "candidateNameFamily",
+      "candidate_name_family",
+      "family",
+      "last",
+    );
+    if (first) mapped.firstName = first;
+    if (last) mapped.lastName = last;
   }
 
-  // Most recent job title
-  if (data.workExperience?.length) {
-    const latest = data.workExperience[0];
-    if (latest.jobTitle) mapped.title = latest.jobTitle;
+  const workExp =
+    data.workExperience ?? data.work_experience ?? [];
+  if (workExp?.length) {
+    const latest = workExp[0];
+    const title = firstOf(
+      latest,
+      "workExperienceJobTitle",
+      "work_experience_job_title",
+      "jobTitle",
+      "job_title",
+    );
+    if (title) mapped.title = title;
   }
 
   if (data.location) {
@@ -111,27 +185,56 @@ function mapAffindaToFields(data: AffindaResumeData): Partial<OnboardingData> {
   if (data.education?.length) {
     mapped.education = data.education
       .map((e) => {
-        const parts = [
-          e.educationAccreditation,
-          e.educationOrganization,
-          e.educationDateRange,
-        ].filter(Boolean);
+        const accred = firstOf(
+          e,
+          "educationAccreditation",
+          "education_accreditation",
+          "accreditation",
+        );
+        const org = firstOf(
+          e,
+          "educationOrganization",
+          "education_organization",
+          "organization",
+        );
+        const range = firstOf(
+          e,
+          "educationDateRange",
+          "education_date_range",
+          "dateRange",
+        );
+        const parts = [accred, org, range].filter(Boolean);
         return parts.join(" – ");
       })
       .filter(Boolean)
       .join("\n");
   }
 
-  if (data.workExperience?.length) {
-    mapped.experience = data.workExperience
+  if (workExp?.length) {
+    mapped.experience = workExp
       .map((w) => {
-        const org = w.workExperienceOrganization
-          ? ` at ${w.workExperienceOrganization}`
-          : "";
-        const dates = w.workExperienceDateRange
-          ? ` (${w.workExperienceDateRange})`
-          : "";
-        return `${w.jobTitle ?? ""}${org}${dates}`.trim();
+        const title = firstOf(
+          w,
+          "workExperienceJobTitle",
+          "work_experience_job_title",
+          "jobTitle",
+          "job_title",
+        );
+        const org = firstOf(
+          w,
+          "workExperienceOrganization",
+          "work_experience_organization",
+          "organization",
+        );
+        const dates = firstOf(
+          w,
+          "workExperienceDateRange",
+          "work_experience_date_range",
+          "dates",
+        );
+        const orgStr = org ? ` at ${org}` : "";
+        const datesStr = dates ? ` (${dates})` : "";
+        return `${title}${orgStr}${datesStr}`.trim();
       })
       .filter(Boolean)
       .join("\n");
@@ -141,10 +244,13 @@ function mapAffindaToFields(data: AffindaResumeData): Partial<OnboardingData> {
   const intro = extractText(data.summary) || extractText(data.objective);
   if (intro) mapped.personalIntro = intro;
 
-  if (data.website?.length) {
-    for (const site of data.website) {
-      const type = (site.websiteType ?? "").toLowerCase();
-      const url = site.websiteUrl ?? "";
+  const sites = data.website ?? data.websites ?? [];
+  if (sites?.length) {
+    for (const site of sites) {
+      const type = (
+        firstOf(site, "websiteType", "website_type", "type")
+      ).toLowerCase();
+      const url = firstOf(site, "websiteUrl", "website_url", "url");
       if (!url) continue;
       if (type.includes("linkedin") && !mapped.linkedin) {
         mapped.linkedin = url;
@@ -159,8 +265,9 @@ function mapAffindaToFields(data: AffindaResumeData): Partial<OnboardingData> {
     }
   }
 
-  if (data.achievement?.length) {
-    mapped.accomplishments = data.achievement.join("\n");
+  const achievements = data.achievement ?? data.achievements ?? [];
+  if (achievements?.length) {
+    mapped.accomplishments = achievements.join("\n");
   }
 
   return mapped;
@@ -210,6 +317,7 @@ export async function POST(request: NextRequest) {
     affindaForm.append("documentType", process.env.AFFINDA_DOCUMENT_TYPE_ID!);
     affindaForm.append("compact", "true");
     affindaForm.append("deleteAfterParse", "true");
+    affindaForm.append("wait", "true");
 
     const affindaRes = await fetch("https://api.us1.affinda.com/v3/documents", {
       method: "POST",
@@ -231,11 +339,17 @@ export async function POST(request: NextRequest) {
     }
 
     const affindaJson = await affindaRes.json();
-    const data = mapAffindaToFields(
-      (affindaJson.data ?? {}) as AffindaResumeData,
-    );
+    // Affinda returns { data, extractor, meta }; resume data is in data
+    const rawData: AffindaResumeData =
+      affindaJson.data ??
+      (affindaJson.candidateName ||
+      affindaJson.workExperience ||
+      affindaJson.education
+        ? affindaJson
+        : {});
+    const mapped = mapAffindaToFields(rawData);
 
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json({ success: true, data: mapped });
   } catch (error) {
     console.error("Error in parse-resume:", error);
     return NextResponse.json(
