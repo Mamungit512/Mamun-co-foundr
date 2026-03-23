@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import dynamic from "next/dynamic";
 import { useAuth, useSession } from "@clerk/nextjs";
 import { useStepEntry } from "@/hooks/useOnboardingAnimation";
+import ResumeUploader from "@/components/ResumeUploader";
 
 const FaceDetectionUploader = dynamic(
   () => import("@/components/FaceDetectionUploader"),
@@ -38,7 +39,9 @@ const FaceDetectionUploader = dynamic(
 );
 
 interface ProfilePhotoFormProps {
-  onNext: (data: { photoUploaded: boolean; pfp_url?: string }) => void;
+  onNext: (
+    data: { photoUploaded: boolean; pfp_url?: string } & Partial<OnboardingData>,
+  ) => void;
   defaultValues?: { photoUploaded?: boolean; pfp_url?: string };
 }
 
@@ -53,6 +56,8 @@ function ProfilePhotoForm({ onNext, defaultValues }: ProfilePhotoFormProps) {
   const [uploadSuccess, setUploadSuccess] = useState(
     defaultValues?.photoUploaded || false,
   );
+  const [parsedResumeData, setParsedResumeData] =
+    useState<Partial<OnboardingData>>({});
 
   const { userId } = useAuth();
   const { session } = useSession();
@@ -68,7 +73,11 @@ function ProfilePhotoForm({ onNext, defaultValues }: ProfilePhotoFormProps) {
         setUploadSuccess(false);
         return;
       }
-      onNext({ photoUploaded: true, pfp_url: defaultValues.pfp_url });
+      onNext({
+        photoUploaded: true,
+        pfp_url: defaultValues.pfp_url,
+        ...parsedResumeData,
+      });
       return;
     }
 
@@ -102,7 +111,11 @@ function ProfilePhotoForm({ onNext, defaultValues }: ProfilePhotoFormProps) {
 
       const result = await response.json();
       setUploadSuccess(true);
-      onNext({ photoUploaded: true, pfp_url: result.url });
+      onNext({
+        photoUploaded: true,
+        pfp_url: result.url,
+        ...parsedResumeData,
+      });
     } catch (err) {
       setError(
         err instanceof Error
@@ -165,6 +178,17 @@ function ProfilePhotoForm({ onNext, defaultValues }: ProfilePhotoFormProps) {
               </p>
             </div>
           )}
+        </div>
+
+        {/* Resume upload — optional, pre-fills Step 2 & 4 */}
+        <div className="flex flex-col gap-y-2">
+          <p className="text-xs font-semibold tracking-widest text-white/45 uppercase">
+            Resume{" "}
+            <span className="font-normal normal-case text-white/30">
+              (optional)
+            </span>
+          </p>
+          <ResumeUploader onParsed={(data) => setParsedResumeData(data)} />
         </div>
 
         {/* Error */}
