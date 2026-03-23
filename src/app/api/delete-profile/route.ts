@@ -26,8 +26,25 @@ export async function POST() {
       .single();
 
     if (profileError || !profile) {
+      // Orphaned user: Supabase profile already deleted, but still in Clerk
       console.error("Error fetching profile:", profileError);
-      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
+      try {
+        const client = await clerkClient();
+        await client.users.deleteUser(userId);
+        return NextResponse.json(
+          { message: "Account deleted successfully", clerkDeleted: true },
+          { status: 200 },
+        );
+      } catch (clerkError) {
+        console.error("Error deleting orphaned user from Clerk:", clerkError);
+        return NextResponse.json(
+          {
+            error:
+              "Profile not found. Could not remove authentication account.",
+          },
+          { status: 404 },
+        );
+      }
     }
 
     const internalProfileId = profile.id;
@@ -113,9 +130,11 @@ export async function POST() {
     }
 
     // 7. Delete the user from Clerk
+    let clerkDeleted = false;
     try {
       const client = await clerkClient();
       await client.users.deleteUser(userId);
+      clerkDeleted = true;
     } catch (clerkError) {
       console.error("Error deleting user from Clerk:", clerkError);
       // Don't fail the request if Clerk deletion fails
@@ -142,7 +161,10 @@ export async function POST() {
     }
 
     return NextResponse.json(
-      { message: "Account deleted successfully" },
+      {
+        message: "Account deleted successfully",
+        clerkDeleted,
+      },
       { status: 200 },
     );
   } catch (error) {

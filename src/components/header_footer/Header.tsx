@@ -188,8 +188,14 @@ function Header() {
                           });
 
                           if (response.ok) {
-                            alert("Your account has been permanently deleted.");
-                            // Sign out the user after successful deletion
+                            const data = await response.json();
+                            if (data.clerkDeleted === false) {
+                              alert(
+                                "Your data was deleted, but we couldn't fully remove your account. Please contact support.",
+                              );
+                            } else {
+                              alert("Your account has been permanently deleted.");
+                            }
                             signOut({ redirectUrl: "/" });
                           } else {
                             const errorData = await response.json();
@@ -421,9 +427,16 @@ function Header() {
                               },
                             );
                             if (response.ok) {
-                              alert(
-                                "Your account has been permanently deleted.",
-                              );
+                              const data = await response.json();
+                              if (data.clerkDeleted === false) {
+                                alert(
+                                  "Your data was deleted, but we couldn't fully remove your account. Please contact support.",
+                                );
+                              } else {
+                                alert(
+                                  "Your account has been permanently deleted.",
+                                );
+                              }
                               signOut({ redirectUrl: "/" });
                             } else {
                               const errorData = await response.json();
