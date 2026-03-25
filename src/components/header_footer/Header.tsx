@@ -60,10 +60,10 @@ function Header() {
       <Link href="/">
         <Image
           src="/img/mamun-transparent-logo.png"
-          width={140}
+          width={100}
           height={100}
           alt="Mamun Logo. Circle with a line through it next to Mamun in all capital letters"
-          className="translate-y h-20 w-auto md:h-24 lg:h-32"
+          className="translate-y h-28 w-auto md:h-32 lg:h-40"
         />
       </Link>
 
@@ -188,14 +188,8 @@ function Header() {
                           });
 
                           if (response.ok) {
-                            const data = await response.json();
-                            if (data.clerkDeleted === false) {
-                              alert(
-                                "Your data was deleted, but we couldn't fully remove your account. Please contact support.",
-                              );
-                            } else {
-                              alert("Your account has been permanently deleted.");
-                            }
+                            alert("Your account has been permanently deleted.");
+                            // Sign out the user after successful deletion
                             signOut({ redirectUrl: "/" });
                           } else {
                             const errorData = await response.json();
@@ -427,16 +421,9 @@ function Header() {
                               },
                             );
                             if (response.ok) {
-                              const data = await response.json();
-                              if (data.clerkDeleted === false) {
-                                alert(
-                                  "Your data was deleted, but we couldn't fully remove your account. Please contact support.",
-                                );
-                              } else {
-                                alert(
-                                  "Your account has been permanently deleted.",
-                                );
-                              }
+                              alert(
+                                "Your account has been permanently deleted.",
+                              );
                               signOut({ redirectUrl: "/" });
                             } else {
                               const errorData = await response.json();
