@@ -72,16 +72,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // If skip already exists, return success without inserting
-    if (existingSkip) {
-      console.log("Profile already skipped, skipping duplicate insert");
-      return NextResponse.json({
-        success: true,
-        alreadySkipped: true,
-      });
+    // Always bump the matching_queue cycle regardless of whether this is a repeat skip.
+    // This ensures the skip-order stays accurate across page refreshes.
+    const { data: existingQueueRow } = await supabase
+      .from("matching_queue")
+      .select("cycle")
+      .eq("viewer_user_id", userId)
+      .eq("candidate_user_id", skippedProfileId)
+      .maybeSingle();
+
+    const newCycle = (existingQueueRow?.cycle ?? 0) + 1;
+
+    const { error: queueError } = await supabase.from("matching_queue").upsert(
+      {
+        viewer_user_id: userId,
+        candidate_user_id: skippedProfileId,
+        cycle: newCycle,
+        last_action: "skip",
+        last_action_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "viewer_user_id,candidate_user_id" },
+    );
+
+    if (queueError) {
+      console.error("Error updating matching_queue:", queueError);
     }
 
-    // Store skip in user_profile_actions table (only if doesn't exist)
+    // Only insert into user_profile_actions once per pair (analytics / swipe-count).
+    if (existingSkip) {
+      return NextResponse.json({ success: true, alreadySkipped: true });
+    }
+
     const { error: createSkipError } = await supabase
       .from("user_profile_actions")
       .insert({

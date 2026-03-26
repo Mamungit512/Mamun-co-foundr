@@ -145,7 +145,7 @@ export function complementarityScore(
 }
 
 // --- Scoring ---
-function scoreCandidate(
+export function scoreCandidate(
   userProfile: OnboardingData,
   currentUser: OnboardingData,
 ) {
