@@ -31,7 +31,6 @@ import { MdSkipNext } from "react-icons/md";
 import { trackEvent } from "@/lib/posthog-events";
 
 function CofoundrMatching() {
-  const [curProfileIdx, setCurProfileIdx] = useState(0);
   const [showMore, setShowMore] = useState(false);
   const [isStartingConversation, setIsStartingConversation] = useState(false);
   const queryClient = useQueryClient();
@@ -46,17 +45,17 @@ function CofoundrMatching() {
   const { data: swipeLimitData } = useSwipeLimit();
 
   // Get current profile and like status
-  const curProfile = profiles?.[curProfileIdx];
+  const curProfile = profiles?.[0];
   const { data: likeStatus } = useLikeStatus(curProfile?.user_id);
 
   // Track profile views
   React.useEffect(() => {
     if (curProfile?.user_id) {
       trackEvent.profileViewed(curProfile.user_id, "matching", {
-        profile_index: curProfileIdx,
+        profile_index: 0,
       });
     }
-  }, [curProfile?.user_id, curProfileIdx]);
+  }, [curProfile?.user_id]);
 
   const onPreferencesChange = () => {
     // Invalidate profiles query to refetch with new preferences
@@ -177,7 +176,6 @@ function CofoundrMatching() {
         if (!Array.isArray(oldProfiles)) return [];
         return oldProfiles.filter((p) => p.user_id !== curProfile.user_id);
       });
-      setCurProfileIdx(0);
 
     } catch (error) {
       console.error("Error skipping profile:", error);
@@ -268,7 +266,6 @@ function CofoundrMatching() {
         if (!Array.isArray(oldProfiles)) return [];
         return oldProfiles.filter((p) => p.user_id !== curProfile.user_id);
       });
-      setCurProfileIdx(0);
     
   
     } catch (error) {
