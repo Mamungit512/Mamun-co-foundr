@@ -154,32 +154,49 @@ function CofoundrMatching() {
       return;
     }
 
+    // Capture profile data before the optimistic update triggers a re-render.
+    const skippedId = curProfile.user_id;
+    const skippedFirstName = curProfile.firstName;
+    const skippedCity = curProfile.city;
+    const skippedCountry = curProfile.country;
+    const skippedIsTechnical = curProfile.isTechnical;
+
+    // Rotate immediately so the next profile appears without waiting for the API.
+    // This must happen before mutateAsync to avoid the race where onSuccess fires
+    // invalidateQueries, a refetch completes, and then this rotate overwrites
+    // the fresh server data (or vice-versa — causing the snap-back).
+    queryClient.setQueryData(["profiles"], (oldProfiles: { user_id: string | number }[] | undefined) => {
+      if (!Array.isArray(oldProfiles) || oldProfiles.length === 0) return [];
+      const [first, ...rest] = oldProfiles;
+      return [...rest, first];
+    });
+
     try {
-      await skipProfileMutation.mutateAsync({
-        skippedProfileId: curProfile.user_id,
+      await skipProfileMutation.mutateAsync({ skippedProfileId: skippedId });
+
+      trackEvent.profileSkipped(skippedId, {
+        skipped_profile_id: skippedId,
+        skipped_profile_city: skippedCity,
+        skipped_profile_country: skippedCountry,
+        skipped_profile_is_technical: skippedIsTechnical,
       });
 
-      trackEvent.profileSkipped(curProfile.user_id, {
-        skipped_profile_id: curProfile.user_id,
-        skipped_profile_city: curProfile.city,
-        skipped_profile_country: curProfile.country,
-        skipped_profile_is_technical: curProfile.isTechnical,
-      });
-
-      toast(`Skipped ${curProfile.firstName}`, {
+      toast(`Skipped ${skippedFirstName}`, {
         duration: 2000,
         position: "bottom-right",
         icon: "👋",
       });
 
-      queryClient.setQueryData(["profiles"], (oldProfiles: { user_id: string | number }[] | undefined) => {
-        if (!Array.isArray(oldProfiles)) return [];
-        return oldProfiles.filter((p) => p.user_id !== curProfile.user_id);
+    } catch (error) {
+      // Revert the optimistic rotation so the original profile is shown again.
+      queryClient.setQueryData(["profiles"], (currentProfiles: { user_id: string | number }[] | undefined) => {
+        if (!Array.isArray(currentProfiles) || currentProfiles.length === 0) return [];
+        const last = currentProfiles[currentProfiles.length - 1];
+        const rest = currentProfiles.slice(0, -1);
+        return [last, ...rest];
       });
 
-    } catch (error) {
       console.error("Error skipping profile:", error);
-      // Keep direct posthog.captureException for error tracking
       if (typeof window !== "undefined" && window.posthog) {
         window.posthog.captureException(error);
       }

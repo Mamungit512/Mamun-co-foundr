@@ -2,24 +2,25 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 import { mapProfileToOnboardingData } from "@/lib/mapProfileToFromDBFormat";
-import { sortProfiles } from "@/features/matching/matchingService";
+import {
+  filterProfilesByPreferences,
+  scoreCandidate,
+} from "@/features/matching/matchingService";
 
 export async function GET() {
   try {
-    // Get the authenticated user from Clerk
     const { userId } = await auth();
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Create Supabase client with service role key for server-side operations
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
-    // First, get the current user's profile
+    // Get the current user's profile
     const { data: currentUserData, error: currentUserError } = await supabase
       .from("profiles")
       .select("*")
@@ -36,31 +37,27 @@ export async function GET() {
 
     const currentUser = mapProfileToOnboardingData(currentUserData);
 
-    // Get all profiles that the current user has liked
-    const { data: likedProfiles, error: likedError } = await supabase
+    // Get IDs of profiles the current user has already liked
+    const { data: likedProfiles } = await supabase
       .from("likes")
       .select("liked_id")
       .eq("liker_id", currentUser.user_id);
 
-    if (likedError) {
-      // Continue without filtering if there's an error fetching likes
-    }
-
     const likedIds = likedProfiles?.map((like) => like.liked_id) || [];
 
-    // Get profiles excluding current user, deleted profiles, and already liked profiles
+    // Fetch candidate profiles (excluding self, deleted, already liked)
     let query = supabase
       .from("profiles")
       .select("*")
-      .neq("user_id", currentUser.user_id) // Exclude current user's profile
-      .is("deleted_at", null); // Exclude soft-deleted profiles
+      .neq("user_id", currentUser.user_id)
+      .is("deleted_at", null);
 
-    // Exclude already liked profiles if there are any
     if (likedIds.length > 0) {
       query = query.not("user_id", "in", `(${likedIds.join(",")})`);
     }
 
-    const { data: profiles, error } = await query.limit(20); // batch fetching
+    // Fetch more candidates than we return so preference filtering still yields a full page
+    const { data: profilesData, error } = await query.limit(50);
 
     if (error) {
       return NextResponse.json(
@@ -69,19 +66,66 @@ export async function GET() {
       );
     }
 
-    if (!profiles) {
-      return NextResponse.json({ profiles: [] });
+    if (!profilesData || profilesData.length === 0) {
+      return NextResponse.json({ profiles: [], currentUser });
     }
 
-    const mappedProfiles = profiles.map(mapProfileToOnboardingData);
+    // Map and apply preference filters
+    const mapped = profilesData.map(mapProfileToOnboardingData);
+    const filtered = filterProfilesByPreferences(mapped, currentUser);
 
-    // Sort profiles based on scoring algorithm
-    const sorted = sortProfiles(currentUser, mappedProfiles);
+    if (filtered.length === 0) {
+      return NextResponse.json({ profiles: [], currentUser });
+    }
 
-    return NextResponse.json({
-      profiles: sorted,
-      currentUser,
-    });
+    const candidateIds = filtered
+      .map((p) => p.user_id)
+      .filter((id): id is string => Boolean(id));
+
+    // Fetch existing queue rows — only cycle is needed for ordering
+    const { data: queueRows } = await supabase
+      .from("matching_queue")
+      .select("candidate_user_id, cycle")
+      .eq("viewer_user_id", userId)
+      .in("candidate_user_id", candidateIds);
+
+    const queueMap = new Map<string, number>(
+      queueRows?.map((r) => [r.candidate_user_id, r.cycle as number]) ?? [],
+    );
+
+    // Ensure queue rows exist for any candidate not yet in the queue.
+    // ignoreDuplicates: true → ON CONFLICT DO NOTHING, so existing cycle values are preserved.
+    const newCandidateIds = candidateIds.filter((id) => !queueMap.has(id));
+    if (newCandidateIds.length > 0) {
+      await supabase.from("matching_queue").upsert(
+        newCandidateIds.map((id) => ({
+          viewer_user_id: userId,
+          candidate_user_id: id,
+          cycle: 0,
+          updated_at: new Date().toISOString(),
+        })),
+        {
+          onConflict: "viewer_user_id,candidate_user_id",
+          ignoreDuplicates: true,
+        },
+      );
+    }
+
+    // Sort by: cycle asc (skipped profiles go to back) → score desc (best match first within same cycle)
+    const sorted = filtered
+      .map((profile) => ({
+        profile,
+        cycle: queueMap.get(profile.user_id!) ?? 0,
+        score: scoreCandidate(profile, currentUser),
+      }))
+      .sort((a, b) => {
+        if (a.cycle !== b.cycle) return a.cycle - b.cycle;
+        return b.score - a.score;
+      })
+      .slice(0, 20)
+      .map((item) => item.profile);
+
+    return NextResponse.json({ profiles: sorted, currentUser });
   } catch (error) {
     console.error("Error in profiles API:", error);
     return NextResponse.json(

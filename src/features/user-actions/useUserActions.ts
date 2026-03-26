@@ -18,10 +18,11 @@ export function useSkipProfile() {
       return await createSkipProfileAction(userId, skippedProfileId, token);
     },
     onSuccess: () => {
-      // Invalidate related queries to refresh data
       queryClient.invalidateQueries({ queryKey: ["today-swipe-count"] });
       queryClient.invalidateQueries({ queryKey: ["swipe-limit"] });
-      queryClient.invalidateQueries({ queryKey: ["profiles"] });
+      // Do NOT invalidate ["profiles"] here. The UI handles ordering via an
+      // optimistic rotate, and the server-side cycle tracking ensures the next
+      // independent refetch (page reload, preference change) returns the correct order.
     },
     onError: (error) => {
       console.error("Error skipping profile:", error);
