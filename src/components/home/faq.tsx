@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa6";
-import { motion } from "motion/react";
 
 function FAQ() {
   const [openFaqId, setOpenFaqId] = useState<number | null>(null);
@@ -86,73 +85,74 @@ function FAQ() {
   };
 
   return (
-    <section className="mt-20 w-full px-6 py-20 sm:px-8 lg:px-12">
+    <section className="mt-10 w-full px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl">
-        <div className="mb-16 text-center">
+        <div className="mb-8 text-center">
           <h2 className="heading-5 mb-4">Frequently Asked Questions</h2>
           <p className="text-lg text-gray-300">
             Everything you need to know about Mamun
           </p>
         </div>
-      </div>
-      <hr className="mb-10 border-gray-400" />
-      {faqList.map((faq) => {
-        const isOpen = openFaqId === faq.id;
-        return (
-          <div
-            key={faq.id + "-" + faq.question.substring(0, 4)}
-            className="mb-10"
-          >
-            {/* - Question Block (Clickable) - */}
+
+        <hr className="mb-4 border-gray-400" />
+
+        {faqList.map((faq) => {
+          const isOpen = openFaqId === faq.id;
+          return (
             <div
-              className="flex cursor-pointer items-center justify-between rounded-lg p-4 transition-all duration-200 hover:bg-gray-800/30"
-              onClick={() => toggleFaq(faq.id)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  toggleFaq(faq.id);
-                }
-              }}
+              key={faq.id + "-" + faq.question.substring(0, 4)}
+              className="mb-4"
             >
-              <p className="pr-4 text-left text-xl font-semibold">
-                {faq.question}
-              </p>
-              <div className="flex-shrink-0">
-                {isOpen ? (
-                  <FaMinus className="text-yellow-300" />
-                ) : (
-                  <FaPlus className="text-yellow-300" />
-                )}
-              </div>
-            </div>
-
-            {/* - Answer - */}
-            {isOpen && (
-              <motion.div
-                className="mt-4 ml-4 text-left text-gray-300"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
+              {/* - Question Block (Clickable) - */}
+              <div
+                className="flex cursor-pointer items-center justify-between rounded-lg px-2 py-3 transition-all duration-200 hover:bg-gray-800/30"
+                onClick={() => toggleFaq(faq.id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    toggleFaq(faq.id);
+                  }
+                }}
               >
-                {Array.isArray(faq.answer) ? (
-                  <ul className="list-inside list-disc space-y-2">
-                    {faq.answer.map((item, index) => (
-                      <li key={index}>{item}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>{faq.answer}</p>
-                )}
-              </motion.div>
-            )}
+                <p className="pr-4 text-left text-xl font-semibold">
+                  {faq.question}
+                </p>
+                <div className="flex-shrink-0">
+                  {isOpen ? (
+                    <FaMinus className="text-yellow-300" />
+                  ) : (
+                    <FaPlus className="text-yellow-300" />
+                  )}
+                </div>
+              </div>
 
-            <hr className="mt-10 border-gray-400" />
-          </div>
-        );
-      })}
+              {/* - Answer - */}
+              <div
+                className="grid transition-[grid-template-rows] duration-300 ease-in-out"
+                style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
+              >
+                <div className="overflow-hidden">
+                  <div className="mt-2 ml-2 pb-2 text-left text-gray-300">
+                    {Array.isArray(faq.answer) ? (
+                      <ul className="list-inside list-disc space-y-2">
+                        {faq.answer.map((item, index) => (
+                          <li key={index}>{item}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>{faq.answer}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <hr className="mt-10 border-gray-400" />
+            </div>
+          );
+        })}
+      </div>
     </section>
   );
 }
