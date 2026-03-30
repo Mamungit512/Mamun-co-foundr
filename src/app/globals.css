@@ -21,7 +21,7 @@
 }
 
 body {
-  background: var(--background);
+  background: var(--charcoal-black);
   color: var(--foreground);
   font-family:
     system-ui,

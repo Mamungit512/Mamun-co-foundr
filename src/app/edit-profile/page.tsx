@@ -222,7 +222,7 @@ export default function EditProfile() {
         )}
 
         {/* Profile Picture Section */}
-        <div className="mb-8 rounded-lg border border-blue-500/20 bg-(--charcoal-black) from-blue-500/10 to-transparent p-6">
+        <div className="mb-8 rounded-lg border border-white bg-(--charcoal-black) from-blue-500/10 to-transparent p-6">
           <div className="mb-4 flex items-center gap-3">
             <div className="rounded-full bg-blue-500/20 p-2">
               <span className="text-lg">📸</span>
@@ -300,7 +300,7 @@ export default function EditProfile() {
         </div>
 
         {/* Hiring Settings Section */}
-        <div className="mb-8 rounded-lg border border-blue-500/20 bg-(--charcoal-black) from-blue-500/10 to-transparent p-6">
+        <div className="mb-8 rounded-lg border border-white bg-(--charcoal-black) from-blue-500/10 to-transparent p-6">
           <div className="mb-4 flex items-center gap-3">
             <div className="rounded-full bg-blue-500/20 p-2">
               <span className="blue-blue-300 text-lg">💼</span>
