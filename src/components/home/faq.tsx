@@ -29,50 +29,44 @@ function FAQ() {
     },
     {
       id: 4,
-      question: "Is this service only for Muslims living in a specific region?",
-      answer:
-        "No, Mamun Co-founder Matching is a global platform open to Muslim and people from all walks of life  worldwide.",
-    },
-    {
-      id: 5,
       question: "What is the Matching process like ?",
       answer:
         "The algorithm considers factors like your skills, experience, desired venture focus, and  Islamic values to connect you with compatible co-founders.",
     },
     {
-      id: 6,
+      id: 5,
       question: "Can I influence who I get matched with?",
       answer:
         "Yes, you can set preferences based on specific skills, experience, and venture type  you're interested in.",
     },
     {
-      id: 7,
+      id: 6,
       question: "What happens if I don't get matched with anyone?",
       answer:
         "Mamun is constantly growing its user base. You can refine your profile or preferences  and keep an eye out for new matches as they become available.",
     },
     {
-      id: 8,
+      id: 7,
       question:
         "How does Mamun ensure the safety and security of my information?",
       answer:
         "Mamun employs robust security measures to protect user data. We recommend you review our privacy policy for detailed information.",
     },
     {
-      id: 9,
+      id: 8,
       question: "How do I know the person I'm matched with is trustworthy?",
       answer:
         "Mamun uses background checks (where applicable) and encourages transparent  communication between potential co-founders. However, it's ultimately your responsibility  to assess your comfort level with any potential partner.",
     },
     {
-      id: 10,
+      id: 9,
       question:
-        "How does Mamun consider Islamic values in the matching process?",
+        "How does Mamun consider Ethical values in the matching process?",
       answer:
         "The matching algorithm may consider factors like preferred work styles and communication styles, work industry and location.",
     },
     {
-      id: 11,
+      id: 10,
       question:
         "Can I connect with co-founders who want to launch Ethical compliant ventures?",
       answer:
