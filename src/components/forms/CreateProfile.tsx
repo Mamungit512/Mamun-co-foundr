@@ -22,7 +22,7 @@ type CreateProfileProps = {
 
 /*
  * 1. Photo
- * 2. About You (name, title, location, education, experience, intro, ummah, mindset, isTechnical)
+ * 2. About You (name, title, location, education, experience, intro, archetype, mindset, isTechnical)
  * 3. Startup (essentials + conditional detailed fields on one page)
  * 4. Additional Details (optional background + socials)
  * 5. Interests & Values
@@ -52,7 +52,7 @@ function getCompletedSteps(
     data.education &&
     data.experience &&
     data.personalIntro &&
-    data.ummah &&
+    data.archetype &&
     data.satisfaction &&
     data.batteryLevel &&
     data.isTechnical

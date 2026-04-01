@@ -28,7 +28,7 @@ Each profile must include these required fields. Use the exact types and enums s
 - isTechnical: "yes" | "no"
 - personalIntro: string (1-2 sentences)
 - accomplishments?: string (optional)
-- ummah: string (civizational/community focus)
+- archetype: "the_scalar" | "the_steward" | "the_architect"
 - education: string
 - experience: string
 - interests?: string (optional)

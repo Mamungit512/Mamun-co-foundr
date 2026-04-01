@@ -76,7 +76,6 @@ export default function EditProfile() {
   const experienceValue = watch("experience") || "";
   const personalIntroValue = watch("personalIntro") || "";
   const accomplishmentsValue = watch("accomplishments") || "";
-  const ummahValue = watch("ummah") || "";
   const interestsValue = watch("interests") || "";
   const hobbiesValue = watch("hobbies") || "";
 
@@ -611,21 +610,75 @@ export default function EditProfile() {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-300">
-                  If you were a civilizational engineer for the Ummah, what idea
-                  would you bring?
-                </label>
-                <AIWriter
-                  text={ummahValue}
-                  onAccept={(suggestion) => setValue("ummah", suggestion)}
-                  fieldType="ummah"
-                />
-                <textarea
-                  rows={3}
-                  placeholder="Your idea here"
-                  {...register("ummah")}
-                  className="w-full rounded-md border border-gray-600 bg-(--charcoal-black) px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                />
+                <div className="flex items-center justify-between gap-3">
+                  <label className="block text-sm font-medium text-gray-300">
+                    Founder Archetype
+                  </label>
+                  <a
+                    href="/founder-archetypes"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 text-xs text-white/35 underline-offset-2 transition-colors duration-150 hover:text-white/65 hover:underline"
+                  >
+                    Learn more ↗
+                  </a>
+                </div>
+                <div className="flex flex-col gap-y-2">
+                  {(
+                    [
+                      {
+                        value: "the_scalar",
+                        label: "The Scalar",
+                        tooltip:
+                          "Speed and scale above all else. Uses AI and proprietary data to grow without headcount. Measures success by 10–15% week-over-week revenue or user growth.",
+                      },
+                      {
+                        value: "the_steward",
+                        label: "The Steward",
+                        tooltip:
+                          "Values-driven and mission-first. Prioritizes ethical integrity and community trust in every decision. Measures success by social impact and adherence to moral guardrails.",
+                      },
+                      {
+                        value: "the_architect",
+                        label: "The Architect",
+                        tooltip:
+                          "Builds the infrastructure others run on. Creates platforms powered by network effects. Measures success by total value generated across the ecosystem — not just by the company itself.",
+                      },
+                    ] as const
+                  ).map(({ value, label, tooltip }) => (
+                    <label
+                      key={value}
+                      className="relative flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition-all duration-150 hover:border-white/20 hover:bg-white/8 has-[:checked]:border-white/40 has-[:checked]:bg-white/15 has-[:checked]:text-white"
+                    >
+                      <input
+                        type="radio"
+                        value={value}
+                        {...register("archetype")}
+                        className="sr-only"
+                      />
+                      <span
+                        className={`h-4 w-4 shrink-0 rounded-full border-2 transition-all duration-150 ${
+                          watch("archetype") === value
+                            ? "border-white bg-white"
+                            : "border-white/30 bg-transparent"
+                        }`}
+                      />
+                      <span className="flex-1">{label}</span>
+                      {/* Tooltip trigger */}
+                      <span
+                        className="group/tip relative ml-auto flex items-center"
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        <span className="flex h-5 w-5 cursor-default items-center justify-center rounded-full border border-white/15 text-[10px] font-medium text-white/30 transition-colors duration-150 group-hover/tip:border-white/35 group-hover/tip:text-white/60">
+                          i
+                        </span>
+                        <span className="pointer-events-none absolute right-0 bottom-7 z-50 w-60 rounded-xl border border-white/10 bg-neutral-900 px-3.5 py-3 text-left text-xs leading-relaxed text-white/60 opacity-0 shadow-2xl transition-opacity duration-150 group-hover/tip:opacity-100">
+                          {tooltip}
+                        </span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
