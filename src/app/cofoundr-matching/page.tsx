@@ -550,15 +550,21 @@ function CofoundrMatching() {
                       </p>
                     </div>
 
-                    {/* Ummah Vision */}
-                    <div>
-                      <h3 className="mb-2 text-base font-bold text-yellow-300 sm:mb-3 sm:text-lg">
-                        What impact will you leave on the ummah or world?
-                      </h3>
-                      <p className="text-sm text-gray-300 sm:text-base">
-                        {curProfile.ummah}
-                      </p>
-                    </div>
+                    {/* Founder Archetype */}
+                    {curProfile.archetype && (
+                      <div>
+                        <h3 className="mb-2 text-base font-bold text-yellow-300 sm:mb-3 sm:text-lg">
+                          Founder Archetype
+                        </h3>
+                        <p className="text-sm text-gray-300 sm:text-base">
+                          {curProfile.archetype === "the_scalar"
+                            ? "The Scalar"
+                            : curProfile.archetype === "the_steward"
+                              ? "The Steward"
+                              : "The Architect"}
+                        </p>
+                      </div>
+                    )}
 
                     {/* Show More Button */}
                     <div className="pt-3 text-center sm:pt-4">

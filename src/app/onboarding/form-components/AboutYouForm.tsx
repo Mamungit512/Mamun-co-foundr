@@ -17,7 +17,7 @@ type AboutYouData = {
   education: string;
   experience: string;
   personalIntro: string;
-  ummah: string;
+  archetype: FounderArchetype;
   satisfaction: "Happy" | "Content" | "Browsing";
   batteryLevel: "Energized" | "Content" | "Burnt out";
   isTechnical: "yes" | "no";
@@ -56,7 +56,7 @@ function AboutYouForm({
   const educationValue = watch("education") || "";
   const experienceValue = watch("experience") || "";
   const personalIntroValue = watch("personalIntro") || "";
-  const ummahValue = watch("ummah") || "";
+  const archetypeValue = watch("archetype");
   const isTechnicalValue = watch("isTechnical");
 
   useEffect(() => {
@@ -233,25 +233,81 @@ function AboutYouForm({
           )}
         </div>
 
-        {/* ── Ummah Vision ── */}
-        <div className="flex flex-col gap-y-1.5">
-          <label className={LABEL_CLS}>Ummah Vision *</label>
-          <p className="text-xs leading-relaxed text-white/40">
-            If you were a civilizational engineer for the Ummah, what idea would
-            you bring?
-          </p>
-          <FormInput
-            {...register("ummah", { required: "This field is required" })}
-            type="text"
-            placeholder="Your idea here"
-          />
-          <AIWriter
-            text={ummahValue}
-            fieldType="ummah"
-            onAccept={(s) => setValue("ummah", s)}
-          />
-          {errors.ummah && (
-            <p className="text-xs text-red-400">{errors.ummah.message}</p>
+        {/* ── Founder Archetype ── */}
+        <div className="flex flex-col gap-y-3">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <label className={LABEL_CLS}>Founder Archetype *</label>
+              <p className="mt-1 text-xs leading-relaxed text-white/40">
+                Which best describes your founding style?
+              </p>
+            </div>
+            <a
+              href="/founder-archetypes"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 mt-0.5 text-xs text-white/35 underline-offset-2 transition-colors duration-150 hover:text-white/65 hover:underline"
+            >
+              Learn more ↗
+            </a>
+          </div>
+          <div className="flex flex-col gap-y-2">
+            {(
+              [
+                {
+                  value: "the_scalar",
+                  label: "The Scalar",
+                  tooltip:
+                    "Speed and scale above all else. Uses AI and proprietary data to grow without headcount. Measures success by 10–15% week-over-week revenue or user growth.",
+                },
+                {
+                  value: "the_steward",
+                  label: "The Steward",
+                  tooltip:
+                    "Values-driven and mission-first. Prioritizes ethical integrity and community trust in every decision. Measures success by social impact and adherence to moral guardrails.",
+                },
+                {
+                  value: "the_architect",
+                  label: "The Architect",
+                  tooltip:
+                    "Builds the infrastructure others run on. Creates platforms powered by network effects. Measures success by total value generated across the ecosystem — not just by the company itself.",
+                },
+              ] as const
+            ).map(({ value, label, tooltip }) => (
+              <label key={value} className={`${PILL_RADIO_CLS} relative`}>
+                <input
+                  type="radio"
+                  value={value}
+                  {...register("archetype", {
+                    required: "Please select an archetype",
+                  })}
+                  className="sr-only"
+                />
+                <span
+                  className={`h-4 w-4 shrink-0 rounded-full border-2 transition-all duration-150 ${
+                    archetypeValue === value
+                      ? "border-white bg-white"
+                      : "border-white/30 bg-transparent"
+                  }`}
+                />
+                <span className="flex-1">{label}</span>
+                {/* Tooltip trigger */}
+                <span
+                  className="group/tip relative ml-auto flex items-center"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  <span className="flex h-5 w-5 cursor-default items-center justify-center rounded-full border border-white/15 text-[10px] font-medium text-white/30 transition-colors duration-150 group-hover/tip:border-white/35 group-hover/tip:text-white/60">
+                    i
+                  </span>
+                  <span className="pointer-events-none absolute right-0 bottom-7 z-50 w-60 rounded-xl border border-white/10 bg-neutral-900 px-3.5 py-3 text-left text-xs leading-relaxed text-white/60 opacity-0 shadow-2xl transition-opacity duration-150 group-hover/tip:opacity-100">
+                    {tooltip}
+                  </span>
+                </span>
+              </label>
+            ))}
+          </div>
+          {errors.archetype && (
+            <p className="text-xs text-red-400">{errors.archetype.message}</p>
           )}
         </div>
 
