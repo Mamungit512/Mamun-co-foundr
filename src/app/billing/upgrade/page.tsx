@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "motion/react";
-import { FaCheck, FaUsers, FaEnvelope, FaEye } from "react-icons/fa";
+import { FaUsers, FaEnvelope, FaEye } from "react-icons/fa";
 import { PricingTable } from "@clerk/nextjs";
 import { trackEvent } from "@/lib/posthog-events";
 import ElfsightCounter from "@/components/Elfsightcounter";
