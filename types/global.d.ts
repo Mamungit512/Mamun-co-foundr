@@ -21,8 +21,24 @@ declare global {
   interface CustomJwtSessionClaims {
     metadata: {
       onboardingComplete?: boolean;
+      /** Supabase UUID of the user's school. Absent for general CoFoundr users. */
+      organization_id?: string;
+      /** Present when the user is a school staff admin for their organization. */
+      is_school_admin?: boolean;
     };
   }
+
+  type OrganizationFromDb = {
+    id: string;
+    name: string;
+    slug: string;
+    type: string;
+    ferpa_dpa_signed_at: string | null;
+    suppress_tracking: boolean;
+    settings: Record<string, unknown>;
+    created_at: string;
+    updated_at: string;
+  };
 
   type UserProfileFromDb = {
     accomplishments: string | null;
@@ -71,6 +87,8 @@ declare global {
     // Hiring feature fields
     is_hiring: boolean;
     hiring_email: string | null;
+    // School tenant isolation
+    organization_id: string | null;
   };
 
   // Combine all individual form step types

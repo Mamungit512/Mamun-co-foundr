@@ -2,7 +2,11 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
+const isOnboardingRoute = createRouteMatcher(["/onboarding(.*)"]);
+const isSchoolOnboardingRoute = createRouteMatcher([
+  "/school/:slug/onboarding(.*)",
+]);
+const isSchoolRoute = createRouteMatcher(["/school/:slug(.*)"]);
 const isPublicRoute = createRouteMatcher([
   "/",
   "/careers",
@@ -14,7 +18,32 @@ const isPublicRoute = createRouteMatcher([
   "/api/webhooks/clerk",
 ]);
 
-// Helper function to update user activity in user_activity_summary table
+type OrgRecord = { slug: string; ferpa_dpa_signed_at: string | null };
+
+// Helper: resolve organization slug and DPA status from org UUID via Supabase
+async function resolveOrgRecord(organizationId: string): Promise<OrgRecord | null> {
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey =
+      process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_KEY;
+
+    if (!supabaseUrl || !supabaseKey) return null;
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const { data } = await supabase
+      .from("organizations")
+      .select("slug, ferpa_dpa_signed_at")
+      .eq("id", organizationId)
+      .single();
+
+    return data ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// Helper: update user activity asynchronously
 async function updateUserActivity(userId: string) {
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -32,8 +61,6 @@ async function updateUserActivity(userId: string) {
     const supabase = createClient(supabaseUrl, supabaseKey);
     const now = new Date().toISOString();
 
-    // Upsert to user_activity_summary table
-    // This updates last_active_at in real-time while the cron job handles login counts
     const { error } = await supabase.from("user_activity_summary").upsert(
       {
         user_id: userId,
@@ -42,7 +69,6 @@ async function updateUserActivity(userId: string) {
       },
       {
         onConflict: "user_id",
-        // Don't overwrite login counts that are managed by cron job
         ignoreDuplicates: false,
       },
     );
@@ -52,58 +78,127 @@ async function updateUserActivity(userId: string) {
     }
   } catch (error) {
     console.error("Failed to update user activity:", error);
-    // Don't throw - activity tracking should not break the request
   }
 }
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const { userId, sessionClaims, redirectToSignIn } = await auth();
-
-  // For users visiting /onboarding, don't try to redirect
-  if (userId && isOnboardingRoute(req)) {
-    return NextResponse.next();
-  }
+  const pathname = req.nextUrl.pathname;
+  const isApiRoute = pathname.startsWith("/api/");
+  const isStaticAsset = /\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2?|ttf)$/.test(
+    pathname,
+  );
 
   // If the user isn't signed in and the route is private, redirect to sign-in
-  if (!userId && !isPublicRoute(req))
+  if (!userId && !isPublicRoute(req)) {
     return redirectToSignIn({ returnBackUrl: req.url });
+  }
 
-  // Catch users who do not have `onboardingComplete: true` in their publicMetadata
-  // Redirect them to the /onboarding route to complete onboarding
-  if (userId && !sessionClaims?.metadata?.onboardingComplete) {
-    // Allow public routes and API requests to proceed so form submits don't break
-    const isApiRoute = req.nextUrl.pathname.startsWith("/api/");
-    if (isPublicRoute(req) || isApiRoute) {
+  if (userId) {
+    const orgId = sessionClaims?.metadata?.organization_id;
+
+    // ----------------------------------------------------------------
+    // SCHOOL USERS
+    // ----------------------------------------------------------------
+    if (orgId) {
+      // Allow onboarding, API routes, and public routes to pass through
+      if (isApiRoute || isPublicRoute(req)) {
+        return NextResponse.next();
+      }
+
+      // If the user is on a school route already, let onboarding pass first
+      if (isSchoolOnboardingRoute(req)) {
+        return NextResponse.next();
+      }
+
+      // Resolve the org slug (also validates FERPA DPA)
+      const org = await resolveOrgRecord(orgId);
+
+      if (!org) {
+        // Organization not found — deny access gracefully
+        const url = new URL("/", req.url);
+        return NextResponse.redirect(url);
+      }
+
+      // FERPA gate: DPA must be signed before any student can use the app
+      if (!org.ferpa_dpa_signed_at) {
+        const pendingUrl = new URL(
+          `/school/${org.slug}/pending-activation`,
+          req.url,
+        );
+        if (pathname !== pendingUrl.pathname) {
+          return NextResponse.redirect(pendingUrl);
+        }
+        return NextResponse.next();
+      }
+
+      // Onboarding gate for school users
+      if (!sessionClaims?.metadata?.onboardingComplete) {
+        const schoolOnboardingUrl = new URL(
+          `/school/${org.slug}/onboarding`,
+          req.url,
+        );
+        if (pathname !== schoolOnboardingUrl.pathname) {
+          return NextResponse.redirect(schoolOnboardingUrl);
+        }
+        return NextResponse.next();
+      }
+
+      // School user trying to access a general route → redirect to school dashboard
+      if (!isSchoolRoute(req)) {
+        const dashboardUrl = new URL(
+          `/school/${org.slug}/dashboard`,
+          req.url,
+        );
+        return NextResponse.redirect(dashboardUrl);
+      }
+
+      // Already on a school route — proceed
+      if (!isApiRoute && !isStaticAsset) {
+        updateUserActivity(userId).catch(console.error);
+      }
       return NextResponse.next();
     }
 
-    // For private, non-API routes, redirect to /onboarding page
-    const onboardingUrl = new URL("/onboarding", req.url);
-    return NextResponse.redirect(onboardingUrl);
-  }
+    // ----------------------------------------------------------------
+    // GENERAL USERS
+    // ----------------------------------------------------------------
 
-  // Update user activity for authenticated users on protected routes
-  // Skip for API routes, static assets, and webhooks to reduce DB load
-  if (userId && !isPublicRoute(req)) {
-    const isApiRoute = req.nextUrl.pathname.startsWith("/api/");
-    const isStaticAsset = req.nextUrl.pathname.match(
-      /\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2|ttf)$/,
-    );
+    // Allow onboarding route for users who haven't completed it
+    if (isOnboardingRoute(req)) {
+      return NextResponse.next();
+    }
 
-    if (!isApiRoute && !isStaticAsset) {
-      // Update activity asynchronously without blocking the response
+    // General user trying to access a school route → redirect to general dashboard
+    if (isSchoolRoute(req) && !isApiRoute) {
+      const dashboardUrl = new URL("/cofoundr-matching", req.url);
+      return NextResponse.redirect(dashboardUrl);
+    }
+
+    // Onboarding gate
+    if (!sessionClaims?.metadata?.onboardingComplete) {
+      if (isPublicRoute(req) || isApiRoute) {
+        return NextResponse.next();
+      }
+      const onboardingUrl = new URL("/onboarding", req.url);
+      return NextResponse.redirect(onboardingUrl);
+    }
+
+    // Update activity for protected, non-API, non-static routes
+    if (!isPublicRoute(req) && !isApiRoute && !isStaticAsset) {
       updateUserActivity(userId).catch(console.error);
     }
 
     return NextResponse.next();
   }
+
+  // Public routes — no auth required
+  return NextResponse.next();
 });
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
     "/(api|trpc)(.*)",
   ],
 };

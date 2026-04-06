@@ -2,6 +2,7 @@ import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { NextRequest } from "next/server";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
+import { clerkClient } from "@clerk/nextjs/server";
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,6 +25,44 @@ export async function POST(req: NextRequest) {
         | undefined;
       const fpRef = evt.data.unsafe_metadata?.fp_ref as string | undefined;
       const fpTid = evt.data.unsafe_metadata?.fp_tid as string | undefined;
+
+      // School invite: unsafe_metadata.school_slug carries the school's slug
+      const schoolSlug = evt.data.unsafe_metadata?.school_slug as
+        | string
+        | undefined;
+
+      // If this signup came from a school invite link, assign the school org
+      if (schoolSlug && id) {
+        try {
+          const supabaseForOrg = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.SUPABASE_SERVICE_ROLE_KEY!,
+          );
+
+          const { data: org } = await supabaseForOrg
+            .from("organizations")
+            .select("id, ferpa_dpa_signed_at")
+            .eq("slug", schoolSlug)
+            .eq("type", "school")
+            .single();
+
+          if (org?.ferpa_dpa_signed_at) {
+            const client = await clerkClient();
+            await client.users.updateUserMetadata(id, {
+              publicMetadata: {
+                organization_id: org.id,
+              },
+            });
+            console.log(`🏫 School user assigned: ${schoolSlug} → org ${org.id}`);
+          } else {
+            console.warn(
+              `⚠️  School invite for "${schoolSlug}" rejected: FERPA DPA not yet signed.`,
+            );
+          }
+        } catch (schoolError) {
+          console.error("Error assigning school organization:", schoolError);
+        }
+      }
 
       console.log("🆕 New user created:", {
         userId: id,
