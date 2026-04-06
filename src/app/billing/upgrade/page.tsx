@@ -120,7 +120,7 @@ export default function BillingUpgradePage() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <div className="rounded-lg border border-white bg-(--charcoal-black) p-8">
+          {/* <div className="rounded-lg border border-white bg-(--charcoal-black) p-8">
             <h3 className="mb-4 text-xl font-semibold text-white">
               Founders Pass
             </h3>
@@ -165,7 +165,7 @@ export default function BillingUpgradePage() {
                 Refund Policy
               </a>
             </p>
-          </div>
+          </div> */}
         </motion.div>
       </div>
     </div>
