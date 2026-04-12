@@ -48,7 +48,7 @@ export default function AdminMatchPreviewPage() {
             batteryLevel: "Energized",
             isTechnical: "yes",
             personalIntro: "Full-stack engineer building in AI.",
-            archetype: "the_scalar",
+            archetype: "the_scaler",
             education: "BSc CS, MIT",
             experience: "2 years at Google",
             lookingFor: "non-technical",

@@ -255,8 +255,8 @@ function AboutYouForm({
             {(
               [
                 {
-                  value: "the_scalar",
-                  label: "The Scalar",
+                  value: "the_scaler",
+                  label: "The Scaler",
                   tooltip:
                     "Speed and scale above all else. Uses AI and proprietary data to grow without headcount. Measures success by 10–15% week-over-week revenue or user growth.",
                 },

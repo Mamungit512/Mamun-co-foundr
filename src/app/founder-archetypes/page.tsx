@@ -6,13 +6,13 @@ import { auth } from "@clerk/nextjs/server";
 export const metadata: Metadata = {
   title: "Founder Archetypes — Mamun",
   description:
-    "Understand the three founder archetypes: The Scalar, The Steward, and The Architect. Find your founding style.",
+    "Understand the three founder archetypes: The Scaler, The Steward, and The Architect. Find your founding style.",
 };
 
 const ARCHETYPES = [
   {
-    id: "the_scalar",
-    name: "The Scalar",
+    id: "the_scaler",
+    name: "The Scaler",
     subtitle: "AI-First Hypergrowth",
     description:
       "Wins markets through speed, algorithmic efficiency, and bold bets on exponential growth. Every decision optimizes for scale.",

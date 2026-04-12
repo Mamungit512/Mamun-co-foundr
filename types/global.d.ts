@@ -1,7 +1,7 @@
 export {};
 
 declare global {
-  type FounderArchetype = "the_scalar" | "the_steward" | "the_architect";
+  type FounderArchetype = "the_scaler" | "the_steward" | "the_architect";
 
   // PostHog on window
   interface Window {
