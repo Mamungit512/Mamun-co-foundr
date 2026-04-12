@@ -6,7 +6,6 @@ import { FaUsers, FaEnvelope, FaEye } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useUser, PricingTable } from "@clerk/nextjs";
 import { trackEvent } from "@/lib/posthog-events";
-import { FaCheck } from "react-icons/fa6";
 import ElfsightCounter from "@/components/Elfsightcounter";
 
 export default function PricingPage() {
@@ -145,7 +144,7 @@ export default function PricingPage() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            <div className="rounded-lg border border-white bg-(--charcoal-black) p-8">
+            {/* <div className="rounded-lg border border-white bg-(--charcoal-black) p-8">
               <h3 className="mb-4 text-xl font-semibold text-white">
                 Founders Pass
               </h3>
@@ -191,7 +190,7 @@ export default function PricingPage() {
                   Refund Policy
                 </a>
               </p>
-            </div>
+            </div> */}
           </motion.div>
         </motion.div>
       </div>

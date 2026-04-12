@@ -1,8 +1,5 @@
 import React from "react";
-import {
-  FaLinkedin,
- 
-} from "react-icons/fa6";
+
 
 /* ------
 Socials
@@ -40,14 +37,14 @@ function Socials() {
         <FaInstagram className="size-4 text-(--mist-white)" />
       </a> */}
 
-      <a
+      {/* <a
         href="https://www.linkedin.com/company/mamunic/?viewAsMember=true"
         target="_blank"
         rel="noopener noreferrer"
         className="translate-y transition-opacity hover:opacity-80"
       >
         <FaLinkedin className="size-4 text-(--mist-white)" />
-      </a>
+      </a> */}
       {/* <a
         href="https://www.reddit.com/user/ComfortableDry6491/"
         target="_blank"

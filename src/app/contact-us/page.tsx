@@ -46,7 +46,7 @@ function ContactPage() {
               How Can We Help?
             </h2>
             <p className="text-sm text-white/70 sm:text-base md:text-lg">
-              We will usually reply within 1–3 business days, insha&apos;Allah.
+              We will usually reply within 1–3 business days.
             </p>
           </div>
 

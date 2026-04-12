@@ -50,7 +50,7 @@ export default function ReviewForm({
             { label: "Education", value: data.education || "—" },
             { label: "Experience", value: data.experience || "—" },
             { label: "Personal Intro", value: data.personalIntro || "—" },
-            { label: "Ummah Vision", value: data.ummah || "—" },
+            { label: "Founder Archetype", value: data.archetype || "—" },
             { label: "Satisfaction", value: data.satisfaction || "—" },
             { label: "Battery Level", value: data.batteryLevel || "—" },
             {

@@ -58,7 +58,6 @@ export async function POST(request: NextRequest) {
           "Aggressively fix typos, complete ALL incomplete words, and expand this into a natural 2-3 sentence professional bio:",
         accomplishments:
           "Fix typos and expand into a list of 2-3 impressive accomplishments:",
-        ummah: "Fix typos and complete this civilizational engineering idea:",
         education:
           "Fix typos and complete with full education details (degree, field, university, year):",
         experience:
