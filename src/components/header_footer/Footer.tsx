@@ -7,7 +7,7 @@ function Footer() {
     <footer className="w-full bg-(--charcoal-black) text-(--mist-white)">
       <div className="mx-auto max-w-5xl px-8 pt-14 pb-8">
         {/* Top section */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-10 pb-12">
+        <div className="flex flex-col gap-10 pb-12 sm:flex-row sm:items-start sm:justify-between">
           {/* Left: Logo + tagline */}
           <div className="flex flex-col gap-3">
             <Link href="/" className="flex items-center gap-3">
@@ -18,7 +18,7 @@ function Footer() {
                 className="h-10 w-auto"
                 alt="Mamun Logo"
               />
-              <span className="text-lg font-semibold tracking-widest uppercase text-(--mist-white)">
+              <span className="text-lg font-semibold tracking-widest text-(--mist-white) uppercase">
                 Mamun
               </span>
             </Link>
@@ -29,20 +29,51 @@ function Footer() {
 
           {/* Right: Link columns */}
           <div className="flex gap-12">
+            {/* Resources column */}
+            <div className="flex flex-col gap-4">
+              <p className="text-lg font-semibold tracking-widest text-(--mist-white) uppercase opacity-50">
+                Resources
+              </p>
+              <a
+                href="https://lu.ma/mamun"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-base text-(--mist-white) opacity-80 transition-opacity hover:underline hover:underline-offset-4 hover:opacity-100"
+              >
+                Mamun Luma Events
+              </a>
+              <a
+                href="https://www.cakeequity.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-base text-(--mist-white) opacity-80 transition-opacity hover:underline hover:underline-offset-4 hover:opacity-100"
+              >
+                Create Cap Table
+              </a>
+              <a
+                href="https://calendly.com/mcfm-mamuncofoundr/30min?month=2026-04"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-base text-(--mist-white) opacity-80 transition-opacity hover:underline hover:underline-offset-4 hover:opacity-100"
+              >
+                Book a Demo
+              </a>
+            </div>
+
             {/* Company column */}
             <div className="flex flex-col gap-4">
-              <p className="text-lg font-semibold tracking-widest uppercase text-(--mist-white) opacity-50">
+              <p className="text-lg font-semibold tracking-widest text-(--mist-white) uppercase opacity-50">
                 Company
               </p>
               <Link
                 href="/careers"
-                className="text-base text-(--mist-white) opacity-80 hover:opacity-100 hover:underline hover:underline-offset-4 transition-opacity"
+                className="text-base text-(--mist-white) opacity-80 transition-opacity hover:underline hover:underline-offset-4 hover:opacity-100"
               >
                 Careers
               </Link>
               <Link
                 href="/privacy-policy"
-                className="text-base text-(--mist-white) opacity-80 hover:opacity-100 hover:underline hover:underline-offset-4 transition-opacity"
+                className="text-base text-(--mist-white) opacity-80 transition-opacity hover:underline hover:underline-offset-4 hover:opacity-100"
               >
                 Privacy Policy
               </Link>
@@ -50,18 +81,18 @@ function Footer() {
 
             {/* Support column */}
             <div className="flex flex-col gap-4">
-              <p className="text-lg font-semibold tracking-widest uppercase text-(--mist-white) opacity-50">
+              <p className="text-lg font-semibold tracking-widest text-(--mist-white) uppercase opacity-50">
                 Support
               </p>
               <Link
                 href="/refund-policy"
-                className="text-base text-(--mist-white) opacity-80 hover:opacity-100 hover:underline hover:underline-offset-4 transition-opacity"
+                className="text-base text-(--mist-white) opacity-80 transition-opacity hover:underline hover:underline-offset-4 hover:opacity-100"
               >
                 Refund Policy
               </Link>
               <Link
                 href="/contact-us"
-                className="text-base text-(--mist-white) opacity-80 hover:opacity-100 hover:underline hover:underline-offset-4 transition-opacity"
+                className="text-base text-(--mist-white) opacity-80 transition-opacity hover:underline hover:underline-offset-4 hover:opacity-100"
               >
                 Contact Support
               </Link>
@@ -81,7 +112,7 @@ function Footer() {
             href="https://www.linkedin.com/company/mamunic/?viewAsMember=true"
             rel="noopener noreferrer"
             aria-label="LinkedIn"
-            className="flex items-center justify-center w-8 h-8 rounded border border-white/20 text-(--mist-white) opacity-60 hover:opacity-100 transition-opacity"
+            className="flex h-8 w-8 items-center justify-center rounded border border-white/20 text-(--mist-white) opacity-60 transition-opacity hover:opacity-100"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

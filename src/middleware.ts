@@ -15,6 +15,7 @@ const isPublicRoute = createRouteMatcher([
   "/privacy-policy",
   "/refund-policy",
   "/pricing",
+  "/founder-archetypes",
   "/api/webhooks/clerk",
 ]);
 

@@ -1,6 +1,8 @@
 export {};
 
 declare global {
+  type FounderArchetype = "the_scalar" | "the_steward" | "the_architect";
+
   // PostHog on window
   interface Window {
     posthog?: {
@@ -83,7 +85,7 @@ declare global {
     twitter: string | null;
     updated_at: string;
     user_id: string;
-    ummah: string;
+    archetype: FounderArchetype | null;
     // Hiring feature fields
     is_hiring: boolean;
     hiring_email: string | null;
@@ -127,7 +129,7 @@ declare global {
   type IntroAccomplishmentsFormData = {
     personalIntro: string;
     accomplishments?: string;
-    ummah: string;
+    archetype: FounderArchetype;
     education: string;
     experience: string;
     isTechnical: "yes" | "no";

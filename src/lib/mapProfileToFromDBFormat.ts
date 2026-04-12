@@ -20,6 +20,7 @@ export function mapProfileToOnboardingData(
     // IntroAccomplishmentsFormData
     personalIntro: profile.personal_intro,
     accomplishments: profile.accomplishments ?? undefined,
+    archetype: profile.archetype ?? undefined,
     education: profile.education,
     experience: profile.experience,
     isTechnical: profile.is_technical ? "yes" : "no",
@@ -75,6 +76,7 @@ export function mapOnboardingDatatoProfileDB(data: OnboardingData) {
 
     personal_intro: data.personalIntro || "",
     accomplishments: data.accomplishments || null,
+    archetype: data.archetype || null,
     education: data.education || null,
     experience: data.experience || null,
     is_technical: data.isTechnical === "yes",
