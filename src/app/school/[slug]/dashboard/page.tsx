@@ -17,6 +17,7 @@ import HiringBadge from "@/components/HiringBadge";
 import InformationTooltipButton from "@/components/ui/InformationTooltipButton";
 import SwipeLimit from "@/components/SwipeLimit";
 import { useGetProfiles, useUserProfile } from "@/features/profile/useProfile";
+import { useSchool } from "@/components/school/SchoolContext";
 import { useToggleLike, useLikeStatus, useMutualLikes } from "@/features/likes/useLikes";
 import { useCreateConversation } from "@/hooks/useConversations";
 import { useSkipProfile } from "@/features/user-actions/useUserActions";
@@ -33,6 +34,7 @@ export default function SchoolDashboardPage({
   const queryClient = useQueryClient();
   const router = useRouter();
 
+  const { schoolName } = useSchool();
   const { data: profiles } = useGetProfiles();
   const { data: currentUserProfile } = useUserProfile();
   const { toggleLike, isLoading: isLikeLoading } = useToggleLike();
@@ -93,23 +95,40 @@ export default function SchoolDashboardPage({
     }
   };
 
+  const brandingHeader = (
+    <div className="mb-5 text-center">
+      <p className="text-xs font-semibold uppercase tracking-widest text-white/50">
+        Mamun &times; {schoolName}
+      </p>
+      <h1 className="mt-0.5 text-base font-semibold text-white/80">
+        Co-Founder Matching
+      </h1>
+    </div>
+  );
+
   if (swipeLimitData?.limitReached) {
     return (
-      <div className="flex min-h-[calc(100vh-64px)] items-center justify-center p-6">
-        <SwipeLimit resetTime={swipeLimitData.resetTime} />
+      <div className="mx-auto max-w-2xl p-4 pt-6">
+        {brandingHeader}
+        <div className="flex min-h-[calc(100vh-200px)] items-center justify-center">
+          <SwipeLimit resetTime={swipeLimitData.resetTime} />
+        </div>
       </div>
     );
   }
 
   if (!curProfile) {
     return (
-      <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center gap-4 p-6 text-center">
-        <p className="text-xl font-semibold text-(--mist-white)">
-          No more co-founders to show right now
-        </p>
-        <p className="text-sm text-white/50">
-          Check back later — more students from your program will be joining.
-        </p>
+      <div className="mx-auto max-w-2xl p-4 pt-6">
+        {brandingHeader}
+        <div className="flex min-h-[calc(100vh-200px)] flex-col items-center justify-center gap-4 text-center">
+          <p className="text-xl font-semibold text-(--mist-white)">
+            No more co-founders to show right now
+          </p>
+          <p className="text-sm text-white/50">
+            Check back later — more students from your program will be joining.
+          </p>
+        </div>
       </div>
     );
   }
@@ -120,6 +139,7 @@ export default function SchoolDashboardPage({
 
   return (
     <div className="mx-auto max-w-2xl p-4 pt-6">
+      {brandingHeader}
       <AnimatePresence mode="wait">
         <motion.div
           key={curProfile.user_id}

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import { FaUsers, FaEnvelope, FaUserCircle, FaShieldAlt } from "react-icons/fa";
@@ -45,15 +46,24 @@ export default function SchoolHeader({ slug, schoolName }: SchoolHeaderProps) {
   ];
 
   return (
-    <header className="flex items-center justify-between bg-(--charcoal-black) px-6 py-4 text-(--mist-white) border-b border-white/10">
-      <div className="flex items-center gap-3">
-        <Link href={`/school/${slug}/dashboard`} className="flex items-center gap-2">
-          <span className="text-lg font-semibold tracking-tight">{schoolName}</span>
-          <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs font-medium text-white/60">
-            Co-Founder Matching
-          </span>
-        </Link>
-      </div>
+    <header className="flex items-center justify-between border-b border-white/10 bg-(--charcoal-black) px-6 py-3 text-(--mist-white)">
+      {/* Brand lockup: Mamun logo + divider + school name */}
+      <Link
+        href={`/school/${slug}/dashboard`}
+        className="flex items-center gap-3"
+      >
+        <Image
+          src="/img/mamun-transparent-logo.png"
+          alt="Mamun"
+          width={72}
+          height={72}
+          className="h-9 w-auto"
+        />
+        <span className="h-5 w-px bg-white/20" aria-hidden="true" />
+        <span className="text-sm font-semibold tracking-tight text-white">
+          {schoolName}
+        </span>
+      </Link>
 
       <nav className="hidden items-center gap-1 md:flex">
         {navItems.map(({ href, label, icon: Icon }) => (

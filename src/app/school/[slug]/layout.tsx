@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
 import SchoolHeader from "@/components/school/SchoolHeader";
+import { SchoolProvider } from "@/components/school/SchoolContext";
 
 async function getOrganizationBySlug(slug: string): Promise<OrganizationFromDb | null> {
   const supabase = createClient(
@@ -33,9 +34,11 @@ export default async function SchoolSlugLayout({
   }
 
   return (
-    <div className="min-h-screen bg-(--charcoal-black) text-(--mist-white)">
-      <SchoolHeader slug={slug} schoolName={org.name} />
-      <main>{children}</main>
-    </div>
+    <SchoolProvider slug={slug} schoolName={org.name}>
+      <div className="min-h-screen bg-(--charcoal-black) text-(--mist-white)">
+        <SchoolHeader slug={slug} schoolName={org.name} />
+        <main>{children}</main>
+      </div>
+    </SchoolProvider>
   );
 }

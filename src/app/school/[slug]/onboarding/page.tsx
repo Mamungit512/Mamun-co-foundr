@@ -14,6 +14,7 @@ import ReviewForm from "@/app/onboarding/form-components/ReviewForm";
 import OnboardingProgressBar from "@/components/ui/OnboardingProgressBar";
 import { useStepTransition } from "@/hooks/useOnboardingAnimation";
 import { useOnboardingDraft } from "@/hooks/useOnboardingDraft";
+import { useSchool } from "@/components/school/SchoolContext";
 
 // School onboarding skips the StartupForm — 5 steps instead of 6
 const TOTAL_STEPS = 5;
@@ -54,6 +55,7 @@ export default function SchoolOnboardingPage({
   const [visitedSteps, setVisitedSteps] = useState<Set<number>>(new Set());
   const [error, setError] = useState<string | null>(null);
 
+  const { schoolName } = useSchool();
   const { user } = useUser();
   const { session } = useSession();
   const router = useRouter();
@@ -123,8 +125,12 @@ export default function SchoolOnboardingPage({
     <div className="mx-auto max-w-xl px-4 py-8">
       <div className="mb-8 text-center">
         <p className="text-xs font-semibold uppercase tracking-widest text-white/30">
-          Student Profile Setup
+          Mamun &times; {schoolName}
         </p>
+        <h1 className="mt-1 text-xl font-semibold text-white">
+          Co-Founder Matching
+        </h1>
+        <p className="mt-1 text-sm text-white/40">Student Profile Setup</p>
       </div>
 
       <OnboardingProgressBar
