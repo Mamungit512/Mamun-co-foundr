@@ -557,8 +557,8 @@ function CofoundrMatching() {
                           Founder Archetype
                         </h3>
                         <p className="text-sm text-gray-300 sm:text-base">
-                          {curProfile.archetype === "the_scalar"
-                            ? "The Scalar"
+                          {curProfile.archetype === "the_scaler"
+                            ? "The Scaler"
                             : curProfile.archetype === "the_steward"
                               ? "The Steward"
                               : "The Architect"}
