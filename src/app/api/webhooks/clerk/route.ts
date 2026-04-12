@@ -26,41 +26,41 @@ export async function POST(req: NextRequest) {
       const fpRef = evt.data.unsafe_metadata?.fp_ref as string | undefined;
       const fpTid = evt.data.unsafe_metadata?.fp_tid as string | undefined;
 
-      // School invite: unsafe_metadata.school_slug carries the school's slug
-      const schoolSlug = evt.data.unsafe_metadata?.school_slug as
-        | string
-        | undefined;
-
-      // If this signup came from a school invite link, assign the school org
-      if (schoolSlug && id) {
+      // Email domain allowlist: automatically assign school org based on email domain
+      if (email && id) {
         try {
-          const supabaseForOrg = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!,
-          );
+          const domain = email.split("@")[1]?.toLowerCase();
 
-          const { data: org } = await supabaseForOrg
-            .from("organizations")
-            .select("id, ferpa_dpa_signed_at")
-            .eq("slug", schoolSlug)
-            .eq("type", "school")
-            .single();
-
-          if (org?.ferpa_dpa_signed_at) {
-            const client = await clerkClient();
-            await client.users.updateUserMetadata(id, {
-              publicMetadata: {
-                organization_id: org.id,
-              },
-            });
-            console.log(`🏫 School user assigned: ${schoolSlug} → org ${org.id}`);
-          } else {
-            console.warn(
-              `⚠️  School invite for "${schoolSlug}" rejected: FERPA DPA not yet signed.`,
+          if (domain) {
+            const supabaseForOrg = createClient(
+              process.env.NEXT_PUBLIC_SUPABASE_URL!,
+              process.env.SUPABASE_SERVICE_ROLE_KEY!,
             );
+
+            const { data: org } = await supabaseForOrg
+              .from("organizations")
+              .select("id, slug, ferpa_dpa_signed_at")
+              .contains("allowed_email_domains", [domain])
+              .single();
+
+            if (org?.ferpa_dpa_signed_at) {
+              const client = await clerkClient();
+              await client.users.updateUserMetadata(id, {
+                publicMetadata: {
+                  organization_id: org.id,
+                },
+              });
+              console.log(
+                `🏫 School user auto-assigned: ${domain} → org ${org.slug} (${org.id})`,
+              );
+            } else if (org) {
+              console.warn(
+                `⚠️  Domain "${domain}" matches org "${org.slug}" but FERPA DPA not yet signed — not assigning.`,
+              );
+            }
           }
         } catch (schoolError) {
-          console.error("Error assigning school organization:", schoolError);
+          console.error("Error assigning school organization by email domain:", schoolError);
         }
       }
 

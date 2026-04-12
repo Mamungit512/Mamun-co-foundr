@@ -9,19 +9,25 @@
 -- Run this in your Supabase SQL Editor or via: supabase db push
 
 CREATE TABLE IF NOT EXISTS organizations (
-  id                   uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  name                 text NOT NULL,
-  slug                 text UNIQUE NOT NULL,
-  type                 text NOT NULL DEFAULT 'school',
-  ferpa_dpa_signed_at  timestamptz,
-  suppress_tracking    boolean NOT NULL DEFAULT true,
-  settings             jsonb NOT NULL DEFAULT '{}',
-  created_at           timestamptz NOT NULL DEFAULT now(),
-  updated_at           timestamptz NOT NULL DEFAULT now()
+  id                    uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name                  text NOT NULL,
+  slug                  text UNIQUE NOT NULL,
+  type                  text NOT NULL DEFAULT 'school',
+  ferpa_dpa_signed_at   timestamptz,
+  allowed_email_domains text[] NOT NULL DEFAULT '{}',
+  suppress_tracking     boolean NOT NULL DEFAULT true,
+  settings              jsonb NOT NULL DEFAULT '{}',
+  created_at            timestamptz NOT NULL DEFAULT now(),
+  updated_at            timestamptz NOT NULL DEFAULT now()
 );
 
 COMMENT ON TABLE organizations IS
   'One row per school tenant. NULL organization_id on profiles = general CoFoundr pool.';
+
+COMMENT ON COLUMN organizations.allowed_email_domains IS
+  'Array of email domains that automatically map to this organization on signup. '
+  'e.g. ARRAY[''mit.edu'', ''college.mit.edu'']. '
+  'The user.created webhook checks this to assign publicMetadata.organization_id.';
 
 COMMENT ON COLUMN organizations.ferpa_dpa_signed_at IS
   'Timestamp when the school signed the FERPA Data Processing Agreement. '
