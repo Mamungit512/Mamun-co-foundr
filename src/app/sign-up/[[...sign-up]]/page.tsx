@@ -1,134 +1,101 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useUser } from "@clerk/nextjs";
-import { useSearchParams } from "next/navigation";
+import { SignUp } from "@clerk/nextjs";
+import { useEffect, useState, useRef } from "react";
+import {
+  getSavedReferralCode,
+  getFirstPromoterRef,
+  getFirstPromoterTid,
+} from "@/lib/referral-utils";
+import { trackEvent } from "@/lib/posthog-events";
 
-const STORAGE_KEY = "introSurveyShown";
-
-export default function IntroSurveyModal() {
-  const { isSignedIn, isLoaded } = useUser();
-  const searchParams = useSearchParams();
-  const [isOpen, setIsOpen] = useState(false);
-  const hasChecked = useRef(false);
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isLoaded || !isSignedIn) return;
-    if (hasChecked.current) return;
-    hasChecked.current = true;
-
-    // Yeni kayıt olduysa storage'ı temizle
-    const isNew = searchParams.get("new") === "1";
-    if (isNew) {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-
-    if (!localStorage.getItem(STORAGE_KEY)) {
-      setIsOpen(true);
-    }
-  }, [isLoaded, isSignedIn, searchParams]);
+export default function SignUpPage() {
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [fpRef, setFpRef] = useState<string | null>(null);
+  const [fpTid, setFpTid] = useState<string | null>(null);
+  const [isReady, setIsReady] = useState(false);
+  const hasTrackedRef = useRef(false);
 
   useEffect(() => {
-    document.body.style.overflow = isOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
+    let attempts = 0;
+    const maxAttempts = 10;
+    let timeoutId: NodeJS.Timeout;
 
-  // Elfsight OK butonunu dinle
-  useEffect(() => {
-    if (!isOpen) return;
+    const checkCookies = () => {
+      const fpTidValue = getFirstPromoterTid();
+      const fpRefValue = getFirstPromoterRef();
+      const code = getSavedReferralCode();
 
-    const interval = setInterval(() => {
-      if (!modalRef.current) return;
+      if (fpTidValue || fpRefValue || attempts >= maxAttempts) {
+        setFpTid(fpTidValue);
+        setFpRef(fpRefValue);
+        setReferralCode(code);
+        setIsReady(true);
 
-      const buttons = modalRef.current.querySelectorAll(
-        "button, [role='button']",
-      );
-      buttons.forEach((btn) => {
-        const text = btn.textContent?.trim().toLowerCase() ?? "";
-        if (text === "ok" || text === "okay") {
-          btn.addEventListener(
-            "click",
-            () => {
-              clearInterval(interval);
-              localStorage.setItem(STORAGE_KEY, "true");
-              setIsOpen(false);
-            },
-            { once: true },
-          );
+        if (code || fpRefValue || fpTidValue) {
+          console.log("📝 Sign up with referral:", {
+            code,
+            fpRef: fpRefValue,
+            fpTid: fpTidValue,
+            attempts,
+          });
         }
-      });
-    }, 500);
 
-    return () => clearInterval(interval);
-  }, [isOpen]);
+        if (!hasTrackedRef.current) {
+          hasTrackedRef.current = true;
+          trackEvent.signupPageViewed({
+            has_referral_code: !!code,
+            referral_code: code || null,
+            referrer_url:
+              typeof document !== "undefined" ? document.referrer : undefined,
+          });
+        }
+      } else {
+        attempts++;
+        timeoutId = setTimeout(checkCookies, 200);
+      }
+    };
 
-  const handleClose = () => {
-    localStorage.setItem(STORAGE_KEY, "true");
-    setIsOpen(false);
-  };
+    checkCookies();
 
-  const preventScroll = (e: React.WheelEvent | React.TouchEvent) => {
-    e.stopPropagation();
-  };
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, []);
 
-  if (!isOpen) return null;
+  if (!isReady) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ backgroundColor: "rgba(0, 0, 0, 0.65)" }}
-      onClick={handleClose}
-      onWheel={(e) => e.preventDefault()}
-      onTouchMove={(e) => e.preventDefault()}
-    >
-      <div
-        ref={modalRef}
-        className="relative w-full bg-white"
-        style={{
-          maxWidth: "560px",
-          borderRadius: "12px",
-          padding: "32px",
-          maxHeight: "85vh",
-          overflowY: "auto",
-        }}
-        onClick={(e) => e.stopPropagation()}
-        onWheel={preventScroll}
-        onTouchMove={preventScroll}
-      >
-        <button
-          onClick={handleClose}
-          aria-label="Close"
-          className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
-
-        <div className="mb-5">
-          <h2 className="text-xl font-bold text-gray-900">Quick question 👋</h2>
-          <p className="mt-1 text-sm text-gray-500">
-            It will only take a minute to help us get to know you better.
-          </p>
-        </div>
-
-        <div
-          className="elfsight-app-edec83c9-b40f-4a40-ba96-a7f242f8670d"
-          data-elfsight-app-lazy
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="w-full max-w-md">
+        {referralCode && (
+          <div className="mb-4 rounded-xl border-2 border-green-200 bg-green-50 p-4 text-center">
+            <p className="text-sm font-medium text-green-700">
+              You were invited by:{" "}
+              <span className="font-bold">{referralCode}</span>
+            </p>
+          </div>
+        )}
+        <SignUp
+          appearance={{
+            elements: {
+              rootBox: "mx-auto",
+              card: "shadow-2xl",
+            },
+          }}
+          unsafeMetadata={{
+            referral_code: referralCode,
+            fp_ref: fpRef,
+            fp_tid: fpTid,
+          }}
+          forceRedirectUrl="/onboarding"
+          signInUrl="/sign-in"
         />
       </div>
     </div>
