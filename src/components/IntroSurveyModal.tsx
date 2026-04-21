@@ -2,13 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
-import { useSearchParams } from "next/navigation";
 
 const STORAGE_KEY = "introSurveyShown";
 
 export default function IntroSurveyModal() {
   const { isSignedIn, isLoaded } = useUser();
-  const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const hasChecked = useRef(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -18,16 +16,10 @@ export default function IntroSurveyModal() {
     if (hasChecked.current) return;
     hasChecked.current = true;
 
-    // Yeni kayıt olduysa storage'ı temizle
-    const isNew = searchParams.get("new") === "1";
-    if (isNew) {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-
     if (!localStorage.getItem(STORAGE_KEY)) {
       setIsOpen(true);
     }
-  }, [isLoaded, isSignedIn, searchParams]);
+  }, [isLoaded, isSignedIn]);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
@@ -36,7 +28,6 @@ export default function IntroSurveyModal() {
     };
   }, [isOpen]);
 
-  // Elfsight OK butonunu dinle
   useEffect(() => {
     if (!isOpen) return;
 
