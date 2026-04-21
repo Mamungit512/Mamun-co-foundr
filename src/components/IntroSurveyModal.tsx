@@ -2,13 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
-import { useSearchParams } from "next/navigation";
 
 const STORAGE_KEY = "introSurveyShown";
 
 export default function IntroSurveyModal() {
   const { isSignedIn, isLoaded } = useUser();
-  const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const hasChecked = useRef(false);
   const modalRef = useRef<HTMLDivElement>(null);
