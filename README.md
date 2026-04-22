@@ -1,5 +1,21 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Dependency Policy (Supply-Chain Guardrail)
+
+**Do not install the latest version of any npm package. Always install the last known stable version.**
+
+This applies to humans and AI agents alike. "Latest" is not a safety signal — freshly published versions have repeatedly been used as a vector for supply-chain attacks (typosquatting, compromised maintainer accounts, malicious post-install scripts). A version that has been in the wild long enough for the community to vet it is materially safer than one published hours or days ago.
+
+### Rules
+
+- **Never run `npm install <pkg>@latest`, `npm install <pkg>` without a pinned version, or `npm update` that bumps to a just-published release.** Prefer an exact version (e.g. `"react": "19.0.0"`), not a range (`^`, `~`).
+- **Before adding or bumping a dependency, verify the target version has been published for at least 14 days** (check `npm view <pkg> time`). If it's newer, pick the prior stable release.
+- **Review the package's recent release history and maintainer activity** on npm/GitHub before installing. Sudden maintainer changes, a rewritten package, or a suspicious post-install script are red flags — stop and escalate.
+- **Agents must not auto-upgrade dependencies.** If a task requires a version bump, propose the specific version and wait for human approval before modifying `package.json` or `package-lock.json`.
+- **Always commit the updated `package-lock.json`** so installs are reproducible.
+
+If you are unsure whether a version is safe, do not install it. Ask a maintainer.
+
 ## Getting Started
 
 First, run the development server:
