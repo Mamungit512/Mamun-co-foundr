@@ -26,7 +26,6 @@ export default function SignUpPage() {
       const fpRefValue = getFirstPromoterRef();
       const code = getSavedReferralCode();
 
-      // If we found FirstPromoter cookies or exhausted attempts, set state and mark ready
       if (fpTidValue || fpRefValue || attempts >= maxAttempts) {
         setFpTid(fpTidValue);
         setFpRef(fpRefValue);
@@ -42,7 +41,6 @@ export default function SignUpPage() {
           });
         }
 
-        // Track signup page view (only once)
         if (!hasTrackedRef.current) {
           hasTrackedRef.current = true;
           trackEvent.signupPageViewed({
@@ -53,7 +51,6 @@ export default function SignUpPage() {
           });
         }
       } else {
-        // Keep polling until FirstPromoter sets cookies
         attempts++;
         timeoutId = setTimeout(checkCookies, 200);
       }
@@ -66,8 +63,6 @@ export default function SignUpPage() {
     };
   }, []);
 
-  // Don't render SignUp until cookies have been checked
-  // This ensures Clerk receives the correct unsafeMetadata values on mount
   if (!isReady) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
@@ -99,7 +94,7 @@ export default function SignUpPage() {
             fp_ref: fpRef,
             fp_tid: fpTid,
           }}
-          forceRedirectUrl="/dashboard"
+          forceRedirectUrl="/onboarding"
           signInUrl="/sign-in"
         />
       </div>

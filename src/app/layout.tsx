@@ -13,6 +13,7 @@ import QueryProvider from "./_providers/QueryProvider";
 import { PostHogProvider } from "./_providers/PostHogProvider";
 import { Toaster } from "react-hot-toast";
 import ReferralTracker from "@/components/referrals/referral-tracker";
+import IntroSurveyModal from "@/components/IntroSurveyModal";
 
 const satoshi = localFont({
   src: "../../public/fonts/Satoshi-Variable.ttf",
@@ -53,6 +54,9 @@ export default function RootLayout({
                 <Footer />
               </QueryProvider>
             </PostHogProvider>
+          </Suspense>
+          <Suspense fallback={null}>
+            <IntroSurveyModal />
           </Suspense>
           <Toaster position="bottom-right" />
         </body>
