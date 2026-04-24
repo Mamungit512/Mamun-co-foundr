@@ -24,6 +24,7 @@ import {
 import { useCreateConversation } from "@/hooks/useConversations";
 import { useRouter } from "next/navigation";
 import CofoundrShowMore from "./CofoundrShowMore";
+import AISearchBar from "./AISearchBar";
 import { useSkipProfile } from "@/features/user-actions/useUserActions";
 import { useSwipeLimit } from "@/features/swipes/useSwipes";
 import SwipeLimit from "@/components/SwipeLimit";
@@ -99,6 +100,8 @@ function CofoundrMatching() {
                 }}
                 onPreferencesChange={onPreferencesChange}
               />
+
+              <AISearchBar />
 
               {/* No Profiles Message */}
               <div className="mt-8 overflow-hidden rounded-2xl border border-gray-800/50 bg-gray-900/50 shadow-2xl backdrop-blur-sm">
@@ -278,13 +281,13 @@ function CofoundrMatching() {
       }
 
       // Move to next profile after liking
-     
+
       queryClient.setQueryData(["profiles"], (oldProfiles: { user_id: string | number }[] | undefined) => {
         if (!Array.isArray(oldProfiles)) return [];
         return oldProfiles.filter((p) => p.user_id !== curProfile.user_id);
       });
-    
-  
+
+
     } catch (error) {
       console.error("Error liking profile:", error);
       // Keep direct posthog.captureException for error tracking
@@ -367,6 +370,8 @@ function CofoundrMatching() {
               }}
               onPreferencesChange={onPreferencesChange}
             />
+
+            <AISearchBar />
 
             {/* Swipe Limit Display */}
             {swipeLimitData && (
