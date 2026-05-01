@@ -16,11 +16,11 @@ export const completeOnboarding = async (_formData: OnboardingData) => {
   const client = await clerkClient();
 
   try {
-    const res = await client.users.updateUser(userId, {
+    // updateUserMetadata MERGES into existing publicMetadata (preserves organization_id
+    // and any other fields set by the webhook). updateUser would overwrite everything.
+    const res = await client.users.updateUserMetadata(userId, {
       publicMetadata: {
         onboardingComplete: true,
-        // Only store the flag to prevent JWT token overflow
-        // Full profile data is stored in Supabase
       },
     });
     return { message: res.publicMetadata };
