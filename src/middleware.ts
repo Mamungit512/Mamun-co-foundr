@@ -17,66 +17,83 @@ const isPublicRoute = createRouteMatcher([
   "/pricing",
   "/founder-archetypes",
   "/api/webhooks/clerk",
+  "/school/:slug",
 ]);
 
-type OrgRecord = { slug: string; ferpa_dpa_signed_at: string | null };
+type OrgRecord = {
+  id: string;
+  slug: string;
+  subdomain: string | null;
+  ferpa_dpa_signed_at: string | null;
+};
 
-// Helper: resolve organization slug and DPA status from org UUID via Supabase
-async function resolveOrgRecord(organizationId: string): Promise<OrgRecord | null> {
+const APEX_HOSTS = new Set([
+  "mamuncofoundr.com",
+  "www.mamuncofoundr.com",
+  "localhost",
+]);
+
+function isApexHost(host: string): boolean {
+  const bare = host.split(":")[0].toLowerCase();
+  return APEX_HOSTS.has(bare) || bare.endsWith(".vercel.app");
+}
+
+function getSubdomain(host: string): string | null {
+  const bare = host.split(":")[0].toLowerCase();
+  if (isApexHost(bare)) return null;
+  const parts = bare.split(".");
+  return parts.length >= 3 ? parts[0] : null;
+}
+
+function supabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_KEY;
+  if (!url || !key) return null;
+  return createClient(url, key);
+}
+
+async function resolveOrgBySubdomain(subdomain: string): Promise<OrgRecord | null> {
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey =
-      process.env.SUPABASE_SERVICE_ROLE_KEY ||
-      process.env.NEXT_PUBLIC_SUPABASE_KEY;
-
-    if (!supabaseUrl || !supabaseKey) return null;
-
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = supabaseAdmin();
+    if (!supabase) return null;
     const { data } = await supabase
       .from("organizations")
-      .select("slug, ferpa_dpa_signed_at")
-      .eq("id", organizationId)
+      .select("id, slug, subdomain, ferpa_dpa_signed_at")
+      .eq("subdomain", subdomain)
       .single();
-
     return data ?? null;
   } catch {
     return null;
   }
 }
 
-// Helper: update user activity asynchronously
+async function resolveOrgRecord(organizationId: string): Promise<OrgRecord | null> {
+  try {
+    const supabase = supabaseAdmin();
+    if (!supabase) return null;
+    const { data } = await supabase
+      .from("organizations")
+      .select("id, slug, subdomain, ferpa_dpa_signed_at")
+      .eq("id", organizationId)
+      .single();
+    return data ?? null;
+  } catch {
+    return null;
+  }
+}
+
 async function updateUserActivity(userId: string) {
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey =
-      process.env.SUPABASE_SERVICE_ROLE_KEY ||
-      process.env.NEXT_PUBLIC_SUPABASE_KEY;
-
-    if (!supabaseUrl || !supabaseKey) {
-      console.error(
-        "Supabase credentials not configured for activity tracking",
-      );
-      return;
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = supabaseAdmin();
+    if (!supabase) return;
     const now = new Date().toISOString();
-
     const { error } = await supabase.from("user_activity_summary").upsert(
-      {
-        user_id: userId,
-        last_active_at: now,
-        updated_at: now,
-      },
-      {
-        onConflict: "user_id",
-        ignoreDuplicates: false,
-      },
+      { user_id: userId, last_active_at: now, updated_at: now },
+      { onConflict: "user_id", ignoreDuplicates: false },
     );
-
-    if (error) {
-      console.error("Error updating user activity:", error);
-    }
+    if (error) console.error("Error updating user activity:", error);
   } catch (error) {
     console.error("Failed to update user activity:", error);
   }
@@ -85,12 +102,44 @@ async function updateUserActivity(userId: string) {
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const { userId, sessionClaims, redirectToSignIn } = await auth();
   const pathname = req.nextUrl.pathname;
+  const host = req.headers.get("host") ?? "";
   const isApiRoute = pathname.startsWith("/api/");
-  const isStaticAsset = /\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2?|ttf)$/.test(
-    pathname,
-  );
+  const isStaticAsset = /\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2?|ttf)$/.test(pathname);
 
-  // If the user isn't signed in and the route is private, redirect to sign-in
+  // ----------------------------------------------------------------
+  // SUBDOMAIN REWRITE
+  // Runs before auth so the rest of the middleware sees /school/{slug}/*
+  // ----------------------------------------------------------------
+  const subdomain = getSubdomain(host);
+  if (subdomain && !isApiRoute && !isStaticAsset) {
+    const hostOrg = await resolveOrgBySubdomain(subdomain);
+
+    if (!hostOrg) {
+      // Unknown subdomain — send to apex
+      return NextResponse.redirect(new URL("/", "https://www.mamuncofoundr.com"));
+    }
+
+    const schoolPrefix = `/school/${hostOrg.slug}`;
+
+    // If a signed-in user belongs to a different org, kick them to apex
+    if (userId) {
+      const orgId = sessionClaims?.metadata?.organization_id;
+      if (orgId && orgId !== hostOrg.id) {
+        return NextResponse.redirect(new URL("/", "https://www.mamuncofoundr.com"));
+      }
+    }
+
+    // Already on the rewritten path — no action needed
+    if (!pathname.startsWith(schoolPrefix)) {
+      const rewritePath = pathname === "/" ? schoolPrefix : schoolPrefix + pathname;
+      return NextResponse.rewrite(new URL(rewritePath, req.url));
+    }
+  }
+
+  // ----------------------------------------------------------------
+  // AUTH GATES
+  // ----------------------------------------------------------------
+
   if (!userId && !isPublicRoute(req)) {
     return redirectToSignIn({ returnBackUrl: req.url });
   }
@@ -102,59 +151,51 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     // SCHOOL USERS
     // ----------------------------------------------------------------
     if (orgId) {
-      // Allow onboarding, API routes, and public routes to pass through
       if (isApiRoute || isPublicRoute(req)) {
         return NextResponse.next();
       }
 
-      // If the user is on a school route already, let onboarding pass first
       if (isSchoolOnboardingRoute(req)) {
         return NextResponse.next();
       }
 
-      // Resolve the org slug (also validates FERPA DPA)
       const org = await resolveOrgRecord(orgId);
 
       if (!org) {
-        // Organization not found — deny access gracefully
-        const url = new URL("/", req.url);
-        return NextResponse.redirect(url);
+        return NextResponse.redirect(new URL("/", req.url));
       }
 
-      // FERPA gate: DPA must be signed before any student can use the app
-      if (!org.ferpa_dpa_signed_at) {
-        const pendingUrl = new URL(
-          `/school/${org.slug}/pending-activation`,
-          req.url,
+      // If on apex with a subdomain configured, redirect to the subdomain
+      if (!subdomain && org.subdomain) {
+        const proto = req.nextUrl.protocol;
+        return NextResponse.redirect(
+          new URL(`/dashboard`, `${proto}//${org.subdomain}.mamuncofoundr.com`),
         );
+      }
+
+      // FERPA gate
+      if (!org.ferpa_dpa_signed_at) {
+        const pendingUrl = new URL(`/school/${org.slug}/pending-activation`, req.url);
         if (pathname !== pendingUrl.pathname) {
           return NextResponse.redirect(pendingUrl);
         }
         return NextResponse.next();
       }
 
-      // Onboarding gate for school users
+      // Onboarding gate
       if (!sessionClaims?.metadata?.onboardingComplete) {
-        const schoolOnboardingUrl = new URL(
-          `/school/${org.slug}/onboarding`,
-          req.url,
-        );
+        const schoolOnboardingUrl = new URL(`/school/${org.slug}/onboarding`, req.url);
         if (pathname !== schoolOnboardingUrl.pathname) {
           return NextResponse.redirect(schoolOnboardingUrl);
         }
         return NextResponse.next();
       }
 
-      // School user trying to access a general route → redirect to school dashboard
+      // School user trying to access a general route → school dashboard
       if (!isSchoolRoute(req)) {
-        const dashboardUrl = new URL(
-          `/school/${org.slug}/dashboard`,
-          req.url,
-        );
-        return NextResponse.redirect(dashboardUrl);
+        return NextResponse.redirect(new URL(`/school/${org.slug}/dashboard`, req.url));
       }
 
-      // Already on a school route — proceed
       if (!isApiRoute && !isStaticAsset) {
         updateUserActivity(userId).catch(console.error);
       }
@@ -165,27 +206,21 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     // GENERAL USERS
     // ----------------------------------------------------------------
 
-    // Allow onboarding route for users who haven't completed it
     if (isOnboardingRoute(req)) {
       return NextResponse.next();
     }
 
-    // General user trying to access a school route → redirect to general dashboard
     if (isSchoolRoute(req) && !isApiRoute) {
-      const dashboardUrl = new URL("/cofoundr-matching", req.url);
-      return NextResponse.redirect(dashboardUrl);
+      return NextResponse.redirect(new URL("/cofoundr-matching", req.url));
     }
 
-    // Onboarding gate
     if (!sessionClaims?.metadata?.onboardingComplete) {
       if (isPublicRoute(req) || isApiRoute) {
         return NextResponse.next();
       }
-      const onboardingUrl = new URL("/onboarding", req.url);
-      return NextResponse.redirect(onboardingUrl);
+      return NextResponse.redirect(new URL("/onboarding", req.url));
     }
 
-    // Update activity for protected, non-API, non-static routes
     if (!isPublicRoute(req) && !isApiRoute && !isStaticAsset) {
       updateUserActivity(userId).catch(console.error);
     }
@@ -193,7 +228,6 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     return NextResponse.next();
   }
 
-  // Public routes — no auth required
   return NextResponse.next();
 });
 

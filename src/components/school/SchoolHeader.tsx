@@ -7,13 +7,15 @@ import { UserButton } from "@clerk/nextjs";
 import { FaUsers, FaEnvelope, FaUserCircle, FaShieldAlt } from "react-icons/fa";
 import { useUser } from "@clerk/nextjs";
 import clsx from "clsx";
+import type { OrgConfig } from "@/orgs/types";
 
 type SchoolHeaderProps = {
   slug: string;
   schoolName: string;
+  config: OrgConfig;
 };
 
-export default function SchoolHeader({ slug, schoolName }: SchoolHeaderProps) {
+export default function SchoolHeader({ slug, schoolName, config }: SchoolHeaderProps) {
   const pathname = usePathname();
   const { user } = useUser();
   const isSchoolAdmin = user?.publicMetadata?.is_school_admin === true;
@@ -46,21 +48,23 @@ export default function SchoolHeader({ slug, schoolName }: SchoolHeaderProps) {
   ];
 
   return (
-    <header className="flex items-center justify-between border-b border-white/10 bg-(--charcoal-black) px-6 py-3 text-(--mist-white)">
-      {/* Brand lockup: Mamun logo + divider + school name */}
+    <header
+      className="flex items-center justify-between border-b border-black/10 px-6 py-3"
+      style={{ backgroundColor: config.branding.backgroundColor, color: config.branding.textColor }}
+    >
       <Link
         href={`/school/${slug}/dashboard`}
         className="flex items-center gap-3"
       >
         <Image
-          src="/img/mamun-transparent-logo.png"
-          alt="Mamun"
+          src={config.branding.logoUrl}
+          alt={config.branding.wordmark ?? schoolName}
           width={72}
           height={72}
           className="h-9 w-auto"
         />
-        <span className="h-5 w-px bg-white/20" aria-hidden="true" />
-        <span className="text-sm font-semibold tracking-tight text-white">
+        <span className="h-5 w-px bg-black/20" aria-hidden="true" />
+        <span className="text-sm font-semibold tracking-tight">
           {schoolName}
         </span>
       </Link>
@@ -73,9 +77,14 @@ export default function SchoolHeader({ slug, schoolName }: SchoolHeaderProps) {
             className={clsx(
               "flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
               pathname.startsWith(href)
-                ? "bg-white/15 text-white"
-                : "text-white/60 hover:bg-white/10 hover:text-white",
+                ? "opacity-100 font-semibold"
+                : "opacity-60 hover:opacity-90",
             )}
+            style={
+              pathname.startsWith(href)
+                ? { color: config.branding.primaryColor }
+                : undefined
+            }
           >
             <Icon className="h-4 w-4" />
             {label}

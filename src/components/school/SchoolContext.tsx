@@ -1,10 +1,12 @@
 "use client";
 
 import { createContext, useContext } from "react";
+import type { OrgConfig } from "@/orgs/types";
 
 type SchoolContextValue = {
   slug: string;
   schoolName: string;
+  config: OrgConfig;
 };
 
 const SchoolContext = createContext<SchoolContextValue | null>(null);
@@ -12,10 +14,11 @@ const SchoolContext = createContext<SchoolContextValue | null>(null);
 export function SchoolProvider({
   slug,
   schoolName,
+  config,
   children,
 }: SchoolContextValue & { children: React.ReactNode }) {
   return (
-    <SchoolContext.Provider value={{ slug, schoolName }}>
+    <SchoolContext.Provider value={{ slug, schoolName, config }}>
       {children}
     </SchoolContext.Provider>
   );
