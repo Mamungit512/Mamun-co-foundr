@@ -16,7 +16,7 @@ import ActivityIndicator from "@/components/ActivityIndicator";
 import HiringBadge from "@/components/HiringBadge";
 import InformationTooltipButton from "@/components/ui/InformationTooltipButton";
 import SwipeLimit from "@/components/SwipeLimit";
-import { useGetProfiles, useUserProfile } from "@/features/profile/useProfile";
+import { useGetProfiles } from "@/features/profile/useProfile";
 import { useSchool } from "@/components/school/SchoolContext";
 import { useToggleLike, useLikeStatus, useMutualLikes } from "@/features/likes/useLikes";
 import { useCreateConversation } from "@/hooks/useConversations";
@@ -36,7 +36,6 @@ export default function SchoolDashboardPage({
 
   const { schoolName } = useSchool();
   const { data: profiles } = useGetProfiles();
-  const { data: currentUserProfile } = useUserProfile();
   const { toggleLike, isLoading: isLikeLoading } = useToggleLike();
   const { data: mutualLikes } = useMutualLikes();
   const createConversationMutation = useCreateConversation();
@@ -57,10 +56,7 @@ export default function SchoolDashboardPage({
   const handleLike = async () => {
     if (!curProfile?.user_id || isLikeLoading) return;
     try {
-      const result = await toggleLike(curProfile.user_id);
-      if (result?.mutual) {
-        toast.success(`It's a match with ${curProfile.firstName}! 🎉`);
-      }
+      await toggleLike(curProfile.user_id, likeStatus?.isLiked ?? false);
       queryClient.invalidateQueries({ queryKey: ["profiles"] });
     } catch {
       toast.error("Failed to like profile");
@@ -85,7 +81,7 @@ export default function SchoolDashboardPage({
       const result = await createConversationMutation.mutateAsync(
         curProfile.user_id,
       );
-      if (result?.conversationId) {
+      if (result?.conversation?.id) {
         router.push(`/school/${resolvedParams.slug}/matches`);
       }
     } catch {
@@ -106,12 +102,16 @@ export default function SchoolDashboardPage({
     </div>
   );
 
-  if (swipeLimitData?.limitReached) {
+  if (swipeLimitData?.hasReachedLimit) {
     return (
       <div className="mx-auto max-w-2xl p-4 pt-6">
         {brandingHeader}
         <div className="flex min-h-[calc(100vh-200px)] items-center justify-center">
-          <SwipeLimit resetTime={swipeLimitData.resetTime} />
+          <SwipeLimit
+            hasReachedLimit={swipeLimitData.hasReachedLimit}
+            currentCount={swipeLimitData.currentCount}
+            limit={swipeLimitData.limit}
+          />
         </div>
       </div>
     );
@@ -133,8 +133,8 @@ export default function SchoolDashboardPage({
     );
   }
 
-  const isMutualLike = mutualLikes?.some(
-    (like) => like.user_id === curProfile.user_id,
+  const isMutualLike = mutualLikes?.matches?.some(
+    (id: string) => id === curProfile.user_id,
   );
 
   return (
@@ -168,7 +168,7 @@ export default function SchoolDashboardPage({
                 Mutual Match ❤️
               </div>
             )}
-            <HiringBadge isHiring={curProfile.is_hiring ?? false} />
+            {curProfile.is_hiring && <HiringBadge />}
           </div>
 
           {/* Profile info */}
@@ -177,7 +177,7 @@ export default function SchoolDashboardPage({
               <h2 className="text-xl font-bold text-(--mist-white)">
                 {curProfile.firstName} {curProfile.lastName}
               </h2>
-              <ActivityIndicator userId={curProfile.user_id} />
+              <ActivityIndicator lastActiveAt={curProfile.last_active_at} />
             </div>
 
             <p className="mb-1 text-sm text-white/60">{curProfile.title}</p>
@@ -233,7 +233,7 @@ export default function SchoolDashboardPage({
 
           {/* Action buttons */}
           <div className="flex items-center justify-between border-t border-white/10 px-5 py-4">
-            <InformationTooltipButton tooltip="Skip for now">
+            <InformationTooltipButton text={<span>Skip for now</span>}>
               <button
                 onClick={handleSkip}
                 disabled={skipProfileMutation.isPending}
@@ -247,7 +247,7 @@ export default function SchoolDashboardPage({
               onClick={handleLike}
               disabled={isLikeLoading}
               className={`flex h-14 w-14 items-center justify-center rounded-full transition ${
-                likeStatus?.liked
+                likeStatus?.isLiked
                   ? "bg-pink-500 text-white"
                   : "border border-white/20 text-white/60 hover:border-pink-400 hover:text-pink-400"
               }`}
@@ -255,7 +255,7 @@ export default function SchoolDashboardPage({
               <FaHeart className="h-6 w-6" />
             </button>
 
-            <InformationTooltipButton tooltip="Send a message">
+            <InformationTooltipButton text={<span>Send a message</span>}>
               <button
                 onClick={handleMessage}
                 disabled={isStartingConversation}

@@ -101,10 +101,10 @@ export default function SchoolMatchesPage({
         >
           {conversations.map((convo) => (
             <ConversationItem
-              key={convo.conversation_id}
+              key={convo.id}
               conversation={convo}
               currentUserId={currentUserId || ""}
-              onClick={() => handleConversationClick(convo.conversation_id)}
+              onClick={() => handleConversationClick(convo.id)}
             />
           ))}
         </motion.div>
