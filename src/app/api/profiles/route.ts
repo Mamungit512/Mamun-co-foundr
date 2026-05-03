@@ -9,7 +9,7 @@ import {
 
 export async function GET() {
   try {
-    const { userId } = await auth();
+    const { userId, sessionClaims } = await auth();
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -19,6 +19,9 @@ export async function GET() {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
+
+    // Organization context: null = general pool, UUID = school tenant
+    const orgId = sessionClaims?.metadata?.organization_id ?? null;
 
     // Get the current user's profile
     const { data: currentUserData, error: currentUserError } = await supabase
@@ -46,11 +49,18 @@ export async function GET() {
     const likedIds = likedProfiles?.map((like) => like.liked_id) || [];
 
     // Fetch candidate profiles (excluding self, deleted, already liked)
+    // Hard filter: candidates must belong to the same organization (or null for general pool)
     let query = supabase
       .from("profiles")
       .select("*")
       .neq("user_id", currentUser.user_id)
       .is("deleted_at", null);
+
+    if (orgId) {
+      query = query.eq("organization_id", orgId);
+    } else {
+      query = query.is("organization_id", null);
+    }
 
     if (likedIds.length > 0) {
       query = query.not("user_id", "in", `(${likedIds.join(",")})`);

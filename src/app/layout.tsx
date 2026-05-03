@@ -6,9 +6,7 @@ import { Suspense } from "react";
 import Script from "next/script";
 
 import "./globals.css";
-import Header from "@/components/header_footer/Header";
-import Socials from "@/components/Socials";
-import Footer from "@/components/header_footer/Footer";
+import ConditionalShell from "@/components/ConditionalShell";
 import QueryProvider from "./_providers/QueryProvider";
 import { PostHogProvider } from "./_providers/PostHogProvider";
 import { Toaster } from "react-hot-toast";
@@ -48,10 +46,7 @@ export default function RootLayout({
             <PostHogProvider>
               <QueryProvider>
                 <ReferralTracker />
-                <Header />
-                {children}
-                <Socials />
-                <Footer />
+                <ConditionalShell>{children}</ConditionalShell>
               </QueryProvider>
             </PostHogProvider>
           </Suspense>
