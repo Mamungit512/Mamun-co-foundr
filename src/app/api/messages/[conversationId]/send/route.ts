@@ -180,7 +180,7 @@ export async function POST(
                   });
                   const [s1, s2, s3] = [slot(0), slot(1), slot(2)];
 
-                  await resend.emails.send({
+                  await (resend.emails.send as unknown as (options: Record<string, unknown>) => Promise<unknown>)({
                     from: "Mamun Co-Foundr <mamun@mamuncofoundr.com>",
                     to: recipientEmail,
                     template: {
