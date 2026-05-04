@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 import { mapProfileToOnboardingData } from "@/lib/mapProfileToFromDBFormat";
 import {
@@ -7,7 +7,17 @@ import {
   scoreCandidate,
 } from "@/features/matching/matchingService";
 
-export async function GET() {
+function isApexHost(host: string): boolean {
+  const bare = host.split(":")[0].toLowerCase();
+  return (
+    bare === "mamuncofoundr.com" ||
+    bare === "www.mamuncofoundr.com" ||
+    bare === "localhost" ||
+    bare.endsWith(".vercel.app")
+  );
+}
+
+export async function GET(req: NextRequest) {
   try {
     const { userId, sessionClaims } = await auth();
 
@@ -22,6 +32,22 @@ export async function GET() {
 
     // Organization context: null = general pool, UUID = school tenant
     const orgId = sessionClaims?.metadata?.organization_id ?? null;
+
+    // Mamun staff (@mamuncofoundr.com) on the apex host should see the general
+    // pool, not their org-scoped pool. Other school orgs are never mixed in.
+    const host = req.headers.get("host") ?? "";
+    const onApex = isApexHost(host);
+    let useGeneralPool = !orgId;
+    if (orgId && onApex) {
+      const clerk = await clerkClient();
+      const user = await clerk.users.getUser(userId);
+      const email = user.emailAddresses
+        .find((e) => e.id === user.primaryEmailAddressId)
+        ?.emailAddress?.toLowerCase();
+      if (email?.endsWith("@mamuncofoundr.com")) {
+        useGeneralPool = true;
+      }
+    }
 
     // Get the current user's profile
     const { data: currentUserData, error: currentUserError } = await supabase
@@ -56,10 +82,10 @@ export async function GET() {
       .neq("user_id", currentUser.user_id)
       .is("deleted_at", null);
 
-    if (orgId) {
-      query = query.eq("organization_id", orgId);
-    } else {
+    if (useGeneralPool) {
       query = query.is("organization_id", null);
+    } else {
+      query = query.eq("organization_id", orgId);
     }
 
     if (likedIds.length > 0) {
