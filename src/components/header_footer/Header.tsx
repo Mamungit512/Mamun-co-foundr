@@ -7,7 +7,6 @@ import {
   UserButton,
   useClerk,
 } from "@clerk/nextjs";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";

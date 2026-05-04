@@ -137,7 +137,9 @@ export default function LocationSelector({
         .concat(
           cities.filter(
             (c) =>
-              !c.name.toLowerCase().startsWith(cityInput.trim().toLowerCase()) &&
+              !c.name
+                .toLowerCase()
+                .startsWith(cityInput.trim().toLowerCase()) &&
               c.name.toLowerCase().includes(cityInput.trim().toLowerCase()),
           ),
         )
@@ -292,6 +294,7 @@ export default function LocationSelector({
             type="text"
             role="combobox"
             aria-expanded={isOpen}
+            aria-controls="city-listbox"
             aria-autocomplete="list"
             aria-activedescendant={
               activeIndex >= 0 ? `city-option-${activeIndex}` : undefined
@@ -319,6 +322,7 @@ export default function LocationSelector({
           {isOpen && filteredCities.length > 0 && (
             <ul
               ref={listRef}
+              id="city-listbox"
               role="listbox"
               className={
                 "absolute z-50 mt-1 max-h-60 w-full overflow-y-auto " +
