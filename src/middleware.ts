@@ -165,14 +165,6 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
         return NextResponse.redirect(new URL("/", req.url));
       }
 
-      // If on apex with a subdomain configured, redirect to the subdomain
-      if (!subdomain && org.subdomain) {
-        const proto = req.nextUrl.protocol;
-        return NextResponse.redirect(
-          new URL(`/dashboard`, `${proto}//${org.subdomain}.mamuncofoundr.com`),
-        );
-      }
-
       // FERPA gate
       if (!org.ferpa_dpa_signed_at) {
         const pendingUrl = new URL(`/school/${org.slug}/pending-activation`, req.url);
@@ -189,11 +181,6 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
           return NextResponse.redirect(schoolOnboardingUrl);
         }
         return NextResponse.next();
-      }
-
-      // School user trying to access a general route → school dashboard
-      if (!isSchoolRoute(req)) {
-        return NextResponse.redirect(new URL(`/school/${org.slug}/dashboard`, req.url));
       }
 
       if (!isApiRoute && !isStaticAsset) {
