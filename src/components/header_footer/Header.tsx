@@ -58,13 +58,9 @@ function Header() {
   return (
     <header className="section-padding relative flex items-center justify-between bg-(--charcoal-black) text-(--mist-white)">
       <Link href="/">
-        <Image
-          src="/img/mamun-transparent-logo.png"
-          width={140}
-          height={100}
-          alt="Mamun Logo. Circle with a line through it next to Mamun in all capital letters"
-          className="translate-y h-28 w-auto md:h-32 lg:h-40"
-        />
+        <span className="flex h-28 items-center text-2xl font-bold tracking-widest text-(--mist-white) md:h-32 md:text-3xl lg:h-40 lg:text-4xl">
+          MAMUN
+        </span>
       </Link>
 
       {/* Desktop Navigation */}
@@ -194,7 +190,9 @@ function Header() {
                                 "Your data was deleted, but we couldn't fully remove your account. Please contact support.",
                               );
                             } else {
-                              alert("Your account has been permanently deleted.");
+                              alert(
+                                "Your account has been permanently deleted.",
+                              );
                             }
                             signOut({ redirectUrl: "/" });
                           } else {
