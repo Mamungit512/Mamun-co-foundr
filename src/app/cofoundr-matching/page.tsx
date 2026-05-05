@@ -5,7 +5,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { CiCircleInfo } from "react-icons/ci";
 import { FaHeart, FaLocationDot } from "react-icons/fa6";
-import { TbMessageCircleFilled } from "react-icons/tb";
+import { IoSend } from "react-icons/io5";
 import { motion, AnimatePresence } from "motion/react";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -74,9 +74,7 @@ function CofoundrMatching() {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <div className="mx-auto max-w-7xl">
-              <h1 className="heading-4 mb-2 text-center">
-               Co-Foundr Matching
-              </h1>
+              <h1 className="heading-4 mb-2 text-center">Co-Foundr Matching</h1>
               <p className="text-center text-gray-300">
                 Discover your perfect co-founder match
               </p>
@@ -165,11 +163,14 @@ function CofoundrMatching() {
     // This must happen before mutateAsync to avoid the race where onSuccess fires
     // invalidateQueries, a refetch completes, and then this rotate overwrites
     // the fresh server data (or vice-versa — causing the snap-back).
-    queryClient.setQueryData(["profiles"], (oldProfiles: { user_id: string | number }[] | undefined) => {
-      if (!Array.isArray(oldProfiles) || oldProfiles.length === 0) return [];
-      const [first, ...rest] = oldProfiles;
-      return [...rest, first];
-    });
+    queryClient.setQueryData(
+      ["profiles"],
+      (oldProfiles: { user_id: string | number }[] | undefined) => {
+        if (!Array.isArray(oldProfiles) || oldProfiles.length === 0) return [];
+        const [first, ...rest] = oldProfiles;
+        return [...rest, first];
+      },
+    );
 
     try {
       await skipProfileMutation.mutateAsync({ skippedProfileId: skippedId });
@@ -186,15 +187,18 @@ function CofoundrMatching() {
         position: "bottom-right",
         icon: "👋",
       });
-
     } catch (error) {
       // Revert the optimistic rotation so the original profile is shown again.
-      queryClient.setQueryData(["profiles"], (currentProfiles: { user_id: string | number }[] | undefined) => {
-        if (!Array.isArray(currentProfiles) || currentProfiles.length === 0) return [];
-        const last = currentProfiles[currentProfiles.length - 1];
-        const rest = currentProfiles.slice(0, -1);
-        return [last, ...rest];
-      });
+      queryClient.setQueryData(
+        ["profiles"],
+        (currentProfiles: { user_id: string | number }[] | undefined) => {
+          if (!Array.isArray(currentProfiles) || currentProfiles.length === 0)
+            return [];
+          const last = currentProfiles[currentProfiles.length - 1];
+          const rest = currentProfiles.slice(0, -1);
+          return [last, ...rest];
+        },
+      );
 
       console.error("Error skipping profile:", error);
       if (typeof window !== "undefined" && window.posthog) {
@@ -278,13 +282,14 @@ function CofoundrMatching() {
       }
 
       // Move to next profile after liking
-     
-      queryClient.setQueryData(["profiles"], (oldProfiles: { user_id: string | number }[] | undefined) => {
-        if (!Array.isArray(oldProfiles)) return [];
-        return oldProfiles.filter((p) => p.user_id !== curProfile.user_id);
-      });
-    
-  
+
+      queryClient.setQueryData(
+        ["profiles"],
+        (oldProfiles: { user_id: string | number }[] | undefined) => {
+          if (!Array.isArray(oldProfiles)) return [];
+          return oldProfiles.filter((p) => p.user_id !== curProfile.user_id);
+        },
+      );
     } catch (error) {
       console.error("Error liking profile:", error);
       // Keep direct posthog.captureException for error tracking
@@ -343,7 +348,7 @@ function CofoundrMatching() {
         >
           <div className="mx-auto max-w-7xl">
             <h1 className="mb-2 text-center text-2xl font-bold sm:text-3xl md:text-4xl lg:text-5xl">
-             Co-Foundr Matching
+              Co-Foundr Matching
             </h1>
             <p className="text-center text-sm text-gray-300 sm:text-base md:text-lg">
               Discover your perfect co-founder match
@@ -609,7 +614,7 @@ function CofoundrMatching() {
         >
           <div className="flex items-center gap-4 sm:gap-6">
             <motion.button
-              className={`group flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-red-500/20 text-red-400 shadow-2xl backdrop-blur-sm transition-all duration-200 hover:bg-red-500/30 hover:shadow-red-500/25 sm:h-14 sm:w-14 md:h-16 md:w-16 ${
+              className={`group flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-neutral-800/60 text-white shadow-2xl backdrop-blur-sm transition-all duration-200 hover:bg-orange-500/20 hover:text-orange-400 hover:shadow-orange-500/40 sm:h-14 sm:w-14 md:h-16 md:w-16 ${
                 skipProfileMutation.isPending || swipeLimitData?.hasReachedLimit
                   ? "cursor-not-allowed opacity-50"
                   : ""
@@ -632,7 +637,7 @@ function CofoundrMatching() {
               }
             >
               {skipProfileMutation.isPending ? (
-                <div className="h-5 w-5 animate-spin rounded-full border-2 border-red-400 border-t-transparent sm:h-6 sm:w-6 md:h-7 md:w-7" />
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent sm:h-6 sm:w-6 md:h-7 md:w-7" />
               ) : (
                 <MdSkipNext className="size-5 transition-transform group-hover:scale-110 sm:size-6 md:size-7" />
               )}
@@ -641,8 +646,8 @@ function CofoundrMatching() {
             <motion.button
               className={`group flex h-14 w-14 cursor-pointer items-center justify-center rounded-full shadow-2xl backdrop-blur-sm transition-all duration-200 sm:h-16 sm:w-16 md:h-20 md:w-20 ${
                 likeStatus?.isLiked
-                  ? "bg-pink-500/40 text-pink-300 hover:bg-pink-500/50 hover:shadow-pink-500/25"
-                  : "bg-pink-500/20 text-pink-400 hover:bg-pink-500/30 hover:shadow-pink-500/25"
+                  ? "bg-red-500/30 text-red-300 hover:bg-red-500/40 hover:shadow-red-500/50"
+                  : "bg-neutral-800/60 text-white hover:bg-red-500/20 hover:text-red-400 hover:shadow-red-500/40"
               } ${isLikeLoading || swipeLimitData?.hasReachedLimit ? "cursor-not-allowed opacity-50" : ""}`}
               onClick={handleLike}
               disabled={isLikeLoading || swipeLimitData?.hasReachedLimit}
@@ -658,7 +663,7 @@ function CofoundrMatching() {
               }
             >
               {isLikeLoading ? (
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-pink-400 border-t-transparent sm:h-7 sm:w-7 md:h-8 md:w-8" />
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent sm:h-7 sm:w-7 md:h-8 md:w-8" />
               ) : (
                 <FaHeart
                   className={`size-6 transition-transform sm:size-7 md:size-8 ${
@@ -669,10 +674,10 @@ function CofoundrMatching() {
             </motion.button>
 
             <motion.button
-              className={`group flex h-12 w-12 cursor-pointer items-center justify-center rounded-full shadow-2xl backdrop-blur-sm transition-all duration-200 hover:bg-blue-500/30 hover:shadow-blue-500/25 sm:h-14 sm:w-14 md:h-16 md:w-16 ${
+              className={`group flex h-12 w-12 cursor-pointer items-center justify-center rounded-full shadow-2xl backdrop-blur-sm transition-all duration-200 sm:h-14 sm:w-14 md:h-16 md:w-16 ${
                 isStartingConversation
-                  ? "cursor-not-allowed opacity-50"
-                  : "bg-blue-500/20 text-blue-400"
+                  ? "cursor-not-allowed bg-neutral-800/60 opacity-50"
+                  : "bg-neutral-800/60 text-white hover:bg-green-500/20 hover:text-green-400 hover:shadow-green-500/40"
               }`}
               onClick={handleMessage}
               disabled={isStartingConversation}
@@ -680,9 +685,9 @@ function CofoundrMatching() {
               whileTap={!isStartingConversation ? { scale: 0.95 } : {}}
             >
               {isStartingConversation ? (
-                <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-400 border-t-transparent sm:h-6 sm:w-6 md:h-7 md:w-7" />
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent sm:h-6 sm:w-6 md:h-7 md:w-7" />
               ) : (
-                <TbMessageCircleFilled className="size-5 transition-transform group-hover:scale-110 sm:size-6 md:size-7" />
+                <IoSend className="size-5 -rotate-45 transition-transform group-hover:scale-110 sm:size-6 md:size-7" />
               )}
             </motion.button>
           </div>
