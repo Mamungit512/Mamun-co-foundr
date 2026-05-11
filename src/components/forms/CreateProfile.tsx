@@ -67,23 +67,35 @@ function getCompletedSteps(
   return completed;
 }
 
-function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
+function hasExistingProfileData(profile: OnboardingData): boolean {
+  return !!(
+    profile.firstName ||
+    profile.lastName ||
+    profile.personalIntro ||
+    profile.pfp_url
+  );
+}
+
+function CreateProfile({ onSubmit, initialData, onSuccess, onError }: CreateProfileProps) {
   const draft = useOnboardingDraft();
   const { containerRef, transition } = useStepTransition();
 
   const [stepNumber, setStepNumber] = useState(1);
   const [formData, setFormData] = useState<OnboardingData>({});
   const [visitedSteps, setVisitedSteps] = useState<Set<number>>(new Set());
+  const [preFilledNotice, setPreFilledNotice] = useState(false);
 
   useEffect(() => {
     const savedDraft = draft.load();
     if (savedDraft) {
       setStepNumber(savedDraft.step);
       setFormData(savedDraft.data);
-      // Treat every step before the saved step as already visited
       const visited = new Set<number>();
       for (let i = 1; i < savedDraft.step; i++) visited.add(i);
       setVisitedSteps(visited);
+    } else if (initialData && hasExistingProfileData(initialData)) {
+      setFormData(initialData);
+      setPreFilledNotice(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -132,6 +144,21 @@ function CreateProfile({ onSubmit, onSuccess, onError }: CreateProfileProps) {
 
   return (
     <>
+      {preFilledNotice && (
+        <div className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] px-4 py-3 text-sm text-[var(--ui-text-muted)]">
+          <span>
+            ✦ Some fields were pre-filled from your existing profile — review and update as needed.
+          </span>
+          <button
+            type="button"
+            onClick={() => setPreFilledNotice(false)}
+            className="shrink-0 text-[var(--ui-text-subtle)] hover:text-[var(--ui-text-muted)]"
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
+        </div>
+      )}
       <OnboardingProgressBar
         currentStep={stepNumber}
         totalSteps={TOTAL_STEPS}

@@ -3,6 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { getOrganizationBySlug } from "@/lib/organizations";
 import { getOrgConfig } from "@/orgs/registry";
+import Hero from "@/components/school/landing/Hero";
+import HowItWorks from "@/components/school/landing/HowItWorks";
+import ValuesPillars from "@/components/school/landing/ValuesPillars";
+import CtaBand from "@/components/school/landing/CtaBand";
+import DepartmentMosaic from "@/components/school/landing/DepartmentMosaic";
+import PublicFooter from "@/components/school/landing/PublicFooter";
 
 export default async function SchoolLanding({
   params,
@@ -15,6 +21,19 @@ export default async function SchoolLanding({
 
   const cfg = getOrgConfig(slug);
   if (!cfg) notFound();
+
+  if (slug === "ut") {
+    return (
+      <>
+        <Hero />
+        <HowItWorks />
+        <ValuesPillars />
+        <CtaBand />
+        <DepartmentMosaic />
+        <PublicFooter />
+      </>
+    );
+  }
 
   const { branding, landing } = cfg;
 

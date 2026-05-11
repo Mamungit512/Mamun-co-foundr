@@ -7,9 +7,9 @@ import AIWriter from "@/components/ui/AIWriter";
 import { useStepEntry, useErrorShake } from "@/hooks/useOnboardingAnimation";
 
 const TEXTAREA_CLS =
-  "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-white/90 placeholder-white/30 transition-all duration-200 focus:border-white/25 focus:bg-white/8 focus:ring-2 focus:ring-white/15 focus:outline-none hover:border-white/20 resize-none";
+  "w-full rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] px-4 py-3.5 text-[var(--ui-text)] placeholder-[var(--ui-text-subtle)] transition-all duration-200 focus:border-[var(--ui-border-strong)] focus:bg-[var(--ui-surface)] focus:ring-2 focus:ring-[var(--ui-border)] focus:outline-none hover:border-[var(--ui-border-strong)] resize-none";
 
-const LABEL_CLS = "text-xs font-semibold tracking-widest text-white/45 uppercase";
+const LABEL_CLS = "text-xs font-semibold tracking-widest text-[var(--ui-text-muted)] uppercase";
 
 function InterestsAndValuesForm({
   onBack,
@@ -88,13 +88,13 @@ function InterestsAndValuesForm({
 
         {/* ── Header ── */}
         <div className="pb-4">
-          <p className="mb-1 text-xs font-semibold tracking-widest text-white/40 uppercase">
+          <p className="mb-1 text-xs font-semibold tracking-widest text-[var(--ui-text-muted)] uppercase">
             Step 5 of 6
           </p>
-          <h2 className="text-2xl font-bold text-white">
+          <h2 className="text-2xl font-bold text-[var(--ui-text)]">
             Interests &amp; values
           </h2>
-          <p className="mt-1.5 text-sm text-white/50">
+          <p className="mt-1.5 text-sm text-[var(--ui-text-muted)]">
             What drives you and what you want to work on.
           </p>
         </div>
@@ -118,7 +118,7 @@ function InterestsAndValuesForm({
         <div className="flex flex-col gap-y-3">
           <div>
             <label className={LABEL_CLS}>MAMUN Priority Areas</label>
-            <p className="mt-1 text-xs text-white/35">
+            <p className="mt-1 text-xs text-[var(--ui-text-subtle)]">
               Select any that apply to your work.
             </p>
           </div>
@@ -130,8 +130,8 @@ function InterestsAndValuesForm({
                   key={area}
                   className={`flex cursor-pointer items-center gap-2 rounded-lg border px-4 py-2 text-sm transition-all duration-150 ${
                     checked
-                      ? "border-white/40 bg-white/15 text-white"
-                      : "border-white/10 bg-white/5 text-white/50 hover:border-white/20 hover:text-white/70"
+                      ? "border-[var(--ui-text-muted)] bg-[var(--ui-surface-active)] text-[var(--ui-text)]"
+                      : "border-[var(--ui-border)] bg-[var(--ui-surface)] text-[var(--ui-text-muted)] hover:border-[var(--ui-border-strong)] hover:text-[var(--ui-text)]"
                   }`}
                 >
                   <input
@@ -149,8 +149,8 @@ function InterestsAndValuesForm({
             <label
               className={`flex cursor-pointer items-center gap-2 rounded-lg border px-4 py-2 text-sm transition-all duration-150 ${
                 showOtherInput
-                  ? "border-white/40 bg-white/15 text-white"
-                  : "border-white/10 bg-white/5 text-white/50 hover:border-white/20 hover:text-white/70"
+                  ? "border-[var(--ui-text-muted)] bg-[var(--ui-surface-active)] text-[var(--ui-text)]"
+                  : "border-[var(--ui-border)] bg-[var(--ui-surface)] text-[var(--ui-text-muted)] hover:border-[var(--ui-border-strong)] hover:text-[var(--ui-text)]"
               }`}
             >
               <input
@@ -167,7 +167,7 @@ function InterestsAndValuesForm({
             <input
               type="text"
               placeholder="Please specify"
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-white/90 placeholder-white/30 transition-all duration-200 focus:border-white/25 focus:bg-white/8 focus:ring-2 focus:ring-white/15 focus:outline-none hover:border-white/20"
+              className="w-full rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] px-4 py-3.5 text-[var(--ui-text)] placeholder-[var(--ui-text-subtle)] transition-all duration-200 focus:border-[var(--ui-border-strong)] focus:bg-[var(--ui-surface)] focus:ring-2 focus:ring-[var(--ui-border)] focus:outline-none hover:border-[var(--ui-border-strong)]"
               value={otherPriority}
               onChange={(e) => setOtherPriority(e.target.value)}
             />
@@ -191,17 +191,17 @@ function InterestsAndValuesForm({
         </div>
 
         {/* ── Navigation ── */}
-        <div className="flex items-center justify-between gap-4 pt-10 border-t border-white/8">
+        <div className="flex items-center justify-between gap-4 pt-10 border-t border-[var(--ui-border)]">
           <button
             type="button"
             onClick={onBack}
-            className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-medium text-white/60 transition-all duration-200 hover:border-white/30 hover:text-white"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--ui-border-strong)] px-5 py-3 text-sm font-medium text-[var(--ui-text-muted)] transition-all duration-200 hover:border-[var(--ui-border-strong)] hover:text-[var(--ui-text)]"
           >
             ← Back
           </button>
           <button
             type="submit"
-            className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-black shadow-lg shadow-white/10 transition-all duration-200 hover:bg-white/90 active:scale-[0.98] sm:flex-none"
+            className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-[var(--ui-btn-bg)] px-8 py-3.5 text-sm font-semibold text-[var(--ui-btn-text)] shadow-lg shadow-black/5 transition-all duration-200 hover:bg-[var(--ui-btn-bg)]/90 active:scale-[0.98] sm:flex-none"
           >
             Review →
           </button>

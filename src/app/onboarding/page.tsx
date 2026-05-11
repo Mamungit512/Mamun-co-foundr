@@ -5,7 +5,7 @@ import { useSession, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
 import { completeOnboarding } from "./_actions";
-import { useProfileUpsert } from "@/features/profile/useProfile";
+import { useProfileUpsert, useUserProfile } from "@/features/profile/useProfile";
 import CreateProfile from "@/components/forms/CreateProfile";
 import { posthog } from "@/lib/posthog";
 import { trackEvent } from "@/lib/posthog-events";
@@ -19,6 +19,7 @@ export default function OnboardingComponent() {
   const router = useRouter();
 
   const { mutateAsync: upsertProfileMutationFn } = useProfileUpsert();
+  const { data: existingProfile } = useUserProfile();
 
   const handleSubmit = async (formData: OnboardingData) => {
     try {
@@ -112,7 +113,11 @@ export default function OnboardingComponent() {
             </div>
           )}
 
-          <CreateProfile onSubmit={handleSubmit} onError={(e) => setError(e)} />
+          <CreateProfile
+            onSubmit={handleSubmit}
+            onError={(e) => setError(e)}
+            initialData={existingProfile}
+          />
         </div>
       </section>
     </>
