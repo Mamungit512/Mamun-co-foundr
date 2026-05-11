@@ -5,6 +5,18 @@
   --mist-white: #fafaf9;
   --charcoal-black: #1c1c1c;
 
+  /* - semantic UI tokens (dark-mode defaults — overridden by school layout for light orgs) - */
+  --ui-text: #ffffff;
+  --ui-text-muted: rgba(255, 255, 255, 0.5);
+  --ui-text-subtle: rgba(255, 255, 255, 0.3);
+  --ui-border: rgba(255, 255, 255, 0.1);
+  --ui-border-strong: rgba(255, 255, 255, 0.2);
+  --ui-surface: rgba(255, 255, 255, 0.05);
+  --ui-surface-active: rgba(255, 255, 255, 0.15);
+  --ui-btn-bg: #ffffff;
+  --ui-btn-text: #000000;
+  --ui-popover-bg: #1a1a1a;
+
   /* - font sizes according to golden ratio typescale - */
   --heading-1: 17.942rem;
   --heading-2: 11.089rem;

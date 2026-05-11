@@ -213,14 +213,14 @@ export default function LocationSelector({
   const isDisabled = !selectedCountryIso || (isUS && !selectedStateIso);
 
   const selectClass =
-    "w-full rounded-lg border border-white/10 bg-[#1a1a1a] px-4 py-2.5 text-white " +
+    "w-full rounded-lg border border-[var(--ui-border)] bg-[var(--ui-popover-bg)] px-4 py-2.5 text-[var(--ui-text)] " +
     "focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none " +
     "disabled:opacity-50 disabled:cursor-not-allowed";
 
   const inputClass =
-    "w-full rounded-lg border border-white/10 bg-[#1a1a1a] px-4 py-2.5 text-white " +
+    "w-full rounded-lg border border-[var(--ui-border)] bg-[var(--ui-popover-bg)] px-4 py-2.5 text-[var(--ui-text)] " +
     "focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none " +
-    "placeholder-white/30 disabled:opacity-50 disabled:cursor-not-allowed";
+    "placeholder-[var(--ui-text-subtle)] disabled:opacity-50 disabled:cursor-not-allowed";
 
   return (
     <div className="space-y-4">
@@ -326,7 +326,7 @@ export default function LocationSelector({
               role="listbox"
               className={
                 "absolute z-50 mt-1 max-h-60 w-full overflow-y-auto " +
-                "rounded-lg border border-white/10 bg-[#1a1a1a] py-1 shadow-xl"
+                "rounded-lg border border-[var(--ui-border)] bg-[var(--ui-popover-bg)] py-1 shadow-xl"
               }
             >
               {filteredCities.map((city, index) => (
@@ -336,10 +336,10 @@ export default function LocationSelector({
                   role="option"
                   aria-selected={index === activeIndex}
                   className={
-                    "cursor-pointer px-4 py-2 text-sm text-white " +
+                    "cursor-pointer px-4 py-2 text-sm text-[var(--ui-text)] " +
                     (index === activeIndex
                       ? "bg-blue-600"
-                      : "hover:bg-white/10")
+                      : "hover:bg-[var(--ui-surface)]")
                   }
                   onMouseDown={(e) => {
                     // Prevent blur from firing before click
@@ -359,8 +359,8 @@ export default function LocationSelector({
             filteredCities.length === 0 && (
               <div
                 className={
-                  "absolute z-50 mt-1 w-full rounded-lg border border-white/10 " +
-                  "bg-[#1a1a1a] px-4 py-3 text-sm text-white/40 shadow-xl"
+                  "absolute z-50 mt-1 w-full rounded-lg border border-[var(--ui-border)] " +
+                  "bg-[var(--ui-popover-bg)] px-4 py-3 text-sm text-[var(--ui-text-muted)] shadow-xl"
                 }
               >
                 No cities found for &ldquo;{cityInput}&rdquo;

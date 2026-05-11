@@ -93,10 +93,10 @@ export default function SchoolDashboardPage({
 
   const brandingHeader = (
     <div className="mb-5 text-center">
-      <p className="text-xs font-semibold uppercase tracking-widest text-white/50">
+      <p className="text-xs font-semibold uppercase tracking-widest text-[var(--ui-text-muted)]">
         Mamun &times; {schoolName}
       </p>
-      <h1 className="mt-0.5 text-base font-semibold text-white/80">
+      <h1 className="mt-0.5 text-base font-semibold text-[var(--ui-text)]">
         Co-Founder Matching
       </h1>
     </div>
@@ -122,10 +122,10 @@ export default function SchoolDashboardPage({
       <div className="mx-auto max-w-2xl p-4 pt-6">
         {brandingHeader}
         <div className="flex min-h-[calc(100vh-200px)] flex-col items-center justify-center gap-4 text-center">
-          <p className="text-xl font-semibold text-(--mist-white)">
+          <p className="text-xl font-semibold text-[var(--ui-text)]">
             No more co-founders to show right now
           </p>
-          <p className="text-sm text-white/50">
+          <p className="text-sm text-[var(--ui-text-muted)]">
             Check back later — more students from your program will be joining.
           </p>
         </div>
@@ -147,10 +147,10 @@ export default function SchoolDashboardPage({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -16 }}
           transition={{ duration: 0.25 }}
-          className="overflow-hidden rounded-2xl border border-white/10 bg-white/5"
+          className="overflow-hidden rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)]"
         >
           {/* Profile picture */}
-          <div className="relative h-72 w-full bg-white/10">
+          <div className="relative h-72 w-full bg-[var(--ui-surface)]">
             {curProfile.pfp_url ? (
               <Image
                 src={curProfile.pfp_url}
@@ -159,12 +159,12 @@ export default function SchoolDashboardPage({
                 className="object-cover"
               />
             ) : (
-              <div className="flex h-full items-center justify-center text-white/20">
+              <div className="flex h-full items-center justify-center text-[var(--ui-text-subtle)]">
                 <FaLocationDot className="h-16 w-16" />
               </div>
             )}
             {isMutualLike && (
-              <div className="absolute right-3 top-3 rounded-full bg-pink-500 px-3 py-1 text-xs font-semibold text-white">
+              <div className="absolute right-3 top-3 rounded-full bg-pink-500 px-3 py-1 text-xs font-semibold text-[var(--ui-text)]">
                 Mutual Match ❤️
               </div>
             )}
@@ -174,15 +174,15 @@ export default function SchoolDashboardPage({
           {/* Profile info */}
           <div className="p-5">
             <div className="mb-1 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-(--mist-white)">
+              <h2 className="text-xl font-bold text-[var(--ui-text)]">
                 {curProfile.firstName} {curProfile.lastName}
               </h2>
               <ActivityIndicator lastActiveAt={curProfile.last_active_at} />
             </div>
 
-            <p className="mb-1 text-sm text-white/60">{curProfile.title}</p>
+            <p className="mb-1 text-sm text-[var(--ui-text-muted)]">{curProfile.title}</p>
 
-            <div className="mb-3 flex items-center gap-1 text-xs text-white/40">
+            <div className="mb-3 flex items-center gap-1 text-xs text-[var(--ui-text-muted)]">
               <FaLocationDot className="h-3 w-3" />
               <span>
                 {curProfile.city}, {curProfile.country}
@@ -190,7 +190,7 @@ export default function SchoolDashboardPage({
             </div>
 
             {curProfile.personalIntro && (
-              <p className="mb-3 text-sm leading-relaxed text-white/70">
+              <p className="mb-3 text-sm leading-relaxed text-[var(--ui-text)]">
                 {curProfile.personalIntro}
               </p>
             )}
@@ -198,22 +198,22 @@ export default function SchoolDashboardPage({
             <BatteryLevel level={curProfile.batteryLevel} />
 
             {showMore && (
-              <div className="mt-4 space-y-2 border-t border-white/10 pt-4 text-sm text-white/60">
+              <div className="mt-4 space-y-2 border-t border-[var(--ui-border)] pt-4 text-sm text-[var(--ui-text-muted)]">
                 {curProfile.education && (
                   <p>
-                    <span className="font-medium text-white/80">Education: </span>
+                    <span className="font-medium text-[var(--ui-text)]">Education: </span>
                     {curProfile.education}
                   </p>
                 )}
                 {curProfile.experience && (
                   <p>
-                    <span className="font-medium text-white/80">Experience: </span>
+                    <span className="font-medium text-[var(--ui-text)]">Experience: </span>
                     {curProfile.experience}
                   </p>
                 )}
                 {curProfile.accomplishments && (
                   <p>
-                    <span className="font-medium text-white/80">
+                    <span className="font-medium text-[var(--ui-text)]">
                       Accomplishments:{" "}
                     </span>
                     {curProfile.accomplishments}
@@ -224,7 +224,7 @@ export default function SchoolDashboardPage({
 
             <button
               onClick={() => setShowMore((v) => !v)}
-              className="mt-3 flex items-center gap-1 text-xs text-white/40 hover:text-white/70"
+              className="mt-3 flex items-center gap-1 text-xs text-[var(--ui-text-muted)] hover:text-[var(--ui-text)]"
             >
               <CiCircleInfo className="h-4 w-4" />
               {showMore ? "Show less" : "Show more"}
@@ -232,12 +232,12 @@ export default function SchoolDashboardPage({
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center justify-between border-t border-white/10 px-5 py-4">
+          <div className="flex items-center justify-between border-t border-[var(--ui-border)] px-5 py-4">
             <InformationTooltipButton text={<span>Skip for now</span>}>
               <button
                 onClick={handleSkip}
                 disabled={skipProfileMutation.isPending}
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white/40 transition hover:border-white/40 hover:text-white/70"
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--ui-border-strong)] text-[var(--ui-text-muted)] transition hover:border-[var(--ui-text-muted)] hover:text-[var(--ui-text)]"
               >
                 <MdSkipNext className="h-5 w-5" />
               </button>
@@ -248,8 +248,8 @@ export default function SchoolDashboardPage({
               disabled={isLikeLoading}
               className={`flex h-14 w-14 items-center justify-center rounded-full transition ${
                 likeStatus?.isLiked
-                  ? "bg-pink-500 text-white"
-                  : "border border-white/20 text-white/60 hover:border-pink-400 hover:text-pink-400"
+                  ? "bg-pink-500 text-[var(--ui-text)]"
+                  : "border border-[var(--ui-border-strong)] text-[var(--ui-text-muted)] hover:border-pink-400 hover:text-pink-400"
               }`}
             >
               <FaHeart className="h-6 w-6" />
@@ -259,7 +259,7 @@ export default function SchoolDashboardPage({
               <button
                 onClick={handleMessage}
                 disabled={isStartingConversation}
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white/40 transition hover:border-white/40 hover:text-white/70"
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--ui-border-strong)] text-[var(--ui-text-muted)] transition hover:border-[var(--ui-text-muted)] hover:text-[var(--ui-text)]"
               >
                 <TbMessageCircleFilled className="h-5 w-5" />
               </button>

@@ -115,7 +115,7 @@ export default function ResumeUploader({ onParsed }: ResumeUploaderProps) {
         <button
           type="button"
           onClick={reset}
-          className="text-xs text-white/30 transition-colors hover:text-white/60"
+          className="text-xs text-[var(--ui-text-subtle)] transition-colors hover:text-[var(--ui-text-muted)]"
         >
           Remove
         </button>
@@ -125,9 +125,9 @@ export default function ResumeUploader({ onParsed }: ResumeUploaderProps) {
 
   if (state === "parsing") {
     return (
-      <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-5 py-4">
+      <div className="flex items-center gap-3 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] px-5 py-4">
         <svg
-          className="h-4 w-4 shrink-0 animate-spin text-white/50"
+          className="h-4 w-4 shrink-0 animate-spin text-[var(--ui-text-muted)]"
           fill="none"
           viewBox="0 0 24 24"
         >
@@ -146,8 +146,8 @@ export default function ResumeUploader({ onParsed }: ResumeUploaderProps) {
           />
         </svg>
         <div>
-          <p className="text-sm text-white/70">Parsing resume…</p>
-          {fileName && <p className="text-xs text-white/30">{fileName}</p>}
+          <p className="text-sm text-[var(--ui-text)]">Parsing resume…</p>
+          {fileName && <p className="text-xs text-[var(--ui-text-subtle)]">{fileName}</p>}
         </div>
       </div>
     );
@@ -162,10 +162,10 @@ export default function ResumeUploader({ onParsed }: ResumeUploaderProps) {
         onKeyDown={(e) => e.key === "Enter" && inputRef.current?.click()}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
-        className="flex cursor-pointer flex-col items-center gap-2 rounded-xl border border-dashed border-white/15 bg-white/3 px-6 py-5 text-center transition-all duration-200 hover:border-white/25 hover:bg-white/5"
+        className="flex cursor-pointer flex-col items-center gap-2 rounded-xl border border-dashed border-[var(--ui-border-strong)] bg-white/3 px-6 py-5 text-center transition-all duration-200 hover:border-[var(--ui-border-strong)] hover:bg-[var(--ui-surface)]"
       >
         <svg
-          className="h-5 w-5 text-white/30"
+          className="h-5 w-5 text-[var(--ui-text-subtle)]"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -178,13 +178,13 @@ export default function ResumeUploader({ onParsed }: ResumeUploaderProps) {
           />
         </svg>
         <div>
-          <p className="text-sm text-white/50">
-            <span className="text-white/70 underline underline-offset-2">
+          <p className="text-sm text-[var(--ui-text-muted)]">
+            <span className="text-[var(--ui-text)] underline underline-offset-2">
               Upload resume
             </span>{" "}
             to auto-fill your profile
           </p>
-          <p className="mt-0.5 text-xs text-white/25">
+          <p className="mt-0.5 text-xs text-[var(--ui-text-subtle)]">
             PDF, DOC, DOCX · max 5MB · optional
           </p>
         </div>

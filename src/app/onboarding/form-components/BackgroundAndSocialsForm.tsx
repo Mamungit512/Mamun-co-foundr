@@ -18,9 +18,9 @@ type BackgroundAndSocialsData = {
 };
 
 const TEXTAREA_CLS =
-  "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-white/90 placeholder-white/30 transition-all duration-200 focus:border-white/25 focus:bg-white/8 focus:ring-2 focus:ring-white/15 focus:outline-none hover:border-white/20 resize-none";
+  "w-full rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] px-4 py-3.5 text-[var(--ui-text)] placeholder-[var(--ui-text-subtle)] transition-all duration-200 focus:border-[var(--ui-border-strong)] focus:bg-[var(--ui-surface)] focus:ring-2 focus:ring-[var(--ui-border)] focus:outline-none hover:border-[var(--ui-border-strong)] resize-none";
 
-const LABEL_CLS = "text-xs font-semibold tracking-widest text-white/45 uppercase";
+const LABEL_CLS = "text-xs font-semibold tracking-widest text-[var(--ui-text-muted)] uppercase";
 
 function BackgroundAndSocialsForm({
   onNext,
@@ -57,11 +57,11 @@ function BackgroundAndSocialsForm({
 
         {/* ── Header ── */}
         <div className="pb-4">
-          <p className="mb-1 text-xs font-semibold tracking-widest text-white/40 uppercase">
+          <p className="mb-1 text-xs font-semibold tracking-widest text-[var(--ui-text-muted)] uppercase">
             Step 4 of 6
           </p>
-          <h2 className="text-2xl font-bold text-white">Additional details</h2>
-          <p className="mt-1.5 text-sm text-white/50">
+          <h2 className="text-2xl font-bold text-[var(--ui-text)]">Additional details</h2>
+          <p className="mt-1.5 text-sm text-[var(--ui-text-muted)]">
             All fields are optional — add what feels relevant.
           </p>
         </div>
@@ -105,7 +105,7 @@ function BackgroundAndSocialsForm({
           <div className="flex flex-col gap-y-1.5">
             <label className={LABEL_CLS}>
               Scheduling Link
-              <span className="ml-1 font-normal normal-case text-white/30">
+              <span className="ml-1 font-normal normal-case text-[var(--ui-text-subtle)]">
                 (Calendly, Cal.com…)
               </span>
             </label>
@@ -119,11 +119,11 @@ function BackgroundAndSocialsForm({
 
         {/* ── Section break ── */}
         <div className="flex items-center gap-3">
-          <div className="h-px flex-1 bg-white/8" />
-          <span className="text-xs font-semibold tracking-widest text-white/25 uppercase">
+          <div className="h-px flex-1 bg-[var(--ui-surface)]" />
+          <span className="text-xs font-semibold tracking-widest text-[var(--ui-text-subtle)] uppercase">
             Socials
           </span>
-          <div className="h-px flex-1 bg-white/8" />
+          <div className="h-px flex-1 bg-[var(--ui-surface)]" />
         </div>
 
         {/* ── Social links: 2×2 grid ── */}
@@ -166,17 +166,17 @@ function BackgroundAndSocialsForm({
         </div>
 
         {/* ── Navigation ── */}
-        <div className="flex items-center justify-between gap-4 pt-10 border-t border-white/8">
+        <div className="flex items-center justify-between gap-4 pt-10 border-t border-[var(--ui-border)]">
           <button
             type="button"
             onClick={onBack}
-            className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-medium text-white/60 transition-all duration-200 hover:border-white/30 hover:text-white"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--ui-border-strong)] px-5 py-3 text-sm font-medium text-[var(--ui-text-muted)] transition-all duration-200 hover:border-[var(--ui-border-strong)] hover:text-[var(--ui-text)]"
           >
             ← Back
           </button>
           <button
             type="submit"
-            className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-black shadow-lg shadow-white/10 transition-all duration-200 hover:bg-white/90 active:scale-[0.98] sm:flex-none"
+            className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-[var(--ui-btn-bg)] px-8 py-3.5 text-sm font-semibold text-[var(--ui-btn-text)] shadow-lg shadow-black/5 transition-all duration-200 hover:bg-[var(--ui-btn-bg)]/90 active:scale-[0.98] sm:flex-none"
           >
             Continue →
           </button>

@@ -18,6 +18,10 @@ const isPublicRoute = createRouteMatcher([
   "/founder-archetypes",
   "/api/webhooks/clerk",
   "/school/:slug",
+  "/school/:slug/sign-up(.*)",
+  "/school/:slug/sign-in(.*)",
+  "/school/:slug/sso-callback(.*)",
+  "/school/:slug/sso-complete(.*)",
 ]);
 
 type OrgRecord = {

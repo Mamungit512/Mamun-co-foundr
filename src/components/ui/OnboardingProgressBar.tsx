@@ -71,12 +71,12 @@ export default function OnboardingProgressBar({
             <React.Fragment key={i}>
               {/* Connector line before this dot (skip for first dot) */}
               {i > 0 && (
-                <div className="relative h-[2px] flex-1 overflow-hidden rounded-full bg-white/10">
+                <div className="relative h-[2px] flex-1 overflow-hidden rounded-full bg-[var(--ui-surface)]">
                   <div
                     ref={(el) => {
                       lineRefs.current[i - 1] = el;
                     }}
-                    className="absolute left-0 top-0 h-full rounded-full bg-white"
+                    className="absolute left-0 top-0 h-full rounded-full bg-[var(--ui-btn-bg)]"
                     // Initialise synchronously so GSAP always transitions from the right start value
                     style={{ width: currentStep > i + 1 ? "100%" : "0%" }}
                   />
@@ -95,12 +95,12 @@ export default function OnboardingProgressBar({
                 className={[
                   "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-colors duration-300",
                   isComplete
-                    ? "cursor-pointer bg-white text-black hover:bg-white/80"
+                    ? "cursor-pointer bg-[var(--ui-btn-bg)] text-[var(--ui-btn-text)] hover:bg-[var(--ui-surface)]"
                     : isActive
-                      ? "cursor-default bg-white/15 text-white ring-2 ring-white/50 ring-offset-2 ring-offset-transparent"
+                      ? "cursor-default bg-[var(--ui-surface-active)] text-[var(--ui-text)] ring-2 ring-[var(--ui-border-strong)] ring-offset-2 ring-offset-[var(--org-bg,transparent)]"
                       : isClickable
-                        ? "cursor-pointer bg-white/8 text-white/30 hover:bg-white/12 hover:text-white/50"
-                        : "cursor-default bg-white/8 text-white/25",
+                        ? "cursor-pointer bg-[var(--ui-surface)] text-[var(--ui-text-subtle)] hover:bg-[var(--ui-surface)] hover:text-[var(--ui-text-muted)]"
+                        : "cursor-default bg-[var(--ui-surface)] text-[var(--ui-text-subtle)]",
                 ].join(" ")}
               >
                 {isComplete ? (
@@ -129,10 +129,10 @@ export default function OnboardingProgressBar({
 
       {/* Label row */}
       <div className="mt-3 flex items-center justify-between">
-        <span className="text-xs font-medium tracking-widest text-white/30 uppercase">
+        <span className="text-xs font-medium tracking-widest text-[var(--ui-text-subtle)] uppercase">
           {STEP_LABELS[currentStep - 1]}
         </span>
-        <span className="text-xs text-white/30">
+        <span className="text-xs text-[var(--ui-text-subtle)]">
           {currentStep} / {totalSteps}
         </span>
       </div>

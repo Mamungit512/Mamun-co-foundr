@@ -11,7 +11,7 @@ const FaceDetectionUploader = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex animate-pulse items-center gap-2.5 text-white/40">
+      <div className="flex animate-pulse items-center gap-2.5 text-[var(--ui-text-muted)]">
         <svg
           className="h-4 w-4 animate-spin"
           xmlns="http://www.w3.org/2000/svg"
@@ -132,13 +132,13 @@ function ProfilePhotoForm({ onNext, defaultValues }: ProfilePhotoFormProps) {
       <div ref={fieldsRef} className="flex flex-col gap-y-8">
         {/* Header */}
         <div className="pb-4">
-          <p className="mb-1 text-xs font-semibold tracking-widest text-white/40 uppercase">
+          <p className="mb-1 text-xs font-semibold tracking-widest text-[var(--ui-text-muted)] uppercase">
             Step 1 of 6
           </p>
-          <h2 className="text-2xl font-bold text-white">
+          <h2 className="text-2xl font-bold text-[var(--ui-text)]">
             Add your profile photo
           </h2>
-          <p className="mt-1.5 text-sm text-white/50">
+          <p className="mt-1.5 text-sm text-[var(--ui-text-muted)]">
             Our AI verifies it contains a real face to keep profiles authentic.
           </p>
         </div>
@@ -182,9 +182,9 @@ function ProfilePhotoForm({ onNext, defaultValues }: ProfilePhotoFormProps) {
 
         {/* Resume upload — optional, pre-fills Step 2 & 4 */}
         <div className="flex flex-col gap-y-2">
-          <p className="text-xs font-semibold tracking-widest text-white/45 uppercase">
+          <p className="text-xs font-semibold tracking-widest text-[var(--ui-text-muted)] uppercase">
             Resume{" "}
-            <span className="font-normal normal-case text-white/30">
+            <span className="font-normal normal-case text-[var(--ui-text-subtle)]">
               (optional)
             </span>
           </p>
@@ -199,11 +199,11 @@ function ProfilePhotoForm({ onNext, defaultValues }: ProfilePhotoFormProps) {
         )}
 
         {/* Action */}
-        <div className="pt-10 border-t border-white/8">
+        <div className="pt-10 border-t border-[var(--ui-border)]">
           <button
             type="submit"
             disabled={isUploading || (!validatedPhotoFile && !uploadSuccess)}
-            className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-black shadow-lg shadow-white/10 transition-all duration-200 hover:bg-white/90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+            className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[var(--ui-btn-bg)] px-8 py-3.5 text-sm font-semibold text-[var(--ui-btn-text)] shadow-lg shadow-black/5 transition-all duration-200 hover:bg-[var(--ui-btn-bg)]/90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
           >
             {isUploading ? (
               <>

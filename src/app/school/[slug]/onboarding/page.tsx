@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
 import { completeOnboarding } from "@/app/onboarding/_actions";
-import { useProfileUpsert } from "@/features/profile/useProfile";
+import { useProfileUpsert, useUserProfile } from "@/features/profile/useProfile";
 import ProfilePhotoForm from "@/app/onboarding/form-components/ProfilePhotoForm";
 import AboutYouForm from "@/app/onboarding/form-components/AboutYouForm";
 import BackgroundAndSocialsForm from "@/app/onboarding/form-components/BackgroundAndSocialsForm";
@@ -54,6 +54,8 @@ export default function SchoolOnboardingPage({
   const [formData, setFormData] = useState<OnboardingData>({});
   const [visitedSteps, setVisitedSteps] = useState<Set<number>>(new Set());
   const [error, setError] = useState<string | null>(null);
+  const [initialized, setInitialized] = useState(false);
+  const [preFilledNotice, setPreFilledNotice] = useState(false);
 
   const { schoolName } = useSchool();
   const { user } = useUser();
@@ -61,6 +63,26 @@ export default function SchoolOnboardingPage({
   const router = useRouter();
   const draft = useOnboardingDraft();
   const { containerRef, transition } = useStepTransition();
+  const { data: existingProfile, isLoading: profileLoading } = useUserProfile();
+
+  useEffect(() => {
+    if (initialized || profileLoading) return;
+    const savedDraft = draft.load();
+    if (savedDraft) {
+      setStepNumber(savedDraft.step);
+      setFormData(savedDraft.data);
+      const visited = new Set<number>();
+      for (let i = 1; i < savedDraft.step; i++) visited.add(i);
+      setVisitedSteps(visited);
+    } else if (
+      existingProfile &&
+      (existingProfile.firstName || existingProfile.personalIntro || existingProfile.pfp_url)
+    ) {
+      setFormData(existingProfile);
+      setPreFilledNotice(true);
+    }
+    setInitialized(true);
+  }, [initialized, profileLoading, existingProfile]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { mutateAsync: upsertProfileMutationFn } = useProfileUpsert();
 
@@ -121,17 +143,39 @@ export default function SchoolOnboardingPage({
     }
   };
 
+  if (!initialized) {
+    return (
+      <div className="flex min-h-[calc(100vh-64px)] items-center justify-center">
+        <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--ui-border)] border-t-[var(--org-primary)]" />
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-xl px-4 py-8">
       <div className="mb-8 text-center">
-        <p className="text-xs font-semibold uppercase tracking-widest text-white/30">
+        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--ui-text-subtle)]">
           Mamun &times; {schoolName}
         </p>
-        <h1 className="mt-1 text-xl font-semibold text-white">
+        <h1 className="mt-1 text-xl font-semibold text-[var(--ui-text)]">
           Co-Founder Matching
         </h1>
-        <p className="mt-1 text-sm text-white/40">Student Profile Setup</p>
+        <p className="mt-1 text-sm text-[var(--ui-text-muted)]">Student Profile Setup</p>
       </div>
+
+      {preFilledNotice && (
+        <div className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] px-4 py-3 text-sm text-[var(--ui-text-muted)]">
+          <span>✦ Some fields were pre-filled from your existing profile — review and update as needed.</span>
+          <button
+            type="button"
+            onClick={() => setPreFilledNotice(false)}
+            className="shrink-0 text-[var(--ui-text-subtle)] hover:text-[var(--ui-text-muted)]"
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       <OnboardingProgressBar
         currentStep={stepNumber}
