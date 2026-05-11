@@ -4,6 +4,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 import { getOrganizationBySlug } from "@/lib/organizations";
 import { isEmailDomainAllowed } from "@/lib/auth/email-domain";
+import SessionRefreshRedirect from "@/components/school/auth/SessionRefreshRedirect";
 
 export default async function SSOCompletePage({
   params,
@@ -32,20 +33,20 @@ export default async function SSOCompletePage({
     return (
       <DomainMismatch
         slug={slug}
-        orgName={org.name}
+        orgName={org!.name}
         email="unknown"
-        domains={org.allowed_email_domains}
+        domains={org!.allowed_email_domains}
       />
     );
   }
 
-  if (!isEmailDomainAllowed(primaryEmail, org.allowed_email_domains)) {
+  if (!isEmailDomainAllowed(primaryEmail, org!.allowed_email_domains)) {
     return (
       <DomainMismatch
         slug={slug}
-        orgName={org.name}
+        orgName={org!.name}
         email={primaryEmail}
-        domains={org.allowed_email_domains}
+        domains={org!.allowed_email_domains}
       />
     );
   }
@@ -53,7 +54,7 @@ export default async function SSOCompletePage({
   await clerk.users.updateUserMetadata(userId, {
     publicMetadata: {
       ...(user.publicMetadata ?? {}),
-      organization_id: org.id,
+      organization_id: org!.id,
     },
   });
 
@@ -64,13 +65,13 @@ export default async function SSOCompletePage({
     );
     await supabase
       .from("profiles")
-      .update({ organization_id: org.id })
+      .update({ organization_id: org!.id })
       .eq("user_id", userId);
   } catch (err) {
     console.error("sso-complete: profile org update failed:", err);
   }
 
-  redirect(`/school/${slug}/onboarding`);
+  return <SessionRefreshRedirect to={`/school/${slug}/onboarding`} />;
 }
 
 function DomainMismatch({
