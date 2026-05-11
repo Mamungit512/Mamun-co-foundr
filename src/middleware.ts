@@ -201,7 +201,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
       return NextResponse.next();
     }
 
-    if (isSchoolRoute(req) && !isApiRoute) {
+    if (isSchoolRoute(req) && !isApiRoute && !isPublicRoute(req)) {
       return NextResponse.redirect(new URL("/cofoundr-matching", req.url));
     }
 
