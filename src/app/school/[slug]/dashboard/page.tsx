@@ -34,7 +34,7 @@ export default function SchoolDashboardPage({
   const { schoolName } = useSchool();
   const { data: profiles } = useGetProfiles();
   const { toggleLike, isLoading: isLikeLoading } = useToggleLike();
-  const { data: mutualLikes } = useMutualLikes();
+  useMutualLikes();
   const createConversationMutation = useCreateConversation();
   const skipProfileMutation = useSkipProfile();
   const { data: swipeLimitData } = useSwipeLimit();
@@ -67,12 +67,13 @@ export default function SchoolDashboardPage({
       { threshold: 0.5 }
     );
 
-    if (cardRef.current) {
-      observer.observe(cardRef.current);
+    const node = cardRef.current;
+    if (node) {
+      observer.observe(node);
     }
 
     return () => {
-      if (cardRef.current) observer.unobserve(cardRef.current);
+      if (node) observer.unobserve(node);
     };
   }, [curProfile?.user_id, curProfile?.isNew]);
 
@@ -155,10 +156,6 @@ export default function SchoolDashboardPage({
       </div>
     );
   }
-
-  const isMutualLike = mutualLikes?.matches?.some(
-    (id: string) => id === curProfile.user_id,
-  );
 
   // Helper: is profile online (active in last 5 minutes)
   const isOnline = curProfile.last_active_at
