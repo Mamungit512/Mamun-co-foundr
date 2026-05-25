@@ -18,6 +18,10 @@ const isPublicRoute = createRouteMatcher([
   "/founder-archetypes",
   "/api/webhooks/clerk",
   "/school/:slug",
+  "/school/:slug/sign-up(.*)",
+  "/school/:slug/sign-in(.*)",
+  "/school/:slug/sso-callback(.*)",
+  "/school/:slug/sso-complete(.*)",
 ]);
 
 type OrgRecord = {
@@ -197,7 +201,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
       return NextResponse.next();
     }
 
-    if (isSchoolRoute(req) && !isApiRoute) {
+    if (isSchoolRoute(req) && !isApiRoute && !isPublicRoute(req)) {
       return NextResponse.redirect(new URL("/cofoundr-matching", req.url));
     }
 

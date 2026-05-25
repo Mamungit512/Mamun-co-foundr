@@ -58,6 +58,14 @@ function Footer() {
               >
                 Book a Demo
               </a>
+              <a
+                href="https://forms.gle/u3tS9KUfNhdFFG489"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-base text-(--mist-white) opacity-80 transition-opacity hover:underline hover:underline-offset-4 hover:opacity-100"
+              >
+                Partner with Us
+              </a>
             </div>
 
             {/* Company column */}

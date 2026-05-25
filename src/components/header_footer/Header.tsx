@@ -90,16 +90,18 @@ function Header() {
               Pricing
             </Link>
           </li>
-          {/* <li className="translate-y text-sm font-semibold sm:text-base">
+
+          <li className="translate-y text-sm font-semibold sm:text-base">
             <Link
-              href="https://calendly.com/mcfm-mamuncofoundr/30min"
+              href="https://forms.gle/u3tS9KUfNhdFFG489"
               target="_blank"
               className="underline underline-offset-4 transition hover:text-white"
             >
-              Book a Demo
+              Partner with Us{" "}
             </Link>
           </li>
 
+          {/*
           <li className="translate-y text-sm font-semibold sm:text-base">
             <Link
               href="https://luma.com/user/usr-eZsILDku7ToYtZZ"

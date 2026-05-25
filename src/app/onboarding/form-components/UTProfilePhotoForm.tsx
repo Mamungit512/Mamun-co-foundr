@@ -1,0 +1,207 @@
+"use client";
+
+import React, { useState } from "react";
+import dynamic from "next/dynamic";
+import { useAuth, useSession } from "@clerk/nextjs";
+import { useStepEntry } from "@/hooks/useOnboardingAnimation";
+
+const FaceDetectionUploader = dynamic(
+  () => import("@/components/FaceDetectionUploader"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex animate-pulse items-center gap-2.5 text-[var(--ui-text-muted)]">
+        <svg
+          className="h-4 w-4 animate-spin"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          />
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          />
+        </svg>
+        <span className="text-sm">Loading AI model…</span>
+      </div>
+    ),
+  },
+);
+
+interface UTProfilePhotoFormProps {
+  onNext: (data: { photoUploaded: boolean; pfp_url?: string }) => void;
+  defaultValues?: { photoUploaded?: boolean; pfp_url?: string };
+}
+
+function UTProfilePhotoForm({ onNext, defaultValues }: UTProfilePhotoFormProps) {
+  const fieldsRef = useStepEntry();
+
+  const [validatedPhotoFile, setValidatedPhotoFile] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(
+    defaultValues?.photoUploaded || false,
+  );
+
+  const { userId } = useAuth();
+  const { session } = useSession();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (uploadSuccess) {
+      if (!defaultValues?.pfp_url) {
+        setError("Profile photo URL is missing. Please upload your photo again.");
+        setUploadSuccess(false);
+        return;
+      }
+      onNext({ photoUploaded: true, pfp_url: defaultValues.pfp_url });
+      return;
+    }
+
+    if (!validatedPhotoFile) {
+      setError("Please upload a valid profile photo with a clear human face");
+      return;
+    }
+
+    setIsUploading(true);
+    setError(null);
+
+    try {
+      const token = await session?.getToken();
+      if (!userId || !token) throw new Error("Authentication required");
+
+      const formData = new FormData();
+      formData.append("file", validatedPhotoFile);
+
+      const response = await fetch("/api/upload-profile-pic", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Upload failed");
+      }
+
+      const result = await response.json();
+      setUploadSuccess(true);
+      onNext({ photoUploaded: true, pfp_url: result.url });
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to upload photo. Please try again.",
+      );
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div ref={fieldsRef} className="flex flex-col gap-y-8">
+        {/* Header */}
+        <div className="pb-4">
+          <p className="mb-1 text-xs font-semibold tracking-widest text-[var(--ui-text-muted)] uppercase">
+            Step 1 of 5
+          </p>
+          <h2 className="text-2xl font-bold text-[var(--ui-text)]">
+            Add your profile photo
+          </h2>
+          <p className="mt-1.5 text-sm text-[var(--ui-text-muted)]">
+            Our AI verifies it contains a real face to keep profiles authentic.
+          </p>
+        </div>
+
+        {/* Uploader */}
+        <div>
+          {!uploadSuccess ? (
+            <FaceDetectionUploader
+              onValidationSuccess={(file) => {
+                setValidatedPhotoFile(file);
+                setError(null);
+              }}
+              onValidationFail={(errorMsg) => {
+                setValidatedPhotoFile(null);
+                setError(errorMsg);
+              }}
+            />
+          ) : (
+            <div className="flex items-center gap-3 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-5 py-4">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500/20">
+                <svg
+                  className="h-4 w-4 text-emerald-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+              <p className="text-sm font-medium text-emerald-400">
+                Profile photo uploaded successfully
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div className="rounded-xl border border-red-500/30 bg-red-500/8 px-4 py-3">
+            <p className="text-sm text-red-400">{error}</p>
+          </div>
+        )}
+
+        {/* Action */}
+        <div className="pt-10 border-t border-[var(--ui-border)]">
+          <button
+            type="submit"
+            disabled={isUploading || (!validatedPhotoFile && !uploadSuccess)}
+            className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[var(--ui-btn-bg)] px-8 py-3.5 text-sm font-semibold text-[var(--ui-btn-text)] shadow-lg shadow-black/5 transition-all duration-200 hover:bg-[var(--ui-btn-bg)]/90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+          >
+            {isUploading ? (
+              <>
+                <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
+                </svg>
+                Uploading…
+              </>
+            ) : uploadSuccess ? (
+              "Continue →"
+            ) : (
+              "Upload & Continue →"
+            )}
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+}
+
+export default UTProfilePhotoForm;

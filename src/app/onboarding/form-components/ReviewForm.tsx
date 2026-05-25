@@ -23,11 +23,11 @@ export default function ReviewForm({
     <div ref={fieldsRef} className="flex flex-col gap-y-8">
       {/* Header */}
       <div className="pb-4">
-        <p className="mb-1 text-xs font-semibold tracking-widest text-white/40 uppercase">
+        <p className="mb-1 text-xs font-semibold tracking-widest text-[var(--ui-text-muted)] uppercase">
           Step 6 of 6
         </p>
-        <h2 className="text-2xl font-bold text-white">Review your info</h2>
-        <p className="mt-1.5 text-sm text-white/50">
+        <h2 className="text-2xl font-bold text-[var(--ui-text)]">Review your info</h2>
+        <p className="mt-1.5 text-sm text-[var(--ui-text-muted)]">
           Double-check everything before submitting.
         </p>
       </div>
@@ -151,16 +151,16 @@ export default function ReviewForm({
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between gap-4 pt-10 border-t border-white/8">
+      <div className="flex items-center justify-between gap-4 pt-10 border-t border-[var(--ui-border)]">
         <button
           onClick={onBack}
-          className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-medium text-white/60 transition-all duration-200 hover:border-white/30 hover:text-white"
+          className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--ui-border-strong)] px-5 py-3 text-sm font-medium text-[var(--ui-text-muted)] transition-all duration-200 hover:border-[var(--ui-border-strong)] hover:text-[var(--ui-text)]"
         >
           ← Back
         </button>
         <button
           onClick={onSubmit}
-          className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-500 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:bg-emerald-400 active:scale-[0.98] sm:flex-none"
+          className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-500 px-8 py-3.5 text-sm font-semibold text-[var(--ui-text)] shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:bg-emerald-400 active:scale-[0.98] sm:flex-none"
         >
           Confirm &amp; Submit ✓
         </button>
@@ -179,14 +179,14 @@ function Section({
   onEdit: () => void;
 }) {
   return (
-    <div className="rounded-xl border border-white/8 bg-white/4 p-4">
+    <div className="rounded-xl border border-[var(--ui-border)] bg-white/4 p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold tracking-wide text-white">
+        <h3 className="text-sm font-semibold tracking-wide text-[var(--ui-text)]">
           {title}
         </h3>
         <button
           onClick={onEdit}
-          className="cursor-pointer rounded-lg px-2.5 py-1 text-xs font-medium text-white/40 transition-all duration-150 hover:bg-white/8 hover:text-white"
+          className="cursor-pointer rounded-lg px-2.5 py-1 text-xs font-medium text-[var(--ui-text-muted)] transition-all duration-150 hover:bg-[var(--ui-surface)] hover:text-[var(--ui-text)]"
         >
           Edit
         </button>
@@ -194,8 +194,8 @@ function Section({
       <ul className="space-y-1.5">
         {fields.map((f, i) => (
           <li key={i} className="flex gap-2 text-sm">
-            <span className="w-36 shrink-0 text-white/40">{f.label}</span>
-            <span className="text-white/80">{f.value || "—"}</span>
+            <span className="w-36 shrink-0 text-[var(--ui-text-muted)]">{f.label}</span>
+            <span className="text-[var(--ui-text)]">{f.value || "—"}</span>
           </li>
         ))}
       </ul>

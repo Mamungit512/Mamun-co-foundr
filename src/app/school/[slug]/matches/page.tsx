@@ -67,7 +67,7 @@ export default function SchoolMatchesPage({
   if (isLoading) {
     return (
       <div className="flex min-h-[calc(100vh-64px)] items-center justify-center">
-        <FaSync className="h-6 w-6 animate-spin text-white/40" />
+        <FaSync className="h-6 w-6 animate-spin text-[var(--ui-text-muted)]" />
       </div>
     );
   }
@@ -75,8 +75,8 @@ export default function SchoolMatchesPage({
   return (
     <div className="mx-auto max-w-2xl p-4 pt-6">
       <div className="mb-6 flex items-center gap-2">
-        <FaEnvelope className="h-5 w-5 text-white/60" />
-        <h1 className="text-xl font-semibold text-(--mist-white)">Messages</h1>
+        <FaEnvelope className="h-5 w-5 text-[var(--ui-text-muted)]" />
+        <h1 className="text-xl font-semibold text-[var(--ui-text)]">Messages</h1>
       </div>
 
       {error && (
@@ -87,9 +87,9 @@ export default function SchoolMatchesPage({
 
       {conversations.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-16 text-center">
-          <FaHeart className="h-10 w-10 text-white/10" />
-          <p className="font-medium text-white/40">No conversations yet</p>
-          <p className="text-sm text-white/25">
+          <FaHeart className="h-10 w-10 text-[var(--ui-text-subtle)]" />
+          <p className="font-medium text-[var(--ui-text-muted)]">No conversations yet</p>
+          <p className="text-sm text-[var(--ui-text-subtle)]">
             Like a co-founder to start a conversation.
           </p>
         </div>

@@ -22,7 +22,7 @@ const FaceDetectionUploader = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex animate-pulse items-center gap-2 text-white/40">
+      <div className="flex animate-pulse items-center gap-2 text-[var(--ui-text-muted)]">
         <svg
           className="h-5 w-5 animate-spin"
           xmlns="http://www.w3.org/2000/svg"
@@ -149,7 +149,7 @@ export default function SchoolProfilePage() {
 
   if (isLoading)
     return (
-      <div className="flex min-h-[60vh] items-center justify-center text-white/40">
+      <div className="flex min-h-[60vh] items-center justify-center text-[var(--ui-text-muted)]">
         Loading profile…
       </div>
     );
@@ -161,19 +161,19 @@ export default function SchoolProfilePage() {
     );
 
   const sectionClass =
-    "rounded-2xl border border-white/10 bg-white/5 p-6 space-y-5";
-  const labelClass = "block text-sm font-medium text-white/60";
+    "rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-6 space-y-5";
+  const labelClass = "block text-sm font-medium text-[var(--ui-text-muted)]";
   const textareaClass =
-    "w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/20 focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/20";
+    "w-full rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-sm text-[var(--ui-text)] placeholder-[var(--ui-text-subtle)] focus:border-[var(--ui-border-strong)] focus:outline-none focus:ring-1 focus:ring-[var(--ui-border)]";
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-6">
       {/* Branding header */}
       <div className="mb-6 text-center">
-        <p className="text-xs font-semibold uppercase tracking-widest text-white/50">
+        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--ui-text-muted)]">
           Mamun &times; {schoolName}
         </p>
-        <h1 className="mt-0.5 text-base font-semibold text-white/80">
+        <h1 className="mt-0.5 text-base font-semibold text-[var(--ui-text)]">
           Edit Your Profile
         </h1>
       </div>
@@ -181,7 +181,7 @@ export default function SchoolProfilePage() {
       {/* Back link */}
       <Link
         href={`/school/${slug}/dashboard`}
-        className="mb-6 inline-flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70"
+        className="mb-6 inline-flex items-center gap-1.5 text-xs text-[var(--ui-text-muted)] hover:text-[var(--ui-text)]"
       >
         <FaArrowLeft className="h-3 w-3" />
         Back to dashboard
@@ -197,7 +197,7 @@ export default function SchoolProfilePage() {
       <div className="space-y-5">
         {/* Profile picture */}
         <div className={sectionClass}>
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-white/40">
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-[var(--ui-text-muted)]">
             Profile Picture
           </h2>
           {profileData?.pfp_url && (
@@ -206,7 +206,7 @@ export default function SchoolProfilePage() {
               alt="Current profile photo"
               width={96}
               height={96}
-              className="h-24 w-24 rounded-full border border-white/10 object-cover"
+              className="h-24 w-24 rounded-full border border-[var(--ui-border)] object-cover"
             />
           )}
           <FaceDetectionUploader
@@ -226,7 +226,7 @@ export default function SchoolProfilePage() {
               type="button"
               onClick={handlePhotoUpload}
               disabled={isUploadingPhoto}
-              className="rounded-lg bg-white/10 px-5 py-2 text-sm text-white transition hover:bg-white/20 disabled:opacity-50"
+              className="rounded-lg bg-[var(--ui-surface)] px-5 py-2 text-sm text-[var(--ui-text)] transition hover:bg-[var(--ui-surface)] disabled:opacity-50"
             >
               {isUploadingPhoto ? "Uploading…" : "Upload Photo"}
             </button>
@@ -240,7 +240,7 @@ export default function SchoolProfilePage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Basic information */}
           <div className={sectionClass}>
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-white/40">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-[var(--ui-text-muted)]">
               Basic Information
             </h2>
 
@@ -322,7 +322,7 @@ export default function SchoolProfilePage() {
 
           {/* Professional information */}
           <div className={sectionClass}>
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-white/40">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-[var(--ui-text-muted)]">
               Professional Information
             </h2>
 
@@ -377,7 +377,7 @@ export default function SchoolProfilePage() {
                       {...register("satisfaction", { required: "Required" })}
                       className="h-4 w-4 accent-white"
                     />
-                    <span className="text-sm text-white/70">{opt}</span>
+                    <span className="text-sm text-[var(--ui-text)]">{opt}</span>
                   </label>
                 ))}
               </div>
@@ -399,7 +399,7 @@ export default function SchoolProfilePage() {
                       {...register("batteryLevel", { required: "Required" })}
                       className="h-4 w-4 accent-white"
                     />
-                    <span className="text-sm text-white/70">{opt}</span>
+                    <span className="text-sm text-[var(--ui-text)]">{opt}</span>
                   </label>
                 ))}
               </div>
@@ -413,7 +413,7 @@ export default function SchoolProfilePage() {
 
           {/* Personal story */}
           <div className={sectionClass}>
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-white/40">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-[var(--ui-text-muted)]">
               Personal Story
             </h2>
 
@@ -462,7 +462,7 @@ export default function SchoolProfilePage() {
                   href="/founder-archetypes"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-white/30 underline-offset-2 hover:text-white/60 hover:underline"
+                  className="text-xs text-[var(--ui-text-subtle)] underline-offset-2 hover:text-[var(--ui-text-muted)] hover:underline"
                 >
                   Learn more ↗
                 </a>
@@ -492,7 +492,7 @@ export default function SchoolProfilePage() {
                 ).map(({ value, label, tooltip }) => (
                   <label
                     key={value}
-                    className="relative flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition-all hover:border-white/20 hover:bg-white/8 has-[:checked]:border-white/40 has-[:checked]:bg-white/15"
+                    className="relative flex cursor-pointer items-center gap-3 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] px-4 py-3 text-sm text-[var(--ui-text)] transition-all hover:border-[var(--ui-border-strong)] hover:bg-[var(--ui-surface)] has-[:checked]:border-[var(--ui-text-muted)] has-[:checked]:bg-[var(--ui-surface-active)]"
                   >
                     <input
                       type="radio"
@@ -503,8 +503,8 @@ export default function SchoolProfilePage() {
                     <span
                       className={`h-4 w-4 shrink-0 rounded-full border-2 transition-all ${
                         watch("archetype") === value
-                          ? "border-white bg-white"
-                          : "border-white/30 bg-transparent"
+                          ? "border-[var(--ui-btn-bg)] bg-[var(--ui-btn-bg)]"
+                          : "border-[var(--ui-border-strong)] bg-transparent"
                       }`}
                     />
                     <span className="flex-1">{label}</span>
@@ -512,10 +512,10 @@ export default function SchoolProfilePage() {
                       className="group/tip relative ml-auto flex items-center"
                       onClick={(e) => e.preventDefault()}
                     >
-                      <span className="flex h-5 w-5 cursor-default items-center justify-center rounded-full border border-white/15 text-[10px] font-medium text-white/30 transition-colors group-hover/tip:border-white/35 group-hover/tip:text-white/60">
+                      <span className="flex h-5 w-5 cursor-default items-center justify-center rounded-full border border-[var(--ui-border-strong)] text-[10px] font-medium text-[var(--ui-text-subtle)] transition-colors group-hover/tip:border-white/35 group-hover/tip:text-[var(--ui-text-muted)]">
                         i
                       </span>
-                      <span className="pointer-events-none absolute right-0 bottom-7 z-50 w-56 rounded-xl border border-white/10 bg-neutral-900 px-3.5 py-3 text-left text-xs leading-relaxed text-white/60 opacity-0 shadow-2xl transition-opacity group-hover/tip:opacity-100">
+                      <span className="pointer-events-none absolute right-0 bottom-7 z-50 w-56 rounded-xl border border-[var(--ui-border)] bg-neutral-900 px-3.5 py-3 text-left text-xs leading-relaxed text-[var(--ui-text-muted)] opacity-0 shadow-2xl transition-opacity group-hover/tip:opacity-100">
                         {tooltip}
                       </span>
                     </span>
@@ -527,7 +527,7 @@ export default function SchoolProfilePage() {
 
           {/* Social links */}
           <div className={sectionClass}>
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-white/40">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-[var(--ui-text-muted)]">
               Social Links
             </h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -552,7 +552,7 @@ export default function SchoolProfilePage() {
 
           {/* Interests & values */}
           <div className={sectionClass}>
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-white/40">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-[var(--ui-text-muted)]">
               Interests &amp; Values
             </h2>
 
@@ -568,7 +568,7 @@ export default function SchoolProfilePage() {
                         {...register("responsibilities")}
                         className="h-4 w-4 accent-white"
                       />
-                      <span className="text-sm text-white/70">{area}</span>
+                      <span className="text-sm text-[var(--ui-text)]">{area}</span>
                     </label>
                   ),
                 )}
@@ -595,7 +595,7 @@ export default function SchoolProfilePage() {
                       {...register("priorityAreas")}
                       className="h-4 w-4 accent-white"
                     />
-                    <span className="text-sm text-white/70">{area}</span>
+                    <span className="text-sm text-[var(--ui-text)]">{area}</span>
                   </label>
                 ))}
               </div>
@@ -636,7 +636,7 @@ export default function SchoolProfilePage() {
           <div className="flex items-center justify-between pb-8">
             <Link
               href={`/school/${slug}/dashboard`}
-              className="text-sm text-white/40 hover:text-white/70"
+              className="text-sm text-[var(--ui-text-muted)] hover:text-[var(--ui-text)]"
             >
               Cancel
             </Link>
@@ -648,7 +648,7 @@ export default function SchoolProfilePage() {
                   ? "Upload a profile picture first"
                   : undefined
               }
-              className="rounded-xl bg-white/10 px-8 py-2.5 text-sm font-medium text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-xl bg-[var(--ui-surface)] px-8 py-2.5 text-sm font-medium text-[var(--ui-text)] transition hover:bg-[var(--ui-surface)] disabled:cursor-not-allowed disabled:opacity-40"
             >
               {isSubmitting ? "Saving…" : "Save Changes"}
             </button>
