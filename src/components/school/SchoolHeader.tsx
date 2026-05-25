@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import { FaHeart } from "react-icons/fa6";
 import clsx from "clsx";
-import { useMutualLikes } from "@/features/likes/useLikes";
+import { useLikedProfilesData } from "@/features/likes/useLikes";
 import type { OrgConfig } from "@/orgs/types";
 
 type SchoolHeaderProps = {
@@ -18,11 +18,11 @@ type SchoolHeaderProps = {
 export default function SchoolHeader({ slug, schoolName, config }: SchoolHeaderProps) {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
-  const { data: mutualLikes } = useMutualLikes();
+  const { data: likedProfilesData } = useLikedProfilesData();
 
   useEffect(() => setMounted(true), []);
 
-  const savedMatchesCount = mutualLikes?.matches?.length ?? 0;
+  const savedMatchesCount = likedProfilesData?.profiles?.length ?? 0;
 
   const navItems = [
     {
@@ -89,7 +89,7 @@ export default function SchoolHeader({ slug, schoolName, config }: SchoolHeaderP
           )}
         </Link>
 
-        {mounted && <UserButton />}
+        {mounted && <UserButton afterSignOutUrl={`/school/${slug}`} />}
       </div>
     </header>
   );

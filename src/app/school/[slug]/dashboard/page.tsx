@@ -11,13 +11,11 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
 import HiringBadge from "@/components/HiringBadge";
-import SwipeLimit from "@/components/SwipeLimit";
 import { useGetProfiles } from "@/features/profile/useProfile";
 import { useSchool } from "@/components/school/SchoolContext";
 import { useToggleLike, useLikeStatus, useMutualLikes } from "@/features/likes/useLikes";
 import { useCreateConversation } from "@/hooks/useConversations";
 import { useSkipProfile } from "@/features/user-actions/useUserActions";
-import { useSwipeLimit } from "@/features/swipes/useSwipes";
 import { trackEvent } from "@/lib/posthog-events";
 import { getSchoolFullName, getDegreeAbbreviation, SECTOR_INTEREST_LABELS } from "@/lib/utSchoolsAndMajors";
 
@@ -37,7 +35,6 @@ export default function SchoolDashboardPage({
   useMutualLikes();
   const createConversationMutation = useCreateConversation();
   const skipProfileMutation = useSkipProfile();
-  const { data: swipeLimitData } = useSwipeLimit();
 
   const curProfile = profiles?.[0];
   const { data: likeStatus } = useLikeStatus(curProfile?.user_id);
@@ -102,17 +99,14 @@ export default function SchoolDashboardPage({
     const resolvedParams = await params;
     setIsStartingConversation(true);
     try {
-      const result = await createConversationMutation.mutateAsync(
-        curProfile.user_id,
-      );
-      if (result?.conversation?.id) {
-        router.push(`/school/${resolvedParams.slug}/matches`);
-      }
+      await createConversationMutation.mutateAsync({
+        otherUserId: curProfile.user_id,
+      });
     } catch {
       toast.error("Failed to start conversation");
-    } finally {
-      setIsStartingConversation(false);
     }
+    setIsStartingConversation(false);
+    router.push(`/school/${resolvedParams.slug}/matches?tab=messages`);
   };
 
   const brandingHeader = (
@@ -125,21 +119,6 @@ export default function SchoolDashboardPage({
       </h1>
     </div>
   );
-
-  if (swipeLimitData?.hasReachedLimit) {
-    return (
-      <div className="mx-auto max-w-2xl p-4 pt-6">
-        {brandingHeader}
-        <div className="flex min-h-[calc(100vh-200px)] items-center justify-center">
-          <SwipeLimit
-            hasReachedLimit={swipeLimitData.hasReachedLimit}
-            currentCount={swipeLimitData.currentCount}
-            limit={swipeLimitData.limit}
-          />
-        </div>
-      </div>
-    );
-  }
 
   if (!curProfile) {
     return (
@@ -321,7 +300,7 @@ export default function SchoolDashboardPage({
             <button
               onClick={handleSkip}
               disabled={skipProfileMutation.isPending}
-              className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-[var(--ui-border-strong)] text-[var(--ui-text-muted)] transition hover:border-[var(--ui-text-muted)] hover:text-[var(--ui-text)]"
+              className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-[var(--ui-border-strong)] text-[var(--ui-text-muted)] transition hover:border-[var(--ui-text-muted)] hover:text-[var(--ui-text)] cursor-pointer"
             >
               <MdSkipNext className="h-5 w-5" />
             </button>
@@ -329,7 +308,7 @@ export default function SchoolDashboardPage({
             <button
               onClick={handleMessage}
               disabled={isStartingConversation}
-              className="flex flex-1 items-center justify-center gap-2 rounded-full bg-[#bf5700] py-3 text-white transition hover:bg-[#a04e00] disabled:opacity-50"
+              className="flex flex-1 items-center justify-center gap-2 rounded-full bg-[#bf5700] py-3 text-white transition hover:bg-[#a04e00] disabled:opacity-50 cursor-pointer"
             >
               <TbSend className="h-5 w-5" />
               <span className="text-sm font-medium">Message</span>
@@ -338,7 +317,7 @@ export default function SchoolDashboardPage({
             <button
               onClick={handleLike}
               disabled={isLikeLoading}
-              className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full transition ${
+              className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full transition cursor-pointer ${
                 likeStatus?.isLiked
                   ? "bg-pink-500 text-white"
                   : "border border-[var(--ui-border-strong)] text-[var(--ui-text-muted)] hover:border-pink-400 hover:text-pink-400"

@@ -71,7 +71,11 @@ export default async function SSOCompletePage({
     console.error("sso-complete: profile org update failed:", err);
   }
 
-  return <SessionRefreshRedirect to={`/school/${slug}/onboarding`} />;
+  const destination = user.publicMetadata?.onboardingComplete
+    ? `/school/${slug}/dashboard`
+    : `/school/${slug}/onboarding`;
+
+  return <SessionRefreshRedirect to={destination} />;
 }
 
 function DomainMismatch({

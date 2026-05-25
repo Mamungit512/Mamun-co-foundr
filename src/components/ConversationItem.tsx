@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { FaEnvelope, FaUser } from "react-icons/fa6";
+import { FaEnvelope } from "react-icons/fa6";
 import Image from "next/image";
 import { ConversationWithOtherParticipant } from "@/features/conversations/conversationService";
 import ActivityIndicator from "@/components/ActivityIndicator";
@@ -20,10 +20,10 @@ function ConversationItem({ conversation, onClick }: ConversationItemProps) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ scale: 1.02 }}
-      className="group cursor-pointer rounded-lg border border-white bg-(--charcoal-black) p-4 transition-all duration-200 hover:border-blue-500/50 hover:bg-gray-800"
+      className="group cursor-pointer rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4 transition-all duration-200 hover:border-[var(--ui-border-strong)]"
       onClick={onClick}
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <div className="relative">
           <div className="relative h-12 w-12 overflow-hidden rounded-full">
             {otherParticipant.pfp_url ? (
@@ -34,12 +34,12 @@ function ConversationItem({ conversation, onClick }: ConversationItemProps) {
                 className="object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center bg-blue-500/20 text-blue-400">
-                <FaUser className="h-5 w-5" />
+              <div className="flex h-full w-full items-center justify-center bg-[var(--ui-surface-active)] text-sm font-bold text-[var(--ui-text)]">
+                {(otherParticipant.first_name?.[0] ?? "").toUpperCase()}
+                {(otherParticipant.last_name?.[0] ?? "").toUpperCase()}
               </div>
             )}
           </div>
-          {/* Activity indicator dot positioned at bottom-right of avatar */}
           <div className="absolute -right-0.5 -bottom-0.5">
             <ActivityIndicator
               lastActiveAt={otherParticipant.last_active_at}
@@ -49,23 +49,23 @@ function ConversationItem({ conversation, onClick }: ConversationItemProps) {
           </div>
         </div>
 
-        <div className="flex-1">
-          <h4 className="font-semibold text-white">
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-semibold text-[var(--ui-text)]">
             {otherParticipant.first_name && otherParticipant.last_name
               ? `${otherParticipant.first_name} ${otherParticipant.last_name}`
               : "Unknown User"}
-          </h4>
-          <p className="text-sm text-gray-400">
+          </p>
+          <p className="truncate text-sm text-[var(--ui-text-muted)]">
             {otherParticipant.title || "No title"}
           </p>
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-0.5 text-xs text-[var(--ui-text-subtle)]">
             {new Date(
               conversation.last_message_at || conversation.created_at,
             ).toLocaleDateString()}
           </p>
         </div>
 
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500/20 text-blue-400 transition-all duration-200 group-hover:bg-blue-500/30">
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--ui-surface-active)] text-[var(--ui-text-muted)] transition group-hover:text-[var(--ui-text)]">
           <FaEnvelope className="h-4 w-4" />
         </div>
       </div>

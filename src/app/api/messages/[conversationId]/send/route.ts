@@ -13,8 +13,7 @@ export async function POST(
   { params }: { params: Promise<{ conversationId: string }> },
 ) {
   try {
-    // Get the authenticated user from Clerk
-    const { userId } = await auth();
+    const { userId, sessionClaims } = await auth();
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -71,30 +70,34 @@ export async function POST(
       );
     }
 
-    // Check message count limit (20 messages per conversation)
-    const { count: messageCount, error: countError } = await supabase
-      .from("messages")
-      .select("*", { count: "exact", head: true })
-      .eq("conversation_id", conversationId);
+    // School org users have no message limits
+    const orgId = (sessionClaims?.metadata as Record<string, unknown>)?.organization_id as string | undefined ?? null;
 
-    if (countError) {
-      console.error("Error counting messages:", countError);
-      return NextResponse.json(
-        { error: "Failed to check message count" },
-        { status: 500 },
-      );
-    }
+    if (!orgId) {
+      const { count: messageCount, error: countError } = await supabase
+        .from("messages")
+        .select("*", { count: "exact", head: true })
+        .eq("conversation_id", conversationId);
 
-    if (messageCount && messageCount >= 20) {
-      return NextResponse.json(
-        {
-          error: "Message limit reached (20 messages per conversation)",
-          messageCount: messageCount,
-          limit: 20,
-          suggestion: "Connect on other platforms to continue the conversation",
-        },
-        { status: 429 },
-      );
+      if (countError) {
+        console.error("Error counting messages:", countError);
+        return NextResponse.json(
+          { error: "Failed to check message count" },
+          { status: 500 },
+        );
+      }
+
+      if (messageCount && messageCount >= 20) {
+        return NextResponse.json(
+          {
+            error: "Message limit reached (20 messages per conversation)",
+            messageCount: messageCount,
+            limit: 20,
+            suggestion: "Connect on other platforms to continue the conversation",
+          },
+          { status: 429 },
+        );
+      }
     }
 
     // Insert the message into the database
