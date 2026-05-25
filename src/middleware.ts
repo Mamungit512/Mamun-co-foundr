@@ -160,6 +160,14 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
       }
 
       if (isSchoolOnboardingRoute(req)) {
+        if (sessionClaims?.metadata?.onboardingComplete) {
+          const org = await resolveOrgRecord(orgId);
+          if (org) {
+            return NextResponse.redirect(
+              new URL(`/school/${org.slug}/dashboard`, req.url),
+            );
+          }
+        }
         return NextResponse.next();
       }
 

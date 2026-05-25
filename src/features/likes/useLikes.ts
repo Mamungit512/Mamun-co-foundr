@@ -7,10 +7,7 @@ import {
   checkLikeStatus,
   getLikedProfiles,
   getLikers,
-  getMutualLikes,
 } from "./likesService";
-import { createSupabaseClientWithToken } from "../../lib/supabaseClient";
-import { mapProfileToOnboardingData } from "../../lib/mapProfileToFromDBFormat";
 
 // Hook to like/unlike a profile
 export function useLikeProfile() {
@@ -101,7 +98,7 @@ export function useLikedProfiles() {
   });
 }
 
-// Hook to get full profile data for liked profiles
+// Hook to get full profile data for liked profiles, org-scoped via server-side API
 export function useLikedProfilesData() {
   const { session } = useSession();
 
@@ -111,39 +108,15 @@ export function useLikedProfilesData() {
       const token = await session?.getToken();
       if (!token) throw new Error("No authentication token");
 
-      const userId = session?.user?.id;
-      if (!userId) throw new Error("No user ID");
-
-      // Get liked profile IDs
-      const { profiles: likedIds, error: likedError } = await getLikedProfiles({
-        likerId: userId,
-        token,
+      const response = await fetch("/api/likes/profiles", {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (likedError) {
+      if (!response.ok) {
         throw new Error("Failed to fetch liked profiles");
       }
 
-      if (!likedIds || likedIds.length === 0) {
-        return { profiles: [], error: null };
-      }
-
-      // Get full profile data for liked profiles
-      const supabase = createSupabaseClientWithToken(token);
-      const { data: profiles, error: profilesError } = await supabase
-        .from("profiles")
-        .select("*")
-        .in("user_id", likedIds)
-        .is("deleted_at", null);
-
-      if (profilesError) {
-        throw new Error("Failed to fetch profile data");
-      }
-
-      // Map to OnboardingData format
-      const mappedProfiles = profiles?.map(mapProfileToOnboardingData) || [];
-
-      return { profiles: mappedProfiles, error: null };
+      return (await response.json()) as { profiles: OnboardingData[] };
     },
     enabled: !!session,
   });
@@ -168,7 +141,7 @@ export function useLikers() {
   });
 }
 
-// Hook to get mutual likes (matches)
+// Hook to get mutual likes (matches), org-scoped via server-side API
 export function useMutualLikes() {
   const { session } = useSession();
 
@@ -178,10 +151,15 @@ export function useMutualLikes() {
       const token = await session?.getToken();
       if (!token) throw new Error("No authentication token");
 
-      const userId = session?.user?.id;
-      if (!userId) throw new Error("No user ID");
+      const response = await fetch("/api/likes/mutual", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      return await getMutualLikes({ userId, token });
+      if (!response.ok) {
+        throw new Error("Failed to fetch mutual likes");
+      }
+
+      return (await response.json()) as { matches: string[] };
     },
     enabled: !!session,
   });

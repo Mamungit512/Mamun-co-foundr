@@ -8,14 +8,12 @@ import {
 
 export async function GET(request: NextRequest) {
   try {
-    // Get the authenticated user from Clerk
-    const { userId } = await auth();
+    const { userId, sessionClaims } = await auth();
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get the token from the request headers
     const authHeader = request.headers.get("authorization");
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -25,14 +23,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Create Supabase client with service role key for server-side operations
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
-    // Fetch conversations for the user
-    const result = await getUserConversations(userId, supabase);
+    const orgId = (sessionClaims?.metadata as Record<string, unknown>)?.organization_id as string | undefined ?? null;
+
+    const result = await getUserConversations(userId, supabase, orgId);
 
     if (result.error) {
       return NextResponse.json({ error: result.error }, { status: 500 });

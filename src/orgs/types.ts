@@ -16,7 +16,13 @@ export type OrgLanding = {
   ctaSecondaryLabel: string;
 };
 
+export type OrgLimits = {
+  unlimitedSwipes: boolean;
+  unlimitedMessages: boolean;
+};
+
 export type OrgConfig = {
   branding: OrgBranding;
   landing: OrgLanding;
+  limits: OrgLimits;
 };

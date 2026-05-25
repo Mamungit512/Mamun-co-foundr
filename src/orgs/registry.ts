@@ -14,6 +14,10 @@ export const DEFAULT_ORG_CONFIG: OrgConfig = {
     ctaPrimaryLabel: "Get started",
     ctaSecondaryLabel: "Sign in",
   },
+  limits: {
+    unlimitedSwipes: true,
+    unlimitedMessages: true,
+  },
 };
 
 export const ORG_REGISTRY: Record<string, OrgConfig> = {
@@ -34,6 +38,10 @@ export const ORG_REGISTRY: Record<string, OrgConfig> = {
       heroImageUrl: "/orgs/ut/hero.jpg",
       ctaPrimaryLabel: "Join with your UT email",
       ctaSecondaryLabel: "Sign in",
+    },
+    limits: {
+      unlimitedSwipes: true,
+      unlimitedMessages: true,
     },
   },
 };
