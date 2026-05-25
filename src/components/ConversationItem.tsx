@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { FaEnvelope, FaUser } from "react-icons/fa6";
+import { FaEnvelope } from "react-icons/fa6";
 import Image from "next/image";
 import { ConversationWithOtherParticipant } from "@/features/conversations/conversationService";
 import ActivityIndicator from "@/components/ActivityIndicator";
