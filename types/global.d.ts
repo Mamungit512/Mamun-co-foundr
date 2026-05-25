@@ -93,6 +93,55 @@ declare global {
     organization_id: string | null;
   };
 
+  // Mirrors the school_profiles DB row. The persistence layer is generic across
+  // schools; the form/dashboard layer still uses UT-prefixed names below
+  // (UTProfileData / utCollege / utSectorInterests) for back-compat — translation
+  // happens in the API routes.
+  type SchoolProfileFromDb = {
+    id: number;
+    user_id: string;
+    organization_id: string;
+    school_status: "student" | "alumni";
+    graduation_year: number | null;
+    college: string | null;
+    degree_type: "bachelors" | "masters" | "professional" | "other" | null;
+    major: string | null;
+    sector_interests: string[] | null;
+    additional_education: string | null;
+    school_data: Record<string, unknown>;
+    created_at: string;
+    updated_at: string;
+  };
+
+  type UTCollege =
+    | 'mccombs_business'
+    | 'cockrell_engineering'
+    | 'school_of_information'
+    | 'natural_sciences'
+    | 'liberal_arts'
+    | 'moody_communication'
+    | 'college_of_fine_arts'
+    | 'school_of_architecture'
+    | 'lbj_public_affairs'
+    | 'dell_medical_school';
+
+  type UTDegreeType = 'bachelors' | 'masters' | 'professional' | 'other';
+
+  type UTSectorInterest =
+    | 'b2b_saas' | 'fintech' | 'ai_ml' | 'deeptech' | 'data' | 'ux'
+    | 'healthtech' | 'biotech' | 'policy' | 'impact'
+    | 'media' | 'consumer' | 'edtech' | 'proptech' | 'cleantech' | 'govtech';
+
+  type UTProfileData = {
+    utStatus?: "student" | "alumni";
+    gradYear?: number;
+    utCollege?: UTCollege;
+    utDegreeType?: UTDegreeType;
+    utMajor?: string;
+    utSectorInterests?: UTSectorInterest[];
+    additionalEducation?: string;
+  };
+
   // Combine all individual form step types
   type OnboardingData = Partial<
     WhoYouAreFormData &
@@ -102,7 +151,9 @@ declare global {
       InterestsAndValuesFormData &
       Preferences &
       HiringSettingsFormData &
-      ActivityFields
+      ActivityFields &
+      MatchingQueueFields &
+      UTProfileData
   >;
 
   type WhoYouAreFormData = {
@@ -185,5 +236,9 @@ declare global {
     last_login_at?: string | null;
     logins_last_7_days?: number;
     logins_last_30_days?: number;
+  };
+
+  type MatchingQueueFields = {
+    isNew?: boolean;
   };
 }

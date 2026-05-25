@@ -11,9 +11,7 @@ function isApexHost(host: string): boolean {
   const bare = host.split(":")[0].toLowerCase();
   return (
     bare === "mamuncofoundr.com" ||
-    bare === "www.mamuncofoundr.com" ||
-    bare === "localhost" ||
-    bare.endsWith(".vercel.app")
+    bare === "www.mamuncofoundr.com"
   );
 }
 
@@ -74,6 +72,20 @@ export async function GET(req: NextRequest) {
 
     const likedIds = likedProfiles?.map((like) => like.liked_id) || [];
 
+    // For any school tenant, restrict candidates to users who have completed
+    // school-specific onboarding (i.e. have a row in school_profiles for this
+    // org). Acts as the "verified school user" filter. Must be scoped by
+    // organization_id to avoid leaking cross-tenant existence.
+    const inSchoolTenant = !useGeneralPool && !!orgId;
+    let schoolUserIds: string[] | null = null;
+    if (inSchoolTenant) {
+      const { data: schoolRows } = await supabase
+        .from("school_profiles")
+        .select("user_id")
+        .eq("organization_id", orgId);
+      schoolUserIds = schoolRows?.map((r) => r.user_id) ?? [];
+    }
+
     // Fetch candidate profiles (excluding self, deleted, already liked)
     // Hard filter: candidates must belong to the same organization (or null for general pool)
     let query = supabase
@@ -86,6 +98,13 @@ export async function GET(req: NextRequest) {
       query = query.is("organization_id", null);
     } else {
       query = query.eq("organization_id", orgId);
+    }
+
+    if (schoolUserIds !== null) {
+      if (schoolUserIds.length === 0) {
+        return NextResponse.json({ profiles: [], currentUser });
+      }
+      query = query.in("user_id", schoolUserIds);
     }
 
     if (likedIds.length > 0) {
@@ -118,15 +137,50 @@ export async function GET(req: NextRequest) {
       .map((p) => p.user_id)
       .filter((id): id is string => Boolean(id));
 
-    // Fetch existing queue rows — only cycle is needed for ordering
+    // For school-tenant orgs: fetch school-specific fields from the unified
+    // school_profiles table and join them onto the profiles. Output keys stay
+    // as utStatus/utCollege/etc. so the dashboard and UT form components keep
+    // working without changes.
+    let enrichedFiltered = filtered;
+    if (inSchoolTenant && candidateIds.length > 0) {
+      const { data: schoolRows } = await supabase
+        .from("school_profiles")
+        .select("user_id, school_status, graduation_year, college, degree_type, major, sector_interests")
+        .eq("organization_id", orgId)
+        .in("user_id", candidateIds);
+
+      const schoolMap = new Map(
+        schoolRows?.map((row) => [
+          row.user_id,
+          {
+            utStatus: row.school_status,
+            gradYear: row.graduation_year,
+            utCollege: row.college,
+            utDegreeType: row.degree_type,
+            utMajor: row.major,
+            utSectorInterests: row.sector_interests,
+          },
+        ]) ?? [],
+      );
+
+      enrichedFiltered = filtered.map((profile) => {
+        const school = schoolMap.get(profile.user_id!);
+        return school ? { ...profile, ...school } : profile;
+      });
+    }
+
+    // Fetch existing queue rows — cycle, seen_at are needed for ordering and "New" badge
     const { data: queueRows } = await supabase
       .from("matching_queue")
-      .select("candidate_user_id, cycle")
+      .select("candidate_user_id, cycle, seen_at")
       .eq("viewer_user_id", userId)
       .in("candidate_user_id", candidateIds);
 
-    const queueMap = new Map<string, number>(
-      queueRows?.map((r) => [r.candidate_user_id, r.cycle as number]) ?? [],
+    const queueMap = new Map<string, { cycle: number; seenAt: string | null }>(
+      queueRows?.map((r) => [
+        r.candidate_user_id,
+        { cycle: r.cycle as number, seenAt: r.seen_at },
+      ]) ?? [],
     );
 
     // Ensure queue rows exist for any candidate not yet in the queue.
@@ -148,12 +202,15 @@ export async function GET(req: NextRequest) {
     }
 
     // Sort by: cycle asc (skipped profiles go to back) → score desc (best match first within same cycle)
-    const sorted = filtered
-      .map((profile) => ({
-        profile,
-        cycle: queueMap.get(profile.user_id!) ?? 0,
-        score: scoreCandidate(profile, currentUser),
-      }))
+    const sorted = enrichedFiltered
+      .map((profile) => {
+        const queueInfo = queueMap.get(profile.user_id!) ?? { cycle: 0, seenAt: null };
+        return {
+          profile: { ...profile, isNew: queueInfo.seenAt === null },
+          cycle: queueInfo.cycle,
+          score: scoreCandidate(profile, currentUser),
+        };
+      })
       .sort((a, b) => {
         if (a.cycle !== b.cycle) return a.cycle - b.cycle;
         return b.score - a.score;

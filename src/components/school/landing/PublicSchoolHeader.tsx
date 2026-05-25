@@ -18,12 +18,14 @@ export default function PublicSchoolHeader() {
         >
           Find a co-foundr
         </a>
-        <Link
-          href="/contact-us"
+        <a
+          href="https://www.mccombs.utexas.edu/about/contact/"
+          target="_blank"
+          rel="noopener noreferrer"
           className="text-xs font-medium text-white/75 hover:text-white"
         >
-          Contact support
-        </Link>
+          Contact us
+        </a>
 
         <div className="relative flex items-center">
           <FaHeart className="h-[17px] w-[17px] text-white/80" />

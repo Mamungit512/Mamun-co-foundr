@@ -56,13 +56,15 @@ export default function PublicFooter() {
               >
                 Privacy Policy
               </Link>
-              <Link
-                href="/contact-us"
+              <a
+                href="https://www.mccombs.utexas.edu/about/contact/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block text-xs hover:text-white"
                 style={{ color: "#9cadb7" }}
               >
-                Contact Support
-              </Link>
+                Contact Us
+              </a>
             </div>
           </div>
         </div>
