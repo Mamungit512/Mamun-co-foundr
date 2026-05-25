@@ -93,7 +93,7 @@ export async function checkLikeStatus({
     .select("id")
     .eq("liker_id", likerId)
     .eq("liked_id", likedId)
-    .single();
+    .maybeSingle();
 
   if (error && error.code !== "PGRST116") {
     // PGRST116 is "not found" error, which is expected if no like exists

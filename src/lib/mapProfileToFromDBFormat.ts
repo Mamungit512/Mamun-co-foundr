@@ -68,7 +68,7 @@ export function mapOnboardingDatatoProfileDB(data: OnboardingData) {
     country: data.country || null,
     state: data.state || null,
     satisfaction: data.satisfaction ?? null,
-    battery_level: data.batteryLevel ?? null,
+    battery_level: (data.batteryLevel ?? null) as "Energized" | "Content" | "Burnt out" | null,
     gender: data.gender || null,
     birthdate: data.birthdate ? new Date(data.birthdate) : null,
     // pfp_url is preserved as-is; validation happens at API layer
@@ -77,7 +77,7 @@ export function mapOnboardingDatatoProfileDB(data: OnboardingData) {
     personal_intro: data.personalIntro || "",
     accomplishments: data.accomplishments || null,
     archetype: data.archetype || null,
-    education: data.education || null,
+    education: data.education ?? null,
     experience: data.experience || null,
     is_technical: data.isTechnical === "yes",
 

@@ -11,14 +11,12 @@ export default function TooltipButton({ text, children }: ToolTipProps) {
   const [show, setShow] = useState(false);
 
   return (
-    <div className="relative flex items-center">
-      <button
-        onMouseEnter={() => setShow(true)}
-        onMouseLeave={() => setShow(false)}
-        className="ml-3 cursor-pointer text-base"
-      >
-        {children}
-      </button>
+    <div
+      className="relative flex items-center"
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+    >
+      {children}
 
       {show && text}
     </div>
