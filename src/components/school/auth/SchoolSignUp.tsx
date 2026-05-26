@@ -90,6 +90,7 @@ export default function SchoolSignUp({
         password,
         firstName: firstName || undefined,
         lastName: lastName || undefined,
+        legalAccepted: true,
       });
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setPendingVerification(true);
@@ -291,6 +292,18 @@ export default function SchoolSignUp({
             >
               {submitting ? "Creating account…" : "Create account"}
             </button>
+
+            <p className="text-center text-[11px]" style={{ color: "#9cadb7" }}>
+              By creating an account, you agree to our{" "}
+              <Link
+                href="/privacy-policy"
+                className="font-medium underline hover:opacity-70"
+                style={{ color: "#9cadb7" }}
+              >
+                Privacy Policy
+              </Link>
+              .
+            </p>
           </form>
           </>
         ) : (
