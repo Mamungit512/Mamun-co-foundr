@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   title: "Mamun Cofounder Platform",
   description: "Cofounding Platform for the Muslim Community",
   icons: {
-    icon: "/img/favicon.jpg",
+    icon: "/img/mamun-logo.png",
   },
 };
 

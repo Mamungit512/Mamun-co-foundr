@@ -5,6 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 import { getOrganizationBySlug } from "@/lib/organizations";
 import { isEmailDomainAllowed } from "@/lib/auth/email-domain";
 import SessionRefreshRedirect from "@/components/school/auth/SessionRefreshRedirect";
+import AutoRetry from "@/components/school/auth/AutoRetry";
 
 export default async function SSOCompletePage({
   params,
@@ -24,7 +25,25 @@ export default async function SSOCompletePage({
   }
 
   const clerk = await clerkClient();
-  const user = await clerk.users.getUser(userId);
+
+  let user: Awaited<ReturnType<typeof clerk.users.getUser>> | undefined;
+  try {
+    const { data: users } = await clerk.users.getUserList({ userId: [userId], limit: 1 });
+    user = users[0];
+  } catch (err) {
+    console.error("sso-complete: getUserList failed, trying getUser", userId, err);
+    try {
+      user = await clerk.users.getUser(userId);
+    } catch (err2) {
+      console.error("sso-complete: getUser also failed", userId, err2);
+      return <AutoRetry />;
+    }
+  }
+
+  if (!user) {
+    return <AutoRetry />;
+  }
+
   const primaryEmail = user.emailAddresses.find(
     (e) => e.id === user.primaryEmailAddressId,
   )?.emailAddress;
@@ -51,12 +70,17 @@ export default async function SSOCompletePage({
     );
   }
 
-  await clerk.users.updateUserMetadata(userId, {
-    publicMetadata: {
-      ...(user.publicMetadata ?? {}),
-      organization_id: org!.id,
-    },
-  });
+  try {
+    await clerk.users.updateUserMetadata(userId, {
+      publicMetadata: {
+        ...(user.publicMetadata ?? {}),
+        organization_id: org!.id,
+      },
+    });
+  } catch (err) {
+    console.error("sso-complete: updateUserMetadata failed", userId, err);
+    return <AutoRetry />;
+  }
 
   try {
     const supabase = createClient(

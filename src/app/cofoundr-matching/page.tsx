@@ -5,7 +5,6 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { CiCircleInfo } from "react-icons/ci";
 import { FaHeart, FaLocationDot } from "react-icons/fa6";
-import { IoSend } from "react-icons/io5";
 import { motion, AnimatePresence } from "motion/react";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -21,8 +20,6 @@ import {
   useLikeStatus,
   useMutualLikes,
 } from "@/features/likes/useLikes";
-import { useCreateConversation } from "@/hooks/useConversations";
-import { useRouter } from "next/navigation";
 import CofoundrShowMore from "./CofoundrShowMore";
 import { useSkipProfile } from "@/features/user-actions/useUserActions";
 import { useSwipeLimit } from "@/features/swipes/useSwipes";
@@ -32,15 +29,12 @@ import { trackEvent } from "@/lib/posthog-events";
 
 function CofoundrMatching() {
   const [showMore, setShowMore] = useState(false);
-  const [isStartingConversation, setIsStartingConversation] = useState(false);
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   const { data: profiles } = useGetProfiles();
   const { data: currentUserProfile } = useUserProfile();
   const { toggleLike, isLoading: isLikeLoading } = useToggleLike();
   const { data: mutualLikes } = useMutualLikes();
-  const createConversationMutation = useCreateConversation();
   const skipProfileMutation = useSkipProfile();
   const { data: swipeLimitData } = useSwipeLimit();
 
@@ -300,39 +294,6 @@ function CofoundrMatching() {
         duration: 3000,
         position: "bottom-right",
       });
-    }
-  };
-
-  const handleMessage = async () => {
-    if (!curProfile?.user_id) return;
-
-    setIsStartingConversation(true);
-    try {
-      const result = await createConversationMutation.mutateAsync({
-        otherUserId: curProfile.user_id,
-      });
-
-      if (result.success) {
-        trackEvent.conversationStarted(
-          result.conversation.id,
-          curProfile.user_id,
-          {
-            other_user_city: curProfile.city,
-            other_user_country: curProfile.country,
-          },
-        );
-        // Navigate to the conversation
-        router.push(`/messages/${result.conversation.id}`);
-      }
-    } catch (error) {
-      console.error("Failed to start conversation:", error);
-      // Keep direct posthog.captureException for error tracking
-      if (typeof window !== "undefined" && window.posthog) {
-        window.posthog.captureException(error);
-      }
-      toast.error("Failed to start conversation. Please try again.");
-    } finally {
-      setIsStartingConversation(false);
     }
   };
 
@@ -673,23 +634,6 @@ function CofoundrMatching() {
               )}
             </motion.button>
 
-            <motion.button
-              className={`group flex h-12 w-12 cursor-pointer items-center justify-center rounded-full shadow-2xl backdrop-blur-sm transition-all duration-200 sm:h-14 sm:w-14 md:h-16 md:w-16 ${
-                isStartingConversation
-                  ? "cursor-not-allowed bg-neutral-800/60 opacity-50"
-                  : "bg-neutral-800/60 text-white hover:bg-green-500/20 hover:text-green-400 hover:shadow-green-500/40"
-              }`}
-              onClick={handleMessage}
-              disabled={isStartingConversation}
-              whileHover={!isStartingConversation ? { scale: 1.1 } : {}}
-              whileTap={!isStartingConversation ? { scale: 0.95 } : {}}
-            >
-              {isStartingConversation ? (
-                <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent sm:h-6 sm:w-6 md:h-7 md:w-7" />
-              ) : (
-                <IoSend className="size-5 -rotate-45 transition-transform group-hover:scale-110 sm:size-6 md:size-7" />
-              )}
-            </motion.button>
           </div>
         </motion.div>
       </div>

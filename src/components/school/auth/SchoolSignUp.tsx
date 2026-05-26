@@ -145,10 +145,15 @@ export default function SchoolSignUp({
       <div className="rounded-2xl border border-[#e8e4dc] bg-white p-8 shadow-sm">
         <div className="mb-6">
           <h1
-            className="mb-1 text-2xl font-semibold tracking-tight"
+            className="mb-1 text-xl md:text-2xl font-semibold tracking-tight"
             style={{ color: "#333f48" }}
           >
-            {pendingVerification ? "Verify your email" : "Create McCombs Co-foundr Matching Engine account"}
+            {pendingVerification ? "Verify your email" : (
+              <>
+                <span className="md:hidden">Create your McCombs co-foundr matching account</span>
+                <span className="hidden md:inline">Create McCombs Co-foundr Matching Engine account</span>
+              </>
+            )}
           </h1>
           <p className="text-sm" style={{ color: "#9cadb7" }}>
             {pendingVerification
