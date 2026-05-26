@@ -148,7 +148,7 @@ export default function SchoolSignUp({
             className="mb-1 text-2xl font-semibold tracking-tight"
             style={{ color: "#333f48" }}
           >
-            {pendingVerification ? "Verify your email" : `Join ${schoolName}`}
+            {pendingVerification ? "Verify your email" : "Create McCombs Co-foundr Matching Engine account"}
           </h1>
           <p className="text-sm" style={{ color: "#9cadb7" }}>
             {pendingVerification
