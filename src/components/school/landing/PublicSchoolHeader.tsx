@@ -3,17 +3,17 @@ import Link from "next/link";
 export default function PublicSchoolHeader() {
   return (
     <header
-      className="flex items-center justify-between px-6 py-3"
+      className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0 px-4 sm:px-6 py-3 sm:py-4"
       style={{ backgroundColor: "#bf5700" }}
     >
-      <Link href="/" className="text-sm font-semibold text-white">
+      <Link href="/" className="text-xs sm:text-sm font-semibold text-white text-center sm:text-left">
         Texas McCombs Co-Foundr
       </Link>
 
-      <nav className="flex items-center gap-5">
+      <nav className="flex flex-wrap items-center justify-center gap-3 sm:gap-5">
         <a
           href="#departments"
-          className="border-b border-white/40 pb-0.5 text-xs font-medium text-white"
+          className="border-b border-white/40 pb-0.5 text-xs sm:text-sm font-medium text-white whitespace-nowrap"
         >
           Find a co-foundr
         </a>
@@ -21,14 +21,14 @@ export default function PublicSchoolHeader() {
           href="https://www.mccombs.utexas.edu/about/contact/"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs font-medium text-white/75 hover:text-white"
+          className="text-xs sm:text-sm font-medium text-white/75 hover:text-white whitespace-nowrap"
         >
           Contact us
         </a>
 
         <Link
           href="/school/ut/sign-in"
-          className="rounded-full px-3 py-1.5 text-xs font-semibold"
+          className="rounded-full px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold whitespace-nowrap"
           style={{ backgroundColor: "#ffffff", color: "#bf5700" }}
         >
           Sign in
