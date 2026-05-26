@@ -90,7 +90,6 @@ export default function SchoolSignUp({
         password,
         firstName: firstName || undefined,
         lastName: lastName || undefined,
-        legalAccepted: true,
       });
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setPendingVerification(true);
