@@ -1,3 +1,7 @@
+"use client";
+
+import { motion } from "framer-motion";
+
 const PILLARS = [
   {
     title: "Human centered",
@@ -18,30 +22,65 @@ const PILLARS = [
 ];
 
 export default function ValuesPillars() {
+  const container = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.08,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.6 } },
+  };
+
   return (
     <section
       className="px-6 py-20"
       style={{ backgroundColor: "#333f48" }}
     >
       <div className="mx-auto max-w-5xl">
-        <h2 className="mb-1.5 text-center text-2xl font-semibold text-white sm:text-3xl">
+        <motion.h2
+          initial={{ opacity: 0, y: -10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="mb-1.5 text-center text-2xl font-semibold text-white sm:text-3xl"
+        >
           Built on McCombs values
-        </h2>
-        <p
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          viewport={{ once: true }}
           className="mb-10 text-center text-sm"
           style={{ color: "#9cadb7" }}
         >
           Every match is filtered against four pillars that define who we are
-        </p>
-        <div className="grid gap-4 sm:grid-cols-2">
+        </motion.p>
+        <motion.div
+          className="grid gap-4 sm:grid-cols-2"
+          variants={container}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+        >
           {PILLARS.map((p) => (
-            <div
+            <motion.div
               key={p.title}
-              className="rounded-lg border border-white/10 bg-white/5 p-5"
+              variants={item}
+              whileHover={{ y: -4 }}
+              className="rounded-lg border border-white/10 bg-white/5 p-5 cursor-pointer transition-all duration-300"
             >
-              <div
+              <motion.div
                 className="mb-3 h-2 w-2 rounded-full"
                 style={{ backgroundColor: "#bf5700" }}
+                whileHover={{ scale: 1.3 }}
               />
               <div className="mb-1.5 text-sm font-semibold text-white">
                 {p.title}
@@ -52,9 +91,9 @@ export default function ValuesPillars() {
               >
                 {p.desc}
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

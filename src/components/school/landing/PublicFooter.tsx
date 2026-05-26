@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function PublicFooter() {
   return (
@@ -7,7 +10,13 @@ export default function PublicFooter() {
       style={{ backgroundColor: "#333f48" }}
     >
       <div className="mx-auto max-w-6xl">
-        <div className="mb-8 flex flex-col items-start justify-between gap-8 sm:flex-row">
+        <motion.div
+          className="mb-8 flex flex-col items-start justify-between gap-8 sm:flex-row"
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+        >
           <div>
             <div className="mb-1 text-sm font-semibold text-white">
               Texas McCombs Co-Foundr
@@ -25,24 +34,26 @@ export default function PublicFooter() {
               >
                 Resources
               </div>
-              <a
+              <motion.a
                 href="https://lu.ma"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mb-1.5 block text-xs hover:text-white"
+                className="mb-1.5 block text-xs hover:text-white transition-colors"
                 style={{ color: "#9cadb7" }}
+                whileHover={{ color: "#ffffff" }}
               >
                 UT Luma Events
-              </a>
-              <a
+              </motion.a>
+              <motion.a
                 href="https://www.cakeequity.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-xs hover:text-white"
+                className="block text-xs hover:text-white transition-colors"
                 style={{ color: "#9cadb7" }}
+                whileHover={{ color: "#ffffff" }}
               >
                 Create a Cap Table
-              </a>
+              </motion.a>
             </div>
             <div>
               <div
@@ -51,25 +62,30 @@ export default function PublicFooter() {
               >
                 Company
               </div>
-              <Link
-                href="/privacy-policy"
-                className="mb-1.5 block text-xs hover:text-white"
-                style={{ color: "#9cadb7" }}
+              <motion.div
+                whileHover={{ color: "#ffffff" }}
               >
-                Privacy Policy
-              </Link>
-              <a
+                <Link
+                  href="/privacy-policy"
+                  className="mb-1.5 block text-xs hover:text-white transition-colors"
+                  style={{ color: "#9cadb7" }}
+                >
+                  Privacy Policy
+                </Link>
+              </motion.div>
+              <motion.a
                 href="https://www.mccombs.utexas.edu/about/contact/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-xs hover:text-white"
+                className="block text-xs hover:text-white transition-colors"
                 style={{ color: "#9cadb7" }}
+                whileHover={{ color: "#ffffff" }}
               >
                 Contact Us
-              </a>
+              </motion.a>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         <div
           className="border-t pt-5 text-xs"
