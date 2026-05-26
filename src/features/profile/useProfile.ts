@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth, useSession } from "@clerk/nextjs";
 import toast from "react-hot-toast";
@@ -130,6 +131,39 @@ export function useProfileByUserId(userId: string, enabled: boolean = true) {
       }
     },
     enabled: enabled && !!userId && !!session && !!requestingUserId,
+    retry: 1,
+  });
+}
+
+export function useSearchProfiles(query: string) {
+  const { session } = useSession();
+  const [debouncedQuery, setDebouncedQuery] = useState(query);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQuery(query), 300);
+    return () => clearTimeout(t);
+  }, [query]);
+
+  return useQuery<OnboardingData[], { message: string }>({
+    queryKey: ["profiles-search", debouncedQuery],
+    queryFn: async () => {
+      const token = await session?.getToken();
+      if (!token) throw { message: "Authentication failed. Please log in again." };
+
+      const res = await fetch(
+        `/api/profiles/search?q=${encodeURIComponent(debouncedQuery)}`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw { message: errorData.error || "Search failed" };
+      }
+
+      const data = await res.json();
+      return data.profiles;
+    },
+    enabled: debouncedQuery.trim().length >= 2 && !!session,
     retry: 1,
   });
 }

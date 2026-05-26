@@ -1,7 +1,7 @@
 "use client";
 
 import { useSignIn, useSignUp } from "@clerk/nextjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 
 type Props = {
@@ -15,8 +15,11 @@ export default function GoogleOAuthButton({ slug, mode, label }: Props) {
   const { isLoaded: signUpLoaded, signUp } = useSignUp();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
 
-  const isLoaded = mode === "signIn" ? signInLoaded : signUpLoaded;
+  useEffect(() => { setMounted(true); }, []);
+
+  const isLoaded = mounted && (mode === "signIn" ? signInLoaded : signUpLoaded);
   const display =
     label ??
     (mode === "signIn" ? "Sign in with Google" : "Sign up with Google");
