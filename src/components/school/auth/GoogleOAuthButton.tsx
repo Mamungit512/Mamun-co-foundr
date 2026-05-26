@@ -30,6 +30,7 @@ export default function GoogleOAuthButton({ slug, mode, label }: Props) {
         strategy: "oauth_google" as const,
         redirectUrl: `/school/${slug}/sso-callback`,
         redirectUrlComplete: `/school/${slug}/sso-complete`,
+        legalAccepted: true,
       };
       if (mode === "signIn" && signIn) {
         await signIn.authenticateWithRedirect(opts);
