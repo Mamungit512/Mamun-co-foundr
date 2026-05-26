@@ -3,19 +3,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { FaHeart, FaLinkedin, FaGithub, FaTwitter, FaGlobe, FaCalendar } from "react-icons/fa6";
-import { TbSend } from "react-icons/tb";
 import { MdSkipNext } from "react-icons/md";
 import { IoSearchOutline, IoCloseOutline } from "react-icons/io5";
 import { motion, AnimatePresence } from "motion/react";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 
 import HiringBadge from "@/components/HiringBadge";
 import { useGetProfiles, useSearchProfiles } from "@/features/profile/useProfile";
 import { useSchool } from "@/components/school/SchoolContext";
 import { useToggleLike, useLikeStatus, useMutualLikes } from "@/features/likes/useLikes";
-import { useCreateConversation } from "@/hooks/useConversations";
 import { useSkipProfile } from "@/features/user-actions/useUserActions";
 import { trackEvent } from "@/lib/posthog-events";
 import { getSchoolFullName, getDegreeAbbreviation, SECTOR_INTEREST_LABELS } from "@/lib/utSchoolsAndMajors";
@@ -24,17 +21,12 @@ import { getSchoolFullName, getDegreeAbbreviation, SECTOR_INTEREST_LABELS } from
 
 function SearchResultCard({
   profile,
-  slug,
 }: {
   profile: OnboardingData;
-  slug: string;
 }) {
-  const router = useRouter();
   const queryClient = useQueryClient();
-  const [isStartingConversation, setIsStartingConversation] = useState(false);
   const { toggleLike, isLoading: isLikeLoading } = useToggleLike();
   const { data: likeStatus } = useLikeStatus(profile.user_id);
-  const createConversationMutation = useCreateConversation();
 
   const initials =
     (profile.firstName?.[0] ?? "").toUpperCase() +
@@ -58,18 +50,6 @@ function SearchResultCard({
     } catch {
       toast.error("Failed to like profile");
     }
-  };
-
-  const handleMessage = async () => {
-    if (!profile.user_id || isStartingConversation) return;
-    setIsStartingConversation(true);
-    try {
-      await createConversationMutation.mutateAsync({ otherUserId: profile.user_id });
-      router.push(`/school/${slug}/matches?tab=messages`);
-    } catch {
-      toast.error("Failed to start conversation");
-    }
-    setIsStartingConversation(false);
   };
 
   return (
@@ -148,15 +128,6 @@ function SearchResultCard({
       {/* Actions */}
       <div className="flex items-center gap-3 border-t border-[var(--ui-border)] px-4 py-3">
         <button
-          onClick={handleMessage}
-          disabled={isStartingConversation}
-          className="flex flex-1 items-center justify-center gap-2 rounded-full bg-[#bf5700] py-2.5 text-white transition hover:bg-[#a04e00] disabled:opacity-50 cursor-pointer"
-        >
-          <TbSend className="h-4 w-4" />
-          <span className="text-sm font-medium">Message</span>
-        </button>
-
-        <button
           onClick={handleLike}
           disabled={isLikeLoading}
           className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full transition cursor-pointer ${
@@ -174,29 +145,16 @@ function SearchResultCard({
 
 // ─── Main dashboard page ───────────────────────────────────────────────────────
 
-export default function SchoolDashboardPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const [isStartingConversation, setIsStartingConversation] = useState(false);
+export default function SchoolDashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [slug, setSlug] = useState<string>("");
   const queryClient = useQueryClient();
-  const router = useRouter();
   const cardRef = useRef<HTMLDivElement>(null);
-
-  // Resolve slug once
-  useEffect(() => {
-    params.then((p) => setSlug(p.slug));
-  }, [params]);
 
   const { schoolName } = useSchool();
   const { data: profiles } = useGetProfiles();
   const { data: searchResults, isFetching: isSearching } = useSearchProfiles(searchQuery);
   const { toggleLike, isLoading: isLikeLoading } = useToggleLike();
   useMutualLikes();
-  const createConversationMutation = useCreateConversation();
   const skipProfileMutation = useSkipProfile();
 
   const isSearchActive = searchQuery.trim().length >= 2;
@@ -251,21 +209,6 @@ export default function SchoolDashboardPage({
     } catch {
       toast.error("Failed to skip profile");
     }
-  };
-
-  const handleMessage = async () => {
-    if (!curProfile?.user_id || isStartingConversation) return;
-    const resolvedParams = await params;
-    setIsStartingConversation(true);
-    try {
-      await createConversationMutation.mutateAsync({
-        otherUserId: curProfile.user_id,
-      });
-    } catch {
-      toast.error("Failed to start conversation");
-    }
-    setIsStartingConversation(false);
-    router.push(`/school/${resolvedParams.slug}/matches?tab=messages`);
   };
 
   const brandingHeader = (
@@ -350,7 +293,7 @@ export default function SchoolDashboardPage({
           {searchResults && searchResults.length > 0 && (
             <div className="flex flex-col gap-3">
               {searchResults.map((profile) => (
-                <SearchResultCard key={profile.user_id} profile={profile} slug={slug} />
+                <SearchResultCard key={profile.user_id} profile={profile} />
               ))}
             </div>
           )}
@@ -566,15 +509,6 @@ export default function SchoolDashboardPage({
                   className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-[var(--ui-border-strong)] text-[var(--ui-text-muted)] transition hover:border-[var(--ui-text-muted)] hover:text-[var(--ui-text)] cursor-pointer"
                 >
                   <MdSkipNext className="h-5 w-5" />
-                </button>
-
-                <button
-                  onClick={handleMessage}
-                  disabled={isStartingConversation}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-full bg-[#bf5700] py-3 text-white transition hover:bg-[#a04e00] disabled:opacity-50 cursor-pointer"
-                >
-                  <TbSend className="h-5 w-5" />
-                  <span className="text-sm font-medium">Message</span>
                 </button>
 
                 <button
