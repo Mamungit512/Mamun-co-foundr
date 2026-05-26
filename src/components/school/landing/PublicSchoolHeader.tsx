@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { FaHeart } from "react-icons/fa";
 
 export default function PublicSchoolHeader() {
   return (
@@ -26,20 +25,6 @@ export default function PublicSchoolHeader() {
         >
           Contact us
         </a>
-
-        <div className="relative flex items-center">
-          <FaHeart className="h-[17px] w-[17px] text-white/80" />
-          <span
-            className="absolute -right-1.5 -top-1.5 flex h-[14px] w-[14px] items-center justify-center rounded-full border-[1.5px] text-[8px] font-bold"
-            style={{
-              backgroundColor: "#ffffff",
-              color: "#bf5700",
-              borderColor: "#bf5700",
-            }}
-          >
-            0
-          </span>
-        </div>
 
         <Link
           href="/school/ut/sign-in"

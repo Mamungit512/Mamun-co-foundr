@@ -178,7 +178,7 @@ export default function DepartmentMosaic() {
         </p>
 
         <TierHeader
-          label="Tier 1 — Core Schools · Highest founder density"
+          label="Tier 1 — Core Schools"
           dotColor="#bf5700"
         />
         <div className="mb-8 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
@@ -188,7 +188,7 @@ export default function DepartmentMosaic() {
         </div>
 
         <TierHeader
-          label="Tier 2 — Partner Schools · Strong secondary pipeline"
+          label="Tier 2 — Partner Schools"
           dotColor="#9cadb7"
         />
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">

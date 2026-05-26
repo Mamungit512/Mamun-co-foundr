@@ -4,27 +4,32 @@ import { createClient } from "@supabase/supabase-js";
 
 export async function GET() {
   try {
-    // Get the authenticated user from Clerk
-    const { userId } = await auth();
+    const { userId, sessionClaims } = await auth();
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Create Supabase client with service role key (bypasses RLS)
+    // School org users have no swipe limits
+    const orgId = (sessionClaims?.metadata as Record<string, unknown>)?.organization_id as string | undefined ?? null;
+    if (orgId) {
+      return NextResponse.json({
+        count: 0,
+        hasReachedLimit: false,
+        currentCount: 0,
+        limit: Infinity,
+      });
+    }
+
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
-    // Get today's date in UTC
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
     const todayISO = today.toISOString();
 
-    console.log("Checking swipe count for user:", userId, "since:", todayISO);
-
-    // Get user's internal profile ID first
     const { data: userProfile, error: profileError } = await supabase
       .from("profiles")
       .select("id")
@@ -41,7 +46,6 @@ export async function GET() {
 
     const userProfileId = userProfile.id;
 
-    // Count likes from likes table
     const { count: likesCount, error: likesError } = await supabase
       .from("likes")
       .select("*", { count: "exact", head: true })
@@ -56,7 +60,6 @@ export async function GET() {
       );
     }
 
-    // Count skips from user_profile_actions table
     const { count: skipsCount, error: skipsError } = await supabase
       .from("user_profile_actions")
       .select("*", { count: "exact", head: true })
@@ -73,16 +76,7 @@ export async function GET() {
     }
 
     const totalSwipes = (likesCount || 0) + (skipsCount || 0);
-    const limit = 10; // Free plan limit
-
-    console.log(
-      "Likes count:",
-      likesCount,
-      "Skips count:",
-      skipsCount,
-      "Total:",
-      totalSwipes,
-    );
+    const limit = 10;
 
     return NextResponse.json({
       count: totalSwipes,

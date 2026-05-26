@@ -110,6 +110,7 @@ export async function getConversationById(
 export async function getUserConversations(
   currentUserId: string,
   supabaseClient: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  organizationId: string | null = null,
 ): Promise<{
   conversations: ConversationWithOtherParticipant[];
   error?: string;
@@ -117,7 +118,6 @@ export async function getUserConversations(
   const supabase = supabaseClient;
 
   try {
-    // 1️⃣ Fetch conversations where the user is a participant
     const { data, error } = await supabase
       .from("conversation_participants")
       .select(
@@ -130,8 +130,7 @@ export async function getUserConversations(
         )
       `,
       )
-      .eq("user_id", currentUserId)
-      .order("conversations(last_message_at)", { ascending: false });
+      .eq("user_id", currentUserId);
 
     if (error) {
       console.error("Error fetching conversations:", error.message);
@@ -142,7 +141,6 @@ export async function getUserConversations(
       return { conversations: [], error: undefined };
     }
 
-    // 2️⃣ For each conversation, get the other participant's profile
     const conversationsWithOtherParticipants: ConversationWithOtherParticipant[] =
       [];
 
@@ -153,7 +151,6 @@ export async function getUserConversations(
         ? conversations[0]
         : conversations;
 
-      // Get the other participant's user_id
       const { data: otherParticipantData, error: otherParticipantError } =
         await supabase
           .from("conversation_participants")
@@ -170,20 +167,25 @@ export async function getUserConversations(
         continue;
       }
 
-      // Get the other participant's profile
-      const { data: profileData, error: profileError } = await supabase
+      let profileQuery = supabase
         .from("profiles")
         .select("user_id, first_name, last_name, pfp_url, title")
         .eq("user_id", otherParticipantData.user_id)
-        .is("deleted_at", null)
-        .single();
+        .is("deleted_at", null);
+
+      if (organizationId) {
+        profileQuery = profileQuery.eq("organization_id", organizationId);
+      } else {
+        profileQuery = profileQuery.is("organization_id", null);
+      }
+
+      const { data: profileData, error: profileError } =
+        await profileQuery.single();
 
       if (profileError || !profileData) {
-        console.error("Error fetching profile:", profileError);
         continue;
       }
 
-      // Get the other participant's activity data
       const { data: activityData } = await supabase
         .from("user_activity_summary")
         .select("last_active_at")
@@ -204,6 +206,12 @@ export async function getUserConversations(
         },
       });
     }
+
+    conversationsWithOtherParticipants.sort((a, b) => {
+      const aTime = a.last_message_at ? new Date(a.last_message_at).getTime() : 0;
+      const bTime = b.last_message_at ? new Date(b.last_message_at).getTime() : 0;
+      return bTime - aTime;
+    });
 
     return {
       conversations: conversationsWithOtherParticipants,
