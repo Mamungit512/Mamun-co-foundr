@@ -34,13 +34,15 @@ export default function PublicFooter() {
               >
                 UT Luma Events
               </a>
-              <Link
-                href="/cap-table"
+              <a
+                href="https://www.cakeequity.com/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block text-xs hover:text-white"
                 style={{ color: "#9cadb7" }}
               >
-                Create Cap Table
-              </Link>
+                Create a Cap Table
+              </a>
             </div>
             <div>
               <div
