@@ -1,3 +1,7 @@
+"use client";
+
+import { motion } from "framer-motion";
+
 type Dept = {
   name: string;
   programs: string;
@@ -103,8 +107,13 @@ const TIER_2: Dept[] = [
 
 function Card({ dept, featured }: { dept: Dept; featured?: boolean }) {
   return (
-    <div
-      className="relative overflow-hidden rounded-lg bg-white p-3"
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      whileHover={{ scale: 1.05, y: -4 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      viewport={{ once: true, margin: "-50px" }}
+      className="relative overflow-hidden rounded-lg bg-white p-3 cursor-pointer"
       style={{
         border: featured ? `1.5px solid ${dept.accent}` : "0.5px solid #e8e4dc",
       }}
@@ -136,7 +145,7 @@ function Card({ dept, featured }: { dept: Dept; featured?: boolean }) {
           </span>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
 

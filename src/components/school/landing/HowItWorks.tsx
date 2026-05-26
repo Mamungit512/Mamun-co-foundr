@@ -1,3 +1,7 @@
+"use client";
+
+import { motion } from "framer-motion";
+
 const STEPS = [
   {
     n: 1,
@@ -17,23 +21,50 @@ const STEPS = [
 ];
 
 export default function HowItWorks() {
+  const container = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  };
+
   return (
     <section
       className="px-6 py-20"
       style={{ backgroundColor: "#d6d2c4" }}
     >
       <div className="mx-auto max-w-5xl">
-        <h2
+        <motion.h2
+          initial={{ opacity: 0, y: -10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
           className="mb-10 text-center text-2xl font-semibold sm:text-3xl"
           style={{ color: "#333f48" }}
         >
           Three steps to your ideal founding partner
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-3">
+        </motion.h2>
+        <motion.div
+          className="grid gap-4 sm:grid-cols-3"
+          variants={container}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+        >
           {STEPS.map((s) => (
-            <div
+            <motion.div
               key={s.n}
-              className="rounded-lg border border-black/5 bg-white p-6"
+              variants={item}
+              whileHover={{ y: -8, boxShadow: "0 12px 24px rgba(0,0,0,0.1)" }}
+              className="rounded-lg border border-black/5 bg-white p-6 transition-shadow cursor-pointer"
             >
               <div
                 className="mb-4 flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold text-white"
@@ -53,9 +84,9 @@ export default function HowItWorks() {
               >
                 {s.desc}
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
