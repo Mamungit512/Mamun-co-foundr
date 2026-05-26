@@ -118,7 +118,7 @@ export default function SchoolSignIn({
             className="mb-1 text-2xl font-semibold tracking-tight"
             style={{ color: "#333f48" }}
           >
-            Sign in to {schoolName}
+            Sign into McCombs Co-foundr Matching Engine
           </h1>
           <p className="text-sm" style={{ color: "#9cadb7" }}>
             Use your {allowedCopy} account.
