@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { FaArrowLeft, FaEnvelope, FaUser } from "react-icons/fa6";
+import { FaArrowLeft, FaEnvelope, FaUser, FaHandshake } from "react-icons/fa6";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@clerk/nextjs";
@@ -13,6 +13,10 @@ import { Message } from "@/features/messages/messagesService";
 import AIWriter from "@/components/ui/AIWriter";
 import { trackEvent } from "@/lib/posthog-events";
 import ActivityIndicator from "@/components/ActivityIndicator";
+import ProfileDetailModal from "@/features/matches/ProfileDetailModal";
+import { useProfileByUserId } from "@/features/profile/useProfile";
+import { useWeMatch, useWeMatchStatus } from "@/features/matches/useWeMatch";
+import { useToggleLike } from "@/features/likes/useLikes";
 
 interface ConversationPageProps {
   params: Promise<{
@@ -30,6 +34,7 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
   const [isSending, setIsSending] = React.useState<boolean>(false);
   const [sendError, setSendError] = React.useState<string | null>(null);
   const [isLimitReached, setIsLimitReached] = React.useState<boolean>(false);
+  const [showProfile, setShowProfile] = React.useState<boolean>(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -44,6 +49,14 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
   const { data: conversation, isLoading: isConversationLoading } =
     useConversation(conversationId);
   const currentUserId = session?.user?.id;
+
+  const otherUserId = conversation?.otherParticipant?.id ?? "";
+  const { data: otherProfile } = useProfileByUserId(otherUserId, !!otherUserId);
+  const weMatchMutation = useWeMatch();
+  const { data: weMatchStatus } = useWeMatchStatus();
+  const { toggleLike, isLoading: isUnliking } = useToggleLike();
+  const sentSet = new Set(weMatchStatus?.sent ?? []);
+  const mutualSet = new Set(weMatchStatus?.mutualNotified ?? []);
 
   React.useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -107,47 +120,81 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
           <span className="text-sm font-medium">Back</span>
         </button>
 
-        <div className="flex items-center gap-3">
-          <div className="relative h-10 w-10 overflow-hidden rounded-full">
-            {isConversationLoading ? (
-              <div className="flex h-full w-full items-center justify-center bg-[var(--ui-surface)] text-[var(--ui-text-muted)]">
-                <FaUser className="h-5 w-5" />
-              </div>
-            ) : conversation?.otherParticipant?.pfp_url ? (
-              <Image
-                src={conversation.otherParticipant.pfp_url}
-                alt={`${conversation.otherParticipant.first_name || ""} ${conversation.otherParticipant.last_name || ""}`.trim()}
-                width={40}
-                height={40}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center bg-[var(--ui-surface)] text-[var(--ui-text-muted)]">
-                <FaUser className="h-5 w-5" />
-              </div>
-            )}
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold text-[var(--ui-text)]">
-                {isConversationLoading
-                  ? "Loading..."
-                  : conversation?.otherParticipant
-                    ? `${conversation.otherParticipant.first_name || ""} ${conversation.otherParticipant.last_name || ""}`.trim() || "Conversation"
-                    : "Conversation"}
-              </h1>
-              {!isConversationLoading && conversation?.otherParticipant && (
-                <ActivityIndicator
-                  lastActiveAt={conversation.otherParticipant.last_active_at}
-                  size="sm"
-                  showLabel={true}
+        <div className="flex flex-1 items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="relative h-10 w-10 overflow-hidden rounded-full">
+              {isConversationLoading ? (
+                <div className="flex h-full w-full items-center justify-center bg-[var(--ui-surface)] text-[var(--ui-text-muted)]">
+                  <FaUser className="h-5 w-5" />
+                </div>
+              ) : conversation?.otherParticipant?.pfp_url ? (
+                <Image
+                  src={conversation.otherParticipant.pfp_url}
+                  alt={`${conversation.otherParticipant.first_name || ""} ${conversation.otherParticipant.last_name || ""}`.trim()}
+                  width={40}
+                  height={40}
+                  className="h-full w-full object-cover"
                 />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-[var(--ui-surface)] text-[var(--ui-text-muted)]">
+                  <FaUser className="h-5 w-5" />
+                </div>
               )}
             </div>
-            <p className="text-xs text-[var(--ui-text-muted)]">
-              {messages.length}/20 messages
-            </p>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg font-bold text-[var(--ui-text)]">
+                  {isConversationLoading
+                    ? "Loading..."
+                    : conversation?.otherParticipant
+                      ? `${conversation.otherParticipant.first_name || ""} ${conversation.otherParticipant.last_name || ""}`.trim() || "Conversation"
+                      : "Conversation"}
+                </h1>
+                {!isConversationLoading && conversation?.otherParticipant && (
+                  <ActivityIndicator
+                    lastActiveAt={conversation.otherParticipant.last_active_at}
+                    size="sm"
+                    showLabel={true}
+                  />
+                )}
+              </div>
+              <p className="text-xs text-[var(--ui-text-muted)]">
+                {messages.length}/20 messages
+              </p>
+            </div>
           </div>
+
+          {!isConversationLoading && conversation?.otherParticipant && (
+            <div className="flex items-center gap-2">
+              {mutualSet.has(otherUserId) ? (
+                <span className="flex items-center gap-1.5 rounded-full bg-[var(--org-primary)] px-3 py-1.5 text-xs font-semibold text-white">
+                  <FaHandshake className="h-3 w-3" />
+                  It&apos;s a Match!
+                </span>
+              ) : sentSet.has(otherUserId) ? (
+                <span className="flex items-center gap-1.5 rounded-full border border-[var(--ui-border)] px-3 py-1.5 text-xs font-medium text-[var(--ui-text-muted)]">
+                  <FaHandshake className="h-3 w-3" />
+                  Matched ✓
+                </span>
+              ) : (
+                <button
+                  onClick={() => weMatchMutation.mutate({ toUserId: otherUserId })}
+                  disabled={weMatchMutation.isPending}
+                  className="flex items-center gap-1.5 rounded-full border border-[var(--org-primary)] px-3 py-1.5 text-xs font-medium text-[var(--org-primary)] transition hover:bg-[var(--org-primary)] hover:text-white disabled:opacity-50 cursor-pointer"
+                >
+                  <FaHandshake className="h-3 w-3" />
+                  We Match
+                </button>
+              )}
+              <button
+                onClick={() => setShowProfile(true)}
+                className="flex items-center gap-1.5 rounded-full border border-[var(--ui-border)] px-3 py-1.5 text-xs font-medium text-[var(--ui-text-muted)] transition hover:border-[var(--org-primary)] hover:text-[var(--org-primary)] cursor-pointer"
+              >
+                <FaUser className="h-3 w-3" />
+                View Profile
+              </button>
+            </div>
+          )}
         </div>
       </motion.div>
 
@@ -262,6 +309,23 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
           </form>
         </div>
       </motion.div>
+
+      <ProfileDetailModal
+        profile={showProfile ? (otherProfile ?? null) : null}
+        onClose={() => setShowProfile(false)}
+        sentSet={sentSet}
+        mutualSet={mutualSet}
+        onWeMatch={(userId) => weMatchMutation.mutate({ toUserId: userId })}
+        onMessage={() => setShowProfile(false)}
+        onUnlike={async (userId) => {
+          await toggleLike(userId, true);
+          setShowProfile(false);
+        }}
+        isWeMatchPending={weMatchMutation.isPending}
+        isMessagePending={false}
+        isUnlikePending={isUnliking}
+        weMatchPendingId={weMatchMutation.variables?.toUserId}
+      />
     </div>
   );
 }
