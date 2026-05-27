@@ -19,12 +19,14 @@ type Props = {
   slug: string;
   schoolName: string;
   allowedDomains: string[];
+  initialError?: string | null;
 };
 
 export default function SchoolSignIn({
   slug,
   schoolName,
   allowedDomains,
+  initialError = null,
 }: Props) {
   const { isLoaded, signIn, setActive } = useSignIn();
   const { getToken } = useAuth();
@@ -32,7 +34,7 @@ export default function SchoolSignIn({
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError);
   const [submitting, setSubmitting] = useState(false);
   const [existingUser, setExistingUser] = useState<ExistingUserInfo>({
     exists: false,

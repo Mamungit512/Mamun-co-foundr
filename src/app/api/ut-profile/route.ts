@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     // 1. Upsert shared profile fields
     const { error: profileError } = await supabase
       .from("profiles")
-      .upsert({ user_id: userId, ...dbData }, { onConflict: "user_id" });
+      .upsert({ user_id: userId, organization_id: orgId, ...dbData }, { onConflict: "user_id" });
 
     if (profileError) {
       console.error("Supabase profiles upsert error:", profileError);
