@@ -125,10 +125,13 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
 
     const schoolPrefix = `/school/${hostOrg.slug}`;
 
-    // If a signed-in user belongs to a different org, kick them to apex
+    // If a signed-in user belongs to a different org, kick them to apex —
+    // unless they're on an auth-flow path, where /sso-complete needs to
+    // render "This isn't your portal" (or the page needs to assign org).
     if (userId) {
       const orgId = sessionClaims?.metadata?.organization_id;
-      if (orgId && orgId !== hostOrg.id) {
+      const isAuthFlowPath = /\/(sign-in|sign-up|sso-callback|sso-complete)(\/|$)/.test(pathname);
+      if (orgId && orgId !== hostOrg.id && !isAuthFlowPath) {
         return NextResponse.redirect(new URL("/", "https://www.mamuncofoundr.com"));
       }
     }

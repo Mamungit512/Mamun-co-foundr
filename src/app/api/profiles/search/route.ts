@@ -55,26 +55,47 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ profiles: [] });
     }
 
-    // FTS on profiles (bio, startup, interests, title, city)
+    // Build a prefix tsquery: each word gets :* so "fin" matches "finance", "eng" matches "engineering"
+    // Sanitise each token to alphanumeric to prevent tsquery injection
+    const tsquery = q
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((w) => w.replace(/[^\w]/g, ""))
+      .filter((w) => w.length > 0)
+      .map((w) => `${w}:*`)
+      .join(" & ");
+
+    // FTS with prefix matching on profiles (name, bio, startup, interests, title, city)
+    // Omitting `type` uses to_tsquery which accepts raw tsquery syntax including :*
     const { data: profileMatches } = await supabase
       .from("profiles")
       .select("user_id")
       .in("user_id", eligible)
       .is("deleted_at", null)
-      .textSearch("search_tsv", q, { type: "plain", config: "english" });
+      .textSearch("search_tsv", tsquery, { config: "english" });
 
-    // FTS on school_profiles (major, college, sector_interests)
+    // FTS with prefix matching on school_profiles (major, college, sector_interests)
     const { data: schoolMatches } = await supabase
       .from("school_profiles")
       .select("user_id")
       .eq("organization_id", orgId)
       .in("user_id", eligible)
-      .textSearch("search_tsv", q, { type: "plain", config: "english" });
+      .textSearch("search_tsv", tsquery, { config: "english" });
 
-    // Union matched user IDs from both tables
+    // ilike fallback for partial name matches (e.g. "Jo" → "John")
+    const { data: nameMatches } = await supabase
+      .from("profiles")
+      .select("user_id")
+      .in("user_id", eligible)
+      .is("deleted_at", null)
+      .or(`first_name.ilike.%${q}%,last_name.ilike.%${q}%`);
+
+    // Union matched user IDs from all sources
     const matchedSet = new Set([
       ...(profileMatches?.map((r) => r.user_id) ?? []),
       ...(schoolMatches?.map((r) => r.user_id) ?? []),
+      ...(nameMatches?.map((r) => r.user_id) ?? []),
     ]);
     const matchedIds = Array.from(matchedSet);
 

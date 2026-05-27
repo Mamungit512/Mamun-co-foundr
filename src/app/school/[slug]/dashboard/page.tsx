@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { FaHeart, FaLinkedin, FaGithub, FaTwitter, FaGlobe, FaCalendar } from "react-icons/fa6";
+import { FaPaperPlane, FaLinkedin, FaGithub, FaTwitter, FaGlobe, FaCalendar } from "react-icons/fa6";
 import { MdSkipNext } from "react-icons/md";
 import { IoSearchOutline, IoCloseOutline } from "react-icons/io5";
 import { motion, AnimatePresence } from "motion/react";
@@ -77,7 +77,12 @@ function SearchResultCard({
                 {profile.firstName} {profile.lastName}
               </span>
               {profile.utStatus && (
-                <span className="inline-flex items-center rounded-md border border-[var(--ui-border-strong)] px-2 py-0.5 text-[10px] font-medium text-[var(--ui-text-muted)]">
+                <span
+                  className="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-medium text-white"
+                  style={{
+                    backgroundColor: profile.utStatus === "student" ? "#22c55e" : "#a855f7",
+                  }}
+                >
                   {profile.utStatus === "student" ? "Student" : "Alumni"}
                 </span>
               )}
@@ -130,13 +135,14 @@ function SearchResultCard({
         <button
           onClick={handleLike}
           disabled={isLikeLoading}
-          className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full transition cursor-pointer ${
+          className={`flex h-10 px-3 flex-shrink-0 items-center justify-center gap-2 rounded-full transition cursor-pointer text-sm font-medium ${
             likeStatus?.isLiked
               ? "bg-pink-500 text-white"
               : "border border-[var(--ui-border-strong)] text-[var(--ui-text-muted)] hover:border-pink-400 hover:text-pink-400"
           }`}
         >
-          <FaHeart className="h-4 w-4" />
+          <FaPaperPlane className="h-3.5 w-3.5" />
+          <span>Invite</span>
         </button>
       </div>
     </div>
@@ -376,7 +382,12 @@ export default function SchoolDashboardPage() {
 
                   <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
                     {curProfile.utStatus && (
-                      <span className="inline-flex items-center rounded-md border border-[var(--ui-border-strong)] px-2.5 py-1 text-xs font-medium text-[var(--ui-text-muted)]">
+                      <span
+                        className="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium text-white"
+                        style={{
+                          backgroundColor: curProfile.utStatus === "student" ? "#22c55e" : "#a855f7",
+                        }}
+                      >
                         {curProfile.utStatus === "student" ? "Student" : "Alumni"}
                       </span>
                     )}
@@ -473,10 +484,10 @@ export default function SchoolDashboardPage() {
                     )}
                     <div className="mt-2 flex flex-wrap gap-2">
                       {curProfile.startupTimeSpent && (
-                        <span className="rounded-md bg-[var(--ui-surface-active)] px-2.5 py-1 text-xs text-[var(--ui-text-muted)]">{curProfile.startupTimeSpent}</span>
+                        <span className="rounded-md bg-orange-100 px-2.5 py-1 text-xs text-orange-800 font-medium">{curProfile.startupTimeSpent}</span>
                       )}
                       {curProfile.startupFunding && (
-                        <span className="rounded-md bg-[var(--ui-surface-active)] px-2.5 py-1 text-xs text-[var(--ui-text-muted)]">{curProfile.startupFunding}</span>
+                        <span className="rounded-md bg-orange-100 px-2.5 py-1 text-xs text-orange-800 font-medium">{curProfile.startupFunding}</span>
                       )}
                     </div>
                   </div>
@@ -525,13 +536,14 @@ export default function SchoolDashboardPage() {
                 <button
                   onClick={handleLike}
                   disabled={isLikeLoading}
-                  className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full transition cursor-pointer ${
+                  className={`flex h-11 px-4 flex-shrink-0 items-center justify-center gap-2 rounded-full transition cursor-pointer font-medium ${
                     likeStatus?.isLiked
                       ? "bg-pink-500 text-white"
                       : "border border-[var(--ui-border-strong)] text-[var(--ui-text-muted)] hover:border-pink-400 hover:text-pink-400"
                   }`}
                 >
-                  <FaHeart className="h-5 w-5" />
+                  <FaPaperPlane className="h-4 w-4" />
+                  <span className="text-sm">Send invite</span>
                 </button>
               </div>
             </motion.div>
