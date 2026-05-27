@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { FaHeart, FaLinkedin, FaGithub, FaTwitter, FaGlobe, FaCalendar } from "react-icons/fa6";
+import { FaPaperPlane, FaLinkedin, FaGithub, FaTwitter, FaGlobe, FaCalendar } from "react-icons/fa6";
 import { MdSkipNext } from "react-icons/md";
 import { IoSearchOutline, IoCloseOutline } from "react-icons/io5";
 import { motion, AnimatePresence } from "motion/react";
@@ -77,7 +77,12 @@ function SearchResultCard({
                 {profile.firstName} {profile.lastName}
               </span>
               {profile.utStatus && (
-                <span className="inline-flex items-center rounded-md border border-[var(--ui-border-strong)] px-2 py-0.5 text-[10px] font-medium text-[var(--ui-text-muted)]">
+                <span
+                  className="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-medium text-white"
+                  style={{
+                    backgroundColor: profile.utStatus === "student" ? "#22c55e" : "#a855f7",
+                  }}
+                >
                   {profile.utStatus === "student" ? "Student" : "Alumni"}
                 </span>
               )}
@@ -130,13 +135,14 @@ function SearchResultCard({
         <button
           onClick={handleLike}
           disabled={isLikeLoading}
-          className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full transition cursor-pointer ${
+          className={`flex h-10 px-3 flex-shrink-0 items-center justify-center gap-2 rounded-full transition cursor-pointer text-sm font-medium ${
             likeStatus?.isLiked
               ? "bg-pink-500 text-white"
               : "border border-[var(--ui-border-strong)] text-[var(--ui-text-muted)] hover:border-pink-400 hover:text-pink-400"
           }`}
         >
-          <FaHeart className="h-4 w-4" />
+          <FaPaperPlane className="h-3.5 w-3.5" />
+          <span>Invite</span>
         </button>
       </div>
     </div>
@@ -147,6 +153,7 @@ function SearchResultCard({
 
 export default function SchoolDashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
   const queryClient = useQueryClient();
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -212,13 +219,22 @@ export default function SchoolDashboardPage() {
   };
 
   const brandingHeader = (
-    <div className="mb-5 text-center">
-      <p className="text-xs font-semibold uppercase tracking-widest text-[var(--ui-text-muted)]">
-        Mamun &times; {schoolName}
-      </p>
-      <h1 className="mt-0.5 text-base font-semibold text-[var(--ui-text)]">
-        Co-Founder Matching
-      </h1>
+    <div className="mb-4 flex items-center justify-between">
+      <div className="w-8" />
+      <div className="text-center">
+        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--ui-text-muted)]">
+          Mamun &times; {schoolName}
+        </p>
+        <h1 className="mt-0.5 text-base font-semibold text-[var(--ui-text)]">
+          Co-Founder Matching
+        </h1>
+      </div>
+      <button
+        onClick={() => setSearchOpen(true)}
+        className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--ui-text-muted)] hover:bg-[var(--ui-surface-active)] hover:text-[var(--ui-text)] transition cursor-pointer"
+      >
+        <IoSearchOutline className="h-4 w-4" />
+      </button>
     </div>
   );
 
@@ -248,25 +264,26 @@ export default function SchoolDashboardPage() {
     <div className="mx-auto max-w-2xl p-4 pt-6">
       {brandingHeader}
 
-      {/* Search bar */}
-      <div className="mb-4 flex items-center gap-2 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2.5">
-        <IoSearchOutline className="h-4 w-4 flex-shrink-0 text-[var(--ui-text-muted)]" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search by skill, major, industry…"
-          className="flex-1 bg-transparent text-sm text-[var(--ui-text)] placeholder:text-[var(--ui-text-muted)] outline-none"
-        />
-        {searchQuery && (
+      {/* Search bar — only shown when open */}
+      {searchOpen && (
+        <div className="mb-4 flex items-center gap-2 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2.5">
+          <IoSearchOutline className="h-4 w-4 flex-shrink-0 text-[var(--ui-text-muted)]" />
+          <input
+            autoFocus
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by skill, major, industry…"
+            className="flex-1 bg-transparent text-sm text-[var(--ui-text)] placeholder:text-[var(--ui-text-muted)] outline-none"
+          />
           <button
-            onClick={() => setSearchQuery("")}
+            onClick={() => { setSearchQuery(""); setSearchOpen(false); }}
             className="flex-shrink-0 text-[var(--ui-text-muted)] hover:text-[var(--ui-text)] cursor-pointer"
           >
             <IoCloseOutline className="h-4 w-4" />
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Search results */}
       {isSearchActive ? (
@@ -318,10 +335,10 @@ export default function SchoolDashboardPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
               transition={{ duration: 0.25 }}
-              className="overflow-hidden rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)]"
+              className={`flex flex-col overflow-hidden rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] ${searchOpen ? "max-h-[calc(100vh-210px)]" : "max-h-[calc(100vh-150px)]"}`}
             >
               {/* Card header with avatar, name, badges */}
-              <div className="p-5">
+              <div className="flex-1 overflow-y-auto p-5">
                 {/* Avatar + Name row */}
                 <div className="mb-4 flex items-start gap-3">
                   <div className="relative flex-shrink-0">
@@ -365,7 +382,12 @@ export default function SchoolDashboardPage() {
 
                   <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
                     {curProfile.utStatus && (
-                      <span className="inline-flex items-center rounded-md border border-[var(--ui-border-strong)] px-2.5 py-1 text-xs font-medium text-[var(--ui-text-muted)]">
+                      <span
+                        className="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium text-white"
+                        style={{
+                          backgroundColor: curProfile.utStatus === "student" ? "#22c55e" : "#a855f7",
+                        }}
+                      >
                         {curProfile.utStatus === "student" ? "Student" : "Alumni"}
                       </span>
                     )}
@@ -462,10 +484,10 @@ export default function SchoolDashboardPage() {
                     )}
                     <div className="mt-2 flex flex-wrap gap-2">
                       {curProfile.startupTimeSpent && (
-                        <span className="rounded-md bg-[var(--ui-surface-active)] px-2.5 py-1 text-xs text-[var(--ui-text-muted)]">{curProfile.startupTimeSpent}</span>
+                        <span className="rounded-md bg-orange-100 px-2.5 py-1 text-xs text-orange-800 font-medium">{curProfile.startupTimeSpent}</span>
                       )}
                       {curProfile.startupFunding && (
-                        <span className="rounded-md bg-[var(--ui-surface-active)] px-2.5 py-1 text-xs text-[var(--ui-text-muted)]">{curProfile.startupFunding}</span>
+                        <span className="rounded-md bg-orange-100 px-2.5 py-1 text-xs text-orange-800 font-medium">{curProfile.startupFunding}</span>
                       )}
                     </div>
                   </div>
@@ -514,13 +536,14 @@ export default function SchoolDashboardPage() {
                 <button
                   onClick={handleLike}
                   disabled={isLikeLoading}
-                  className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full transition cursor-pointer ${
+                  className={`flex h-11 px-4 flex-shrink-0 items-center justify-center gap-2 rounded-full transition cursor-pointer font-medium ${
                     likeStatus?.isLiked
                       ? "bg-pink-500 text-white"
                       : "border border-[var(--ui-border-strong)] text-[var(--ui-text-muted)] hover:border-pink-400 hover:text-pink-400"
                   }`}
                 >
-                  <FaHeart className="h-5 w-5" />
+                  <FaPaperPlane className="h-4 w-4" />
+                  <span className="text-sm">Send invite</span>
                 </button>
               </div>
             </motion.div>
