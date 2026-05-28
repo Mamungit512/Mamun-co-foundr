@@ -73,16 +73,15 @@ export default function PublicFooter() {
                   Privacy Policy
                 </Link>
               </motion.div>
-              <motion.a
-                href="https://www.mccombs.utexas.edu/about/contact/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-xs hover:text-white transition-colors"
-                style={{ color: "#9cadb7" }}
-                whileHover={{ color: "#ffffff" }}
-              >
-                Contact Us
-              </motion.a>
+              <motion.div whileHover={{ color: "#ffffff" }}>
+                <Link
+                  href="/school/ut/contact-us"
+                  className="block text-xs hover:text-white transition-colors"
+                  style={{ color: "#9cadb7" }}
+                >
+                  Contact Us
+                </Link>
+              </motion.div>
             </div>
           </div>
         </motion.div>
