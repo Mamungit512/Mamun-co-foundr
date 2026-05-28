@@ -18,7 +18,7 @@ export default function PublicFooter() {
           viewport={{ once: true }}
         >
           <div>
-            <div className="mb-1 text-sm font-semibold text-white">
+            <div className="mb-1 text-sm font-semibold" style={{ color: "#bf5700" }}>
               University of Texas at Austin Co-Foundr
             </div>
             <div className="text-xs" style={{ color: "#9cadb7" }}>
