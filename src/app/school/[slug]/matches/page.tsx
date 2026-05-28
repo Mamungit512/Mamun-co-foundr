@@ -190,7 +190,7 @@ export default function SchoolMatchesPage({
                 No conversations yet
               </p>
               <p className="text-sm text-[var(--ui-text-subtle)]">
-                Message a co-founder from their profile card to start chatting.
+                Message someone from their profile card to start chatting.
               </p>
             </div>
           ) : (
@@ -226,7 +226,7 @@ export default function SchoolMatchesPage({
                 No liked profiles yet
               </p>
               <p className="text-sm text-[var(--ui-text-subtle)]">
-                Like a co-founder from the dashboard and they&apos;ll appear
+                Like someone from the dashboard and they&apos;ll appear
                 here.
               </p>
             </div>
@@ -418,14 +418,14 @@ export default function SchoolMatchesPage({
             </p>
             <p className="mt-0.5 text-xs leading-relaxed text-amber-700">
               Once sent, it can&apos;t be retracted. Only click We Match when
-              you genuinely want to co-found with someone.
+              you genuinely want to work with someone.
             </p>
           </div>
 
           {/* Footer note */}
           <p className="rounded-lg border border-[var(--ui-border)] p-3 text-xs leading-relaxed text-[var(--ui-text-muted)]">
             We Match is separate from messaging. Use it as a stronger signal
-            that you want to co-found together. The email gives you both
+            that you want to work together. The email gives you both
             everything you need to connect directly.
           </p>
         </motion.div>
