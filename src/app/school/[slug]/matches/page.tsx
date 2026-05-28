@@ -11,6 +11,7 @@ import { ConversationWithOtherParticipant } from "@/features/conversations/conve
 import { useLikedProfilesData, useToggleLike } from "@/features/likes/useLikes";
 import { useWeMatch, useWeMatchStatus } from "@/features/matches/useWeMatch";
 import ProfileDetailModal from "@/features/matches/ProfileDetailModal";
+import MeetupCard from "@/features/matches/MeetupCard";
 import { useCreateConversation } from "@/hooks/useConversations";
 import { getDegreeAbbreviation } from "@/lib/utSchoolsAndMajors";
 import React, { useState, useEffect, useCallback } from "react";
@@ -30,6 +31,11 @@ export default function SchoolMatchesPage({
   const [activeTab, setActiveTab] = useState<Tab>(
     tabParam === "messages" ? "messages" : "liked"
   );
+  const [slug, setSlug] = useState<string>("");
+
+  useEffect(() => {
+    params.then((resolvedParams) => setSlug(resolvedParams.slug));
+  }, [params]);
 
   useEffect(() => {
     if (tabParam === "messages") {
@@ -363,6 +369,8 @@ export default function SchoolMatchesPage({
           animate={{ opacity: 1 }}
           className="space-y-4"
         >
+          {slug === "ut" && <MeetupCard />}
+
           <div className="text-center">
             <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-surface-active)]">
               <FaHandshake className="h-6 w-6 text-[var(--org-primary)]" />
