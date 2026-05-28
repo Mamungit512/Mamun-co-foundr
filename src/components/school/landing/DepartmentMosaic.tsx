@@ -149,21 +149,6 @@ function Card({ dept, featured }: { dept: Dept; featured?: boolean }) {
   );
 }
 
-function TierHeader({ label, dotColor }: { label: string; dotColor: string }) {
-  return (
-    <div
-      className="mb-3 flex items-center gap-2 border-b pb-2 text-[11px] font-semibold uppercase tracking-[0.08em]"
-      style={{ borderColor: "#e8e4dc", color: "#9cadb7" }}
-    >
-      <span
-        className="inline-block h-1.5 w-1.5 rounded-full"
-        style={{ backgroundColor: dotColor }}
-      />
-      {label}
-    </div>
-  );
-}
-
 export default function DepartmentMosaic() {
   return (
     <section
@@ -186,20 +171,12 @@ export default function DepartmentMosaic() {
           platform, one mission.
         </p>
 
-        <TierHeader
-          label="Tier 1 — Core Schools"
-          dotColor="#bf5700"
-        />
         <div className="mb-8 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
           {TIER_1.map((d, i) => (
             <Card key={d.name} dept={d} featured={i === 0} />
           ))}
         </div>
 
-        <TierHeader
-          label="Tier 2 — Partner Schools"
-          dotColor="#9cadb7"
-        />
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
           {TIER_2.map((d) => (
             <Card key={d.name} dept={d} />

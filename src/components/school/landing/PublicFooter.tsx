@@ -19,7 +19,7 @@ export default function PublicFooter() {
         >
           <div>
             <div className="mb-1 text-sm font-semibold text-white">
-              Texas McCombs Co-Foundr
+              University of Texas at Austin Co-Foundr
             </div>
             <div className="text-xs" style={{ color: "#9cadb7" }}>
               Co-Foundr Matching Platform
@@ -94,7 +94,7 @@ export default function PublicFooter() {
             color: "rgba(255,255,255,0.25)",
           }}
         >
-          © 2026 Texas McCombs Co-Foundr. Powered by Mamun. All rights
+          © 2026 University of Texas at Austin Co-Foundr. Powered by Mamun. All rights
           reserved.
         </div>
       </div>

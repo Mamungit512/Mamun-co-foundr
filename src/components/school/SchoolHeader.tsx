@@ -55,7 +55,7 @@ export default function SchoolHeader({ slug, schoolName, config }: SchoolHeaderP
     },
   ];
 
-  const headerText = config.branding.wordmark ? `${config.branding.wordmark} McCombs Co-Foundr` : schoolName;
+  const headerText = config.branding.wordmark ? `${config.branding.wordmark} Co-Foundr` : schoolName;
 
   return (
     <header
