@@ -147,7 +147,7 @@ function SearchResultCard({
           className={`flex h-10 px-3 flex-shrink-0 items-center justify-center gap-2 rounded-full transition cursor-pointer text-sm font-medium ${
             likeStatus?.isLiked
               ? "bg-pink-500 text-white"
-              : "border border-[var(--ui-border-strong)] text-[var(--ui-text-muted)] hover:border-pink-400 hover:text-pink-400"
+              : "bg-[#BF5700] text-white hover:bg-[#a34800]"
           }`}
         >
           <FaPaperPlane className="h-3.5 w-3.5" />
@@ -244,24 +244,26 @@ export default function SchoolDashboardPage() {
     <div className="mb-4 flex items-center justify-between">
       <div className="w-8" />
       <div className="text-center">
-        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--ui-text-muted)]">
-          Mamun &times; {schoolName}
+        <p className="text-xs font-semibold uppercase tracking-widest">
+          <span className="text-[#84cc16]">Mamun</span>
+          <span className="text-[var(--ui-text-muted)]"> &times; </span>
+          <span className="text-[#BF5700]">{schoolName}</span>
         </p>
         <h1 className="mt-0.5 text-base font-semibold text-[var(--ui-text)]">
-          Co-Founder Matching
+          UT co-foundr Matching
         </h1>
       </div>
       <div className="flex items-center gap-1">
         <button
           onClick={() => setFilterDrawerOpen(true)}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--ui-text-muted)] hover:bg-[var(--ui-surface-active)] hover:text-[var(--ui-text)] transition cursor-pointer lg:hidden"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-[#fff6f0] text-[#BF5700] hover:bg-[#ffe8d6] transition cursor-pointer lg:hidden"
           aria-label="Open filters"
         >
           <IoFilterOutline className="h-4 w-4" />
         </button>
         <button
           onClick={() => setSearchOpen(true)}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--ui-text-muted)] hover:bg-[var(--ui-surface-active)] hover:text-[var(--ui-text)] transition cursor-pointer"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-[#fff6f0] text-[#BF5700] hover:bg-[#ffe8d6] transition cursor-pointer"
           aria-label="Open search"
         >
           <IoSearchOutline className="h-4 w-4" />
@@ -330,19 +332,19 @@ export default function SchoolDashboardPage() {
 
       {/* Search bar — only shown when open */}
       {searchOpen && (
-        <div className="mb-4 flex items-center gap-2 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2.5">
-          <IoSearchOutline className="h-4 w-4 flex-shrink-0 text-[var(--ui-text-muted)]" />
+        <div className="mb-4 flex items-center gap-2 rounded-xl border-2 border-[#BF5700] bg-[#fff6f0] px-3 py-2.5">
+          <IoSearchOutline className="h-4 w-4 flex-shrink-0 text-[#BF5700]" />
           <input
             autoFocus
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by skill, major, industry…"
-            className="flex-1 bg-transparent text-sm text-[var(--ui-text)] placeholder:text-[var(--ui-text-muted)] outline-none"
+            className="flex-1 bg-transparent text-sm text-[#3d1a00] placeholder:text-[#bf5700]/60 outline-none"
           />
           <button
             onClick={() => { setSearchQuery(""); setSearchOpen(false); }}
-            className="flex-shrink-0 text-[var(--ui-text-muted)] hover:text-[var(--ui-text)] cursor-pointer"
+            className="flex-shrink-0 text-[#BF5700] hover:text-[#8a3d00] cursor-pointer"
           >
             <IoCloseOutline className="h-4 w-4" />
           </button>
@@ -627,7 +629,7 @@ export default function SchoolDashboardPage() {
                 <button
                   onClick={handleSkip}
                   disabled={skipProfileMutation.isPending}
-                  className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-[var(--ui-border-strong)] text-[var(--ui-text-muted)] transition hover:border-[var(--ui-text-muted)] hover:text-[var(--ui-text)] cursor-pointer"
+                  className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-[#BF5700] bg-[#fff6f0] text-[#BF5700] transition hover:bg-[#ffe8d6] cursor-pointer"
                 >
                   <MdSkipNext className="h-5 w-5" />
                 </button>
@@ -638,7 +640,7 @@ export default function SchoolDashboardPage() {
                   className={`flex h-11 px-4 flex-shrink-0 items-center justify-center gap-2 rounded-full transition cursor-pointer font-medium ${
                     likeStatus?.isLiked
                       ? "bg-pink-500 text-white"
-                      : "border border-[var(--ui-border-strong)] text-[var(--ui-text-muted)] hover:border-pink-400 hover:text-pink-400"
+                      : "bg-[#BF5700] text-white hover:bg-[#a34800]"
                   }`}
                 >
                   <FaPaperPlane className="h-4 w-4" />

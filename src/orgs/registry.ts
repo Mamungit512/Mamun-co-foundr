@@ -29,7 +29,7 @@ export const ORG_REGISTRY: Record<string, OrgConfig> = {
       textColor: "#333F48",
       logoUrl: "/orgs/ut/logo.svg",
       faviconUrl: "/orgs/ut/mamun-logo.png",
-      wordmark: "Texas",
+      wordmark: "University of Texas",
     },
     landing: {
       headline: "Find your co-founder at UT Austin.",
