@@ -45,9 +45,8 @@ export default function SchoolHeader({ slug, schoolName, config }: SchoolHeaderP
       label: "Find a co-foundr",
     },
     {
-      href: "https://www.mccombs.utexas.edu/about/contact/",
+      href: `/school/${slug}/contact-us`,
       label: "Contact us",
-      external: true,
     },
     {
       href: "/privacy-policy",
@@ -55,7 +54,7 @@ export default function SchoolHeader({ slug, schoolName, config }: SchoolHeaderP
     },
   ];
 
-  const headerText = config.branding.wordmark ? `${config.branding.wordmark} McCombs Co-Foundr` : schoolName;
+  const headerText = config.branding.wordmark ? `${config.branding.wordmark} Co-Foundr` : schoolName;
 
   return (
     <header
@@ -71,29 +70,20 @@ export default function SchoolHeader({ slug, schoolName, config }: SchoolHeaderP
 
       {/* Desktop nav */}
       <nav className="hidden flex-1 items-center justify-end gap-8 md:flex">
-        {navItems.map(({ href, label, external }) => {
-          const classes = clsx(
-            "text-sm font-medium transition-opacity border-b-2",
-            !external && pathname.startsWith(href)
-              ? "opacity-100 border-white"
-              : "opacity-70 hover:opacity-90 border-transparent",
-          );
-          return external ? (
-            <a
-              key={href}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={classes}
-            >
-              {label}
-            </a>
-          ) : (
-            <Link key={href} href={href} className={classes}>
-              {label}
-            </Link>
-          );
-        })}
+        {navItems.map(({ href, label }) => (
+          <Link
+            key={href}
+            href={href}
+            className={clsx(
+              "text-sm font-medium transition-opacity border-b-2",
+              pathname.startsWith(href)
+                ? "opacity-100 border-white"
+                : "opacity-70 hover:opacity-90 border-transparent",
+            )}
+          >
+            {label}
+          </Link>
+        ))}
       </nav>
 
       <div className="ml-4 flex items-center gap-4 md:ml-8 md:gap-6">
@@ -129,31 +119,17 @@ export default function SchoolHeader({ slug, schoolName, config }: SchoolHeaderP
           style={{ backgroundColor: config.branding.primaryColor }}
         >
           <ul className="p-2 space-y-0.5">
-            {navItems.map(({ href, label, external }) =>
-              external ? (
-                <li key={href}>
-                  <a
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block rounded-lg px-3 py-2 text-sm font-medium text-white/80 hover:bg-white/10 hover:text-white"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {label}
-                  </a>
-                </li>
-              ) : (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className="block rounded-lg px-3 py-2 text-sm font-medium text-white/80 hover:bg-white/10 hover:text-white"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {label}
-                  </Link>
-                </li>
-              )
-            )}
+            {navItems.map(({ href, label }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  className="block rounded-lg px-3 py-2 text-sm font-medium text-white/80 hover:bg-white/10 hover:text-white"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
       )}

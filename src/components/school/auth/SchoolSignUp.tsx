@@ -150,8 +150,8 @@ export default function SchoolSignUp({
           >
             {pendingVerification ? "Verify your email" : (
               <>
-                <span className="md:hidden">Create your McCombs co-foundr matching account</span>
-                <span className="hidden md:inline">Create McCombs Co-foundr Matching Engine account</span>
+                <span className="md:hidden">Create your University of Texas at Austin co-foundr matching account</span>
+                <span className="hidden md:inline">Create University of Texas at Austin Co-foundr Matching Engine account</span>
               </>
             )}
           </h1>

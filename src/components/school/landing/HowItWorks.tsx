@@ -11,12 +11,17 @@ const STEPS = [
   {
     n: 2,
     title: "Get matched",
-    desc: "Engine surfaces verified McCombs founders with complementary skills and aligned values.",
+    desc: "Engine surfaces verified University of Texas at Austin founders with complementary skills and aligned values.",
   },
   {
     n: 3,
+    title: "Meetup",
+    desc: "Connect and message to learn more about each other in person or over video.",
+  },
+  {
+    n: 4,
     title: "Start building",
-    desc: "Connect, message, and find the person you want to build the next decade with.",
+    desc: "Find the person you want to build the next decade with and get started.",
   },
 ];
 
@@ -50,10 +55,10 @@ export default function HowItWorks() {
           className="mb-10 text-center text-2xl font-semibold sm:text-3xl"
           style={{ color: "#333f48" }}
         >
-          Three steps to your ideal founding partner
+          Four steps to your ideal founding partner
         </motion.h2>
         <motion.div
-          className="grid gap-4 sm:grid-cols-3"
+          className="grid gap-4 sm:grid-cols-4"
           variants={container}
           initial="hidden"
           whileInView="visible"

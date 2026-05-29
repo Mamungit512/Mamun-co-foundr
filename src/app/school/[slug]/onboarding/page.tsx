@@ -45,8 +45,15 @@ function getCompletedSteps(
   if (isUT) {
     if (step2BaseFields && data.utStatus) completed.add(2);
     // Step 3: Startup details (has startup field required)
-    if (data.hasStartup && data.coFounderStatus !== undefined && data.equityExpectation !== undefined)
+    if (
+      data.hasStartup === "no" ||
+      (data.hasStartup === "yes" &&
+        data.coFounderStatus !== undefined &&
+        data.intent !== undefined &&
+        data.equityExpectation !== undefined)
+    ) {
       completed.add(3);
+    }
   } else {
     if (
       step2BaseFields &&

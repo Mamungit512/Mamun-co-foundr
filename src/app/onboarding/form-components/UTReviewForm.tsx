@@ -87,6 +87,17 @@ export default function UTReviewForm({
             { label: "Time Spent", value: data.startupTimeSpent || "—" },
             { label: "Funding Status", value: data.startupFunding || "—" },
             { label: "Co-Founder Status", value: data.coFounderStatus || "—" },
+            {
+              label: "Matching Intent",
+              value:
+                data.intent === "join_me"
+                  ? "Join me"
+                  : data.intent === "seeking_to_join"
+                    ? "Seeking to join"
+                    : data.intent === "no_preference"
+                      ? "No preference"
+                      : "—",
+            },
             { label: "Equity Expectation", value: data.equityExpectation ? `${data.equityExpectation}%` : "—" },
           ]}
           onEdit={() => onEdit(3)}

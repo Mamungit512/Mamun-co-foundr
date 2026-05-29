@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { FaPaperPlane, FaLinkedin, FaGithub, FaTwitter, FaGlobe, FaCalendar } from "react-icons/fa6";
 import { MdSkipNext } from "react-icons/md";
-import { IoSearchOutline, IoCloseOutline } from "react-icons/io5";
+import { IoSearchOutline, IoCloseOutline, IoFilterOutline } from "react-icons/io5";
 import { motion, AnimatePresence } from "motion/react";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -16,6 +16,15 @@ import { useToggleLike, useLikeStatus, useMutualLikes } from "@/features/likes/u
 import { useSkipProfile } from "@/features/user-actions/useUserActions";
 import { trackEvent } from "@/lib/posthog-events";
 import { getSchoolFullName, getDegreeAbbreviation, SECTOR_INTEREST_LABELS } from "@/lib/utSchoolsAndMajors";
+import FilterSidebar, { getFilterChipLabels } from "@/components/school/dashboard/FilterSidebar";
+import {
+  type DashboardFilters,
+  EMPTY_DASHBOARD_FILTERS,
+  hasActiveFilters,
+  getDashboardPanelHeightClass,
+  loadDashboardFilters,
+  saveDashboardFilters,
+} from "@/lib/dashboardFilters";
 
 // ─── Search result card ────────────────────────────────────────────────────────
 
@@ -154,17 +163,30 @@ function SearchResultCard({
 export default function SchoolDashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const [filters, setFilters] = useState<DashboardFilters>(EMPTY_DASHBOARD_FILTERS);
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const queryClient = useQueryClient();
   const cardRef = useRef<HTMLDivElement>(null);
 
   const { schoolName } = useSchool();
-  const { data: profiles } = useGetProfiles();
+  const { data: profiles, isLoading: isLoadingProfiles } = useGetProfiles(filters);
+
+  useEffect(() => {
+    setFilters(loadDashboardFilters());
+  }, []);
+
+  const updateFilters = (next: DashboardFilters) => {
+    setFilters(next);
+    saveDashboardFilters(next);
+  };
   const { data: searchResults, isFetching: isSearching } = useSearchProfiles(searchQuery);
   const { toggleLike, isLoading: isLikeLoading } = useToggleLike();
   useMutualLikes();
   const skipProfileMutation = useSkipProfile();
 
   const isSearchActive = searchQuery.trim().length >= 2;
+  const filtersActive = hasActiveFilters(filters);
+  const filterChips = getFilterChipLabels(filters);
   const curProfile = profiles?.[0];
   const { data: likeStatus } = useLikeStatus(curProfile?.user_id);
 
@@ -229,12 +251,22 @@ export default function SchoolDashboardPage() {
           Co-Founder Matching
         </h1>
       </div>
-      <button
-        onClick={() => setSearchOpen(true)}
-        className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--ui-text-muted)] hover:bg-[var(--ui-surface-active)] hover:text-[var(--ui-text)] transition cursor-pointer"
-      >
-        <IoSearchOutline className="h-4 w-4" />
-      </button>
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => setFilterDrawerOpen(true)}
+          className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--ui-text-muted)] hover:bg-[var(--ui-surface-active)] hover:text-[var(--ui-text)] transition cursor-pointer lg:hidden"
+          aria-label="Open filters"
+        >
+          <IoFilterOutline className="h-4 w-4" />
+        </button>
+        <button
+          onClick={() => setSearchOpen(true)}
+          className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--ui-text-muted)] hover:bg-[var(--ui-surface-active)] hover:text-[var(--ui-text)] transition cursor-pointer"
+          aria-label="Open search"
+        >
+          <IoSearchOutline className="h-4 w-4" />
+        </button>
+      </div>
     </div>
   );
 
@@ -260,9 +292,41 @@ export default function SchoolDashboardPage() {
     ? getSchoolFullName(curProfile.utCollege)
     : undefined;
 
+  const panelHeightClass = getDashboardPanelHeightClass(searchOpen);
+
+  const activeFilterChipsRow =
+    filtersActive && !isSearchActive ? (
+      <div className="mb-4">
+        <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[var(--ui-text-muted)]">
+          Active filters
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {filterChips.map((chip) => (
+            <button
+              key={chip.key}
+              type="button"
+              onClick={() => updateFilters(chip.onRemove())}
+              className="inline-flex items-center gap-1 rounded-md bg-[#bf5700] px-2.5 py-1 text-xs font-medium text-white cursor-pointer hover:opacity-90"
+            >
+              {chip.label}
+              <span aria-hidden>&times;</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    ) : null;
+
   return (
-    <div className="mx-auto max-w-2xl p-4 pt-6">
+    <div className="mx-auto max-w-5xl px-4 pt-6">
       {brandingHeader}
+
+      <FilterSidebar
+        variant="drawer"
+        filters={filters}
+        onChange={updateFilters}
+        isOpen={filterDrawerOpen}
+        onClose={() => setFilterDrawerOpen(false)}
+      />
 
       {/* Search bar — only shown when open */}
       {searchOpen && (
@@ -285,6 +349,17 @@ export default function SchoolDashboardPage() {
         </div>
       )}
 
+      {activeFilterChipsRow}
+
+      <div className="flex items-stretch gap-6">
+        <FilterSidebar
+          variant="sidebar"
+          filters={filters}
+          onChange={updateFilters}
+          panelHeightClass={panelHeightClass}
+        />
+
+        <div className="mx-auto w-full min-w-0 max-w-2xl flex-1">
       {/* Search results */}
       {isSearchActive ? (
         <div>
@@ -317,14 +392,38 @@ export default function SchoolDashboardPage() {
         </div>
       ) : (
         /* Swipe card */
-        !curProfile ? (
+        isLoadingProfiles ? (
           <div className="flex min-h-[calc(100vh-260px)] flex-col items-center justify-center gap-4 text-center">
-            <p className="text-xl font-semibold text-[var(--ui-text)]">
-              No more co-founders to show right now
-            </p>
-            <p className="text-sm text-[var(--ui-text-muted)]">
-              Check back later — more students from your program will be joining.
-            </p>
+            <p className="text-sm text-[var(--ui-text-muted)]">Loading profiles…</p>
+          </div>
+        ) : !curProfile ? (
+          <div className="flex min-h-[calc(100vh-260px)] flex-col items-center justify-center gap-4 text-center">
+            {filtersActive ? (
+              <>
+                <p className="text-xl font-semibold text-[var(--ui-text)]">
+                  No matches for these filters
+                </p>
+                <p className="text-sm text-[var(--ui-text-muted)]">
+                  Try adjusting your filters or clear them to see more co-founders.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => updateFilters(EMPTY_DASHBOARD_FILTERS)}
+                  className="mt-1 text-sm font-medium text-[#bf5700] hover:underline cursor-pointer"
+                >
+                  Clear filters
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-xl font-semibold text-[var(--ui-text)]">
+                  No more co-founders to show right now
+                </p>
+                <p className="text-sm text-[var(--ui-text-muted)]">
+                  Check back later — more students from your program will be joining.
+                </p>
+              </>
+            )}
           </div>
         ) : (
           <AnimatePresence mode="wait">
@@ -335,7 +434,7 @@ export default function SchoolDashboardPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
               transition={{ duration: 0.25 }}
-              className={`flex flex-col overflow-hidden rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] ${searchOpen ? "max-h-[calc(100vh-210px)]" : "max-h-[calc(100vh-150px)]"}`}
+              className={`flex flex-col overflow-hidden rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] ${panelHeightClass}`}
             >
               {/* Card header with avatar, name, badges */}
               <div className="flex-1 overflow-y-auto p-5">
@@ -550,6 +649,8 @@ export default function SchoolDashboardPage() {
           </AnimatePresence>
         )
       )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -11,6 +11,7 @@ import { ConversationWithOtherParticipant } from "@/features/conversations/conve
 import { useLikedProfilesData, useToggleLike } from "@/features/likes/useLikes";
 import { useWeMatch, useWeMatchStatus } from "@/features/matches/useWeMatch";
 import ProfileDetailModal from "@/features/matches/ProfileDetailModal";
+import MeetupCard from "@/features/matches/MeetupCard";
 import { useCreateConversation } from "@/hooks/useConversations";
 import { getDegreeAbbreviation } from "@/lib/utSchoolsAndMajors";
 import React, { useState, useEffect, useCallback } from "react";
@@ -30,6 +31,11 @@ export default function SchoolMatchesPage({
   const [activeTab, setActiveTab] = useState<Tab>(
     tabParam === "messages" ? "messages" : "liked"
   );
+  const [slug, setSlug] = useState<string>("");
+
+  useEffect(() => {
+    params.then((resolvedParams) => setSlug(resolvedParams.slug));
+  }, [params]);
 
   useEffect(() => {
     if (tabParam === "messages") {
@@ -190,7 +196,7 @@ export default function SchoolMatchesPage({
                 No conversations yet
               </p>
               <p className="text-sm text-[var(--ui-text-subtle)]">
-                Message a co-founder from their profile card to start chatting.
+                Message someone from their profile card to start chatting.
               </p>
             </div>
           ) : (
@@ -226,7 +232,7 @@ export default function SchoolMatchesPage({
                 No liked profiles yet
               </p>
               <p className="text-sm text-[var(--ui-text-subtle)]">
-                Like a co-founder from the dashboard and they&apos;ll appear
+                Like someone from the dashboard and they&apos;ll appear
                 here.
               </p>
             </div>
@@ -363,6 +369,8 @@ export default function SchoolMatchesPage({
           animate={{ opacity: 1 }}
           className="space-y-4"
         >
+          {slug === "ut" && <MeetupCard />}
+
           <div className="text-center">
             <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-surface-active)]">
               <FaHandshake className="h-6 w-6 text-[var(--org-primary)]" />
@@ -418,14 +426,14 @@ export default function SchoolMatchesPage({
             </p>
             <p className="mt-0.5 text-xs leading-relaxed text-amber-700">
               Once sent, it can&apos;t be retracted. Only click We Match when
-              you genuinely want to co-found with someone.
+              you genuinely want to work with someone.
             </p>
           </div>
 
           {/* Footer note */}
           <p className="rounded-lg border border-[var(--ui-border)] p-3 text-xs leading-relaxed text-[var(--ui-text-muted)]">
             We Match is separate from messaging. Use it as a stronger signal
-            that you want to co-found together. The email gives you both
+            that you want to work together. The email gives you both
             everything you need to connect directly.
           </p>
         </motion.div>

@@ -7,7 +7,7 @@ export default function PublicSchoolHeader() {
       style={{ backgroundColor: "#bf5700" }}
     >
       <Link href="/" className="text-xs sm:text-sm font-semibold text-white text-center sm:text-left">
-        Texas McCombs Co-Foundr
+        University of Texas at Austin Co-Foundr
       </Link>
 
       <nav className="flex flex-wrap items-center justify-center gap-3 sm:gap-5">
@@ -17,14 +17,12 @@ export default function PublicSchoolHeader() {
         >
           Find a co-foundr
         </a>
-        <a
-          href="https://www.mccombs.utexas.edu/about/contact/"
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          href="/school/ut/contact-us"
           className="text-xs sm:text-sm font-medium text-white/75 hover:text-white whitespace-nowrap"
         >
           Contact us
-        </a>
+        </Link>
 
         <Link
           href="/school/ut/sign-in"

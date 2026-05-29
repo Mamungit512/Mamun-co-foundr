@@ -109,3 +109,37 @@ export function mapOnboardingDatatoProfileDB(data: OnboardingData) {
     onboarding_complete: true,
   };
 }
+
+export function mapSchoolProfileToUTData(
+  row: SchoolProfileFromDb,
+): Partial<UTProfileData> {
+  return {
+    utStatus: row.school_status,
+    gradYear: row.graduation_year ?? undefined,
+    utCollege: (row.college as UTCollege | null) ?? undefined,
+    utDegreeType: row.degree_type ?? undefined,
+    utMajor: row.major ?? undefined,
+    utSectorInterests: (row.sector_interests as UTSectorInterest[] | null) ?? undefined,
+    intent: row.intent ?? undefined,
+    additionalEducation: row.additional_education ?? undefined,
+  };
+}
+
+export function mapUTDataToSchoolProfileRow(
+  data: OnboardingData,
+  userId: string,
+  organizationId: string,
+) {
+  return {
+    user_id: userId,
+    organization_id: organizationId,
+    school_status: data.utStatus,
+    graduation_year: data.gradYear ?? null,
+    college: data.utCollege ?? null,
+    degree_type: data.utDegreeType ?? null,
+    major: data.utMajor ?? null,
+    sector_interests: data.utSectorInterests ?? null,
+    additional_education: data.additionalEducation ?? null,
+    intent: data.intent ?? null,
+  };
+}

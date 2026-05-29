@@ -77,12 +77,44 @@ export async function GET(req: NextRequest) {
     // org). Acts as the "verified school user" filter. Must be scoped by
     // organization_id to avoid leaking cross-tenant existence.
     const inSchoolTenant = !useGeneralPool && !!orgId;
+
+    const collegeFilter = req.nextUrl.searchParams.get("college");
+    const sectorsParam = req.nextUrl.searchParams.get("sectors");
+    const gradYearParam = req.nextUrl.searchParams.get("gradYear");
+    const intentFilter = req.nextUrl.searchParams.get("intent");
+
+    const sectorFilters =
+      sectorsParam
+        ?.split(",")
+        .map((s) => s.trim())
+        .filter(Boolean) ?? [];
+
+    const gradYearFilter =
+      gradYearParam && !Number.isNaN(Number(gradYearParam))
+        ? Number(gradYearParam)
+        : null;
+
     let schoolUserIds: string[] | null = null;
     if (inSchoolTenant) {
-      const { data: schoolRows } = await supabase
+      let schoolQuery = supabase
         .from("school_profiles")
         .select("user_id")
         .eq("organization_id", orgId);
+
+      if (collegeFilter) {
+        schoolQuery = schoolQuery.eq("college", collegeFilter);
+      }
+      if (gradYearFilter !== null) {
+        schoolQuery = schoolQuery.eq("graduation_year", gradYearFilter);
+      }
+      if (sectorFilters.length > 0) {
+        schoolQuery = schoolQuery.overlaps("sector_interests", sectorFilters);
+      }
+      if (intentFilter === "join_me" || intentFilter === "seeking_to_join") {
+        schoolQuery = schoolQuery.in("intent", [intentFilter, "no_preference"]);
+      }
+
+      const { data: schoolRows } = await schoolQuery;
       schoolUserIds = schoolRows?.map((r) => r.user_id) ?? [];
     }
 
@@ -145,7 +177,7 @@ export async function GET(req: NextRequest) {
     if (inSchoolTenant && candidateIds.length > 0) {
       const { data: schoolRows } = await supabase
         .from("school_profiles")
-        .select("user_id, school_status, graduation_year, college, degree_type, major, sector_interests")
+        .select("user_id, school_status, graduation_year, college, degree_type, major, sector_interests, intent")
         .eq("organization_id", orgId)
         .in("user_id", candidateIds);
 
@@ -159,6 +191,7 @@ export async function GET(req: NextRequest) {
             utDegreeType: row.degree_type,
             utMajor: row.major,
             utSectorInterests: row.sector_interests,
+            intent: row.intent,
           },
         ]) ?? [],
       );
