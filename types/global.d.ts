@@ -107,6 +107,7 @@ declare global {
     degree_type: "bachelors" | "masters" | "professional" | "other" | null;
     major: string | null;
     sector_interests: string[] | null;
+    intent: "join_me" | "seeking_to_join" | "no_preference" | null;
     additional_education: string | null;
     school_data: Record<string, unknown>;
     created_at: string;
@@ -139,6 +140,7 @@ declare global {
     utDegreeType?: UTDegreeType;
     utMajor?: string;
     utSectorInterests?: UTSectorInterest[];
+    intent?: "join_me" | "seeking_to_join" | "no_preference";
     additionalEducation?: string;
   };
 

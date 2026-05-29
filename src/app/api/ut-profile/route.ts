@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
-import { mapOnboardingDatatoProfileDB } from "@/lib/mapProfileToFromDBFormat";
+import {
+  mapOnboardingDatatoProfileDB,
+  mapUTDataToSchoolProfileRow,
+} from "@/lib/mapProfileToFromDBFormat";
 
 export async function POST(request: NextRequest) {
   try {
@@ -91,20 +94,9 @@ export async function POST(request: NextRequest) {
     //    translated to generic column names here.
     const { error: schoolError } = await supabase
       .from("school_profiles")
-      .upsert(
-        {
-          user_id: userId,
-          organization_id: orgId,
-          school_status: body.utStatus,
-          graduation_year: body.gradYear ?? null,
-          college: body.utCollege ?? null,
-          degree_type: body.utDegreeType ?? null,
-          major: body.utMajor ?? null,
-          sector_interests: body.utSectorInterests ?? null,
-          additional_education: body.additionalEducation ?? null,
-        },
-        { onConflict: "user_id" },
-      );
+      .upsert(mapUTDataToSchoolProfileRow(body, userId, orgId), {
+        onConflict: "user_id",
+      });
 
     if (schoolError) {
       console.error("Supabase school_profiles upsert error:", schoolError);

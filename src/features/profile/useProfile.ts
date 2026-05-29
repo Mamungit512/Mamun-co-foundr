@@ -2,8 +2,12 @@ import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth, useSession } from "@clerk/nextjs";
 import toast from "react-hot-toast";
+import {
+  type DashboardFilters,
+  buildProfilesQueryString,
+} from "@/lib/dashboardFilters";
 
-export function useGetProfiles() {
+export function useGetProfiles(filters?: DashboardFilters) {
   const { userId } = useAuth();
   const { session } = useSession();
 
@@ -12,7 +16,7 @@ export function useGetProfiles() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["profiles"],
+    queryKey: ["profiles", filters],
     queryFn: async () => {
       const token = await session?.getToken();
 
@@ -24,8 +28,10 @@ export function useGetProfiles() {
         throw { message: "No user id. Please log in." };
       }
 
+      const queryString = filters ? buildProfilesQueryString(filters) : "";
+
       try {
-        const response = await fetch("/api/profiles", {
+        const response = await fetch(`/api/profiles${queryString}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
