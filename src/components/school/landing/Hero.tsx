@@ -42,7 +42,7 @@ export default function Hero() {
           variants={item}
           className="mx-auto mb-8 max-w-xl text-sm leading-relaxed text-white/70 sm:text-base"
         >
-          The McCombs co-foundr matching platform connects value-aligned students,
+          The University of Texas at Austin co-foundr matching platform connects value-aligned students,
           alumni, and faculty ready to build something that changes the world.
         </motion.p>
         <motion.div variants={item}>

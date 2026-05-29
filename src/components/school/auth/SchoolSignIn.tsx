@@ -120,8 +120,8 @@ export default function SchoolSignIn({
             className="mb-1 text-xl md:text-2xl font-semibold tracking-tight"
             style={{ color: "#333f48" }}
           >
-            <span className="md:hidden">Create your McCombs co-foundr matching account</span>
-            <span className="hidden md:inline">Sign into McCombs Co-foundr Matching Engine</span>
+            <span className="md:hidden">Sign into your University of Texas at Austin co-foundr matching account</span>
+            <span className="hidden md:inline">Sign into University of Texas at Austin Co-foundr Matching Engine</span>
           </h1>
           <p className="text-sm" style={{ color: "#9cadb7" }}>
             Use your {allowedCopy} account.

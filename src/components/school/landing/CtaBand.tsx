@@ -35,7 +35,7 @@ export default function CtaBand() {
           className="mb-2 text-[10px] font-medium uppercase tracking-[0.1em]"
           style={{ color: "rgba(255,255,255,0.5)" }}
         >
-          Texas McCombs School of Business
+          University of Texas at Austin
         </motion.div>
         <motion.h2
           variants={item}
@@ -47,7 +47,7 @@ export default function CtaBand() {
           variants={item}
           className="mx-auto mb-7 max-w-md text-sm leading-relaxed text-white/70"
         >
-          Join the McCombs co-foundr community — verified, value-aligned, and
+          Join the University of Texas at Austin co-foundr community — verified, value-aligned, and
           ready to build something that changes the world.
         </motion.p>
         <motion.div variants={item}>
@@ -60,7 +60,7 @@ export default function CtaBand() {
           </Link>
         </motion.div>
         <motion.div variants={item} className="text-xs text-white/40">
-          Exclusively for McCombs students, alumni, and faculty
+          Exclusively for University of Texas at Austin students, alumni, and faculty
         </motion.div>
       </motion.div>
     </section>

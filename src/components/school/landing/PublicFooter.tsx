@@ -18,8 +18,8 @@ export default function PublicFooter() {
           viewport={{ once: true }}
         >
           <div>
-            <div className="mb-1 text-sm font-semibold text-white">
-              Texas McCombs Co-Foundr
+            <div className="mb-1 text-sm font-semibold" style={{ color: "#bf5700" }}>
+              University of Texas at Austin Co-Foundr
             </div>
             <div className="text-xs" style={{ color: "#9cadb7" }}>
               Co-Foundr Matching Platform
@@ -73,16 +73,15 @@ export default function PublicFooter() {
                   Privacy Policy
                 </Link>
               </motion.div>
-              <motion.a
-                href="https://www.mccombs.utexas.edu/about/contact/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-xs hover:text-white transition-colors"
-                style={{ color: "#9cadb7" }}
-                whileHover={{ color: "#ffffff" }}
-              >
-                Contact Us
-              </motion.a>
+              <motion.div whileHover={{ color: "#ffffff" }}>
+                <Link
+                  href="/school/ut/contact-us"
+                  className="block text-xs hover:text-white transition-colors"
+                  style={{ color: "#9cadb7" }}
+                >
+                  Contact Us
+                </Link>
+              </motion.div>
             </div>
           </div>
         </motion.div>
@@ -94,7 +93,7 @@ export default function PublicFooter() {
             color: "rgba(255,255,255,0.25)",
           }}
         >
-          © 2026 Texas McCombs Co-Foundr. Powered by Mamun. All rights
+          © 2026 University of Texas at Austin Co-Foundr. Powered by Mamun. All rights
           reserved.
         </div>
       </div>

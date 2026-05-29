@@ -13,6 +13,7 @@ type UTStartupFormData = {
   startupTimeSpent?: string;
   startupFunding?: string;
   coFounderStatus?: string;
+  intent?: "join_me" | "seeking_to_join" | "no_preference";
   equityExpectation?: number;
 };
 
@@ -199,6 +200,49 @@ function UTStartupForm({
               </div>
               {errors.coFounderStatus && (
                 <p className="text-xs text-red-400">{errors.coFounderStatus.message}</p>
+              )}
+            </div>
+
+            {/* ── Co-founder intent ── */}
+            <div className="flex flex-col gap-y-3">
+              <label className={LABEL_CLS}>Co-Founder Matching Intent *</label>
+              <div className="flex flex-col gap-y-2">
+                {[
+                  {
+                    value: "join_me" as const,
+                    label: "Join me — I have a startup/idea",
+                  },
+                  {
+                    value: "seeking_to_join" as const,
+                    label: "Seeking to join — I want to join someone else's project",
+                  },
+                  {
+                    value: "no_preference" as const,
+                    label: "No preference — open to either",
+                  },
+                ].map(({ value, label }) => (
+                  <label key={value} className={PILL_RADIO_CLS}>
+                    <input
+                      type="radio"
+                      value={value}
+                      {...register("intent", {
+                        required: "Please select your matching intent",
+                      })}
+                      className="sr-only"
+                    />
+                    <span
+                      className={`h-4 w-4 shrink-0 rounded-full border-2 transition-all ${
+                        watch("intent") === value
+                          ? "border-[var(--ui-btn-bg)] bg-[var(--ui-btn-bg)]"
+                          : "border-[var(--ui-border-strong)] bg-transparent"
+                      }`}
+                    />
+                    {label}
+                  </label>
+                ))}
+              </div>
+              {errors.intent && (
+                <p className="text-xs text-red-400">{errors.intent.message}</p>
               )}
             </div>
 
