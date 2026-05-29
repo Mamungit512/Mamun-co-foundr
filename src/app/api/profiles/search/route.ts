@@ -3,6 +3,29 @@ import { auth } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 import { mapProfileToOnboardingData } from "@/lib/mapProfileToFromDBFormat";
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const EMBED_FN_URL = `${SUPABASE_URL}/functions/v1/embed`;
+
+async function getQueryEmbedding(q: string): Promise<number[] | null> {
+  try {
+    const res = await fetch(EMBED_FN_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${SERVICE_KEY}`,
+      },
+      body: JSON.stringify({ mode: "query", text: q }),
+    });
+
+    if (!res.ok) return null;
+    const { embedding } = await res.json();
+    return embedding ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function GET(req: NextRequest) {
   try {
     const { userId, sessionClaims } = await auth();
@@ -19,14 +42,10 @@ export async function GET(req: NextRequest) {
 
     const orgId = sessionClaims?.metadata?.organization_id ?? null;
     if (!orgId) {
-      // Search is scoped to school tenants only
       return NextResponse.json({ profiles: [] });
     }
 
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    );
+    const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
     // Get IDs of profiles the current user has already liked
     const { data: likedProfiles } = await supabase
@@ -55,7 +74,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ profiles: [] });
     }
 
-    // Build a prefix tsquery: each word gets :* so "fin" matches "finance", "eng" matches "engineering"
+    // Build a prefix tsquery: each word gets :* so "fin" matches "finance"
     // Sanitise each token to alphanumeric to prevent tsquery injection
     const tsquery = q
       .trim()
@@ -66,57 +85,54 @@ export async function GET(req: NextRequest) {
       .map((w) => `${w}:*`)
       .join(" & ");
 
-    // FTS with prefix matching on profiles (name, bio, startup, interests, title, city)
-    // Omitting `type` uses to_tsquery which accepts raw tsquery syntax including :*
-    const { data: profileMatches } = await supabase
-      .from("profiles")
-      .select("user_id")
-      .in("user_id", eligible)
-      .is("deleted_at", null)
-      .textSearch("search_tsv", tsquery, { config: "english" });
+    // Get semantic embedding for the query — fetch in parallel with nothing else blocked on it
+    const queryEmbedding = await getQueryEmbedding(q);
 
-    // FTS with prefix matching on school_profiles (major, college, sector_interests)
-    const { data: schoolMatches } = await supabase
-      .from("school_profiles")
-      .select("user_id")
-      .eq("organization_id", orgId)
-      .in("user_id", eligible)
-      .textSearch("search_tsv", tsquery, { config: "english" });
+    // Single RPC: runs FTS, school-FTS, vector, and name-ILIKE branches,
+    // combines via RRF, returns top 30 user_ids in ranked order.
+    // Profiles without an embedding still appear via the FTS and name branches.
+    const { data: ranked, error: rpcError } = await supabase.rpc(
+      "search_profiles_hybrid",
+      {
+        eligible_ids: eligible,
+        query_text: tsquery,
+        query_vec: queryEmbedding,
+      },
+    );
 
-    // ilike fallback for partial name matches (e.g. "Jo" → "John")
-    const { data: nameMatches } = await supabase
-      .from("profiles")
-      .select("user_id")
-      .in("user_id", eligible)
-      .is("deleted_at", null)
-      .or(`first_name.ilike.%${q}%,last_name.ilike.%${q}%`);
+    if (rpcError) {
+      console.error("RPC error:", rpcError);
+      return NextResponse.json({ profiles: [] });
+    }
 
-    // Union matched user IDs from all sources
-    const matchedSet = new Set([
-      ...(profileMatches?.map((r) => r.user_id) ?? []),
-      ...(schoolMatches?.map((r) => r.user_id) ?? []),
-      ...(nameMatches?.map((r) => r.user_id) ?? []),
-    ]);
-    const matchedIds = Array.from(matchedSet);
+    const matchedIds = (ranked ?? []).map(
+      (r: { user_id: string }) => r.user_id,
+    );
 
     if (matchedIds.length === 0) {
       return NextResponse.json({ profiles: [] });
     }
 
-    // Fetch full profiles for matched IDs
+    // Fetch full profiles for matched IDs, preserving RRF order
     const { data: profilesData, error } = await supabase
       .from("profiles")
       .select("*")
       .in("user_id", matchedIds)
       .is("deleted_at", null)
-      .eq("organization_id", orgId)
-      .limit(30);
+      .eq("organization_id", orgId);
 
     if (error || !profilesData || profilesData.length === 0) {
       return NextResponse.json({ profiles: [] });
     }
 
     const mapped = profilesData.map(mapProfileToOnboardingData);
+
+    // Re-sort to preserve RRF ranking order (Supabase .in() doesn't guarantee order)
+    const rankIndex = new Map<string, number>(matchedIds.map((id: string, i: number) => [id, i]));
+    mapped.sort(
+      (a, b) => (rankIndex.get(a.user_id!) ?? 999) - (rankIndex.get(b.user_id!) ?? 999),
+    );
+
     const candidateIds = mapped
       .map((p) => p.user_id)
       .filter((id): id is string => Boolean(id));
