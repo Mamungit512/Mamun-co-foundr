@@ -22,7 +22,6 @@ import {
   type RelaxSuggestion,
   EMPTY_DASHBOARD_FILTERS,
   hasActiveFilters,
-  getDashboardPanelHeightClass,
   loadDashboardFilters,
   normalizeDashboardFilters,
   saveDashboardFilters,
@@ -309,7 +308,6 @@ export default function SchoolDashboardPage() {
     ? getSchoolFullName(curProfile.utCollege)
     : undefined;
 
-  const panelHeightClass = getDashboardPanelHeightClass(searchOpen);
 
   const activeFilterChipsRow =
     filtersActive && !isSearchActive ? (
@@ -355,7 +353,7 @@ export default function SchoolDashboardPage() {
   ) : null;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pt-6">
+    <div className="mx-auto flex min-h-dvh max-w-5xl flex-col px-4 pt-6 pb-8">
       {brandingHeader}
 
       <FilterSidebar
@@ -390,15 +388,14 @@ export default function SchoolDashboardPage() {
       {activeFilterChipsRow}
       {inferredFilterChipsRow}
 
-      <div className="flex items-stretch gap-6">
+      <div className="flex flex-1 min-h-0 items-stretch gap-6">
         <FilterSidebar
           variant="sidebar"
           filters={filters}
           onChange={updateFilters}
-          panelHeightClass={panelHeightClass}
         />
 
-        <div className="mx-auto w-full min-w-0 max-w-2xl flex-1">
+        <div className="mx-auto flex w-full min-w-0 max-w-2xl flex-1 flex-col min-h-0">
       {/* Search results */}
       {isSearchActive ? (
         <div>
@@ -455,11 +452,11 @@ export default function SchoolDashboardPage() {
       ) : (
         /* Swipe card */
         isLoadingProfiles ? (
-          <div className="flex min-h-[calc(100vh-260px)] flex-col items-center justify-center gap-4 text-center">
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
             <p className="text-sm text-[var(--ui-text-muted)]">Loading profiles…</p>
           </div>
         ) : !curProfile ? (
-          <div className="flex min-h-[calc(100vh-260px)] flex-col items-center justify-center gap-4 text-center">
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
             {filtersActive ? (
               <>
                 <p className="text-xl font-semibold text-[var(--ui-text)]">
@@ -496,7 +493,7 @@ export default function SchoolDashboardPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
               transition={{ duration: 0.25 }}
-              className={`flex flex-col overflow-hidden rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] ${panelHeightClass}`}
+              className="flex flex-1 min-h-0 flex-col overflow-hidden rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)]"
             >
               {/* Card header with avatar, name, badges */}
               <div className="flex-1 overflow-y-auto p-5">

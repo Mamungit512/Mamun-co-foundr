@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, type ChangeEvent, type ReactNode } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { IoCloseOutline, IoChevronDown } from "react-icons/io5";
 import {
@@ -14,30 +15,103 @@ import {
   hasActiveFilters,
 } from "@/lib/dashboardFilters";
 
-const SELECT_CLS =
-  "box-border w-full min-w-0 appearance-none rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] " +
-  "py-2.5 pl-4 pr-10 text-sm text-[var(--ui-text)] " +
-  "transition-all duration-200 focus:border-[var(--ui-border-strong)] focus:ring-2 focus:ring-[var(--ui-border)] focus:outline-none " +
-  "hover:border-[var(--ui-border-strong)] [&>option]:bg-neutral-900";
+type SelectOption = { value: string; label: string };
 
 function FilterSelect({
   value,
   onChange,
-  children,
+  options,
+  placeholder = "Select…",
 }: {
   value: string | number;
-  onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
-  children: ReactNode;
+  onChange: (value: string) => void;
+  options: SelectOption[];
+  placeholder?: string;
 }) {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0, width: 0 });
+  const [mounted, setMounted] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const selected = options.find((o) => o.value === String(value));
+
+  useEffect(() => { setMounted(true); }, []);
+
+  const handleToggle = () => {
+    if (!open && triggerRef.current) {
+      const r = triggerRef.current.getBoundingClientRect();
+      setPos({ top: r.bottom + 4, left: r.left, width: r.width });
+    }
+    setOpen((v) => !v);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (!triggerRef.current?.contains(t) && !listRef.current?.contains(t)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
   return (
-    <div className="relative w-full min-w-0">
-      <select value={value} onChange={onChange} className={SELECT_CLS}>
-        {children}
-      </select>
-      <IoChevronDown
-        className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-[var(--ui-text-muted)]"
-        aria-hidden
-      />
+    <div className="w-full min-w-0">
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={handleToggle}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className="box-border flex w-full min-w-0 items-center justify-between rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] py-2.5 pl-4 pr-3 text-left text-sm transition-all duration-200 hover:border-[var(--ui-border-strong)] focus:border-[var(--ui-border-strong)] focus:ring-2 focus:ring-[var(--ui-border)] focus:outline-none"
+      >
+        <span className={selected ? "text-[var(--ui-text)]" : "text-[var(--ui-text-muted)]"}>
+          {selected ? selected.label : placeholder}
+        </span>
+        <IoChevronDown
+          className={`h-4 w-4 shrink-0 text-[var(--ui-text-muted)] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          aria-hidden
+        />
+      </button>
+
+      {mounted && createPortal(
+        <AnimatePresence>
+          {open && (
+            <motion.ul
+              ref={listRef}
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.15 }}
+              role="listbox"
+              style={{ top: pos.top, left: pos.left, width: pos.width }}
+              className="fixed z-[9999] max-h-52 overflow-y-auto rounded-xl border border-[#BF5700]/30 bg-[#fff6f0] shadow-lg"
+            >
+              <li
+                role="option"
+                aria-selected={!selected}
+                onClick={() => { onChange(""); setOpen(false); }}
+                className={`cursor-pointer px-4 py-2.5 text-sm transition hover:bg-[#BF5700]/10 ${!selected ? "font-medium text-[#BF5700]" : "text-[#3d1a00]/50"}`}
+              >
+                {placeholder}
+              </li>
+              {options.map((opt) => (
+                <li
+                  key={opt.value}
+                  role="option"
+                  aria-selected={opt.value === String(value)}
+                  onClick={() => { onChange(opt.value); setOpen(false); }}
+                  className={`cursor-pointer px-4 py-2.5 text-sm transition hover:bg-[#BF5700]/10 ${opt.value === String(value) ? "font-medium text-[#BF5700]" : "text-[#3d1a00]"}`}
+                >
+                  {opt.value === String(value) && <span className="mr-1.5">✓</span>}
+                  {opt.label}
+                </li>
+              ))}
+            </motion.ul>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 }
@@ -126,20 +200,13 @@ function FilterPanel({
           </label>
           <FilterSelect
             value={filters.college ?? ""}
-            onChange={(e) =>
-              onChange({
-                ...filters,
-                college: e.target.value || null,
-              })
-            }
-          >
-            <option value="">All schools</option>
-            {Object.keys(UT_SCHOOLS_AND_PROGRAMS).map((key) => (
-              <option key={key} value={key}>
-                {getSchoolLabel(key as UTCollege)}
-              </option>
-            ))}
-          </FilterSelect>
+            onChange={(val) => onChange({ ...filters, college: val || null })}
+            options={Object.keys(UT_SCHOOLS_AND_PROGRAMS).map((key) => ({
+              value: key,
+              label: getSchoolLabel(key as UTCollege),
+            }))}
+            placeholder="All schools"
+          />
         </div>
 
         {/* Industry / interest */}
@@ -177,20 +244,10 @@ function FilterPanel({
           </label>
           <FilterSelect
             value={filters.gradYear ?? ""}
-            onChange={(e) =>
-              onChange({
-                ...filters,
-                gradYear: e.target.value ? Number(e.target.value) : null,
-              })
-            }
-          >
-            <option value="">Any year</option>
-            {gradYears.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </FilterSelect>
+            onChange={(val) => onChange({ ...filters, gradYear: val ? Number(val) : null })}
+            options={gradYears.map((year) => ({ value: String(year), label: String(year) }))}
+            placeholder="Any year"
+          />
         </div>
 
         {/* Intent */}
@@ -234,7 +291,7 @@ export default function FilterSidebar({
   isOpen = false,
   onClose,
   variant = "sidebar",
-  panelHeightClass = "h-[calc(100vh-150px)] max-h-[calc(100vh-150px)]",
+  panelHeightClass = "",
 }: FilterSidebarProps) {
   useEffect(() => {
     if (variant !== "drawer" || !isOpen) return;
@@ -250,7 +307,7 @@ export default function FilterSidebar({
       <aside
         className={`hidden w-64 shrink-0 flex-col overflow-hidden rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4 lg:flex ${panelHeightClass}`}
       >
-        <FilterPanel filters={filters} onChange={onChange} scrollable={false} />
+        <FilterPanel filters={filters} onChange={onChange} scrollable={true} />
       </aside>
     );
   }
@@ -273,7 +330,7 @@ export default function FilterSidebar({
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "spring", damping: 28, stiffness: 320 }}
-            className="fixed left-0 top-0 z-50 flex h-full w-[85vw] max-w-sm flex-col border-r border-[var(--ui-border)] bg-[var(--ui-popover-bg,var(--org-bg,#ffffff))] p-4 shadow-xl"
+            className="fixed left-0 top-0 z-50 flex h-full w-[85vw] max-w-sm flex-col overflow-x-hidden border-r border-[var(--ui-border)] bg-[var(--ui-popover-bg,var(--org-bg,#ffffff))] p-4 shadow-xl"
           >
             <FilterPanel
               filters={filters}
