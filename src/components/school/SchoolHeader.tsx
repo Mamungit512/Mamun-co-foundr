@@ -14,9 +14,10 @@ type SchoolHeaderProps = {
   slug: string;
   schoolName: string;
   config: OrgConfig;
+  isAdmin: boolean;
 };
 
-export default function SchoolHeader({ slug, schoolName, config }: SchoolHeaderProps) {
+export default function SchoolHeader({ slug, schoolName, config, isAdmin }: SchoolHeaderProps) {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -52,6 +53,9 @@ export default function SchoolHeader({ slug, schoolName, config }: SchoolHeaderP
       href: "/privacy-policy",
       label: "Privacy Policy",
     },
+    ...(isAdmin
+      ? [{ href: `/school/${slug}/admin`, label: "Admin" }]
+      : []),
   ];
 
   const headerText = config.branding.wordmark ? `${config.branding.wordmark} Co-Foundr` : schoolName;

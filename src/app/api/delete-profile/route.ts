@@ -1,7 +1,95 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 import { getPostHogClient } from "@/lib/posthog-server";
+import { requireOrgAdmin } from "@/lib/auth/org-admin";
+
+/**
+ * Admin-initiated account deletion.
+ * Requires the caller to be an org admin for the target user's org.
+ * ?targetUserId=<clerk-user-id>
+ */
+export async function DELETE(request: NextRequest) {
+  try {
+    const adminAuth = await requireOrgAdmin();
+    if (adminAuth instanceof NextResponse) return adminAuth;
+    const { orgId } = adminAuth;
+
+    const targetUserId = request.nextUrl.searchParams.get("targetUserId");
+    if (!targetUserId) {
+      return NextResponse.json(
+        { error: "targetUserId query param required" },
+        { status: 400 },
+      );
+    }
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    );
+
+    // Verify the target belongs to the admin's org
+    const { data: targetProfile, error: profileError } = await supabase
+      .from("profiles")
+      .select("id, organization_id")
+      .eq("user_id", targetUserId)
+      .single();
+
+    if (profileError || !targetProfile) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    if (targetProfile.organization_id !== orgId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const internalProfileId = targetProfile.id;
+
+    // Delete storage
+    try {
+      const { data: oldFiles } = await supabase.storage
+        .from("profile-pic")
+        .list("", { search: targetUserId });
+      if (oldFiles && oldFiles.length > 0) {
+        await supabase.storage
+          .from("profile-pic")
+          .remove(oldFiles.map((f) => f.name));
+      }
+    } catch {}
+
+    await supabase.from("messages").delete().eq("sender_id", targetUserId);
+    await supabase
+      .from("conversation_participants")
+      .delete()
+      .eq("user_id", targetUserId);
+    await supabase
+      .from("likes")
+      .delete()
+      .or(`liker_id.eq.${targetUserId},liked_id.eq.${targetUserId}`);
+    await supabase
+      .from("user_profile_actions")
+      .delete()
+      .or(
+        `user_id.eq.${internalProfileId},other_profile_id.eq.${internalProfileId}`,
+      );
+    await supabase.from("profiles").delete().eq("user_id", targetUserId);
+
+    try {
+      const client = await clerkClient();
+      await client.users.deleteUser(targetUserId);
+    } catch (clerkError) {
+      console.error("Error deleting target user from Clerk:", clerkError);
+    }
+
+    return NextResponse.json({ message: "Account deleted successfully" });
+  } catch (error) {
+    console.error("Error in admin delete-profile endpoint:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
+}
 
 export async function POST() {
   try {
