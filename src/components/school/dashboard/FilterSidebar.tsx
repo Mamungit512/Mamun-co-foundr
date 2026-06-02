@@ -289,20 +289,21 @@ export default function FilterSidebar({
   );
 }
 
-export function getFilterChipLabels(filters: DashboardFilters): {
+export type FilterChipLabel = {
   key: string;
+  /** Key used by search inferred-filter dismiss (e.g. `sector:fintech`, `college`) */
+  dismissKey: string;
   label: string;
   onRemove: () => DashboardFilters;
-}[] {
-  const chips: {
-    key: string;
-    label: string;
-    onRemove: () => DashboardFilters;
-  }[] = [];
+};
+
+export function getFilterChipLabels(filters: DashboardFilters): FilterChipLabel[] {
+  const chips: FilterChipLabel[] = [];
 
   if (filters.college) {
     chips.push({
       key: `college-${filters.college}`,
+      dismissKey: "college",
       label: getSchoolLabel(filters.college as UTCollege),
       onRemove: () => ({ ...filters, college: null }),
     });
@@ -311,6 +312,7 @@ export function getFilterChipLabels(filters: DashboardFilters): {
   for (const sector of filters.sectors) {
     chips.push({
       key: `sector-${sector}`,
+      dismissKey: `sector:${sector}`,
       label:
         SECTOR_INTEREST_LABELS[sector as UTSectorInterest] ?? sector,
       onRemove: () => ({
@@ -323,6 +325,7 @@ export function getFilterChipLabels(filters: DashboardFilters): {
   if (filters.gradYear !== null) {
     chips.push({
       key: `grad-${filters.gradYear}`,
+      dismissKey: "gradYear",
       label: `Class of ${filters.gradYear}`,
       onRemove: () => ({ ...filters, gradYear: null }),
     });
@@ -331,12 +334,14 @@ export function getFilterChipLabels(filters: DashboardFilters): {
   if (filters.intent === "join_me") {
     chips.push({
       key: "intent-join_me",
+      dismissKey: "intent",
       label: "Join me",
       onRemove: () => ({ ...filters, intent: null }),
     });
   } else if (filters.intent === "seeking_to_join") {
     chips.push({
       key: "intent-seeking",
+      dismissKey: "intent",
       label: "Seeking to join",
       onRemove: () => ({ ...filters, intent: null }),
     });
