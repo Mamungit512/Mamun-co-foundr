@@ -5,6 +5,7 @@ import OrgHeaderSwitch from "@/components/school/OrgHeaderSwitch";
 import { SchoolProvider } from "@/components/school/SchoolContext";
 import { getOrganizationBySlug } from "@/lib/organizations";
 import { getOrgConfig, DEFAULT_ORG_CONFIG } from "@/orgs/registry";
+import { getVerifiedPrimaryEmail, getOrgAdminEmails } from "@/lib/auth/org-admin";
 
 export async function generateMetadata({
   params,
@@ -31,7 +32,7 @@ export default async function SchoolSlugLayout({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [{ userId }, org] = await Promise.all([
+  const [{ userId, sessionClaims }, org] = await Promise.all([
     auth(),
     getOrganizationBySlug(slug),
   ]);
@@ -41,6 +42,20 @@ export default async function SchoolSlugLayout({
   }
 
   const cfg = getOrgConfig(slug) ?? DEFAULT_ORG_CONFIG;
+
+  let isAdmin = false;
+  if (userId) {
+    const orgId = sessionClaims?.metadata?.organization_id as string | undefined;
+    if (orgId) {
+      const [email, adminEmails] = await Promise.all([
+        getVerifiedPrimaryEmail(userId),
+        getOrgAdminEmails(orgId),
+      ]);
+      if (email) {
+        isAdmin = adminEmails.includes(email.toLowerCase());
+      }
+    }
+  }
 
   return (
     <SchoolProvider slug={slug} schoolName={org.name} config={cfg}>
@@ -71,7 +86,7 @@ export default async function SchoolSlugLayout({
         }
         className="min-h-screen bg-[var(--org-bg)] text-[var(--org-text)]"
       >
-        <OrgHeaderSwitch slug={slug} schoolName={org.name} config={cfg} isSignedIn={!!userId} />
+        <OrgHeaderSwitch slug={slug} schoolName={org.name} config={cfg} isSignedIn={!!userId} isAdmin={isAdmin} />
         <main>{children}</main>
       </div>
     </SchoolProvider>

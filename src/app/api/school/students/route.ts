@@ -1,16 +1,11 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
+import { requireOrgAdmin } from "@/lib/auth/org-admin";
 
 export async function GET() {
-  const { sessionClaims } = await auth();
-
-  const orgId = sessionClaims?.metadata?.organization_id;
-  const isSchoolAdmin = sessionClaims?.metadata?.is_school_admin;
-
-  if (!orgId || !isSchoolAdmin) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const auth = await requireOrgAdmin();
+  if (auth instanceof NextResponse) return auth;
+  const { orgId } = auth;
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
