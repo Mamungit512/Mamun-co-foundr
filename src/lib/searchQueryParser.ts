@@ -60,7 +60,7 @@ function buildSystemPrompt(currentYear: number): string {
 
 Output JSON keys:
 - "filters": object with optional keys "college", "sectors", "gradYear", "intent".
-  - "college": exactly one of these keys: ${collegeLabels}. Only set if the query explicitly names a school/department.
+  - "college": exactly one of these keys: ${collegeLabels}. Only set if the query explicitly names a school/department. A skill, job title, or field of expertise (e.g. "statistics expert", "designer", "ML engineer") is NOT a school name — never infer college from a skill.
   - "sectors": array of one or more of these keys: ${sectorLabels}. Only include sectors the query explicitly mentions or strongly implies by industry name.
   - "gradYear": integer between ${currentYear - 6} and ${currentYear + 6}. Only set if the query explicitly mentions a graduation year (e.g. "class of 2026", "graduating 2025"). For "current senior" or "incoming freshman", do NOT guess a year.
   - "intent": "join_me" (looking for someone to join their startup) or "seeking_to_join" (wants to join someone else's startup). Only set if the query is explicitly about this distinction.
@@ -84,7 +84,10 @@ Input: "non-technical founder with sales chops"
 Output: {"filters":{},"semanticQuery":"non-technical founder with sales experience","ftsTerms":["non-technical","sales","business development","founder"]}
 
 Input: "interesting people"
-Output: {"filters":{},"semanticQuery":"interesting people","ftsTerms":[]}`;
+Output: {"filters":{},"semanticQuery":"interesting people","ftsTerms":[]}
+
+Input: "statistics expert graduating in 2027"
+Output: {"filters":{"gradYear":2027},"semanticQuery":"statistics expert","ftsTerms":["statistics","data","analytics","quantitative"]}`;
 }
 
 function isRecord(v: unknown): v is Record<string, unknown> {
@@ -136,28 +139,36 @@ function validateParsed(raw: unknown, q: string, currentYear: number): ParsedQue
       .slice(0, 10);
   }
 
+  // A year consumed as the gradYear filter must NOT also leak into the
+  // semantic/FTS path. graduation_year lives in no search_tsv, so a bare-year
+  // query ("2027") would otherwise run a text search for "2027" that matches no
+  // profile body and wipes out the correct gradYear-filtered set. Strip the year
+  // token from both so a pure-year query takes the pure-filter return path.
+  if (typeof result.filters.gradYear === "number") {
+    const yearStr = String(result.filters.gradYear);
+    result.ftsTerms = result.ftsTerms.filter(
+      (t) => t.replace(/\D/g, "") !== yearStr,
+    );
+    result.semanticQuery = result.semanticQuery
+      .replace(new RegExp(`\\b${yearStr}\\b`, "g"), "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
   return result;
 }
 
 export async function parseSearchQuery(q: string): Promise<ParsedQuery> {
   const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) {
-    console.log("[groq] no GROQ_API_KEY — skipping parse for %s", q);
-    return safeFallback(q);
-  }
+  if (!apiKey) return safeFallback(q);
 
   const cacheKey = q.trim().toLowerCase();
   const cached = cacheGet(cacheKey);
-  if (cached) {
-    console.log("[groq] cache hit for %s", q);
-    return cached;
-  }
+  if (cached) return cached;
 
   const currentYear = new Date().getFullYear();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), GROQ_TIMEOUT_MS);
-
-  console.log("[groq] calling API for %s", q);
 
   try {
     const res = await fetch(GROQ_URL, {
@@ -179,38 +190,25 @@ export async function parseSearchQuery(q: string): Promise<ParsedQuery> {
       }),
     });
 
-    if (!res.ok) {
-      const errBody = await res.text();
-      console.log("[groq] API error status=%d body=%s", res.status, errBody);
-      return safeFallback(q);
-    }
+    if (!res.ok) return safeFallback(q);
 
     const json = (await res.json()) as {
       choices?: { message?: { content?: string } }[];
     };
     const content = json.choices?.[0]?.message?.content;
-    if (!content) {
-      console.log("[groq] empty content in response: %j", json);
-      return safeFallback(q);
-    }
-
-    console.log("[groq] raw response: %s", content);
+    if (!content) return safeFallback(q);
 
     let parsedJson: unknown;
     try {
       parsedJson = JSON.parse(content);
     } catch {
-      console.log("[groq] JSON parse failed for content: %s", content);
       return safeFallback(q);
     }
 
     const validated = validateParsed(parsedJson, q, currentYear);
-    console.log("[groq] validated result: %j", validated);
     cacheSet(cacheKey, validated);
     return validated;
-  } catch (err) {
-    const isAbort = err instanceof Error && err.name === "AbortError";
-    console.log("[groq] %s for query: %s", isAbort ? "timeout" : `error: ${err}`, q);
+  } catch {
     return safeFallback(q);
   } finally {
     clearTimeout(timer);

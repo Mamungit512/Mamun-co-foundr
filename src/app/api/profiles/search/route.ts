@@ -355,8 +355,6 @@ export async function POST(req: NextRequest) {
       fetchEligibleUserIds(supabase, userId, orgId, mergedFilters),
     ]);
 
-    console.log("[search] q=%s eligible=%d mergedFilters=%j parsedFilters=%j", q, eligible.length, mergedFilters, parsed.filters);
-
     // Hard-filter wall: nobody passes the filters. Offer per-dimension relaxations.
     if (eligible.length === 0) {
       const relaxations = await diagnoseRelaxations(
