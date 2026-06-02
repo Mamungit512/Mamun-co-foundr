@@ -19,10 +19,12 @@ import { getSchoolFullName, getDegreeAbbreviation, SECTOR_INTEREST_LABELS } from
 import FilterSidebar, { getFilterChipLabels } from "@/components/school/dashboard/FilterSidebar";
 import {
   type DashboardFilters,
+  type RelaxSuggestion,
   EMPTY_DASHBOARD_FILTERS,
   hasActiveFilters,
   getDashboardPanelHeightClass,
   loadDashboardFilters,
+  normalizeDashboardFilters,
   saveDashboardFilters,
 } from "@/lib/dashboardFilters";
 
@@ -179,7 +181,20 @@ export default function SchoolDashboardPage() {
     setFilters(next);
     saveDashboardFilters(next);
   };
-  const { data: searchResults, isFetching: isSearching } = useSearchProfiles(searchQuery);
+  const { data: searchResults, isFetching: isSearching, inferred, emptyReason, dismissFilter } = useSearchProfiles(searchQuery, filters);
+
+  // Relax a single binding filter from the empty-results state. Inferred filters
+  // are dismissed (Mode B re-search); user filters are cleared from the sidebar.
+  const handleRelax = (s: RelaxSuggestion) => {
+    if (s.source === "inferred") {
+      s.dismissKeys.forEach((key) => dismissFilter(key));
+      return;
+    }
+    const next: DashboardFilters = { ...filters, sectors: [...filters.sectors] };
+    if (s.dimension === "sectors") next.sectors = [];
+    else next[s.dimension] = null;
+    updateFilters(next);
+  };
   const { toggleLike, isLoading: isLikeLoading } = useToggleLike();
   useMutualLikes();
   const skipProfileMutation = useSkipProfile();
@@ -318,6 +333,27 @@ export default function SchoolDashboardPage() {
       </div>
     ) : null;
 
+  const inferredFilterChipsRow = isSearchActive && inferred && inferred.filters && Object.keys(inferred.filters).length > 0 ? (
+    <div className="mb-3">
+      <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[var(--ui-text-muted)]">
+        ✨ Understood as
+      </p>
+      <div className="flex flex-wrap gap-1.5">
+        {getFilterChipLabels(normalizeDashboardFilters(inferred.filters)).map((chip) => (
+          <button
+            key={chip.key}
+            type="button"
+            onClick={() => dismissFilter(chip.dismissKey)}
+            className="inline-flex items-center gap-1 rounded-md bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-800 cursor-pointer hover:bg-blue-200 transition"
+          >
+            {chip.label}
+            <span aria-hidden>&times;</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  ) : null;
+
   return (
     <div className="mx-auto max-w-5xl px-4 pt-6">
       {brandingHeader}
@@ -352,6 +388,7 @@ export default function SchoolDashboardPage() {
       )}
 
       {activeFilterChipsRow}
+      {inferredFilterChipsRow}
 
       <div className="flex items-stretch gap-6">
         <FilterSidebar
@@ -372,10 +409,33 @@ export default function SchoolDashboardPage() {
           )}
           {!isSearching && searchResults && searchResults.length === 0 && (
             <div className="flex flex-col items-center gap-3 py-16 text-center">
-              <p className="text-base font-semibold text-[var(--ui-text)]">No matches found</p>
-              <p className="text-sm text-[var(--ui-text-muted)]">
-                Try different keywords — skills, majors, industries, or city names work well.
-              </p>
+              <p className="text-base font-semibold text-[var(--ui-text)]">No exact matches</p>
+              {emptyReason && emptyReason.relaxations.length > 0 ? (
+                <>
+                  <p className="text-sm text-[var(--ui-text-muted)]">
+                    Nobody fits all of your criteria. Relax one to see more:
+                  </p>
+                  <div className="mt-1 flex w-full max-w-xs flex-col items-stretch gap-2">
+                    {emptyReason.relaxations.map((s) => (
+                      <button
+                        key={s.dimension}
+                        type="button"
+                        onClick={() => handleRelax(s)}
+                        className="flex items-center justify-between gap-2 rounded-lg border border-[#bf5700]/30 bg-[#fff6f0] px-3 py-2 text-sm text-[#bf5700] transition hover:bg-[#ffe8d6] cursor-pointer"
+                      >
+                        <span className="font-medium">Drop &ldquo;{s.label}&rdquo;</span>
+                        <span className="flex-shrink-0 rounded-full bg-[#bf5700] px-2 py-0.5 text-xs font-semibold text-white">
+                          +{s.countIfRelaxed}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-[var(--ui-text-muted)]">
+                  Try different keywords — skills, majors, industries, or city names work well.
+                </p>
+              )}
               <button
                 onClick={() => setSearchQuery("")}
                 className="mt-1 text-sm font-medium text-[#bf5700] hover:underline cursor-pointer"
