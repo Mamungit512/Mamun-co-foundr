@@ -14,6 +14,42 @@ export const EMPTY_DASHBOARD_FILTERS: DashboardFilters = {
   intent: null,
 };
 
+export type RelaxDimension = "college" | "sectors" | "gradYear" | "intent";
+
+/**
+ * A single "relax this filter" suggestion returned when a search produces zero
+ * matches purely because hard filters cut everyone out. `countIfRelaxed` is how
+ * many candidates re-enter the pool if this one dimension is dropped.
+ */
+export type RelaxSuggestion = {
+  dimension: RelaxDimension;
+  label: string;
+  /** Whether this filter came from the user's sidebar or was AI-inferred. */
+  source: "user" | "inferred";
+  /** Inferred-dismiss keys for this dimension (e.g. ["sector:fintech"]). */
+  dismissKeys: string[];
+  countIfRelaxed: number;
+};
+
+export type SearchEmptyReason = { relaxations: RelaxSuggestion[] } | null;
+
+export function normalizeDashboardFilters(
+  input: Partial<DashboardFilters> | undefined,
+): DashboardFilters {
+  if (!input) return EMPTY_DASHBOARD_FILTERS;
+  return {
+    college: typeof input.college === "string" ? input.college : null,
+    sectors: Array.isArray(input.sectors)
+      ? input.sectors.filter((s): s is string => typeof s === "string")
+      : [],
+    gradYear: typeof input.gradYear === "number" ? input.gradYear : null,
+    intent:
+      input.intent === "join_me" || input.intent === "seeking_to_join"
+        ? input.intent
+        : null,
+  };
+}
+
 const STORAGE_KEY = "school-dashboard-filters";
 
 export function loadDashboardFilters(): DashboardFilters {

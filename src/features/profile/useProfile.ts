@@ -4,8 +4,10 @@ import { useAuth, useSession } from "@clerk/nextjs";
 import toast from "react-hot-toast";
 import {
   type DashboardFilters,
+  type SearchEmptyReason,
   buildProfilesQueryString,
 } from "@/lib/dashboardFilters";
+import type { ParsedQuery } from "@/lib/searchQueryParser";
 
 export function useGetProfiles(filters?: DashboardFilters) {
   const { userId } = useAuth();
@@ -141,37 +143,108 @@ export function useProfileByUserId(userId: string, enabled: boolean = true) {
   });
 }
 
-export function useSearchProfiles(query: string) {
+export function useSearchProfiles(query: string, userFilters: DashboardFilters) {
   const { session } = useSession();
   const [debouncedQuery, setDebouncedQuery] = useState(query);
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
+  // Last-good Mode A parse, kept so chip dismissals (Mode B) can re-search
+  // without paying for another Groq parse.
+  const [inferred, setInferred] = useState<ParsedQuery | null>(null);
 
+  // Parse-mode debounce: 750ms (TPM mitigation)
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(query), 300);
+    const t = setTimeout(() => setDebouncedQuery(query), 750);
     return () => clearTimeout(t);
   }, [query]);
 
-  return useQuery<OnboardingData[], { message: string }>({
-    queryKey: ["profiles-search", debouncedQuery],
+  // Reset per-query state whenever the raw query changes
+  useEffect(() => {
+    setDismissed(new Set());
+    setInferred(null);
+  }, [query]);
+
+  const dismissFilter = (key: string) => {
+    setDismissed((prev) => new Set([...prev, key]));
+  };
+
+  // Mode B = we have a cached parse AND the user dismissed at least one chip.
+  // Backend skips Groq and re-merges the surviving inferred filters itself.
+  const isDismissMode = inferred !== null && dismissed.size > 0;
+  const dismissedKeys = [...dismissed].sort();
+  const cachedParse = inferred
+    ? {
+        filters: inferred.filters,
+        semanticQuery: inferred.semanticQuery,
+        ftsTerms: inferred.ftsTerms,
+      }
+    : undefined;
+
+  const queryKey = [
+    "profiles-search",
+    debouncedQuery,
+    userFilters,
+    dismissedKeys.join(","),
+    isDismissMode,
+  ];
+
+  const searchQuery = useQuery<
+    {
+      profiles: OnboardingData[];
+      inferred: ParsedQuery | null;
+      emptyReason: SearchEmptyReason;
+    },
+    { message: string }
+  >({
+    queryKey,
     queryFn: async () => {
       const token = await session?.getToken();
-      if (!token) throw { message: "Authentication failed. Please log in again." };
+      if (!token)
+        throw { message: "Authentication failed. Please log in again." };
 
-      const res = await fetch(
-        `/api/profiles/search?q=${encodeURIComponent(debouncedQuery)}`,
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+      const body = {
+        q: debouncedQuery,
+        userFilters,
+        ...(isDismissMode && {
+          cachedParse,
+          dismissedFilterKeys: dismissedKeys,
+        }),
+      };
+
+      const res = await fetch("/api/profiles/search", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
 
       if (!res.ok) {
         const errorData = await res.json();
         throw { message: errorData.error || "Search failed" };
       }
 
-      const data = await res.json();
-      return data.profiles;
+      const result = await res.json();
+
+      // Cache the parse only on Mode A so later dismissals can reuse it.
+      if (result.inferred && !isDismissMode) {
+        setInferred(result.inferred);
+      }
+
+      return result;
     },
     enabled: debouncedQuery.trim().length >= 2 && !!session,
     retry: 1,
   });
+
+  return {
+    data: searchQuery.data?.profiles ?? [],
+    inferred: searchQuery.data?.inferred ?? null,
+    emptyReason: searchQuery.data?.emptyReason ?? null,
+    isFetching: searchQuery.isFetching,
+    error: searchQuery.error,
+    dismissFilter,
+  };
 }
 
 export function useProfileUpsert() {
