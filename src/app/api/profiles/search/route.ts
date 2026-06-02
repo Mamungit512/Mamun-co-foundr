@@ -247,6 +247,61 @@ async function diagnoseRelaxations(
     .sort((a, b) => b.countIfRelaxed - a.countIfRelaxed);
 }
 
+async function enrichWithSchoolData(
+  supabase: SupabaseClient,
+  mapped: OnboardingData[],
+  orgId: string,
+): Promise<OnboardingData[]> {
+  const candidateIds = mapped
+    .map((p) => p.user_id)
+    .filter((id): id is string => Boolean(id));
+
+  const { data: schoolEnrichRows } = await supabase
+    .from("school_profiles")
+    .select(
+      "user_id, school_status, graduation_year, college, degree_type, major, sector_interests",
+    )
+    .eq("organization_id", orgId)
+    .in("user_id", candidateIds);
+
+  const schoolMap = new Map(
+    schoolEnrichRows?.map((row) => [
+      row.user_id,
+      {
+        utStatus: row.school_status,
+        gradYear: row.graduation_year,
+        utCollege: row.college,
+        utDegreeType: row.degree_type,
+        utMajor: row.major,
+        utSectorInterests: row.sector_interests,
+      },
+    ]) ?? [],
+  );
+
+  return mapped.map((profile) => {
+    const school = schoolMap.get(profile.user_id!);
+    return school ? { ...profile, ...school } : profile;
+  });
+}
+
+async function fetchAndEnrichProfiles(
+  supabase: SupabaseClient,
+  eligibleIds: string[],
+  orgId: string,
+): Promise<OnboardingData[]> {
+  const { data: profilesData, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .in("user_id", eligibleIds)
+    .is("deleted_at", null)
+    .eq("organization_id", orgId);
+
+  if (error || !profilesData || profilesData.length === 0) return [];
+
+  const mapped = profilesData.map(mapProfileToOnboardingData);
+  return enrichWithSchoolData(supabase, mapped, orgId);
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { userId, sessionClaims } = await auth();
@@ -318,6 +373,16 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Pure filter query: Groq returned no semantic content worth embedding/FTS-ing.
+    // The eligibility filter already identified the right people — just return them.
+    const hasSemanticContent =
+      parsed.semanticQuery.trim().length > 0 || parsed.ftsTerms.length > 0;
+
+    if (!hasSemanticContent) {
+      const enriched = await fetchAndEnrichProfiles(supabase, eligible, orgId);
+      return NextResponse.json({ profiles: enriched, inferred, emptyReason: null });
+    }
+
     const tsquery = buildTsquery(parsed.ftsTerms, q);
     if (!tsquery && !embedding) {
       return NextResponse.json({ profiles: [], inferred, emptyReason: null });
@@ -366,37 +431,7 @@ export async function POST(req: NextRequest) {
         (rankIndex.get(a.user_id!) ?? 999) - (rankIndex.get(b.user_id!) ?? 999),
     );
 
-    const candidateIds = mapped
-      .map((p) => p.user_id)
-      .filter((id): id is string => Boolean(id));
-
-    const { data: schoolEnrichRows } = await supabase
-      .from("school_profiles")
-      .select(
-        "user_id, school_status, graduation_year, college, degree_type, major, sector_interests",
-      )
-      .eq("organization_id", orgId)
-      .in("user_id", candidateIds);
-
-    const schoolMap = new Map(
-      schoolEnrichRows?.map((row) => [
-        row.user_id,
-        {
-          utStatus: row.school_status,
-          gradYear: row.graduation_year,
-          utCollege: row.college,
-          utDegreeType: row.degree_type,
-          utMajor: row.major,
-          utSectorInterests: row.sector_interests,
-        },
-      ]) ?? [],
-    );
-
-    const enriched = mapped.map((profile) => {
-      const school = schoolMap.get(profile.user_id!);
-      return school ? { ...profile, ...school } : profile;
-    });
-
+    const enriched = await enrichWithSchoolData(supabase, mapped, orgId);
     return NextResponse.json({ profiles: enriched, inferred, emptyReason: null });
   } catch (error) {
     console.error("Error in profiles search API:", error);
