@@ -105,17 +105,23 @@ const TIER_2: Dept[] = [
   },
 ];
 
-function Card({ dept, featured }: { dept: Dept; featured?: boolean }) {
+function Card({ dept }: { dept: Dept }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      whileHover={{ scale: 1.05, y: -4 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      initial={{ opacity: 0, y: 24, scale: 0.9 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      whileHover={{ scale: 1.06, y: -6 }}
+      whileTap={{ scale: 0.94 }}
+      transition={{
+        type: "spring",
+        stiffness: 400,
+        damping: 12,
+        mass: 0.8,
+      }}
       viewport={{ once: true, margin: "-50px" }}
       className="relative overflow-hidden rounded-lg bg-white p-3 cursor-pointer"
       style={{
-        border: featured ? `1.5px solid ${dept.accent}` : "0.5px solid #e8e4dc",
+        border: "0.5px solid #e8e4dc",
       }}
     >
       <div
@@ -172,8 +178,8 @@ export default function DepartmentMosaic() {
         </p>
 
         <div className="mb-8 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-          {TIER_1.map((d, i) => (
-            <Card key={d.name} dept={d} featured={i === 0} />
+          {TIER_1.map((d) => (
+            <Card key={d.name} dept={d} />
           ))}
         </div>
 
