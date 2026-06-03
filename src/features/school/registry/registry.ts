@@ -18,6 +18,21 @@ export const DEFAULT_ORG_CONFIG: OrgConfig = {
     unlimitedSwipes: true,
     unlimitedMessages: true,
   },
+  onboarding: {
+    totalSteps: 4,
+    apiEndpoint: "/api/profile",
+    steps: ["photo", "about", "background", "review"],
+    step2RequiredFields: [
+      "firstName",
+      "lastName",
+      "title",
+      "country",
+      "city",
+      "experience",
+      "personalIntro",
+      "isTechnical",
+    ],
+  },
 };
 
 export const ORG_REGISTRY: Record<string, OrgConfig> = {
@@ -42,6 +57,29 @@ export const ORG_REGISTRY: Record<string, OrgConfig> = {
     limits: {
       unlimitedSwipes: true,
       unlimitedMessages: true,
+    },
+    onboarding: {
+      totalSteps: 5,
+      apiEndpoint: "/api/ut-profile",
+      steps: ["photo", "about", "startup", "background", "review"],
+      step2RequiredFields: [
+        "firstName",
+        "lastName",
+        "title",
+        "country",
+        "city",
+        "experience",
+        "personalIntro",
+        "isTechnical",
+        "utStatus",
+      ],
+      step3Completion: (data) =>
+        data.hasStartup !== undefined &&
+        data.intent !== undefined &&
+        (data.hasStartup === "no" ||
+          (data.hasStartup === "yes" &&
+            data.coFounderStatus !== undefined &&
+            data.equityExpectation !== undefined)),
     },
   },
 };

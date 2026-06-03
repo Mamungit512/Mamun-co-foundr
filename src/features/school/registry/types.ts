@@ -21,8 +21,19 @@ export type OrgLimits = {
   unlimitedMessages: boolean;
 };
 
+export type OnboardingStepId = "photo" | "about" | "startup" | "background" | "review";
+
+export type OrgOnboarding = {
+  totalSteps: number;
+  apiEndpoint: string;
+  steps: OnboardingStepId[];
+  step2RequiredFields: (keyof OnboardingData)[];
+  step3Completion?: (data: OnboardingData) => boolean;
+};
+
 export type OrgConfig = {
   branding: OrgBranding;
   landing: OrgLanding;
   limits: OrgLimits;
+  onboarding: OrgOnboarding;
 };

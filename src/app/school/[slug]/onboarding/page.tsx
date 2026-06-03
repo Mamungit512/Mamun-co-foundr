@@ -6,68 +6,14 @@ import { useRouter } from "next/navigation";
 
 import { completeOnboarding } from "@/app/onboarding/_actions";
 import { useUserProfile } from "@/features/profile/useProfile";
-import ProfilePhotoForm from "@/app/onboarding/form-components/ProfilePhotoForm";
-import UTProfilePhotoForm from "@/features/school/onboarding/components/UTProfilePhotoForm";
-import AboutYouForm from "@/app/onboarding/form-components/AboutYouForm";
-import BackgroundAndSocialsForm from "@/app/onboarding/form-components/BackgroundAndSocialsForm";
-import InterestsAndValuesForm from "@/app/onboarding/form-components/InterestsAndValuesForm";
-import ReviewForm from "@/app/onboarding/form-components/ReviewForm";
-import UTAboutYouForm from "@/features/school/onboarding/components/UTAboutYouForm";
-import UTStartupForm from "@/features/school/onboarding/components/UTStartupForm";
-import UTBackgroundAndSocialsForm from "@/features/school/onboarding/components/UTBackgroundAndSocialsForm";
 import UTReviewForm from "@/features/school/onboarding/components/UTReviewForm";
 import OnboardingProgressBar from "@/components/ui/OnboardingProgressBar";
 import { useStepTransition } from "@/hooks/useOnboardingAnimation";
 import { useOnboardingDraft } from "@/hooks/useOnboardingDraft";
 import { useSchool } from "@/features/school/components/SchoolContext";
-
-const TOTAL_STEPS = 5;
-
-function getCompletedSteps(
-  data: OnboardingData,
-  visited: Set<number>,
-  isUT: boolean,
-): Set<number> {
-  const completed = new Set<number>();
-  if (data.pfp_url) completed.add(1);
-
-  const step2BaseFields =
-    data.firstName &&
-    data.lastName &&
-    data.title &&
-    data.country &&
-    data.city &&
-    data.experience &&
-    data.personalIntro &&
-    data.isTechnical;
-
-  if (isUT) {
-    if (step2BaseFields && data.utStatus) completed.add(2);
-    // Step 3: intent is always required; startup details only when hasStartup=yes
-    if (
-      data.hasStartup !== undefined &&
-      data.intent !== undefined &&
-      (data.hasStartup === "no" ||
-        (data.hasStartup === "yes" &&
-          data.coFounderStatus !== undefined &&
-          data.equityExpectation !== undefined))
-    ) {
-      completed.add(3);
-    }
-  } else {
-    if (
-      step2BaseFields &&
-      data.education &&
-      data.satisfaction &&
-      data.batteryLevel
-    )
-      completed.add(2);
-  }
-
-  if (visited.has(4)) completed.add(4);
-  if (visited.has(5)) completed.add(5);
-  return completed;
-}
+import { getOrgConfig } from "@/features/school/registry/registry";
+import { getCompletedSteps } from "@/features/school/onboarding/getCompletedSteps";
+import { STEP_COMPONENTS } from "@/features/school/onboarding/stepRegistry";
 
 export default function SchoolOnboardingPage({
   params,
@@ -75,7 +21,7 @@ export default function SchoolOnboardingPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = use(params);
-  const isUT = slug === "ut";
+  const orgConfig = getOrgConfig(slug);
 
   const [stepNumber, setStepNumber] = useState(1);
   const [formData, setFormData] = useState<OnboardingData>({});
@@ -148,7 +94,7 @@ export default function SchoolOnboardingPage({
         return;
       }
 
-      const endpoint = isUT ? "/api/ut-profile" : "/api/profile";
+      const endpoint = orgConfig?.onboarding.apiEndpoint ?? "/api/profile";
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
@@ -181,6 +127,9 @@ export default function SchoolOnboardingPage({
     );
   }
 
+  const onboarding = orgConfig?.onboarding;
+  const totalSteps = onboarding?.totalSteps ?? 5;
+
   return (
     <div className="mx-auto max-w-xl px-4 py-8">
       <div className="mb-8 text-center">
@@ -209,9 +158,13 @@ export default function SchoolOnboardingPage({
 
       <OnboardingProgressBar
         currentStep={stepNumber}
-        totalSteps={TOTAL_STEPS}
+        totalSteps={totalSteps}
         onStepClick={handleEditStep}
-        completedSteps={getCompletedSteps(formData, visitedSteps, isUT)}
+        completedSteps={
+          onboarding
+            ? getCompletedSteps(formData, visitedSteps, onboarding)
+            : new Set<number>()
+        }
       />
 
       {error && (
@@ -221,79 +174,32 @@ export default function SchoolOnboardingPage({
       )}
 
       <div ref={containerRef} className="will-change-transform">
-        {stepNumber === 1 && (
-          isUT ? (
-            <UTProfilePhotoForm
-              onNext={(newData) => advanceStep(newData, 2)}
+        {onboarding?.steps.map((stepId, index) => {
+          const stepNum = index + 1;
+          if (stepNumber !== stepNum) return null;
+
+          if (stepId === "review") {
+            return (
+              <UTReviewForm
+                key={stepId}
+                data={formData}
+                onBack={handleBack}
+                onEdit={handleEditStep}
+                onSubmit={handleSubmit}
+              />
+            );
+          }
+
+          const StepComponent = STEP_COMPONENTS[stepId];
+          return (
+            <StepComponent
+              key={stepId}
+              onNext={(newData) => advanceStep(newData, stepNum + 1)}
+              onBack={stepNum > 1 ? handleBack : undefined}
               defaultValues={formData}
             />
-          ) : (
-            <ProfilePhotoForm
-              onNext={(newData) => advanceStep(newData, 2)}
-              defaultValues={formData}
-            />
-          )
-        )}
-        {stepNumber === 2 && (
-          isUT ? (
-            <UTAboutYouForm
-              onBack={handleBack}
-              onNext={(newData) => advanceStep(newData, 3)}
-              defaultValues={formData}
-            />
-          ) : (
-            <AboutYouForm
-              onBack={handleBack}
-              onNext={(newData) => advanceStep(newData, 3)}
-              defaultValues={formData}
-            />
-          )
-        )}
-        {stepNumber === 3 && isUT && (
-          <UTStartupForm
-            onBack={handleBack}
-            onNext={(newData) => advanceStep(newData, 4)}
-            defaultValues={formData}
-          />
-        )}
-        {stepNumber === 4 && (
-          isUT ? (
-            <UTBackgroundAndSocialsForm
-              onBack={handleBack}
-              onNext={(newData) => advanceStep(newData, 5)}
-              defaultValues={formData}
-            />
-          ) : (
-            <BackgroundAndSocialsForm
-              onBack={handleBack}
-              onNext={(newData) => advanceStep(newData, 4)}
-              defaultValues={formData}
-            />
-          )
-        )}
-        {stepNumber === 5 && !isUT && (
-          <InterestsAndValuesForm
-            onBack={handleBack}
-            onNext={(newData) => advanceStep(newData, 5)}
-            defaultValues={formData}
-          />
-        )}
-        {stepNumber === 5 && isUT && (
-          <UTReviewForm
-            data={formData}
-            onBack={handleBack}
-            onEdit={handleEditStep}
-            onSubmit={handleSubmit}
-          />
-        )}
-        {stepNumber === 5 && !isUT && (
-          <ReviewForm
-            data={formData}
-            onBack={handleBack}
-            onEdit={handleEditStep}
-            onSubmit={handleSubmit}
-          />
-        )}
+          );
+        })}
       </div>
     </div>
   );
