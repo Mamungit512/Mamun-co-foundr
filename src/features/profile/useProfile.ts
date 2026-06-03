@@ -247,6 +247,72 @@ export function useSearchProfiles(query: string, userFilters: DashboardFilters) 
   };
 }
 
+export function useSchoolProfile() {
+  const { userId } = useAuth();
+  const { session } = useSession();
+
+  return useQuery<OnboardingData, { message: string }>({
+    queryKey: ["school-profile", userId],
+    queryFn: async () => {
+      if (!userId) throw { message: "You must be logged in to view your profile" };
+      const token = await session?.getToken();
+      if (!token) throw { message: "Authentication failed. Please log in again." };
+
+      const response = await fetch("/api/ut-profile", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw { message: errorData.error || "Failed to load school profile" };
+      }
+
+      const data = await response.json();
+      return data.profile;
+    },
+    enabled: !!userId,
+    retry: 1,
+  });
+}
+
+export function useSchoolProfileUpsert() {
+  const { userId } = useAuth();
+  const { session } = useSession();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (formData: OnboardingData) => {
+      const token = await session?.getToken();
+      if (!userId || !token) throw new Error("No logged in user or authentication has failed");
+
+      const response = await fetch("/api/ut-profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update school profile");
+      }
+
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["school-profile", userId] });
+      queryClient.invalidateQueries({ queryKey: ["profiles", userId] });
+      queryClient.invalidateQueries({ queryKey: ["profiles"] });
+      toast.success("Profile updated successfully!");
+    },
+    onError: (error) => {
+      toast.error(error?.message || "Failed to update profile.");
+    },
+  });
+}
+
 export function useProfileUpsert() {
   const { userId } = useAuth();
   const { session } = useSession();

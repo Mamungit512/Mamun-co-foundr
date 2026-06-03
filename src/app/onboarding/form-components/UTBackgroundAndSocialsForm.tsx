@@ -6,7 +6,6 @@ import FormInput from "@/components/ui/FormInput";
 import { useStepEntry, useErrorShake } from "@/hooks/useOnboardingAnimation";
 
 type UTBackgroundAndSocialsData = {
-  schedulingUrl?: string;
   linkedin?: string;
   git?: string;
 };
@@ -46,36 +45,12 @@ function UTBackgroundAndSocialsForm({
         {/* ── Header ── */}
         <div className="pb-4">
           <p className="mb-1 text-xs font-semibold tracking-widest text-[var(--ui-text-muted)] uppercase">
-            Step 4 of 6
+            Step 4 of 5
           </p>
           <h2 className="text-2xl font-bold text-[var(--ui-text)]">Additional details</h2>
           <p className="mt-1.5 text-sm text-[var(--ui-text-muted)]">
             All fields are optional — add what feels relevant.
           </p>
-        </div>
-
-        {/* ── Scheduling ── */}
-        <div className="flex flex-col gap-y-1.5">
-          <label className={LABEL_CLS}>
-            Scheduling Link
-            <span className="ml-1 font-normal normal-case text-[var(--ui-text-subtle)]">
-              (Calendly, Cal.com…)
-            </span>
-          </label>
-          <FormInput
-            {...register("schedulingUrl")}
-            type="url"
-            placeholder="https://calendly.com/your-link"
-          />
-        </div>
-
-        {/* ── Section break ── */}
-        <div className="flex items-center gap-3">
-          <div className="h-px flex-1 bg-[var(--ui-surface)]" />
-          <span className="text-xs font-semibold tracking-widest text-[var(--ui-text-subtle)] uppercase">
-            Socials
-          </span>
-          <div className="h-px flex-1 bg-[var(--ui-surface)]" />
         </div>
 
         {/* ── Social links ── */}

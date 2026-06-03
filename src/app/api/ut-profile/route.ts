@@ -4,7 +4,50 @@ import { createClient } from "@supabase/supabase-js";
 import {
   mapOnboardingDatatoProfileDB,
   mapUTDataToSchoolProfileRow,
+  mapProfileToOnboardingData,
+  mapSchoolProfileToUTData,
 } from "@/lib/mapProfileToFromDBFormat";
+
+export async function GET() {
+  try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    );
+
+    const { data: profileRow, error: profileError } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", userId)
+      .is("deleted_at", null)
+      .single();
+
+    if (profileError || !profileRow) {
+      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
+    }
+
+    const { data: schoolRow } = await supabase
+      .from("school_profiles")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    const profile: OnboardingData = {
+      ...mapProfileToOnboardingData(profileRow),
+      ...(schoolRow ? mapSchoolProfileToUTData(schoolRow) : {}),
+    };
+
+    return NextResponse.json({ profile });
+  } catch (error) {
+    console.error("Error in UT profile GET:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {

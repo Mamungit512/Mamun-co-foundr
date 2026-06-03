@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { FaHeart, FaBars } from "react-icons/fa6";
+import { FaHeart, FaBars, FaUserPen } from "react-icons/fa6";
 import { FaTimes } from "react-icons/fa";
 import clsx from "clsx";
 import { useLikedProfilesData } from "@/features/likes/useLikes";
@@ -14,9 +14,10 @@ type SchoolHeaderProps = {
   slug: string;
   schoolName: string;
   config: OrgConfig;
+  isAdmin: boolean;
 };
 
-export default function SchoolHeader({ slug, schoolName, config }: SchoolHeaderProps) {
+export default function SchoolHeader({ slug, schoolName, config, isAdmin }: SchoolHeaderProps) {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -52,6 +53,9 @@ export default function SchoolHeader({ slug, schoolName, config }: SchoolHeaderP
       href: "/privacy-policy",
       label: "Privacy Policy",
     },
+    ...(isAdmin
+      ? [{ href: `/school/${slug}/admin`, label: "Admin" }]
+      : []),
   ];
 
   const headerText = config.branding.wordmark ? `${config.branding.wordmark} Co-Foundr` : schoolName;
@@ -99,7 +103,17 @@ export default function SchoolHeader({ slug, schoolName, config }: SchoolHeaderP
           )}
         </Link>
 
-        {mounted && <UserButton afterSignOutUrl={`/school/${slug}`} />}
+        {mounted && (
+          <UserButton afterSignOutUrl={`/school/${slug}`}>
+            <UserButton.MenuItems>
+              <UserButton.Link
+                label="Edit profile"
+                labelIcon={<FaUserPen className="h-3.5 w-3.5" />}
+                href={`/school/${slug}/profile`}
+              />
+            </UserButton.MenuItems>
+          </UserButton>
+        )}
 
         {/* Mobile hamburger */}
         <button
