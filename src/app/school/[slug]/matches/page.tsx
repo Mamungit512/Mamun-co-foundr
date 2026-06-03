@@ -13,7 +13,7 @@ import { useWeMatch, useWeMatchStatus } from "@/features/matches/useWeMatch";
 import ProfileDetailModal from "@/features/matches/ProfileDetailModal";
 import MeetupCard from "@/features/matches/MeetupCard";
 import { useCreateConversation } from "@/hooks/useConversations";
-import { getDegreeAbbreviation } from "@/lib/utSchoolsAndMajors";
+import { getDegreeAbbreviation } from "@/features/school/data/utSchoolsAndMajors";
 import React, { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 

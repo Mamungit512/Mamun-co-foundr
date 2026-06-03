@@ -6,7 +6,7 @@ import {
   type DashboardFilters,
   type SearchEmptyReason,
   buildProfilesQueryString,
-} from "@/lib/dashboardFilters";
+} from "@/features/school/data/dashboardFilters";
 import type { ParsedQuery } from "@/lib/searchQueryParser";
 
 export function useGetProfiles(filters?: DashboardFilters) {

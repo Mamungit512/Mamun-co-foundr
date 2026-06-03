@@ -1,14 +1,14 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { getOrganizationBySlug } from "@/lib/organizations";
-import { getOrgConfig } from "@/orgs/registry";
-import Hero from "@/components/school/landing/Hero";
-import HowItWorks from "@/components/school/landing/HowItWorks";
-import ValuesPillars from "@/components/school/landing/ValuesPillars";
-import CtaBand from "@/components/school/landing/CtaBand";
-import DepartmentMosaic from "@/components/school/landing/DepartmentMosaic";
-import PublicFooter from "@/components/school/landing/PublicFooter";
+import { getOrganizationBySlug } from "@/features/school/data/organizations";
+import { getOrgConfig } from "@/features/school/registry/registry";
+import Hero from "@/features/school/components/landing/Hero";
+import HowItWorks from "@/features/school/components/landing/HowItWorks";
+import ValuesPillars from "@/features/school/components/landing/ValuesPillars";
+import CtaBand from "@/features/school/components/landing/CtaBand";
+import DepartmentMosaic from "@/features/school/components/landing/DepartmentMosaic";
+import PublicFooter from "@/features/school/components/landing/PublicFooter";
 
 export default async function SchoolLanding({
   params,

@@ -11,12 +11,12 @@ import toast from "react-hot-toast";
 
 import HiringBadge from "@/components/HiringBadge";
 import { useGetProfiles, useSearchProfiles } from "@/features/profile/useProfile";
-import { useSchool } from "@/components/school/SchoolContext";
+import { useSchool } from "@/features/school/components/SchoolContext";
 import { useToggleLike, useLikeStatus, useMutualLikes } from "@/features/likes/useLikes";
 import { useSkipProfile } from "@/features/user-actions/useUserActions";
 import { trackEvent } from "@/lib/posthog-events";
-import { getSchoolFullName, getDegreeAbbreviation, SECTOR_INTEREST_LABELS } from "@/lib/utSchoolsAndMajors";
-import FilterSidebar, { getFilterChipLabels } from "@/components/school/dashboard/FilterSidebar";
+import { getSchoolFullName, getDegreeAbbreviation, SECTOR_INTEREST_LABELS } from "@/features/school/data/utSchoolsAndMajors";
+import FilterSidebar, { getFilterChipLabels } from "@/features/school/components/dashboard/FilterSidebar";
 import {
   type DashboardFilters,
   type RelaxSuggestion,
@@ -25,7 +25,7 @@ import {
   loadDashboardFilters,
   normalizeDashboardFilters,
   saveDashboardFilters,
-} from "@/lib/dashboardFilters";
+} from "@/features/school/data/dashboardFilters";
 
 // ─── Search result card ────────────────────────────────────────────────────────
 

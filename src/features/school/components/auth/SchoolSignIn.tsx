@@ -7,12 +7,12 @@ import Link from "next/link";
 import {
   isEmailDomainAllowed,
   formatAllowedDomainsForCopy,
-} from "@/lib/auth/email-domain";
+} from "@/features/school/auth/email-domain";
 import {
   assignSchoolOrg,
   checkExistingUser,
   type ExistingUserInfo,
-} from "@/lib/actions/school-auth";
+} from "@/features/school/auth/school-auth";
 import GoogleOAuthButton from "./GoogleOAuthButton";
 
 type Props = {

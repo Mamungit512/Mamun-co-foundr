@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
-import { getOrganizationBySlug } from "@/lib/organizations";
-import { isEmailDomainAllowed } from "@/lib/auth/email-domain";
-import SessionRefreshRedirect from "@/components/school/auth/SessionRefreshRedirect";
-import AutoRetry from "@/components/school/auth/AutoRetry";
-import SignOutRedirect from "@/components/school/auth/SignOutOnMount";
+import { getOrganizationBySlug } from "@/features/school/data/organizations";
+import { isEmailDomainAllowed } from "@/features/school/auth/email-domain";
+import SessionRefreshRedirect from "@/features/school/components/auth/SessionRefreshRedirect";
+import AutoRetry from "@/features/school/components/auth/AutoRetry";
+import SignOutRedirect from "@/features/school/components/auth/SignOutOnMount";
 
 export default async function SSOCompletePage({
   params,

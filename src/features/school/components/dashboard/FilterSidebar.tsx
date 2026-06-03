@@ -8,12 +8,12 @@ import {
   UT_SCHOOLS_AND_PROGRAMS,
   SECTOR_INTEREST_LABELS,
   getSchoolLabel,
-} from "@/lib/utSchoolsAndMajors";
+} from "@/features/school/data/utSchoolsAndMajors";
 import {
   type DashboardFilters,
   EMPTY_DASHBOARD_FILTERS,
   hasActiveFilters,
-} from "@/lib/dashboardFilters";
+} from "@/features/school/data/dashboardFilters";
 
 type SelectOption = { value: string; label: string };
 

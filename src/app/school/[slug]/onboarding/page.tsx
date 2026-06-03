@@ -7,19 +7,19 @@ import { useRouter } from "next/navigation";
 import { completeOnboarding } from "@/app/onboarding/_actions";
 import { useUserProfile } from "@/features/profile/useProfile";
 import ProfilePhotoForm from "@/app/onboarding/form-components/ProfilePhotoForm";
-import UTProfilePhotoForm from "@/app/onboarding/form-components/UTProfilePhotoForm";
+import UTProfilePhotoForm from "@/features/school/onboarding/components/UTProfilePhotoForm";
 import AboutYouForm from "@/app/onboarding/form-components/AboutYouForm";
 import BackgroundAndSocialsForm from "@/app/onboarding/form-components/BackgroundAndSocialsForm";
 import InterestsAndValuesForm from "@/app/onboarding/form-components/InterestsAndValuesForm";
 import ReviewForm from "@/app/onboarding/form-components/ReviewForm";
-import UTAboutYouForm from "@/app/onboarding/form-components/UTAboutYouForm";
-import UTStartupForm from "@/app/onboarding/form-components/UTStartupForm";
-import UTBackgroundAndSocialsForm from "@/app/onboarding/form-components/UTBackgroundAndSocialsForm";
-import UTReviewForm from "@/app/onboarding/form-components/UTReviewForm";
+import UTAboutYouForm from "@/features/school/onboarding/components/UTAboutYouForm";
+import UTStartupForm from "@/features/school/onboarding/components/UTStartupForm";
+import UTBackgroundAndSocialsForm from "@/features/school/onboarding/components/UTBackgroundAndSocialsForm";
+import UTReviewForm from "@/features/school/onboarding/components/UTReviewForm";
 import OnboardingProgressBar from "@/components/ui/OnboardingProgressBar";
 import { useStepTransition } from "@/hooks/useOnboardingAnimation";
 import { useOnboardingDraft } from "@/hooks/useOnboardingDraft";
-import { useSchool } from "@/components/school/SchoolContext";
+import { useSchool } from "@/features/school/components/SchoolContext";
 
 const TOTAL_STEPS = 5;
 

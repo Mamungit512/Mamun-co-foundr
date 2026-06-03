@@ -2,8 +2,8 @@
 
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
-import { getOrganizationBySlug } from "@/lib/organizations";
-import { isEmailDomainAllowed } from "@/lib/auth/email-domain";
+import { getOrganizationBySlug } from "@/features/school/data/organizations";
+import { isEmailDomainAllowed } from "@/features/school/auth/email-domain";
 
 export type ExistingUserInfo = {
   exists: boolean;

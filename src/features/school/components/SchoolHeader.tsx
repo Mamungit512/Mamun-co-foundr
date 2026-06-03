@@ -8,7 +8,7 @@ import { FaHeart, FaBars, FaUserPen } from "react-icons/fa6";
 import { FaTimes } from "react-icons/fa";
 import clsx from "clsx";
 import { useLikedProfilesData } from "@/features/likes/useLikes";
-import type { OrgConfig } from "@/orgs/types";
+import type { OrgConfig } from "@/features/school/registry/types";
 
 type SchoolHeaderProps = {
   slug: string;

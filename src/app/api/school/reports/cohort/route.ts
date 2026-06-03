@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
-import { requireOrgAdmin } from "@/lib/auth/org-admin";
+import { requireOrgAdmin } from "@/features/school/auth/org-admin";
 import { toCsv } from "@/lib/csv";
 import {
   UT_SCHOOLS_AND_PROGRAMS,
   SECTOR_INTEREST_LABELS,
-} from "@/lib/utSchoolsAndMajors";
+} from "@/features/school/data/utSchoolsAndMajors";
 
 const ARCHETYPE_LABELS: Record<string, string> = {
   the_scaler: "The Scaler",

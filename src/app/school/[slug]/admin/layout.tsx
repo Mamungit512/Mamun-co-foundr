@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
-import { getVerifiedPrimaryEmail, isOrgAdmin } from "@/lib/auth/org-admin";
+import { getVerifiedPrimaryEmail, isOrgAdmin } from "@/features/school/auth/org-admin";
 
 async function getOrgBySlug(slug: string) {
   const supabase = createClient(

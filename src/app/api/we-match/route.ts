@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
-import { getOrgConfig } from "@/orgs/registry";
+import { getOrgConfig } from "@/features/school/registry/registry";
 
 type ProfileRow = {
   user_id: string;

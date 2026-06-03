@@ -14,7 +14,7 @@ import {
   getProgramsForSchoolAndDegreeType,
   DEGREE_TYPE_LABELS,
   SECTOR_INTEREST_LABELS,
-} from "@/lib/utSchoolsAndMajors";
+} from "@/features/school/data/utSchoolsAndMajors";
 
 const LABEL_CLS =
   "text-xs font-semibold tracking-widest text-[var(--ui-text-muted)] uppercase";

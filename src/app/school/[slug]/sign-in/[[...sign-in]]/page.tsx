@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { getOrganizationBySlug } from "@/lib/organizations";
-import SchoolSignIn from "@/components/school/auth/SchoolSignIn";
+import { getOrganizationBySlug } from "@/features/school/data/organizations";
+import SchoolSignIn from "@/features/school/components/auth/SchoolSignIn";
 
 export default async function SchoolSignInPage({
   params,

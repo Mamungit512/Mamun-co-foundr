@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import type { OrgConfig } from "@/orgs/types";
+import type { OrgConfig } from "@/features/school/registry/types";
 
 type SchoolContextValue = {
   slug: string;

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { requireOrgAdmin } from "@/lib/auth/org-admin";
+import { requireOrgAdmin } from "@/features/school/auth/org-admin";
 import { toCsv } from "@/lib/csv";
 
 type IntentRow = {

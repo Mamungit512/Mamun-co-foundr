@@ -19,7 +19,7 @@ import {
   getDegreeAbbreviation,
   getSchoolFullName,
   SECTOR_INTEREST_LABELS,
-} from "@/lib/utSchoolsAndMajors";
+} from "@/features/school/data/utSchoolsAndMajors";
 
 interface ProfileDetailModalProps {
   profile: OnboardingData | null;

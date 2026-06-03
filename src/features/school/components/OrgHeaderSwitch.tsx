@@ -1,6 +1,6 @@
 import SchoolHeader from "./SchoolHeader";
 import PublicSchoolHeader from "./landing/PublicSchoolHeader";
-import type { OrgConfig } from "@/orgs/types";
+import type { OrgConfig } from "@/features/school/registry/types";
 
 type Props = {
   slug: string;

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { getOrganizationBySlug } from "@/lib/organizations";
-import UtContactTabs from "@/components/school/contact/UtContactTabs";
-import PublicFooter from "@/components/school/landing/PublicFooter";
+import { getOrganizationBySlug } from "@/features/school/data/organizations";
+import UtContactTabs from "@/features/school/components/contact/UtContactTabs";
+import PublicFooter from "@/features/school/components/landing/PublicFooter";
 
 export default async function UtContactPage({
   params,

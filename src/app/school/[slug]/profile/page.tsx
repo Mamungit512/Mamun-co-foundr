@@ -16,10 +16,10 @@ import {
   useUserProfile,
   useProfileUpsert,
 } from "@/features/profile/useProfile";
-import { useSchool } from "@/components/school/SchoolContext";
+import { useSchool } from "@/features/school/components/SchoolContext";
 import FormInput from "@/components/ui/FormInput";
 import LocationSelector from "@/components/ui/LocationSelector";
-import UTSchoolFields from "@/app/onboarding/form-components/UTSchoolFields";
+import UTSchoolFields from "@/features/school/onboarding/components/UTSchoolFields";
 import { trackEvent } from "@/lib/posthog-events";
 
 const FaceDetectionUploader = dynamic(

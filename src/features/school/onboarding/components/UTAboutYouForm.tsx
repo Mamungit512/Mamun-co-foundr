@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import FormInput from "@/components/ui/FormInput";
 import LocationSelector from "@/components/ui/LocationSelector";
 import { useStepEntry, useErrorShake } from "@/hooks/useOnboardingAnimation";
-import UTSchoolFields from "@/app/onboarding/form-components/UTSchoolFields";
+import UTSchoolFields from "@/features/school/onboarding/components/UTSchoolFields";
 
 type UTAboutYouData = {
   firstName: string;

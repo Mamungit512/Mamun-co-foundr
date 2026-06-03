@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { getOrganizationBySlug } from "@/lib/organizations";
-import SchoolSignUp from "@/components/school/auth/SchoolSignUp";
+import { getOrganizationBySlug } from "@/features/school/data/organizations";
+import SchoolSignUp from "@/features/school/components/auth/SchoolSignUp";
 
 export default async function SchoolSignUpPage({
   params,

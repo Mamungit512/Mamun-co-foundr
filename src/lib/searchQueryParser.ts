@@ -1,8 +1,8 @@
 import {
   SECTOR_INTEREST_LABELS,
   UT_SCHOOLS_AND_PROGRAMS,
-} from "@/lib/utSchoolsAndMajors";
-import type { DashboardFilters } from "@/lib/dashboardFilters";
+} from "@/features/school/data/utSchoolsAndMajors";
+import type { DashboardFilters } from "@/features/school/data/dashboardFilters";
 
 export type ParsedQuery = {
   filters: Partial<DashboardFilters>;

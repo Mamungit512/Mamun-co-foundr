@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { auth } from "@clerk/nextjs/server";
-import OrgHeaderSwitch from "@/components/school/OrgHeaderSwitch";
-import { SchoolProvider } from "@/components/school/SchoolContext";
-import { getOrganizationBySlug } from "@/lib/organizations";
-import { getOrgConfig, DEFAULT_ORG_CONFIG } from "@/orgs/registry";
-import { getVerifiedPrimaryEmail, getOrgAdminEmails } from "@/lib/auth/org-admin";
+import OrgHeaderSwitch from "@/features/school/components/OrgHeaderSwitch";
+import { SchoolProvider } from "@/features/school/components/SchoolContext";
+import { getOrganizationBySlug } from "@/features/school/data/organizations";
+import { getOrgConfig, DEFAULT_ORG_CONFIG } from "@/features/school/registry/registry";
+import { getVerifiedPrimaryEmail, getOrgAdminEmails } from "@/features/school/auth/org-admin";
 
 export async function generateMetadata({
   params,
