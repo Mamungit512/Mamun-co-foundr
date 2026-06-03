@@ -15,14 +15,13 @@ import ReviewForm from "@/app/onboarding/form-components/ReviewForm";
 import UTAboutYouForm from "@/app/onboarding/form-components/UTAboutYouForm";
 import UTStartupForm from "@/app/onboarding/form-components/UTStartupForm";
 import UTBackgroundAndSocialsForm from "@/app/onboarding/form-components/UTBackgroundAndSocialsForm";
-import UTInterestsForm from "@/app/onboarding/form-components/UTInterestsForm";
 import UTReviewForm from "@/app/onboarding/form-components/UTReviewForm";
 import OnboardingProgressBar from "@/components/ui/OnboardingProgressBar";
 import { useStepTransition } from "@/hooks/useOnboardingAnimation";
 import { useOnboardingDraft } from "@/hooks/useOnboardingDraft";
 import { useSchool } from "@/components/school/SchoolContext";
 
-const TOTAL_STEPS = 6;
+const TOTAL_STEPS = 5;
 
 function getCompletedSteps(
   data: OnboardingData,
@@ -44,13 +43,14 @@ function getCompletedSteps(
 
   if (isUT) {
     if (step2BaseFields && data.utStatus) completed.add(2);
-    // Step 3: Startup details (has startup field required)
+    // Step 3: intent is always required; startup details only when hasStartup=yes
     if (
-      data.hasStartup === "no" ||
-      (data.hasStartup === "yes" &&
-        data.coFounderStatus !== undefined &&
-        data.intent !== undefined &&
-        data.equityExpectation !== undefined)
+      data.hasStartup !== undefined &&
+      data.intent !== undefined &&
+      (data.hasStartup === "no" ||
+        (data.hasStartup === "yes" &&
+          data.coFounderStatus !== undefined &&
+          data.equityExpectation !== undefined))
     ) {
       completed.add(3);
     }
@@ -271,22 +271,14 @@ export default function SchoolOnboardingPage({
             />
           )
         )}
-        {stepNumber === 5 && (
-          isUT ? (
-            <UTInterestsForm
-              onBack={handleBack}
-              onNext={(newData) => advanceStep(newData, 6)}
-              defaultValues={formData}
-            />
-          ) : (
-            <InterestsAndValuesForm
-              onBack={handleBack}
-              onNext={(newData) => advanceStep(newData, 5)}
-              defaultValues={formData}
-            />
-          )
+        {stepNumber === 5 && !isUT && (
+          <InterestsAndValuesForm
+            onBack={handleBack}
+            onNext={(newData) => advanceStep(newData, 5)}
+            defaultValues={formData}
+          />
         )}
-        {stepNumber === 6 && isUT && (
+        {stepNumber === 5 && isUT && (
           <UTReviewForm
             data={formData}
             onBack={handleBack}
