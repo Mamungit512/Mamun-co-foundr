@@ -30,7 +30,7 @@ export default function UTReviewForm({
       {/* Header */}
       <div className="pb-4">
         <p className="mb-1 text-xs font-semibold tracking-widest text-[var(--ui-text-muted)] uppercase">
-          Step 6 of 6
+          Step 5 of 5
         </p>
         <h2 className="text-2xl font-bold text-[var(--ui-text)]">Review your info</h2>
         <p className="mt-1.5 text-sm text-[var(--ui-text-muted)]">
