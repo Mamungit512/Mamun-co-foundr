@@ -1,4 +1,4 @@
-import { getOrgConfig } from "@/orgs/registry";
+import { getOrgConfig } from "@/features/school/registry/registry";
 
 export interface ResolvedOrgBranding {
   primaryColor: string;
