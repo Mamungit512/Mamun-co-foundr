@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   runProfileCompletionReminders,
+  runReEngagementReminders,
   type LifecycleResult,
 } from "@/lib/email/lifecycle";
 
@@ -21,7 +22,7 @@ import {
  * }
  */
 
-const CHECKS = [runProfileCompletionReminders];
+const CHECKS = [runProfileCompletionReminders, runReEngagementReminders];
 
 export async function GET(req: NextRequest) {
   try {

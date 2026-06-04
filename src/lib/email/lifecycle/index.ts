@@ -7,3 +7,4 @@ export type LifecycleResult = {
 };
 
 export { runProfileCompletionReminders } from "./profileCompletionReminder";
+export { runReEngagementReminders } from "./reEngagement";

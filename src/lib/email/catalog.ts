@@ -11,9 +11,14 @@ export interface ProfileReminderEmailVariables {
   ctaUrl: string;
 }
 
+export interface ReEngagementEmailVariables {
+  firstName: string;
+}
+
 export interface EmailVariablesByType {
   welcome: WelcomeEmailVariables;
   profileReminder: ProfileReminderEmailVariables;
+  reEngagement: ReEngagementEmailVariables;
 }
 
 export type EmailType = keyof EmailVariablesByType;
@@ -21,4 +26,5 @@ export type EmailType = keyof EmailVariablesByType;
 export const EMAIL_CATALOG: Record<EmailType, { templateId: string }> = {
   welcome: { templateId: "welcome-email-01-1" },
   profileReminder: { templateId: "profile-completion-03-1" },
+  reEngagement: { templateId: "re-engagement-email-07-1" },
 };
