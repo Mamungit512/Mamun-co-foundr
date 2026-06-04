@@ -60,7 +60,7 @@ export const ORG_REGISTRY: Record<string, OrgConfig> = {
     },
     onboarding: {
       totalSteps: 5,
-      apiEndpoint: "/api/ut-profile",
+      apiEndpoint: "/api/profile",
       steps: ["photo", "about", "startup", "background", "review"],
       step2RequiredFields: [
         "firstName",

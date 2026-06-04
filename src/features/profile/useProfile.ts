@@ -258,7 +258,7 @@ export function useSchoolProfile() {
       const token = await session?.getToken();
       if (!token) throw { message: "Authentication failed. Please log in again." };
 
-      const response = await fetch("/api/ut-profile", {
+      const response = await fetch("/api/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -285,7 +285,7 @@ export function useSchoolProfileUpsert() {
       const token = await session?.getToken();
       if (!userId || !token) throw new Error("No logged in user or authentication has failed");
 
-      const response = await fetch("/api/ut-profile", {
+      const response = await fetch("/api/profile", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

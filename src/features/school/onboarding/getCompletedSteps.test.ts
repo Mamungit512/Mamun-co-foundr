@@ -4,7 +4,7 @@ import type { OrgOnboarding } from "@/features/school/registry/types";
 
 const UT_ONBOARDING: OrgOnboarding = {
   totalSteps: 5,
-  apiEndpoint: "/api/ut-profile",
+  apiEndpoint: "/api/profile",
   steps: ["photo", "about", "startup", "background", "review"],
   step2RequiredFields: [
     "firstName",
