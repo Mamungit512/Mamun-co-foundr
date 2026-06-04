@@ -10,7 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 import BatteryLevel from "@/components/BatteryLevel";
-import PreferencesPanel from "@/app/cofoundr-matching/PreferencesPanel";
+import PreferencesPanel from "@/app/(general)/cofoundr-matching/PreferencesPanel";
 import InformationTooltipButton from "@/components/ui/InformationTooltipButton";
 import HiringBadge from "@/components/HiringBadge";
 import ActivityIndicator from "@/components/ActivityIndicator";

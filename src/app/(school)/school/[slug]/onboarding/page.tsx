@@ -4,7 +4,7 @@ import { useState, useEffect, use } from "react";
 import { useSession, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
-import { completeOnboarding } from "@/app/onboarding/_actions";
+import { completeOnboarding } from "@/app/(general)/onboarding/_actions";
 import { useUserProfile } from "@/features/profile/useProfile";
 import UTReviewForm from "@/features/school/onboarding/components/UTReviewForm";
 import OnboardingProgressBar from "@/components/ui/OnboardingProgressBar";
