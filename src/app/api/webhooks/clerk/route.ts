@@ -67,12 +67,6 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      console.log("🆕 New user created:", {
-        userId: id,
-        email: email ? `${email.substring(0, 3)}***` : "none",
-        hasReferral: !!(referralCode || fpRef || fpTid),
-      });
-
       if (email) {
         try {
           const supabase = createClient(
