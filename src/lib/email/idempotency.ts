@@ -3,6 +3,7 @@ import { EmailType } from "./catalog";
 
 const FLAG_KEYS: Record<EmailType, string> = {
   welcome: "welcomeEmailSentAt",
+  profileReminder: "profileReminderSentAt",
 };
 
 export async function hasEmailBeenSent(
