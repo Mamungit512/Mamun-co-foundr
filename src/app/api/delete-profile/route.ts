@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 import { getPostHogClient } from "@/lib/posthog-server";
-import { requireOrgAdmin } from "@/lib/auth/org-admin";
+import { requireOrgAdmin } from "@/features/school/auth/org-admin";
 
 /**
  * Admin-initiated account deletion.
