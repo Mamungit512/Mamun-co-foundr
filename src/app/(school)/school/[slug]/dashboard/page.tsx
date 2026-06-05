@@ -15,6 +15,7 @@ import { useSchool } from "@/features/school/components/SchoolContext";
 import { useToggleLike, useLikeStatus, useMutualLikes } from "@/features/likes/useLikes";
 import { useSkipProfile } from "@/features/user-actions/useUserActions";
 import { trackEvent } from "@/lib/posthog-events";
+import { useProfileViewTracking } from "@/features/profile/useProfileViewTracking";
 import { getSchoolFullName, getDegreeAbbreviation, SECTOR_INTEREST_LABELS } from "@/features/school/data/utSchoolsAndMajors";
 import FilterSidebar, { getFilterChipLabels } from "@/features/school/components/dashboard/FilterSidebar";
 import {
@@ -203,6 +204,8 @@ export default function SchoolDashboardPage() {
   const filterChips = getFilterChipLabels(filters);
   const curProfile = profiles?.[0];
   const { data: likeStatus } = useLikeStatus(curProfile?.user_id);
+
+  useProfileViewTracking(curProfile?.user_id, cardRef);
 
   React.useEffect(() => {
     if (curProfile?.user_id) {
