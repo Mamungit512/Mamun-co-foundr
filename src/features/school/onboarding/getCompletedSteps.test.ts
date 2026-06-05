@@ -17,14 +17,15 @@ const UT_ONBOARDING: OrgOnboarding = {
     "isTechnical",
     "utStatus",
   ],
-  step3Completion: (data) =>
-    data.hasStartup !== undefined &&
-    data.intent !== undefined &&
-    (data.hasStartup === "no" ||
-      (data.hasStartup === "yes" &&
-        data.coFounderStatus !== undefined &&
-        data.equityExpectation !== undefined)),
 };
+
+const utStep3Completion = (data: OnboardingData) =>
+  data.hasStartup !== undefined &&
+  data.intent !== undefined &&
+  (data.hasStartup === "no" ||
+    (data.hasStartup === "yes" &&
+      data.coFounderStatus !== undefined &&
+      data.equityExpectation !== undefined));
 
 const GENERIC_ONBOARDING: OrgOnboarding = {
   totalSteps: 4,
@@ -56,12 +57,12 @@ const BASE_STEP2_FIELDS: Partial<OnboardingData> = {
 describe("getCompletedSteps", () => {
   describe("step 1", () => {
     it("is complete when pfp_url is set", () => {
-      const result = getCompletedSteps({ pfp_url: "/img/photo.jpg" }, new Set(), UT_ONBOARDING);
+      const result = getCompletedSteps({ pfp_url: "/img/photo.jpg" }, new Set(), UT_ONBOARDING, utStep3Completion);
       expect(result.has(1)).toBe(true);
     });
 
     it("is incomplete when pfp_url is absent", () => {
-      const result = getCompletedSteps({}, new Set(), UT_ONBOARDING);
+      const result = getCompletedSteps({}, new Set(), UT_ONBOARDING, utStep3Completion);
       expect(result.has(1)).toBe(false);
     });
   });
@@ -69,13 +70,13 @@ describe("getCompletedSteps", () => {
   describe("step 2 — required fields", () => {
     it("is complete when all step2RequiredFields are truthy (UT)", () => {
       const data: Partial<OnboardingData> = { ...BASE_STEP2_FIELDS, utStatus: "student" };
-      const result = getCompletedSteps(data as OnboardingData, new Set(), UT_ONBOARDING);
+      const result = getCompletedSteps(data as OnboardingData, new Set(), UT_ONBOARDING, utStep3Completion);
       expect(result.has(2)).toBe(true);
     });
 
     it("is incomplete when any required field is missing (UT)", () => {
       const data: Partial<OnboardingData> = { ...BASE_STEP2_FIELDS }; // utStatus missing
-      const result = getCompletedSteps(data as OnboardingData, new Set(), UT_ONBOARDING);
+      const result = getCompletedSteps(data as OnboardingData, new Set(), UT_ONBOARDING, utStep3Completion);
       expect(result.has(2)).toBe(false);
     });
 
@@ -89,7 +90,7 @@ describe("getCompletedSteps", () => {
   describe("step 3 — conditional completion", () => {
     it("is complete when step3Completion returns true (no startup)", () => {
       const data: Partial<OnboardingData> = { hasStartup: "no", intent: "join_me" };
-      const result = getCompletedSteps(data as OnboardingData, new Set(), UT_ONBOARDING);
+      const result = getCompletedSteps(data as OnboardingData, new Set(), UT_ONBOARDING, utStep3Completion);
       expect(result.has(3)).toBe(true);
     });
 
@@ -100,14 +101,14 @@ describe("getCompletedSteps", () => {
         coFounderStatus: "looking",
         equityExpectation: 50,
       };
-      const result = getCompletedSteps(data as OnboardingData, new Set(), UT_ONBOARDING);
+      const result = getCompletedSteps(data as OnboardingData, new Set(), UT_ONBOARDING, utStep3Completion);
       expect(result.has(3)).toBe(true);
     });
 
     it("is incomplete when startup details are partial", () => {
       // hasStartup=yes but coFounderStatus and equityExpectation missing
       const data: Partial<OnboardingData> = { hasStartup: "yes", intent: "join_me" };
-      const result = getCompletedSteps(data as OnboardingData, new Set(), UT_ONBOARDING);
+      const result = getCompletedSteps(data as OnboardingData, new Set(), UT_ONBOARDING, utStep3Completion);
       expect(result.has(3)).toBe(false);
     });
 
@@ -119,17 +120,17 @@ describe("getCompletedSteps", () => {
 
   describe("steps 4 and 5 — visited-based (UT)", () => {
     it("step 4 is complete when visited", () => {
-      const result = getCompletedSteps({} as OnboardingData, new Set([4]), UT_ONBOARDING);
+      const result = getCompletedSteps({} as OnboardingData, new Set([4]), UT_ONBOARDING, utStep3Completion);
       expect(result.has(4)).toBe(true);
     });
 
     it("step 5 is complete when visited", () => {
-      const result = getCompletedSteps({} as OnboardingData, new Set([5]), UT_ONBOARDING);
+      const result = getCompletedSteps({} as OnboardingData, new Set([5]), UT_ONBOARDING, utStep3Completion);
       expect(result.has(5)).toBe(true);
     });
 
     it("step 4 is incomplete when not visited", () => {
-      const result = getCompletedSteps({} as OnboardingData, new Set(), UT_ONBOARDING);
+      const result = getCompletedSteps({} as OnboardingData, new Set(), UT_ONBOARDING, utStep3Completion);
       expect(result.has(4)).toBe(false);
     });
   });

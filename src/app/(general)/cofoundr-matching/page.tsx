@@ -2,7 +2,7 @@
 
 import ReactLenis from "lenis/react";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { CiCircleInfo } from "react-icons/ci";
 import { FaHeart, FaLocationDot } from "react-icons/fa6";
 import { motion, AnimatePresence } from "motion/react";
@@ -26,6 +26,7 @@ import { useSwipeLimit } from "@/features/swipes/useSwipes";
 import SwipeLimit from "@/components/SwipeLimit";
 import { MdSkipNext } from "react-icons/md";
 import { trackEvent } from "@/lib/posthog-events";
+import { useProfileViewTracking } from "@/features/profile/useProfileViewTracking";
 
 function CofoundrMatching() {
   const [showMore, setShowMore] = useState(false);
@@ -41,6 +42,9 @@ function CofoundrMatching() {
   // Get current profile and like status
   const curProfile = profiles?.[0];
   const { data: likeStatus } = useLikeStatus(curProfile?.user_id);
+
+  const cardRef = useRef<HTMLDivElement>(null);
+  useProfileViewTracking(curProfile?.user_id, cardRef);
 
   // Track profile views
   React.useEffect(() => {
@@ -343,7 +347,7 @@ function CofoundrMatching() {
               />
             )}
 
-            <div className="overflow-hidden rounded-2xl border border-white bg-(--charcoal-black) shadow-2xl backdrop-blur-sm">
+            <div ref={cardRef} className="overflow-hidden rounded-2xl border border-white bg-(--charcoal-black) shadow-2xl backdrop-blur-sm">
               <div className="p-4 sm:p-6 md:p-8 lg:p-12">
                 <div className="flex flex-col items-center space-y-6 sm:space-y-8">
                   {/* Profile Image Section - Centered on Top */}

@@ -73,13 +73,6 @@ export const ORG_REGISTRY: Record<string, OrgConfig> = {
         "isTechnical",
         "utStatus",
       ],
-      step3Completion: (data) =>
-        data.hasStartup !== undefined &&
-        data.intent !== undefined &&
-        (data.hasStartup === "no" ||
-          (data.hasStartup === "yes" &&
-            data.coFounderStatus !== undefined &&
-            data.equityExpectation !== undefined)),
     },
   },
 };
@@ -87,3 +80,13 @@ export const ORG_REGISTRY: Record<string, OrgConfig> = {
 export function getOrgConfig(slug: string): OrgConfig | null {
   return ORG_REGISTRY[slug] ?? null;
 }
+
+export const STEP3_COMPLETIONS: Record<string, (data: OnboardingData) => boolean> = {
+  ut: (data) =>
+    data.hasStartup !== undefined &&
+    data.intent !== undefined &&
+    (data.hasStartup === "no" ||
+      (data.hasStartup === "yes" &&
+        data.coFounderStatus !== undefined &&
+        data.equityExpectation !== undefined)),
+};

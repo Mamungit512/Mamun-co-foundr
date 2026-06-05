@@ -11,7 +11,7 @@ import OnboardingProgressBar from "@/components/ui/OnboardingProgressBar";
 import { useStepTransition } from "@/hooks/useOnboardingAnimation";
 import { useOnboardingDraft } from "@/hooks/useOnboardingDraft";
 import { useSchool } from "@/features/school/components/SchoolContext";
-import { getOrgConfig } from "@/features/school/registry/registry";
+import { getOrgConfig, STEP3_COMPLETIONS } from "@/features/school/registry/registry";
 import { getCompletedSteps } from "@/features/school/onboarding/getCompletedSteps";
 import { STEP_COMPONENTS } from "@/features/school/onboarding/stepRegistry";
 
@@ -162,7 +162,7 @@ export default function SchoolOnboardingPage({
         onStepClick={handleEditStep}
         completedSteps={
           onboarding
-            ? getCompletedSteps(formData, visitedSteps, onboarding)
+            ? getCompletedSteps(formData, visitedSteps, onboarding, STEP3_COMPLETIONS[slug])
             : new Set<number>()
         }
       />

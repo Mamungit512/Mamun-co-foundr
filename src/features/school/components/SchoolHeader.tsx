@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UserButton } from "@clerk/nextjs";
-import { FaHeart, FaBars, FaUserPen } from "react-icons/fa6";
+import { UserButton, useClerk } from "@clerk/nextjs";
+import { FaHeart, FaBars, FaUserPen, FaTrash } from "react-icons/fa6";
 import { FaTimes } from "react-icons/fa";
 import clsx from "clsx";
 import { useLikedProfilesData } from "@/features/likes/useLikes";
@@ -23,6 +23,41 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const { data: likedProfilesData } = useLikedProfilesData();
+  const { signOut } = useClerk();
+
+  const handleDeleteAccount = async () => {
+    const confirmed = confirm(
+      "Are you sure you want to delete your account? This action is PERMANENT and CANNOT be undone. All your data will be immediately deleted.",
+    );
+    if (confirmed) {
+      try {
+        const response = await fetch("/api/delete-profile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.clerkDeleted === false) {
+            alert(
+              "Your data was deleted, but we couldn't fully remove your account. Please contact support.",
+            );
+          } else {
+            alert("Your account has been permanently deleted.");
+          }
+          signOut({ redirectUrl: `/school/${slug}` });
+        } else {
+          const errorData = await response.json();
+          alert(`Error: ${errorData.error || "Failed to delete account"}`);
+        }
+      } catch (error) {
+        console.error("Error deleting account:", error);
+        alert(
+          "An error occurred while deleting your account. Please try again.",
+        );
+      }
+    }
+  };
 
   useEffect(() => setMounted(true), []);
 
@@ -104,12 +139,26 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
         </Link>
 
         {mounted && (
-          <UserButton afterSignOutUrl={`/school/${slug}`}>
+          <UserButton
+            userProfileProps={{
+              appearance: {
+                elements: {
+                  profileSection__danger: { display: "none" },
+                },
+              },
+            }}
+            afterSignOutUrl={`/school/${slug}`}
+          >
             <UserButton.MenuItems>
               <UserButton.Link
                 label="Edit profile"
                 labelIcon={<FaUserPen className="h-3.5 w-3.5" />}
                 href={`/school/${slug}/profile`}
+              />
+              <UserButton.Action
+                label="Delete Account"
+                labelIcon={<FaTrash className="h-3.5 w-3.5 text-red-500" />}
+                onClick={handleDeleteAccount}
               />
             </UserButton.MenuItems>
           </UserButton>
