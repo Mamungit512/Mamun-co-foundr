@@ -28,7 +28,6 @@ export type OrgOnboarding = {
   apiEndpoint: string;
   steps: OnboardingStepId[];
   step2RequiredFields: (keyof OnboardingData)[];
-  step3Completion?: (data: OnboardingData) => boolean;
 };
 
 export type OrgConfig = {

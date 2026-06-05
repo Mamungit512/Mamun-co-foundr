@@ -13,6 +13,7 @@ export default async function SchoolSignUpPage({
 
   return (
     <div className="flex min-h-[calc(100vh-64px)] items-center justify-center px-4 py-12">
+      <div id="clerk-captcha" />
       <SchoolSignUp
         slug={org.slug}
         schoolName={org.name}

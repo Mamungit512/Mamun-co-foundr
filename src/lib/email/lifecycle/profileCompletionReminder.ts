@@ -109,5 +109,11 @@ export async function runProfileCompletionReminders(): Promise<LifecycleResult> 
     else failed++;
   }
 
-  return { name: "profileCompletionReminder", candidates: candidates.length, sent, skipped, failed };
+  return {
+    name: "profileCompletionReminder",
+    candidates: candidates.length,
+    sent,
+    skipped,
+    failed,
+  };
 }

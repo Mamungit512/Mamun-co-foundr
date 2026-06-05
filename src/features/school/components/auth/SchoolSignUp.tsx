@@ -286,8 +286,6 @@ export default function SchoolSignUp({
               />
             </div>
 
-            <div id="clerk-captcha" />
-
             <button
               type="submit"
               disabled={submitting || !isLoaded}
