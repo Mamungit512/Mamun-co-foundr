@@ -160,6 +160,7 @@ function Header() {
                             profileSectionContent__profile: { display: "none" },
                             avatarImage: { display: "none" },
                             avatarImageActions: { display: "none" },
+                            profileSection__danger: { display: "none" },
                           },
                         },
                       })
@@ -365,6 +366,7 @@ function Header() {
                               },
                               avatarImage: { display: "none" },
                               avatarImageActions: { display: "none" },
+                              profileSection__danger: { display: "none" },
                             },
                           },
                         });

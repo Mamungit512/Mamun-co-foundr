@@ -6,7 +6,6 @@ import { Suspense } from "react";
 import Script from "next/script";
 
 import "./globals.css";
-import ConditionalShell from "@/components/ConditionalShell";
 import QueryProvider from "./_providers/QueryProvider";
 import { PostHogProvider } from "./_providers/PostHogProvider";
 import { Toaster } from "react-hot-toast";
@@ -46,7 +45,7 @@ export default function RootLayout({
             <PostHogProvider>
               <QueryProvider>
                 <ReferralTracker />
-                <ConditionalShell>{children}</ConditionalShell>
+                {children}
               </QueryProvider>
             </PostHogProvider>
           </Suspense>

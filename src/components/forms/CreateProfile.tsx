@@ -1,11 +1,11 @@
 "use client";
 
-import AboutYouForm from "@/app/onboarding/form-components/AboutYouForm";
-import BackgroundAndSocialsForm from "@/app/onboarding/form-components/BackgroundAndSocialsForm";
-import InterestsAndValuesForm from "@/app/onboarding/form-components/InterestsAndValuesForm";
-import ProfilePhotoForm from "@/app/onboarding/form-components/ProfilePhotoForm";
-import ReviewForm from "@/app/onboarding/form-components/ReviewForm";
-import StartupForm from "@/app/onboarding/form-components/StartupForm";
+import AboutYouForm from "@/app/(general)/onboarding/form-components/AboutYouForm";
+import BackgroundAndSocialsForm from "@/app/(general)/onboarding/form-components/BackgroundAndSocialsForm";
+import InterestsAndValuesForm from "@/app/(general)/onboarding/form-components/InterestsAndValuesForm";
+import ProfilePhotoForm from "@/app/(general)/onboarding/form-components/ProfilePhotoForm";
+import ReviewForm from "@/app/(general)/onboarding/form-components/ReviewForm";
+import StartupForm from "@/app/(general)/onboarding/form-components/StartupForm";
 import OnboardingProgressBar from "@/components/ui/OnboardingProgressBar";
 import { useOnboardingDraft } from "@/hooks/useOnboardingDraft";
 import { useStepTransition } from "@/hooks/useOnboardingAnimation";

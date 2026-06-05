@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 import { clerkClient } from "@clerk/nextjs/server";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -58,17 +59,13 @@ export async function POST(req: NextRequest) {
                 `⚠️  Domain "${domain}" matches org "${org.slug}" but FERPA DPA not yet signed — not assigning.`,
               );
             }
+
+            await sendWelcomeEmail({ userId: id, email, orgSlug: org?.slug ?? null });
           }
         } catch (schoolError) {
           console.error("Error assigning school organization by email domain:", schoolError);
         }
       }
-
-      console.log("🆕 New user created:", {
-        userId: id,
-        email: email ? `${email.substring(0, 3)}***` : "none",
-        hasReferral: !!(referralCode || fpRef || fpTid),
-      });
 
       if (email) {
         try {
