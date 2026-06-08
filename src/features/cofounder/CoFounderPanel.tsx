@@ -19,8 +19,15 @@ const STATUS_LABELS: Record<string, string> = {
   expired: "Expired",
 };
 
-export default function CoFounderPanel({ slug }: { slug: string }) {
+const ROLE_OPTIONS = [
+  { value: "technical", label: "Technical founder" },
+  { value: "non-technical", label: "Non-technical founder" },
+];
+
+export default function CoFounderPanel({ slug: _slug }: { slug: string }) {
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState("");
+  const [note, setNote] = useState("");
   const { data, isLoading } = useCofounderManagement();
   const sendInvite = useSendCofounderInvite();
   const revokeInvite = useRevokeCofounderInvite();
@@ -35,9 +42,15 @@ export default function CoFounderPanel({ slug }: { slug: string }) {
     const trimmed = email.trim().toLowerCase();
     if (!trimmed) return;
     try {
-      await sendInvite.mutateAsync(trimmed);
+      await sendInvite.mutateAsync({
+        inviteeEmail: trimmed,
+        inviteeRole: role || undefined,
+        note: note.trim() || undefined,
+      });
       toast.success(`Invite sent to ${trimmed}`);
       setEmail("");
+      setRole("");
+      setNote("");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to send invite");
     }
@@ -124,22 +137,41 @@ export default function CoFounderPanel({ slug }: { slug: string }) {
         <p className="text-xs text-[var(--ui-text-subtle)]">
           Enter their school email address — they&apos;ll receive a link to accept.
         </p>
-        <form onSubmit={handleSend} className="flex gap-2">
+        <form onSubmit={handleSend} className="space-y-2">
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="cofounder@utexas.edu"
-            className="flex-1 rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-sm text-[var(--ui-text)] placeholder-[var(--ui-text-subtle)] focus:border-[var(--ui-border-strong)] focus:outline-none focus:ring-1 focus:ring-[var(--ui-border)]"
+            className="w-full rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-sm text-[var(--ui-text)] placeholder-[var(--ui-text-subtle)] focus:border-[var(--ui-border-strong)] focus:outline-none focus:ring-1 focus:ring-[var(--ui-border)]"
             required
+          />
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="w-full rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-sm text-[var(--ui-text)] focus:border-[var(--ui-border-strong)] focus:outline-none focus:ring-1 focus:ring-[var(--ui-border)]"
+          >
+            <option value="">Their role (optional)</option>
+            {ROLE_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Add a note for them… (optional)"
+            rows={2}
+            className="w-full rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-sm text-[var(--ui-text)] placeholder-[var(--ui-text-subtle)] focus:border-[var(--ui-border-strong)] focus:outline-none focus:ring-1 focus:ring-[var(--ui-border)] resize-none"
           />
           <button
             type="submit"
             disabled={sendInvite.isPending || !email.trim()}
-            className="flex items-center gap-2 rounded-lg bg-[var(--ui-btn-bg)] px-4 py-2 text-sm font-medium text-[var(--ui-btn-text)] transition hover:opacity-90 disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--ui-btn-bg)] px-4 py-2 text-sm font-medium text-[var(--ui-btn-text)] transition hover:opacity-90 disabled:opacity-50"
           >
             <FaUserPlus className="h-3.5 w-3.5" />
-            {sendInvite.isPending ? "Sending…" : "Send"}
+            {sendInvite.isPending ? "Sending…" : "Send invite"}
           </button>
         </form>
       </div>
@@ -161,7 +193,7 @@ export default function CoFounderPanel({ slug }: { slug: string }) {
               </div>
               <button
                 type="button"
-                onClick={() => handleRevoke(invite.id)}
+                onClick={() => handleRevoke(invite.token)}
                 disabled={revokeInvite.isPending}
                 className="flex items-center gap-1.5 rounded-lg border border-[var(--ui-border)] px-3 py-1.5 text-xs text-[var(--ui-text-muted)] transition hover:border-red-500/30 hover:text-red-500 disabled:opacity-50"
               >

@@ -11,11 +11,13 @@ function supa() {
 }
 
 export async function POST(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ token: string }> },
 ) {
   try {
     const { userId } = await auth();
+    const body = await request.json().catch(() => ({}));
+    const roleOverride: string | null = (body?.role ?? "").trim() || null;
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -66,6 +68,19 @@ export async function POST(
       );
     }
 
+    // One-active-link-per-user guard for acceptor
+    const { data: existingAcceptorLink } = await supabase
+      .from("cofounder_links")
+      .select("id")
+      .or(`user_a_id.eq.${userId},user_b_id.eq.${userId}`)
+      .maybeSingle();
+    if (existingAcceptorLink) {
+      return NextResponse.json(
+        { error: "You already have a linked co-founder. Unlink your current link first." },
+        { status: 409 },
+      );
+    }
+
     // Prevent duplicate links
     const [userA, userB] = [invite.inviter_user_id, userId].sort();
     const { data: existingLink } = await supabase
@@ -99,7 +114,12 @@ export async function POST(
 
     await supabase
       .from("cofounder_invites")
-      .update({ status: "accepted", invitee_user_id: userId, responded_at: new Date().toISOString() })
+      .update({
+        status: "accepted",
+        invitee_user_id: userId,
+        responded_at: new Date().toISOString(),
+        ...(roleOverride ? { invitee_role: roleOverride } : {}),
+      })
       .eq("id", invite.id);
 
     // Send confirmation emails to both parties

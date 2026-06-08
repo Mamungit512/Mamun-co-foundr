@@ -20,8 +20,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { inviteeEmail } = await request.json();
+    const { inviteeEmail, inviteeRole, note } = await request.json();
     const normalizedEmail = (inviteeEmail ?? "").trim().toLowerCase();
+    const normalizedRole = (inviteeRole ?? "").trim() || null;
+    const normalizedNote = (note ?? "").trim() || null;
     if (!normalizedEmail) {
       return NextResponse.json({ error: "Missing inviteeEmail" }, { status: 400 });
     }
@@ -93,6 +95,19 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // One-active-link-per-user guard (v1: max one co-founder link)
+    const { data: existingLinkForInviter } = await supabase
+      .from("cofounder_links")
+      .select("id")
+      .or(`user_a_id.eq.${userId},user_b_id.eq.${userId}`)
+      .maybeSingle();
+    if (existingLinkForInviter) {
+      return NextResponse.json(
+        { error: "You already have a linked co-founder. Unlink first to invite someone new." },
+        { status: 409 },
+      );
+    }
+
     // Pending invite already exists check (via partial unique index)
     const { data: existingInvite } = await supabase
       .from("cofounder_invites")
@@ -117,6 +132,8 @@ export async function POST(request: NextRequest) {
       inviter_user_id: userId,
       organization_id: inviterProfile.organization_id,
       invitee_email: normalizedEmail,
+      invitee_role: normalizedRole,
+      note: normalizedNote,
       invitee_user_id: inviteeUserId,
       token,
     });
@@ -158,7 +175,7 @@ export async function GET() {
 
     const { data: invites, error: inviteErr } = await supabase
       .from("cofounder_invites")
-      .select("id, invitee_email, status, created_at, expires_at")
+      .select("id, token, invitee_email, invitee_role, note, status, created_at, expires_at")
       .eq("inviter_user_id", userId)
       .order("created_at", { ascending: false });
 

@@ -45,6 +45,13 @@ export default function CoFounderLinks({ userId, onClickCofounder }: Props) {
               </span>
             )}
             <span className="max-w-[80px] truncate">{name}</span>
+            {cf.title && (
+              <span className="max-w-[60px] truncate opacity-70">{cf.title}</span>
+            )}
+            <span
+              className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-green-400"
+              title="Linked"
+            />
           </button>
         );
       })}

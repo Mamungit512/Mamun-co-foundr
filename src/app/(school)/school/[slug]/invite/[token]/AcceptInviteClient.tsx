@@ -4,7 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Image from "next/image";
-import { FaHandshake, FaXmark } from "react-icons/fa6";
+import { FaHandshake, FaXmark, FaPencil } from "react-icons/fa6";
+
+const ROLE_OPTIONS = [
+  { value: "technical", label: "Technical founder" },
+  { value: "non-technical", label: "Non-technical founder" },
+];
 
 type Props = {
   slug: string;
@@ -12,6 +17,8 @@ type Props = {
   inviterName: string;
   inviterTitle: string | null;
   inviterPfpUrl: string | null;
+  inviteeRole: string | null;
+  note: string | null;
 };
 
 export default function AcceptInviteClient({
@@ -20,15 +27,23 @@ export default function AcceptInviteClient({
   inviterName,
   inviterTitle,
   inviterPfpUrl,
+  inviteeRole,
+  note,
 }: Props) {
   const router = useRouter();
   const [accepting, setAccepting] = useState(false);
   const [declining, setDeclining] = useState(false);
+  const [editingRole, setEditingRole] = useState(false);
+  const [selectedRole, setSelectedRole] = useState(inviteeRole ?? "");
 
   async function handleAccept() {
     setAccepting(true);
     try {
-      const res = await fetch(`/api/cofounder-invite/${token}/accept`, { method: "POST" });
+      const res = await fetch(`/api/cofounder-invite/${token}/accept`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role: selectedRole || undefined }),
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed to accept invite");
       toast.success(`You and ${inviterName} are now linked as co-founders!`);
@@ -55,6 +70,9 @@ export default function AcceptInviteClient({
 
   const initials =
     inviterName.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+
+  const displayRole =
+    ROLE_OPTIONS.find((o) => o.value === selectedRole)?.label ?? selectedRole;
 
   return (
     <div className="flex min-h-[calc(100vh-64px)] items-center justify-center px-4 py-12">
@@ -85,6 +103,57 @@ export default function AcceptInviteClient({
             </p>
           )}
         </div>
+
+        {/* Role assigned by inviter */}
+        {(inviteeRole || note) && (
+          <div
+            className="mb-4 rounded-xl border border-[#e8e4dc] bg-[#faf8f4] px-4 py-3 space-y-1"
+          >
+            {inviteeRole && (
+              <p className="text-sm" style={{ color: "#333f48" }}>
+                Listed your role as{" "}
+                <span className="font-semibold">{displayRole}</span>
+              </p>
+            )}
+            {note && (
+              <p className="text-sm italic" style={{ color: "#9cadb7" }}>
+                &ldquo;{note}&rdquo;
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Edit my role toggle */}
+        {!editingRole ? (
+          <button
+            type="button"
+            onClick={() => setEditingRole(true)}
+            className="mb-4 flex items-center gap-1.5 text-xs font-medium transition hover:opacity-80"
+            style={{ color: "#bf5700" }}
+          >
+            <FaPencil className="h-3 w-3" />
+            Edit my role
+          </button>
+        ) : (
+          <div className="mb-4 space-y-1.5">
+            <label className="block text-xs font-medium" style={{ color: "#9cadb7" }}>
+              Your role
+            </label>
+            <select
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(e.target.value)}
+              className="w-full rounded-lg border border-[#e8e4dc] bg-white px-3 py-2 text-sm focus:border-[#bf5700] focus:outline-none focus:ring-1 focus:ring-[#bf5700]"
+              style={{ color: "#333f48" }}
+            >
+              <option value="">Select a role…</option>
+              {ROLE_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <p className="mb-6 text-center text-sm" style={{ color: "#9cadb7" }}>
           Accepting will link your profiles as confirmed co-founders, visible on both your cards.

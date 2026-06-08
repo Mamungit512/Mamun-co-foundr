@@ -5,7 +5,10 @@ import type { CofounderLinkProfile } from "@/app/api/cofounder-link/[userId]/rou
 
 export type CofounderInvite = {
   id: string;
+  token: string;
   invitee_email: string;
+  invitee_role: string | null;
+  note: string | null;
   status: "pending" | "accepted" | "declined" | "revoked" | "expired";
   created_at: string;
   expires_at: string;
@@ -30,11 +33,19 @@ export function useCofounderManagement() {
 export function useSendCofounderInvite() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (inviteeEmail: string) => {
+    mutationFn: async ({
+      inviteeEmail,
+      inviteeRole,
+      note,
+    }: {
+      inviteeEmail: string;
+      inviteeRole?: string;
+      note?: string;
+    }) => {
       const res = await fetch("/api/cofounder-invite", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ inviteeEmail }),
+        body: JSON.stringify({ inviteeEmail, inviteeRole, note }),
       });
       if (!res.ok) {
         const data = await res.json();

@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS cofounder_invites (
   inviter_user_id     text NOT NULL REFERENCES profiles(user_id) ON DELETE CASCADE,
   organization_id     uuid NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
   invitee_email       text NOT NULL,
+  invitee_role        text,
+  note                text,
   invitee_user_id     text REFERENCES profiles(user_id) ON DELETE SET NULL,
   token               text NOT NULL UNIQUE,
   status              text NOT NULL DEFAULT 'pending'
@@ -139,6 +141,36 @@ CREATE POLICY "cofounder_links_org_isolation" ON cofounder_links
       AND organization_id = NULLIF(auth.jwt() -> 'metadata' ->> 'organization_id', '')::uuid
     )
   );
+
+-- ============================================================
+-- Enforce one active co-founder link per user (v1)
+-- ============================================================
+CREATE OR REPLACE FUNCTION cofounder_links_enforce_one_per_user()
+RETURNS TRIGGER LANGUAGE plpgsql AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM cofounder_links
+    WHERE user_a_id = NEW.user_a_id OR user_b_id = NEW.user_a_id
+       OR user_a_id = NEW.user_b_id OR user_b_id = NEW.user_b_id
+  ) THEN
+    RAISE EXCEPTION
+      'User already has an active co-founder link'
+      USING ERRCODE = 'unique_violation';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger WHERE tgname = 'trg_cofounder_links_enforce_one_per_user'
+  ) THEN
+    CREATE TRIGGER trg_cofounder_links_enforce_one_per_user
+      BEFORE INSERT ON cofounder_links
+      FOR EACH ROW EXECUTE FUNCTION cofounder_links_enforce_one_per_user();
+  END IF;
+END $$;
 
 COMMENT ON TABLE cofounder_links IS
   'Confirmed co-founder pairs. user_a_id < user_b_id ordering prevents duplicate rows. Query with OR on both columns.';
