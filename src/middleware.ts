@@ -105,8 +105,14 @@ async function updateUserActivity(userId: string) {
 }
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
-  const { userId, sessionClaims, redirectToSignIn } = await auth();
   const pathname = req.nextUrl.pathname;
+
+  // Crawler metadata routes must bypass subdomain rewrite and auth gates
+  if (pathname === "/robots.txt" || pathname === "/sitemap.xml") {
+    return NextResponse.next();
+  }
+
+  const { userId, sessionClaims, redirectToSignIn } = await auth();
   const host = req.headers.get("host") ?? "";
   const isApiRoute = pathname.startsWith("/api/");
   const isStaticAsset = /\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2?|ttf)$/.test(pathname);
