@@ -10,6 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 import HiringBadge from "@/components/HiringBadge";
+import CoFounderLinks from "@/features/cofounder/CoFounderLinks";
 import { useGetProfiles, useSearchProfiles } from "@/features/profile/useProfile";
 import { useSchool } from "@/features/school/components/SchoolContext";
 import { useToggleLike, useLikeStatus, useMutualLikes } from "@/features/likes/useLikes";
@@ -116,6 +117,12 @@ function SearchResultCard({
           <p className="mb-3 line-clamp-2 text-sm leading-relaxed text-[var(--ui-text-muted)]">
             {profile.personalIntro}
           </p>
+        )}
+
+        {profile.user_id && (
+          <div className="mb-3">
+            <CoFounderLinks userId={profile.user_id} />
+          </div>
         )}
 
         {/* Sector tags (max 3) */}
@@ -577,6 +584,12 @@ export default function SchoolDashboardPage() {
                 )}
 
                 {curProfile.is_hiring && <HiringBadge />}
+
+                {curProfile.user_id && (
+                  <div className="mb-3">
+                    <CoFounderLinks userId={curProfile.user_id} />
+                  </div>
+                )}
 
                 {curProfile.personalIntro && (
                   <div className="mb-4 rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface-active)] p-3">

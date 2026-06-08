@@ -19,12 +19,14 @@ type Props = {
   slug: string;
   schoolName: string;
   allowedDomains: string[];
+  afterAuthRedirect?: string | null;
 };
 
 export default function SchoolSignUp({
   slug,
   schoolName,
   allowedDomains,
+  afterAuthRedirect = null,
 }: Props) {
   const { isLoaded, signUp, setActive } = useSignUp();
   const { getToken } = useAuth();
@@ -122,7 +124,10 @@ export default function SchoolSignUp({
           return;
         }
         await getToken({ skipCache: true });
-        router.push(`/school/${slug}/onboarding`);
+        const onboardingUrl = afterAuthRedirect
+          ? `/school/${slug}/onboarding?redirect=${encodeURIComponent(afterAuthRedirect)}`
+          : `/school/${slug}/onboarding`;
+        router.push(onboardingUrl);
       } else {
         setError("Verification could not be completed. Please try again.");
       }

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton, useClerk } from "@clerk/nextjs";
-import { FaHeart, FaBars, FaUserPen, FaTrash } from "react-icons/fa6";
+import { FaHeart, FaBars, FaUserPen, FaTrash, FaUserPlus } from "react-icons/fa6";
 import { FaTimes } from "react-icons/fa";
 import clsx from "clsx";
 import { useLikedProfilesData } from "@/features/likes/useLikes";
@@ -154,6 +154,11 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
                 label="Edit profile"
                 labelIcon={<FaUserPen className="h-3.5 w-3.5" />}
                 href={`/school/${slug}/profile`}
+              />
+              <UserButton.Link
+                label="Invite a co-founder"
+                labelIcon={<FaUserPlus className="h-3.5 w-3.5" />}
+                href={`/school/${slug}/cofounder`}
               />
               <UserButton.Action
                 label="Delete Account"
