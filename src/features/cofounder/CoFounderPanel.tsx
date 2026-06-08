@@ -26,7 +26,6 @@ const ROLE_OPTIONS = [
 ];
 
 export default function CoFounderPanel({
-  slug: _slug,
   allowedDomains = [],
 }: {
   slug: string;
