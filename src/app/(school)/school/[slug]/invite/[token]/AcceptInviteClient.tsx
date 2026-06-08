@@ -128,7 +128,7 @@ export default function AcceptInviteClient({
           <button
             type="button"
             onClick={() => setEditingRole(true)}
-            className="mb-4 flex items-center gap-1.5 text-xs font-medium transition hover:opacity-80"
+            className="mb-4 flex cursor-pointer items-center gap-1.5 text-xs font-medium transition hover:opacity-80"
             style={{ color: "#bf5700" }}
           >
             <FaPencil className="h-3 w-3" />
@@ -142,7 +142,7 @@ export default function AcceptInviteClient({
             <select
               value={selectedRole}
               onChange={(e) => setSelectedRole(e.target.value)}
-              className="w-full rounded-lg border border-[#e8e4dc] bg-white px-3 py-2 text-sm focus:border-[#bf5700] focus:outline-none focus:ring-1 focus:ring-[#bf5700]"
+              className="w-full cursor-pointer rounded-lg border border-[#e8e4dc] bg-white px-3 py-2 text-sm focus:border-[#bf5700] focus:outline-none focus:ring-1 focus:ring-[#bf5700]"
               style={{ color: "#333f48" }}
             >
               <option value="">Select a role…</option>
@@ -164,7 +164,7 @@ export default function AcceptInviteClient({
             type="button"
             onClick={handleDecline}
             disabled={accepting || declining}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#e8e4dc] px-4 py-3 text-sm font-medium transition hover:bg-[#faf8f4] disabled:opacity-50"
+            className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-[#e8e4dc] px-4 py-3 text-sm font-medium transition hover:bg-[#faf8f4] disabled:cursor-not-allowed disabled:opacity-50"
             style={{ color: "#333f48" }}
           >
             <FaXmark className="h-3.5 w-3.5" />
@@ -174,7 +174,7 @@ export default function AcceptInviteClient({
             type="button"
             onClick={handleAccept}
             disabled={accepting || declining}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
+            className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             style={{ backgroundColor: "#bf5700" }}
           >
             <FaHandshake className="h-4 w-4" />

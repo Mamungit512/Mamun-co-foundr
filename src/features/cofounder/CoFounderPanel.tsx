@@ -10,6 +10,7 @@ import {
   useRevokeCofounderInvite,
   useUnlinkCofounder,
 } from "./hooks";
+import { formatAllowedDomainsForCopy } from "@/features/school/auth/email-domain";
 
 const STATUS_LABELS: Record<string, string> = {
   pending: "Pending",
@@ -24,7 +25,13 @@ const ROLE_OPTIONS = [
   { value: "non-technical", label: "Non-technical founder" },
 ];
 
-export default function CoFounderPanel({ slug: _slug }: { slug: string }) {
+export default function CoFounderPanel({
+  slug: _slug,
+  allowedDomains = [],
+}: {
+  slug: string;
+  allowedDomains?: string[];
+}) {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [note, setNote] = useState("");
@@ -36,6 +43,9 @@ export default function CoFounderPanel({ slug: _slug }: { slug: string }) {
   const pendingInvites = (data?.invites ?? []).filter((i) => i.status === "pending");
   const pastInvites = (data?.invites ?? []).filter((i) => i.status !== "pending");
   const links = data?.links ?? [];
+
+  const emailPlaceholder = `cofounder@${allowedDomains[0] ?? "utexas.edu"}`;
+  const allowedDomainsCopy = formatAllowedDomainsForCopy(allowedDomains);
 
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
@@ -136,13 +146,14 @@ export default function CoFounderPanel({ slug: _slug }: { slug: string }) {
         <label className={labelClass}>Invite a co-founder</label>
         <p className="text-xs text-[var(--ui-text-subtle)]">
           Enter their school email address — they&apos;ll receive a link to accept.
+          {allowedDomainsCopy && ` Must be a ${allowedDomainsCopy} email.`}
         </p>
         <form onSubmit={handleSend} className="space-y-2">
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="cofounder@utexas.edu"
+            placeholder={emailPlaceholder}
             className="w-full rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-sm text-[var(--ui-text)] placeholder-[var(--ui-text-subtle)] focus:border-[var(--ui-border-strong)] focus:outline-none focus:ring-1 focus:ring-[var(--ui-border)]"
             required
           />

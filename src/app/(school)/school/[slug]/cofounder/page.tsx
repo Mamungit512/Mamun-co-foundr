@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { FaArrowLeft } from "react-icons/fa6";
 import CoFounderPanel from "@/features/cofounder/CoFounderPanel";
+import { getOrganizationBySlug } from "@/features/school/data/organizations";
 
 export default async function CoFounderPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const org = await getOrganizationBySlug(slug);
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-6">
@@ -19,7 +21,7 @@ export default async function CoFounderPage({ params }: { params: Promise<{ slug
         Back to dashboard
       </Link>
 
-      <CoFounderPanel slug={slug} />
+      <CoFounderPanel slug={slug} allowedDomains={org?.allowed_email_domains ?? []} />
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
-import { getOrganizationBySlug } from "@/features/school/data/organizations";
 import { isEmailDomainAllowed } from "@/features/school/auth/email-domain";
 import { sendCofounderInviteEmail } from "@/lib/email/emails/cofounderInvite";
 import { randomBytes } from "crypto";
@@ -25,7 +24,10 @@ export async function POST(request: NextRequest) {
     const normalizedRole = (inviteeRole ?? "").trim() || null;
     const normalizedNote = (note ?? "").trim() || null;
     if (!normalizedEmail) {
-      return NextResponse.json({ error: "Missing inviteeEmail" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing inviteeEmail" },
+        { status: 400 },
+      );
     }
 
     const supabase = supa();
@@ -37,7 +39,10 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (profileErr || !inviterProfile) {
-      return NextResponse.json({ error: "Caller profile not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Caller profile not found" },
+        { status: 404 },
+      );
     }
     if (!inviterProfile.organization_id) {
       return NextResponse.json(
@@ -53,11 +58,16 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (!org) {
-      return NextResponse.json({ error: "Organization not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Organization not found" },
+        { status: 404 },
+      );
     }
 
     // Domain gate — invitee must belong to the same school org
-    if (!isEmailDomainAllowed(normalizedEmail, org.allowed_email_domains ?? [])) {
+    if (
+      !isEmailDomainAllowed(normalizedEmail, org.allowed_email_domains ?? [])
+    ) {
       return NextResponse.json(
         { error: "Invitee email domain is not allowed for this organization" },
         { status: 403 },
@@ -67,14 +77,19 @@ export async function POST(request: NextRequest) {
     // Look up invitee's Clerk account to get their user_id (if they exist)
     let inviteeUserId: string | null = null;
     const clerk = await clerkClient();
-    const clerkUsers = await clerk.users.getUserList({ emailAddress: [normalizedEmail] });
+    const clerkUsers = await clerk.users.getUserList({
+      emailAddress: [normalizedEmail],
+    });
     if (clerkUsers.data.length > 0) {
       inviteeUserId = clerkUsers.data[0].id;
     }
 
     // Self-invite check
     if (inviteeUserId === userId) {
-      return NextResponse.json({ error: "Cannot invite yourself" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Cannot invite yourself" },
+        { status: 400 },
+      );
     }
 
     // Already linked check
@@ -103,7 +118,10 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
     if (existingLinkForInviter) {
       return NextResponse.json(
-        { error: "You already have a linked co-founder. Unlink first to invite someone new." },
+        {
+          error:
+            "You already have a linked co-founder. Unlink first to invite someone new.",
+        },
         { status: 409 },
       );
     }
@@ -126,21 +144,28 @@ export async function POST(request: NextRequest) {
 
     const token = randomBytes(32).toString("hex");
     const inviterName =
-      [inviterProfile.first_name, inviterProfile.last_name].filter(Boolean).join(" ") || "Someone";
+      [inviterProfile.first_name, inviterProfile.last_name]
+        .filter(Boolean)
+        .join(" ") || "Someone";
 
-    const { error: insertErr } = await supabase.from("cofounder_invites").insert({
-      inviter_user_id: userId,
-      organization_id: inviterProfile.organization_id,
-      invitee_email: normalizedEmail,
-      invitee_role: normalizedRole,
-      note: normalizedNote,
-      invitee_user_id: inviteeUserId,
-      token,
-    });
+    const { error: insertErr } = await supabase
+      .from("cofounder_invites")
+      .insert({
+        inviter_user_id: userId,
+        organization_id: inviterProfile.organization_id,
+        invitee_email: normalizedEmail,
+        invitee_role: normalizedRole,
+        note: normalizedNote,
+        invitee_user_id: inviteeUserId,
+        token,
+      });
 
     if (insertErr) {
       console.error("[cofounder-invite] insert error:", insertErr);
-      return NextResponse.json({ error: "Failed to create invite" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Failed to create invite" },
+        { status: 500 },
+      );
     }
 
     const emailResult = await sendCofounderInviteEmail({
@@ -160,7 +185,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("[cofounder-invite POST] unhandled:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -175,13 +203,18 @@ export async function GET() {
 
     const { data: invites, error: inviteErr } = await supabase
       .from("cofounder_invites")
-      .select("id, token, invitee_email, invitee_role, note, status, created_at, expires_at")
+      .select(
+        "id, token, invitee_email, invitee_role, note, status, created_at, expires_at",
+      )
       .eq("inviter_user_id", userId)
       .order("created_at", { ascending: false });
 
     if (inviteErr) {
       console.error("[cofounder-invite GET] invites error:", inviteErr);
-      return NextResponse.json({ error: "Failed to load invites" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Failed to load invites" },
+        { status: 500 },
+      );
     }
 
     const [a_sort, b_sort] = [userId, userId];
@@ -192,14 +225,23 @@ export async function GET() {
 
     if (linkErr) {
       console.error("[cofounder-invite GET] links error:", linkErr);
-      return NextResponse.json({ error: "Failed to load links" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Failed to load links" },
+        { status: 500 },
+      );
     }
 
     const linkedUserIds = (links ?? []).map((l) =>
       l.user_a_id === userId ? l.user_b_id : l.user_a_id,
     );
 
-    let linkedProfiles: { user_id: string; first_name: string | null; last_name: string | null; pfp_url: string | null; title: string | null }[] = [];
+    let linkedProfiles: {
+      user_id: string;
+      first_name: string | null;
+      last_name: string | null;
+      pfp_url: string | null;
+      title: string | null;
+    }[] = [];
     if (linkedUserIds.length > 0) {
       const { data: profiles } = await supabase
         .from("profiles")
@@ -220,6 +262,9 @@ export async function GET() {
     });
   } catch (error) {
     console.error("[cofounder-invite GET] unhandled:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
