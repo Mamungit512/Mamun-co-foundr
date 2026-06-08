@@ -685,6 +685,7 @@ export default function SchoolProfilePage({ params }: { params: Promise<{ slug: 
             </div>
           </div>
         </form>
+
       </div>
     </div>
   );

@@ -6,6 +6,8 @@ const FLAG_KEYS: Record<EmailType, string> = {
   profileReminder: "profileReminderSentAt",
   reEngagement: "reEngagementSentAt",
   weeklyProfileViews: "weeklyProfileViewsSentAt",
+  cofounderInvite: "cofounderInviteSentAt",
+  cofounderLinked: "cofounderLinkedSentAt",
 };
 
 export async function hasEmailBeenSent(

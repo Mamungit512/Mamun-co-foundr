@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { mapProfileToOnboardingData } from "@/lib/mapProfileToFromDBFormat";
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
@@ -82,13 +82,24 @@ export async function GET(
             reverseLikesCheck.length > 0;
 
           if (!hasMutualLikes) {
-            return NextResponse.json(
-              {
-                error:
-                  "Unauthorized: You can only view profiles of users you have a relationship with",
-              },
-              { status: 403 },
-            );
+            // Check for confirmed co-founder link
+            const [userA, userB] = [requestingUserId, userId].sort();
+            const { data: cofounderLink } = await supabase
+              .from("cofounder_links")
+              .select("id")
+              .eq("user_a_id", userA)
+              .eq("user_b_id", userB)
+              .maybeSingle();
+
+            if (!cofounderLink) {
+              return NextResponse.json(
+                {
+                  error:
+                    "Unauthorized: You can only view profiles of users you have a relationship with",
+                },
+                { status: 403 },
+              );
+            }
           }
         }
       } else {
@@ -114,13 +125,24 @@ export async function GET(
           reverseLikesCheck.length > 0;
 
         if (!hasMutualLikes) {
-          return NextResponse.json(
-            {
-              error:
-                "Unauthorized: You can only view profiles of users you have a relationship with",
-            },
-            { status: 403 },
-          );
+          // Check for confirmed co-founder link
+          const [userA, userB] = [requestingUserId, userId].sort();
+          const { data: cofounderLink } = await supabase
+            .from("cofounder_links")
+            .select("id")
+            .eq("user_a_id", userA)
+            .eq("user_b_id", userB)
+            .maybeSingle();
+
+          if (!cofounderLink) {
+            return NextResponse.json(
+              {
+                error:
+                  "Unauthorized: You can only view profiles of users you have a relationship with",
+              },
+              { status: 403 },
+            );
+          }
         }
       }
     }

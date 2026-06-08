@@ -15,6 +15,7 @@ import {
 } from "react-icons/fa6";
 import { FaTimes } from "react-icons/fa";
 import HiringBadge from "@/components/HiringBadge";
+import CoFounderLinks from "@/features/cofounder/CoFounderLinks";
 import {
   getDegreeAbbreviation,
   getSchoolFullName,
@@ -193,6 +194,11 @@ export default function ProfileDetailModal({
                         ? ` · ${schoolFullName} — ${profile.utMajor}`
                         : ""}
                     </p>
+                  )}
+                  {userId && (
+                    <div className="mt-2">
+                      <CoFounderLinks userId={userId} />
+                    </div>
                   )}
                 </div>
 

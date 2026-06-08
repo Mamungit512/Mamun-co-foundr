@@ -20,6 +20,7 @@ type Props = {
   schoolName: string;
   allowedDomains: string[];
   initialError?: string | null;
+  afterAuthRedirect?: string | null;
 };
 
 export default function SchoolSignIn({
@@ -27,6 +28,7 @@ export default function SchoolSignIn({
   schoolName,
   allowedDomains,
   initialError = null,
+  afterAuthRedirect = null,
 }: Props) {
   const { isLoaded, signIn, setActive } = useSignIn();
   const { getToken } = useAuth();
@@ -94,7 +96,7 @@ export default function SchoolSignIn({
           return;
         }
         await getToken({ skipCache: true });
-        router.push(`/school/${slug}`);
+        router.push(afterAuthRedirect ?? `/school/${slug}`);
       } else {
         setError("Additional verification required. Please try again.");
       }

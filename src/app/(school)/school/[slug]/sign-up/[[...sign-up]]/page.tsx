@@ -4,10 +4,13 @@ import SchoolSignUp from "@/features/school/components/auth/SchoolSignUp";
 
 export default async function SchoolSignUpPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ redirect?: string }>;
 }) {
   const { slug } = await params;
+  const { redirect } = await searchParams;
   const org = await getOrganizationBySlug(slug);
   if (!org) notFound();
 
@@ -18,6 +21,7 @@ export default async function SchoolSignUpPage({
         slug={org.slug}
         schoolName={org.name}
         allowedDomains={org.allowed_email_domains ?? []}
+        afterAuthRedirect={redirect ?? null}
       />
     </div>
   );
