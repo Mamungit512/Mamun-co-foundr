@@ -22,9 +22,27 @@ export default async function SchoolLanding({
   const cfg = getOrgConfig(slug);
   if (!cfg) notFound();
 
+  const baseUrl = `https://${org.subdomain ?? slug}.mamuncofoundr.com`;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    name: cfg.branding.wordmark ?? org.name,
+    url: baseUrl,
+    logo: `${baseUrl}${cfg.branding.logoUrl}`,
+    description: cfg.landing.subheadline,
+  };
+
+  const jsonLdScript = (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
+
   if (slug === "ut") {
     return (
       <>
+        {jsonLdScript}
         <Hero />
         <HowItWorks />
         <ValuesPillars />
@@ -38,7 +56,9 @@ export default async function SchoolLanding({
   const { branding, landing } = cfg;
 
   return (
-    <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center px-6 py-20 text-center">
+    <>
+      {jsonLdScript}
+      <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center px-6 py-20 text-center">
       {landing.heroImageUrl && (
         <div className="absolute inset-0 -z-10 opacity-10">
           <Image
@@ -86,5 +106,6 @@ export default async function SchoolLanding({
         </Link>
       </div>
     </div>
+    </>
   );
 }
