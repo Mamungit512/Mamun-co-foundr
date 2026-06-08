@@ -7,10 +7,10 @@ export default async function SchoolSignInPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ mismatch?: string; email?: string }>;
+  searchParams: Promise<{ mismatch?: string; email?: string; redirect?: string }>;
 }) {
   const { slug } = await params;
-  const { mismatch, email } = await searchParams;
+  const { mismatch, email, redirect } = await searchParams;
   const org = await getOrganizationBySlug(slug);
   if (!org) notFound();
 
@@ -27,6 +27,7 @@ export default async function SchoolSignInPage({
         schoolName={org.name}
         allowedDomains={org.allowed_email_domains ?? []}
         initialError={initialError}
+        afterAuthRedirect={redirect ?? null}
       />
     </div>
   );
