@@ -16,8 +16,42 @@ export async function generateMetadata({
   const org = await getOrganizationBySlug(slug);
   const cfg = getOrgConfig(slug) ?? DEFAULT_ORG_CONFIG;
 
+  const orgName = org?.name ?? "School Portal";
+  const description = cfg.landing.subheadline;
+  const baseUrl =
+    org?.subdomain
+      ? `https://${org.subdomain}.mamuncofoundr.com`
+      : process.env.NEXT_PUBLIC_APP_URL ?? "https://mamuncofoundr.com";
+  const ogImage = cfg.landing.heroImageUrl ?? cfg.branding.logoUrl;
+
   return {
-    title: org?.name ?? "School Portal",
+    metadataBase: new URL(baseUrl),
+    title: {
+      default: orgName,
+      template: `%s | ${orgName}`,
+    },
+    description,
+    alternates: {
+      canonical: "/",
+    },
+    openGraph: {
+      type: "website",
+      url: baseUrl,
+      siteName: orgName,
+      title: orgName,
+      description,
+      images: [ogImage],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: orgName,
+      description,
+      images: [ogImage],
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
     icons: cfg.branding.faviconUrl
       ? { icon: cfg.branding.faviconUrl }
       : undefined,
