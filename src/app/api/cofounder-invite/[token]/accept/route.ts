@@ -135,7 +135,9 @@ export async function POST(
       .eq("user_id", invite.inviter_user_id)
       .single();
 
-    if (orgRow?.slug) {
+    if (!orgRow?.slug) {
+      console.error("[cofounder-invite accept] org slug missing for organization_id:", invite.organization_id);
+    } else {
       const clerk = await clerkClient();
       const [inviterClerk, acceptorClerk] = await Promise.all([
         clerk.users.getUser(invite.inviter_user_id),
@@ -148,7 +150,9 @@ export async function POST(
       const acceptorName =
         [acceptorProfile.first_name, acceptorProfile.last_name].filter(Boolean).join(" ") || "Your co-founder";
 
-      await Promise.allSettled([
+      if (!inviterEmail) console.warn("[cofounder-invite accept] inviter has no email, skipping linked email");
+      if (!acceptorEmail) console.warn("[cofounder-invite accept] acceptor has no email, skipping linked email");
+      const [inviterResult, acceptorResult] = await Promise.allSettled([
         inviterEmail
           ? sendCofounderLinkedEmail({ to: inviterEmail, linkedName: acceptorName, slug: orgRow.slug })
           : Promise.resolve(),
@@ -156,6 +160,12 @@ export async function POST(
           ? sendCofounderLinkedEmail({ to: acceptorEmail, linkedName: inviterName, slug: orgRow.slug })
           : Promise.resolve(),
       ]);
+      if (inviterResult.status === "rejected") {
+        console.error("[cofounder-invite accept] inviter linked email failed:", inviterResult.reason);
+      }
+      if (acceptorResult.status === "rejected") {
+        console.error("[cofounder-invite accept] acceptor linked email failed:", acceptorResult.reason);
+      }
     }
 
     return NextResponse.json({ success: true });
