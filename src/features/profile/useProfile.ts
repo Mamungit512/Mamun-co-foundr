@@ -9,7 +9,7 @@ import {
 } from "@/features/school/data/dashboardFilters";
 import type { ParsedQuery } from "@/lib/searchQueryParser";
 
-export function useGetProfiles(filters?: DashboardFilters) {
+export function useGetProfiles(filters?: DashboardFilters, orgSlug?: string) {
   const { userId } = useAuth();
   const { session } = useSession();
 
@@ -18,7 +18,7 @@ export function useGetProfiles(filters?: DashboardFilters) {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["profiles", filters],
+    queryKey: ["profiles", filters, orgSlug],
     queryFn: async () => {
       const token = await session?.getToken();
 
@@ -30,7 +30,11 @@ export function useGetProfiles(filters?: DashboardFilters) {
         throw { message: "No user id. Please log in." };
       }
 
-      const queryString = filters ? buildProfilesQueryString(filters) : "";
+      const params = new URLSearchParams(
+        filters ? buildProfilesQueryString(filters).replace(/^\?/, "") : "",
+      );
+      if (orgSlug) params.set("org", orgSlug);
+      const queryString = params.toString() ? `?${params.toString()}` : "";
 
       try {
         const response = await fetch(`/api/profiles${queryString}`, {
@@ -143,7 +147,11 @@ export function useProfileByUserId(userId: string, enabled: boolean = true) {
   });
 }
 
-export function useSearchProfiles(query: string, userFilters: DashboardFilters) {
+export function useSearchProfiles(
+  query: string,
+  userFilters: DashboardFilters,
+  orgSlug?: string,
+) {
   const { session } = useSession();
   const [debouncedQuery, setDebouncedQuery] = useState(query);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
@@ -185,6 +193,7 @@ export function useSearchProfiles(query: string, userFilters: DashboardFilters) 
     userFilters,
     dismissedKeys.join(","),
     isDismissMode,
+    orgSlug,
   ];
 
   const searchQuery = useQuery<
@@ -203,6 +212,7 @@ export function useSearchProfiles(query: string, userFilters: DashboardFilters) 
 
       const body = {
         q: debouncedQuery,
+        ...(orgSlug && { org: orgSlug }),
         userFilters,
         ...(isDismissMode && {
           cachedParse,

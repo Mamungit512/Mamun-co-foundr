@@ -25,16 +25,23 @@ export async function sendTemplateEmail<T extends EmailType>({
   const { templateId } = EMAIL_CATALOG[type];
 
   try {
-    await (
+    const result = (await (
       resend.emails.create as unknown as (
         o: Record<string, unknown>,
-      ) => Promise<unknown>
+      ) => Promise<{ data?: { id?: string } | null; error?: unknown }>
     )({
       from,
       to,
       template: { id: templateId, variables },
-    });
-    console.log(`[email] sent ${type} to ${to}`);
+    }));
+
+    // Resend does NOT throw on API errors — it returns { data, error }.
+    if (result?.error) {
+      console.error(`[email] send_error for ${type} to ${to}:`, result.error);
+      return { ok: false, reason: "send_error" };
+    }
+
+    console.log(`[email] sent ${type} to ${to} (id: ${result?.data?.id ?? "unknown"})`);
     return { ok: true };
   } catch (err) {
     console.error(`[email] send_error for ${type} to ${to}:`, err);

@@ -201,8 +201,8 @@ export default function SchoolDashboardPage() {
   const queryClient = useQueryClient();
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const { schoolName } = useSchool();
-  const { data: profiles, isLoading: isLoadingProfiles } = useGetProfiles(filters);
+  const { schoolName, slug } = useSchool();
+  const { data: profiles, isLoading: isLoadingProfiles } = useGetProfiles(filters, slug);
 
   useEffect(() => {
     setFilters(loadDashboardFilters());
@@ -212,7 +212,7 @@ export default function SchoolDashboardPage() {
     setFilters(next);
     saveDashboardFilters(next);
   };
-  const { data: searchResults, isFetching: isSearching, inferred, emptyReason, dismissFilter } = useSearchProfiles(searchQuery, filters);
+  const { data: searchResults, isFetching: isSearching, inferred, emptyReason, dismissFilter } = useSearchProfiles(searchQuery, filters, slug);
 
   // Relax a single binding filter from the empty-results state. Inferred filters
   // are dismissed (Mode B re-search); user filters are cleared from the sidebar.

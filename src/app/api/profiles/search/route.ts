@@ -13,6 +13,7 @@ import {
   getSchoolLabel,
   SECTOR_INTEREST_LABELS,
 } from "@/features/school/data/utSchoolsAndMajors";
+import { resolveTenantScope } from "@/features/school/auth/tenant-scope";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -27,6 +28,8 @@ type CachedParse = {
 
 type SearchRequest = {
   q: string;
+  /** Page tenant slug; scoping is anchored to this org, validated server-side. */
+  org?: string;
   userFilters?: Partial<DashboardFilters>;
   cachedParse?: CachedParse;
   dismissedFilterKeys?: string[];
@@ -319,10 +322,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ profiles: [], inferred: null });
     }
 
-    const orgId = sessionClaims?.metadata?.organization_id ?? null;
-    if (!orgId) {
+    // Search runs only within a school tenant, anchored to the page's org slug
+    // (untrusted, validated server-side). General-pool users and non-members
+    // get no results — never another tenant's data.
+    const sessionOrgId = sessionClaims?.metadata?.organization_id ?? null;
+    const scope = await resolveTenantScope({
+      userId,
+      sessionOrgId,
+      slug: body.org ?? null,
+    });
+    if (scope.kind !== "org") {
       return NextResponse.json({ profiles: [], inferred: null });
     }
+    const orgId = scope.orgId;
 
     const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
     const userFilters = normalizeDashboardFilters(body.userFilters);
