@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 
 import HiringBadge from "@/components/HiringBadge";
 import CoFounderLinks from "@/features/cofounder/CoFounderLinks";
+import ProfileViewModal from "@/features/profile/ProfileViewModal";
 import { useGetProfiles, useSearchProfiles } from "@/features/profile/useProfile";
 import { useSchool } from "@/features/school/components/SchoolContext";
 import { useToggleLike, useLikeStatus, useMutualLikes } from "@/features/likes/useLikes";
@@ -33,8 +34,12 @@ import {
 
 function SearchResultCard({
   profile,
+  onViewProfile,
+  onViewProfileById,
 }: {
   profile: OnboardingData;
+  onViewProfile: (profile: OnboardingData) => void;
+  onViewProfileById: (userId: string) => void;
 }) {
   const queryClient = useQueryClient();
   const { toggleLike, isLoading: isLikeLoading } = useToggleLike();
@@ -66,7 +71,11 @@ function SearchResultCard({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)]">
-      <div className="p-4">
+      <button
+        type="button"
+        onClick={() => onViewProfile(profile)}
+        className="w-full p-4 text-left hover:bg-[var(--ui-surface-active)] transition cursor-pointer"
+      >
         {/* Avatar + name row */}
         <div className="mb-3 flex items-center gap-3">
           {profile.pfp_url ? (
@@ -120,8 +129,8 @@ function SearchResultCard({
         )}
 
         {profile.user_id && (
-          <div className="mb-3">
-            <CoFounderLinks userId={profile.user_id} />
+          <div className="mb-3" onClick={(e) => e.stopPropagation()}>
+            <CoFounderLinks userId={profile.user_id} onClickCofounder={onViewProfileById} />
           </div>
         )}
 
@@ -146,7 +155,7 @@ function SearchResultCard({
             ))}
           </div>
         )}
-      </div>
+      </button>
 
       {/* Actions */}
       <div className="flex items-center gap-3 border-t border-[var(--ui-border)] px-4 py-3">
@@ -174,6 +183,21 @@ export default function SchoolDashboardPage() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [filters, setFilters] = useState<DashboardFilters>(EMPTY_DASHBOARD_FILTERS);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const [viewingUserId, setViewingUserId] = useState<string | null>(null);
+  const [viewingProfile, setViewingProfile] = useState<OnboardingData | null>(null);
+
+  const openProfile = (profile: OnboardingData) => {
+    setViewingProfile(profile);
+    setViewingUserId(null);
+  };
+  const openProfileById = (userId: string) => {
+    setViewingUserId(userId);
+    setViewingProfile(null);
+  };
+  const closeProfile = () => {
+    setViewingUserId(null);
+    setViewingProfile(null);
+  };
   const queryClient = useQueryClient();
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -364,6 +388,7 @@ export default function SchoolDashboardPage() {
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-5xl flex-col px-4 pt-6 pb-8">
+      <ProfileViewModal profile={viewingProfile} userId={viewingUserId} onClose={closeProfile} />
       {brandingHeader}
 
       <FilterSidebar
@@ -454,7 +479,7 @@ export default function SchoolDashboardPage() {
           {searchResults && searchResults.length > 0 && (
             <div className="flex flex-col gap-3">
               {searchResults.map((profile) => (
-                <SearchResultCard key={profile.user_id} profile={profile} />
+                <SearchResultCard key={profile.user_id} profile={profile} onViewProfile={openProfile} onViewProfileById={openProfileById} />
               ))}
             </div>
           )}
@@ -587,7 +612,7 @@ export default function SchoolDashboardPage() {
 
                 {curProfile.user_id && (
                   <div className="mb-3">
-                    <CoFounderLinks userId={curProfile.user_id} />
+                    <CoFounderLinks userId={curProfile.user_id} onClickCofounder={setViewingUserId} />
                   </div>
                 )}
 
