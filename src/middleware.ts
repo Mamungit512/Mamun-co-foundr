@@ -187,6 +187,18 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
         return NextResponse.redirect(new URL("/", req.url));
       }
 
+      // Path-based tenant enforcement: a signed-in school user must not view
+      // another org's /school/<slug> portal. Mirrors the subdomain guard above.
+      // On subdomains the rewrite has already aligned the slug, so this is a
+      // no-op there; it only bites on apex /school/<other-slug> access.
+      const pathSlug = pathname.match(/^\/school\/([^/]+)/)?.[1];
+      const isAuthFlowPath = /\/(sign-in|sign-up|sso-callback|sso-complete)(\/|$)/.test(pathname);
+      if (pathSlug && pathSlug !== org.slug && !isAuthFlowPath) {
+        return NextResponse.redirect(
+          new URL(`/school/${org.slug}/dashboard`, req.url),
+        );
+      }
+
       // FERPA gate
       if (!org.ferpa_dpa_signed_at) {
         const pendingUrl = new URL(`/school/${org.slug}/pending-activation`, req.url);

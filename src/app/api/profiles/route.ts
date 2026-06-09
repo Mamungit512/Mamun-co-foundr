@@ -1,19 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 import { mapProfileToOnboardingData } from "@/lib/mapProfileToFromDBFormat";
 import {
   filterProfilesByPreferences,
   scoreCandidate,
 } from "@/features/matching/matchingService";
-
-function isApexHost(host: string): boolean {
-  const bare = host.split(":")[0].toLowerCase();
-  return (
-    bare === "mamuncofoundr.com" ||
-    bare === "www.mamuncofoundr.com"
-  );
-}
+import { resolveTenantScope } from "@/features/school/auth/tenant-scope";
 
 export async function GET(req: NextRequest) {
   try {
@@ -28,24 +21,20 @@ export async function GET(req: NextRequest) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
-    // Organization context: null = general pool, UUID = school tenant
-    const orgId = sessionClaims?.metadata?.organization_id ?? null;
+    // Tenant context is anchored to the page's org slug (untrusted input,
+    // validated server-side), NOT the HTTP host. `denied` → the viewer is not
+    // a member of the requested school and isn't staff, so return nothing.
+    const sessionOrgId = sessionClaims?.metadata?.organization_id ?? null;
+    const slug = req.nextUrl.searchParams.get("org");
+    const scope = await resolveTenantScope({ userId, sessionOrgId, slug });
 
-    // Mamun staff (@mamuncofoundr.com) on the apex host should see the general
-    // pool, not their org-scoped pool. Other school orgs are never mixed in.
-    const host = req.headers.get("host") ?? "";
-    const onApex = isApexHost(host);
-    let useGeneralPool = !orgId;
-    if (orgId && onApex) {
-      const clerk = await clerkClient();
-      const user = await clerk.users.getUser(userId);
-      const email = user.emailAddresses
-        .find((e) => e.id === user.primaryEmailAddressId)
-        ?.emailAddress?.toLowerCase();
-      if (email?.endsWith("@mamuncofoundr.com")) {
-        useGeneralPool = true;
-      }
+    if (scope.kind === "denied") {
+      return NextResponse.json({ profiles: [] });
     }
+
+    // null = general pool (organization_id IS NULL), UUID = school tenant pool
+    const useGeneralPool = scope.kind === "general";
+    const scopeOrgId = scope.kind === "org" ? scope.orgId : null;
 
     // Get the current user's profile
     const { data: currentUserData, error: currentUserError } = await supabase
@@ -76,7 +65,7 @@ export async function GET(req: NextRequest) {
     // school-specific onboarding (i.e. have a row in school_profiles for this
     // org). Acts as the "verified school user" filter. Must be scoped by
     // organization_id to avoid leaking cross-tenant existence.
-    const inSchoolTenant = !useGeneralPool && !!orgId;
+    const inSchoolTenant = !useGeneralPool && !!scopeOrgId;
 
     const collegeFilter = req.nextUrl.searchParams.get("college");
     const sectorsParam = req.nextUrl.searchParams.get("sectors");
@@ -99,7 +88,7 @@ export async function GET(req: NextRequest) {
       let schoolQuery = supabase
         .from("school_profiles")
         .select("user_id")
-        .eq("organization_id", orgId);
+        .eq("organization_id", scopeOrgId);
 
       if (collegeFilter) {
         schoolQuery = schoolQuery.eq("college", collegeFilter);
@@ -129,7 +118,7 @@ export async function GET(req: NextRequest) {
     if (useGeneralPool) {
       query = query.is("organization_id", null);
     } else {
-      query = query.eq("organization_id", orgId);
+      query = query.eq("organization_id", scopeOrgId);
     }
 
     if (schoolUserIds !== null) {
@@ -178,7 +167,7 @@ export async function GET(req: NextRequest) {
       const { data: schoolRows } = await supabase
         .from("school_profiles")
         .select("user_id, school_status, graduation_year, college, degree_type, major, sector_interests, intent")
-        .eq("organization_id", orgId)
+        .eq("organization_id", scopeOrgId)
         .in("user_id", candidateIds);
 
       const schoolMap = new Map(
