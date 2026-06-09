@@ -26,7 +26,7 @@ export async function sendTemplateEmail<T extends EmailType>({
 
   try {
     await (
-      resend.emails.send as unknown as (
+      resend.emails.create as unknown as (
         o: Record<string, unknown>,
       ) => Promise<unknown>
     )({

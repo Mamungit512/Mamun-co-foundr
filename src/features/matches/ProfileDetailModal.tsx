@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -16,6 +16,7 @@ import {
 import { FaTimes } from "react-icons/fa";
 import HiringBadge from "@/components/HiringBadge";
 import CoFounderLinks from "@/features/cofounder/CoFounderLinks";
+import ProfileViewModal from "@/features/profile/ProfileViewModal";
 import {
   getDegreeAbbreviation,
   getSchoolFullName,
@@ -49,6 +50,8 @@ export default function ProfileDetailModal({
   isUnlikePending,
   weMatchPendingId,
 }: ProfileDetailModalProps) {
+  const [viewingCofounderUserId, setViewingCofounderUserId] = useState<string | null>(null);
+
   if (!profile) return null;
 
   const initials =
@@ -106,6 +109,7 @@ export default function ProfileDetailModal({
   ].filter(Boolean) as { href: string; icon: React.ReactNode; label: string }[];
 
   return (
+    <>
     <AnimatePresence>
       {profile && (
         <motion.div
@@ -197,7 +201,7 @@ export default function ProfileDetailModal({
                   )}
                   {userId && (
                     <div className="mt-2">
-                      <CoFounderLinks userId={userId} />
+                      <CoFounderLinks userId={userId} onClickCofounder={setViewingCofounderUserId} />
                     </div>
                   )}
                 </div>
@@ -388,6 +392,11 @@ export default function ProfileDetailModal({
         </motion.div>
       )}
     </AnimatePresence>
+    <ProfileViewModal
+      userId={viewingCofounderUserId}
+      onClose={() => setViewingCofounderUserId(null)}
+    />
+    </>
   );
 }
 

@@ -9,7 +9,7 @@ export async function GET(
 ) {
   try {
     // Get the authenticated user from Clerk
-    const { userId: requestingUserId } = await auth();
+    const { userId: requestingUserId, sessionClaims } = await auth();
 
     if (!requestingUserId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -33,9 +33,33 @@ export async function GET(
 
     // Authorization check: Only allow if:
     // 1. User is requesting their own profile, OR
-    // 2. Users are in a conversation together, OR
-    // 3. Users have liked each other (mutual match)
+    // 2. Both users belong to the same school org, OR
+    // 3. Users are in a conversation together, OR
+    // 4. Users have liked each other (mutual match), OR
+    // 5. Users have a confirmed co-founder link
     const isOwnProfile = requestingUserId === userId;
+
+    // Same-org check: school org members can view any profile in their org
+    const requestingOrgId = (sessionClaims?.metadata as { organization_id?: string } | null)?.organization_id ?? null;
+    if (!isOwnProfile && requestingOrgId) {
+      const { data: targetProfile } = await supabase
+        .from("profiles")
+        .select("organization_id")
+        .eq("user_id", userId)
+        .is("deleted_at", null)
+        .single();
+      if (targetProfile?.organization_id === requestingOrgId) {
+        // Same org — fetch and return immediately
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("user_id", userId)
+          .is("deleted_at", null)
+          .single();
+        if (error || !data) return NextResponse.json({ error: "Profile not found" }, { status: 404 });
+        return NextResponse.json({ profile: mapProfileToOnboardingData(data) });
+      }
+    }
 
     if (!isOwnProfile) {
       // Check if users are in a conversation together

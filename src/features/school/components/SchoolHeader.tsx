@@ -79,6 +79,7 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
     {
       href: `/school/${slug}/dashboard`,
       label: "Find a co-foundr",
+      featured: true,
     },
     {
       href: `/school/${slug}/contact-us`,
@@ -102,23 +103,26 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
     >
       <Link
         href={`/school/${slug}`}
-        className="text-base font-semibold tracking-tight text-white"
+        className="text-base font-semibold tracking-tight text-white/70 transition-colors hover:text-white"
       >
         {headerText}
       </Link>
 
       {/* Desktop nav */}
       <nav className="hidden flex-1 items-center justify-end gap-8 md:flex">
-        {navItems.map(({ href, label }) => (
+        {navItems.map(({ href, label, featured }) => (
           <Link
             key={href}
             href={href}
-            className={clsx(
-              "text-sm font-medium transition-opacity border-b-2",
-              pathname.startsWith(href)
-                ? "opacity-100 border-white"
-                : "opacity-70 hover:opacity-90 border-transparent",
-            )}
+            className={featured
+              ? "rounded-lg border border-white/30 px-3 py-1.5 text-sm font-medium text-white/70 transition-colors hover:text-white hover:border-white/60"
+              : clsx(
+                  "text-sm font-medium transition-colors border-b-2",
+                  pathname.startsWith(href)
+                    ? "text-white border-white"
+                    : "text-white/70 hover:text-white border-transparent",
+                )
+            }
           >
             {label}
           </Link>
@@ -127,8 +131,16 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
 
       <div className="ml-4 flex items-center gap-4 md:ml-8 md:gap-6">
         <Link
+          href={`/school/${slug}/cofounder`}
+          className="hidden items-center gap-1.5 text-sm font-medium text-white/70 transition-colors hover:text-white md:flex"
+        >
+          <FaUserPlus className="h-3.5 w-3.5" />
+          Invite a co-foundr
+        </Link>
+
+        <Link
           href={`/school/${slug}/matches`}
-          className="relative flex items-center justify-center transition-opacity hover:opacity-80"
+          className="relative flex items-center justify-center text-white/70 transition-colors hover:text-white"
         >
           <FaHeart className="h-5 w-5 text-white" />
           {savedMatchesCount > 0 && (
@@ -155,11 +167,6 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
                 labelIcon={<FaUserPen className="h-3.5 w-3.5" />}
                 href={`/school/${slug}/profile`}
               />
-              <UserButton.Link
-                label="Invite a co-founder"
-                labelIcon={<FaUserPlus className="h-3.5 w-3.5" />}
-                href={`/school/${slug}/cofounder`}
-              />
               <UserButton.Action
                 label="Delete Account"
                 labelIcon={<FaTrash className="h-3.5 w-3.5 text-red-500" />}
@@ -172,7 +179,7 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
         {/* Mobile hamburger */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="cursor-pointer rounded-lg p-1.5 text-white transition-opacity hover:opacity-80 md:hidden"
+          className="cursor-pointer rounded-lg p-1.5 text-white/70 transition-colors hover:text-white md:hidden"
           aria-label="Toggle menu"
         >
           {isMobileMenuOpen ? <FaTimes className="h-5 w-5" /> : <FaBars className="h-5 w-5" />}
@@ -187,17 +194,30 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
           style={{ backgroundColor: config.branding.primaryColor }}
         >
           <ul className="p-2 space-y-0.5">
-            {navItems.map(({ href, label }) => (
+            {navItems.map(({ href, label, featured }) => (
               <li key={href}>
                 <Link
                   href={href}
-                  className="block rounded-lg px-3 py-2 text-sm font-medium text-white/80 hover:bg-white/10 hover:text-white"
+                  className={featured
+                    ? "block rounded-lg border border-white/30 px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:text-white hover:border-white/60"
+                    : "block rounded-lg px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:text-white"
+                  }
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {label}
                 </Link>
               </li>
             ))}
+            <li>
+              <Link
+                href={`/school/${slug}/cofounder`}
+                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:text-white"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <FaUserPlus className="h-3.5 w-3.5" />
+                Invite a co-foundr
+              </Link>
+            </li>
           </ul>
         </div>
       )}
