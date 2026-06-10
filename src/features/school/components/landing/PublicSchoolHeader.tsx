@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function PublicSchoolHeader() {
+export default function PublicSchoolHeader({ slug }: { slug: string }) {
   return (
     <header
       className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0 px-4 sm:px-6 py-3 sm:py-4"
@@ -18,14 +18,20 @@ export default function PublicSchoolHeader() {
           Find a co-foundr
         </a>
         <Link
-          href="/school/ut/contact-us"
+          href={`/school/${slug}/contact-us`}
           className="text-xs sm:text-sm font-medium text-white/75 hover:text-white whitespace-nowrap"
         >
           Contact us
         </Link>
+        <Link
+          href={`/school/${slug}/privacy-policy`}
+          className="text-xs sm:text-sm font-medium text-white/75 hover:text-white whitespace-nowrap"
+        >
+          Privacy Policy
+        </Link>
 
         <Link
-          href="/school/ut/sign-in"
+          href={`/school/${slug}/sign-in`}
           className="rounded-full px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold whitespace-nowrap"
           style={{ backgroundColor: "#ffffff", color: "#bf5700" }}
         >

@@ -30,9 +30,14 @@ export type OrgOnboarding = {
   step2RequiredFields: (keyof OnboardingData)[];
 };
 
+export type OrgPrivacyPolicyMeta = {
+  downloadUrl?: string;
+};
+
 export type OrgConfig = {
   branding: OrgBranding;
   landing: OrgLanding;
   limits: OrgLimits;
   onboarding: OrgOnboarding;
+  privacyPolicy?: OrgPrivacyPolicyMeta;
 };
