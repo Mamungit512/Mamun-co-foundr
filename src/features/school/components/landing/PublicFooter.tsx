@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-export default function PublicFooter() {
+export default function PublicFooter({ slug }: { slug: string }) {
   return (
     <footer
       className="px-6 py-12"
@@ -66,7 +66,7 @@ export default function PublicFooter() {
                 whileHover={{ color: "#ffffff" }}
               >
                 <Link
-                  href="/privacy-policy"
+                  href={`/school/${slug}/privacy-policy`}
                   className="mb-1.5 block text-xs hover:text-white transition-colors"
                   style={{ color: "#9cadb7" }}
                 >

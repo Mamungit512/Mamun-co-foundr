@@ -14,5 +14,5 @@ export default function OrgHeaderSwitch({ slug, schoolName, config, isSignedIn, 
   if (isSignedIn) {
     return <SchoolHeader slug={slug} schoolName={schoolName} config={config} isAdmin={isAdmin} />;
   }
-  return <PublicSchoolHeader />;
+  return <PublicSchoolHeader slug={slug} />;
 }

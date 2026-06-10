@@ -86,7 +86,7 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
       label: "Contact us",
     },
     {
-      href: "/privacy-policy",
+      href: `/school/${slug}/privacy-policy`,
       label: "Privacy Policy",
     },
     ...(isAdmin
