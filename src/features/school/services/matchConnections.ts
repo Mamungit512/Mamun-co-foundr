@@ -169,10 +169,6 @@ export async function getMatchConnections(
   for (const invite of invites ?? []) {
     const inviteeId = invite.invitee_user_id as string | null;
     const inviterKey = invite.inviter_user_id as string;
-    const key = inviteeId
-      ? pairKey(inviterKey, inviteeId)
-      : `invite:${invite.id}`;
-
     if (inviteeId && seen.has(pairKey(inviterKey, inviteeId))) continue;
 
     const p1 = toPerson(inviterKey);
