@@ -48,7 +48,7 @@ export default async function SchoolLanding({
         <ValuesPillars />
         <CtaBand />
         <DepartmentMosaic />
-        <PublicFooter />
+        <PublicFooter slug={slug} />
       </>
     );
   }
