@@ -303,7 +303,7 @@ export default function SchoolSignUp({
             <p className="text-center text-[11px]" style={{ color: "#9cadb7" }}>
               By creating an account, you agree to our{" "}
               <Link
-                href="/privacy-policy"
+                href={`/school/${slug}/privacy-policy`}
                 className="font-medium underline hover:opacity-70"
                 style={{ color: "#9cadb7" }}
               >
