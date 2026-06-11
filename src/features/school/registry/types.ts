@@ -32,6 +32,12 @@ export type OrgOnboarding = {
 
 export type OrgPrivacyPolicyMeta = {
   downloadUrl?: string;
+  /**
+   * Version string of the privacy policy currently in force for this org
+   * (e.g. its effective date). Bump it to force every user to re-accept.
+   * Consumed by the edge-safe consent helper + middleware gate.
+   */
+  version?: string;
 };
 
 export type OrgConfig = {
