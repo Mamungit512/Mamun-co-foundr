@@ -76,6 +76,7 @@ export const ORG_REGISTRY: Record<string, OrgConfig> = {
     },
     privacyPolicy: {
       downloadUrl: "/orgs/ut/privacy-policy.pdf",
+      version: "2026-06-01",
     },
   },
 };
