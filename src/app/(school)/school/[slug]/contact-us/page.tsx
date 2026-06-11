@@ -26,7 +26,7 @@ export default async function UtContactPage({
           <UtContactTabs />
         </div>
       </section>
-      <PublicFooter />
+      <PublicFooter slug={slug} />
     </>
   );
 }
