@@ -73,6 +73,8 @@ export async function DELETE(request: NextRequest) {
         `user_id.eq.${internalProfileId},other_profile_id.eq.${internalProfileId}`,
       );
     await supabase.from("profiles").delete().eq("user_id", targetUserId);
+    // user_consents is intentionally NOT deleted: consent rows are retained as
+    // proof of acceptance under GDPR Art. 17(3)(b) even after account removal.
 
     try {
       const client = await clerkClient();
@@ -203,7 +205,9 @@ export async function POST() {
       console.error("Error deleting user profile actions:", actionsError);
     }
 
-    // 6. Delete the profile from Supabase
+    // 6. Delete the profile from Supabase.
+    // user_consents is intentionally NOT deleted: consent rows are retained as
+    // proof of acceptance under GDPR Art. 17(3)(b) even after account removal.
     const { error: deleteProfileError } = await supabase
       .from("profiles")
       .delete()

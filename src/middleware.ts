@@ -1,6 +1,10 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import {
+  getRequiredPrivacyPolicyVersion,
+  isConsentSatisfied,
+} from "@/features/legal/consent";
 
 const isOnboardingRoute = createRouteMatcher(["/onboarding(.*)"]);
 const isSchoolOnboardingRoute = createRouteMatcher([
@@ -70,6 +74,27 @@ async function resolveOrgBySubdomain(subdomain: string): Promise<OrgRecord | nul
       .eq("subdomain", subdomain)
       .single();
     return data ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function resolveAcceptedConsentVersion(
+  userId: string,
+  document: string,
+): Promise<string | null> {
+  try {
+    const supabase = supabaseAdmin();
+    if (!supabase) return null;
+    const { data } = await supabase
+      .from("user_consents")
+      .select("version")
+      .eq("user_id", userId)
+      .eq("document", document)
+      .order("accepted_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    return data?.version ?? null;
   } catch {
     return null;
   }
@@ -170,19 +195,14 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
         return NextResponse.next();
       }
 
-      if (isSchoolOnboardingRoute(req)) {
-        if (sessionClaims?.metadata?.onboardingComplete) {
-          const org = await resolveOrgRecord(orgId);
-          if (org) {
-            return NextResponse.redirect(
-              new URL(`/school/${org.slug}/dashboard`, req.url),
-            );
-          }
-        }
-        return NextResponse.next();
-      }
-
-      const org = await resolveOrgRecord(orgId);
+      // Resolve org and latest consent version in parallel. Org is needed for all
+      // subsequent gates; consent version is needed for the privacy-policy gate.
+      // Fetching in parallel keeps middleware latency the same as before this gate
+      // was added (one round-trip, not two).
+      const [org, acceptedPrivacyVersion] = await Promise.all([
+        resolveOrgRecord(orgId),
+        resolveAcceptedConsentVersion(userId, "privacy_policy"),
+      ]);
 
       if (!org) {
         return NextResponse.redirect(new URL("/", req.url));
@@ -205,6 +225,28 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
         const pendingUrl = new URL(`/school/${org.slug}/pending-activation`, req.url);
         if (pathname !== pendingUrl.pathname) {
           return NextResponse.redirect(pendingUrl);
+        }
+        return NextResponse.next();
+      }
+
+      // Privacy-policy consent gate (org active -> consent -> onboard). Runs
+      // before onboarding handling so the onboarding route is gated too. The
+      // required version is read from edge-safe config; no DB call here.
+      const requiredPrivacyVersion = getRequiredPrivacyPolicyVersion(org.slug);
+      if (!isConsentSatisfied(acceptedPrivacyVersion, requiredPrivacyVersion)) {
+        const acceptUrl = new URL(`/school/${org.slug}/accept-policies`, req.url);
+        if (pathname !== acceptUrl.pathname) {
+          return NextResponse.redirect(acceptUrl);
+        }
+        return NextResponse.next();
+      }
+
+      // Keep already-onboarded users out of the onboarding flow.
+      if (isSchoolOnboardingRoute(req)) {
+        if (sessionClaims?.metadata?.onboardingComplete) {
+          return NextResponse.redirect(
+            new URL(`/school/${org.slug}/dashboard`, req.url),
+          );
         }
         return NextResponse.next();
       }
