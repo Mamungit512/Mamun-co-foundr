@@ -13,7 +13,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </div>
 
       {/* 1 */}
-      <section>
+      <section id="s1">
         <h2 className="mb-3 text-xl font-bold" style={h2}>1. Who We Are</h2>
         <p>
           Mamun Co-Foundr (&quot;Mamun,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) is a co-founder matching platform that
@@ -25,7 +25,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 2 */}
-      <section>
+      <section id="s2">
         <h2 className="mb-3 text-xl font-bold" style={h2}>2. Scope of This Policy</h2>
         <p>This policy applies to:</p>
         <ul className="mt-2 ml-6 list-disc space-y-1">
@@ -41,7 +41,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 3 */}
-      <section>
+      <section id="s3">
         <h2 className="mb-3 text-xl font-bold" style={h2}>3. FERPA — Our Primary Framework</h2>
         <p>
           The Family Educational Rights and Privacy Act of 1974 (FERPA) is the federal law that governs
@@ -114,7 +114,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 4 */}
-      <section>
+      <section id="s4">
         <h2 className="mb-3 text-xl font-bold" style={h2}>4. What Data We Collect — and How</h2>
         <p>
           All data Mamun collects from students is provided voluntarily and directly by the student. We do
@@ -187,7 +187,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 5 */}
-      <section>
+      <section id="s5">
         <h2 className="mb-3 text-xl font-bold" style={h2}>5. Consent Mechanism</h2>
         <p>
           Before accessing any feature of the Mamun platform, every student must affirmatively complete
@@ -245,7 +245,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 6 */}
-      <section>
+      <section id="s6">
         <h2 className="mb-3 text-xl font-bold" style={h2}>6. How We Use Your Data</h2>
         <p>We use student data strictly for the purpose of facilitating co-founder discovery and matching within university cohorts. Specifically:</p>
         <ul className="mt-2 ml-6 list-disc space-y-1">
@@ -279,7 +279,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 7 */}
-      <section>
+      <section id="s7">
         <h2 className="mb-3 text-xl font-bold" style={h2}>7. Data Sharing</h2>
 
         <h3 className="mb-2 text-base font-semibold" style={h2}>7.1 What We Share With University Partners</h3>
@@ -323,7 +323,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 8 */}
-      <section>
+      <section id="s8">
         <h2 className="mb-3 text-xl font-bold" style={h2}>8. Student Rights Under FERPA</h2>
         <p className="mb-3">Students who use Mamun through a university-sponsored program retain all rights guaranteed by FERPA. Mamun facilitates the following rights:</p>
         <div className="overflow-x-auto">
@@ -365,7 +365,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 9 */}
-      <section>
+      <section id="s9">
         <h2 className="mb-3 text-xl font-bold" style={h2}>9. Data Retention</h2>
         <p>
           Student data is retained for the duration of the active cohort period plus a maximum of 24
@@ -385,7 +385,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 10 */}
-      <section>
+      <section id="s10">
         <h2 className="mb-3 text-xl font-bold" style={h2}>10. Data Security</h2>
         <p>Mamun implements technical and organizational safeguards proportionate to the sensitivity of student data:</p>
         <ul className="mt-2 ml-6 list-disc space-y-1">
@@ -437,7 +437,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 11 */}
-      <section>
+      <section id="s11">
         <h2 className="mb-3 text-xl font-bold" style={h2}>11. University Partner Obligations</h2>
         <p>University partners who deploy Mamun accept the following obligations by signing a Data Use Agreement:</p>
         <ul className="mt-2 ml-6 list-disc space-y-1">
@@ -461,7 +461,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 12 */}
-      <section>
+      <section id="s12">
         <h2 className="mb-3 text-xl font-bold" style={h2}>12. Research Use and IRB Alignment</h2>
         <p>When Mamun operates as a Research Pilot partner with a university, the following additional protections apply:</p>
         <ul className="mt-2 ml-6 list-disc space-y-1">
@@ -473,7 +473,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 13 */}
-      <section>
+      <section id="s13">
         <h2 className="mb-3 text-xl font-bold" style={h2}>13. COPPA — Children&apos;s Online Privacy Protection Act</h2>
         <p>
           The Children&apos;s Online Privacy Protection Act (COPPA) prohibits the collection of personal
@@ -493,7 +493,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 14 */}
-      <section>
+      <section id="s14">
         <h2 className="mb-3 text-xl font-bold" style={h2}>14. State Privacy Laws</h2>
         <p className="mb-3">Mamun operates across multiple U.S. states through its university partnerships. Where applicable, we honor the privacy rights and obligations established by state law.</p>
         <div className="overflow-x-auto">
@@ -543,7 +543,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 15 */}
-      <section>
+      <section id="s15">
         <h2 className="mb-3 text-xl font-bold" style={h2}>15. Cookies and Tracking Technologies</h2>
         <p className="mb-3">Mamun uses a minimal set of cookies and similar technologies strictly necessary for platform operation. We do not use advertising cookies, cross-site tracking, or behavioral analytics.</p>
         <div className="overflow-x-auto">
@@ -587,7 +587,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 16 */}
-      <section>
+      <section id="s16">
         <h2 className="mb-3 text-xl font-bold" style={h2}>16. International Students</h2>
         <p>
           Mamun is designed for U.S.-based university programs and operates under U.S. federal and
@@ -603,7 +603,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 17 */}
-      <section>
+      <section id="s17">
         <h2 className="mb-3 text-xl font-bold" style={h2}>17. Dispute Resolution</h2>
         <p className="mb-3">If you believe Mamun has mishandled your personal data or violated this policy, the following escalation process applies:</p>
         <div className="overflow-x-auto">
@@ -642,7 +642,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 18 */}
-      <section>
+      <section id="s18">
         <h2 className="mb-3 text-xl font-bold" style={h2}>18. Governing Law and Jurisdiction</h2>
         <p>
           This Privacy Policy is governed by and construed in accordance with the laws of the State of
@@ -657,7 +657,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 19 */}
-      <section>
+      <section id="s19">
         <h2 className="mb-3 text-xl font-bold" style={h2}>19. Account Termination</h2>
 
         <h3 className="mb-2 text-base font-semibold" style={h2}>19.1 Student-Initiated Termination</h3>
@@ -686,7 +686,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 20 */}
-      <section>
+      <section id="s20">
         <h2 className="mb-3 text-xl font-bold" style={h2}>20. Business Transitions</h2>
 
         <h3 className="mb-2 text-base font-semibold" style={h2}>20.1 Acquisition or Merger</h3>
@@ -707,7 +707,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 21 */}
-      <section>
+      <section id="s21">
         <h2 className="mb-3 text-xl font-bold" style={h2}>21. Limitation of Liability and Force Majeure</h2>
 
         <h3 className="mb-2 text-base font-semibold" style={h2}>21.1 Force Majeure</h3>
@@ -734,7 +734,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 22 */}
-      <section>
+      <section id="s22">
         <h2 className="mb-3 text-xl font-bold" style={h2}>22. User-to-User Conduct and Platform Data</h2>
         <p>
           Once two students accept a co-founder match connection, they may share contact information,
@@ -749,7 +749,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 23 */}
-      <section>
+      <section id="s23">
         <h2 className="mb-3 text-xl font-bold" style={h2}>23. Accessibility</h2>
         <p>Mamun is committed to providing a platform that is accessible to all university students, including those with disabilities.</p>
         <ul className="mt-2 ml-6 list-disc space-y-1">
@@ -761,7 +761,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 24 */}
-      <section>
+      <section id="s24">
         <h2 className="mb-3 text-xl font-bold" style={h2}>24. Glossary of Defined Terms</h2>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-sm">
@@ -785,7 +785,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 25 */}
-      <section>
+      <section id="s25">
         <h2 className="mb-3 text-xl font-bold" style={h2}>25. Changes to This Policy</h2>
 
         <h3 className="mb-2 text-base font-semibold" style={h2}>25.1 Non-Material Changes</h3>
@@ -806,7 +806,7 @@ export default function UTPrivacyPolicy({ primaryColor }: Props) {
       </section>
 
       {/* 26 */}
-      <section>
+      <section id="s26">
         <h2 className="mb-3 text-xl font-bold" style={h2}>26. Contact &amp; Complaints</h2>
         <p>For any privacy-related inquiry, data request, or concern, contact:</p>
         <p className="mt-2 font-medium">mamun@mamuncofoundr.com | mamuncofoundr.com</p>
