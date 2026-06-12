@@ -2,9 +2,11 @@
  * RLS org-isolation integration tests (Stage 1 of the RLS-activation rollout).
  *
  * These hit a REAL local Supabase and are therefore OPT-IN: they only run when
- * RUN_RLS_TESTS=1, so plain `npm run test` / CI is unaffected.
+ * RUN_RLS_TESTS=1, so plain `npm run test` / CI is unaffected. Configure the
+ * keys straight from the running local stack, then run:
  *
- *   RUN_RLS_TESTS=1 npm run test -- rls-org-isolation
+ *   set -a; eval "$(supabase status -o env)"; set +a
+ *   RUN_RLS_TESTS=1 npx vitest run -- rls-org-isolation
  *
  * Prerequisites (read before running):
  *   1. A local Supabase whose schema includes the BASE tables (profiles, likes,
@@ -35,13 +37,24 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const RUN = process.env.RUN_RLS_TESTS === "1";
 
+// Read app-style names first, then the names `supabase status -o env` prints, so
+//   set -a; eval "$(supabase status -o env)"; set +a
+// is enough to configure the whole suite with the real local keys.
 const SUPABASE_URL =
-  process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://127.0.0.1:54321";
-const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_KEY ?? "";
-const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
+  process.env.NEXT_PUBLIC_SUPABASE_URL ??
+  process.env.API_URL ??
+  "http://127.0.0.1:54321";
+const ANON_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_KEY ?? process.env.ANON_KEY ?? "";
+const SERVICE_ROLE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SERVICE_ROLE_KEY ?? "";
 const JWT_SECRET =
   process.env.SUPABASE_JWT_SECRET ??
+  process.env.JWT_SECRET ??
   "super-secret-jwt-token-with-at-least-32-characters-long";
+
+// This suite SEEDS and DELETES rows — it must only ever touch a local stack.
+const IS_LOCAL = /\/\/(127\.0\.0\.1|localhost)(:|\/|$)/.test(SUPABASE_URL);
 
 const b64url = (input: Buffer | string) =>
   Buffer.from(input)
@@ -92,8 +105,15 @@ describe.skipIf(!RUN)("RLS org isolation", () => {
   const VIEW_TARGET = "user_rlstest_target";
 
   beforeAll(async () => {
-    expect(ANON_KEY, "NEXT_PUBLIC_SUPABASE_KEY must be set").not.toBe("");
-    expect(SERVICE_ROLE_KEY, "SUPABASE_SERVICE_ROLE_KEY must be set").not.toBe(
+    expect(
+      IS_LOCAL || process.env.RLS_TEST_ALLOW_REMOTE === "1",
+      `refusing to seed/delete against non-local Supabase (${SUPABASE_URL}); set RLS_TEST_ALLOW_REMOTE=1 to override`,
+    ).toBe(true);
+    expect(
+      ANON_KEY,
+      'anon key missing — run: set -a; eval "$(supabase status -o env)"; set +a',
+    ).not.toBe("");
+    expect(SERVICE_ROLE_KEY, "service-role key missing — see above").not.toBe(
       "",
     );
 
