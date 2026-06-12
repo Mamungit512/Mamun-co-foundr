@@ -2,21 +2,17 @@
  * RLS org-isolation integration tests (Stage 1 of the RLS-activation rollout).
  *
  * These hit a REAL local Supabase and are therefore OPT-IN: they only run when
- * RUN_RLS_TESTS=1, so plain `npm run test` / CI is unaffected. Configure the
- * keys straight from the running local stack, then run:
+ * RUN_RLS_TESTS=1, so plain `npm run test` / CI is unaffected. Keys are read
+ * automatically from the running local stack (`supabase status -o env`), so all
+ * you need is the stack up:
  *
- *   set -a; eval "$(supabase status -o env)"; set +a
- *   RUN_RLS_TESTS=1 npx vitest run -- rls-org-isolation
+ *   supabase start                              # if not already running
+ *   RUN_RLS_TESTS=1 npx vitest run rls-org-isolation
  *
- * Prerequisites (read before running):
- *   1. A local Supabase whose schema includes the BASE tables (profiles, likes,
- *      matching_queue, …). NOTE: `supabase db reset` alone does NOT build these —
- *      no migration CREATEs them; they exist only in the hosted project. Run
- *      `supabase db pull` first to capture the base schema as an initial
- *      migration, then `supabase db reset`. (Tracked as the Stage 1 prereq.)
- *   2. The migrations applied, including the UT seed (20260511…seed_ut_org) and
- *      the UT mock profiles (20260524…seed_ut_mock_profiles), which these tests
- *      read as fixtures.
+ * Prerequisite: a local stack built from migrations + seed — `supabase start`
+ * then `supabase db reset`, which replays 20260101000000_baseline_schema (all
+ * base tables) and supabase/seed.sql (the UT org + UT mock profiles these tests
+ * read as fixtures).
  *
  * What this validates WITHOUT relying on Clerk:
  *   PostgREST trusts any JWT signed with the project JWT secret. We mint
@@ -31,27 +27,64 @@
  *   SUPABASE_SERVICE_ROLE_KEY      <local service-role key>
  *   SUPABASE_JWT_SECRET            super-secret-jwt-token-with-at-least-32-characters-long
  */
+import { execSync } from "node:child_process";
 import { createHmac } from "node:crypto";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const RUN = process.env.RUN_RLS_TESTS === "1";
 
-// Read app-style names first, then the names `supabase status -o env` prints, so
-//   set -a; eval "$(supabase status -o env)"; set +a
-// is enough to configure the whole suite with the real local keys.
-const SUPABASE_URL =
-  process.env.NEXT_PUBLIC_SUPABASE_URL ??
-  process.env.API_URL ??
-  "http://127.0.0.1:54321";
-const ANON_KEY =
-  process.env.NEXT_PUBLIC_SUPABASE_KEY ?? process.env.ANON_KEY ?? "";
-const SERVICE_ROLE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SERVICE_ROLE_KEY ?? "";
-const JWT_SECRET =
-  process.env.SUPABASE_JWT_SECRET ??
-  process.env.JWT_SECRET ??
-  "super-secret-jwt-token-with-at-least-32-characters-long";
+/**
+ * Source keys straight from the running local stack so `RUN_RLS_TESTS=1 npx
+ * vitest run rls-org-isolation` works with no manual env export. Returns {} if
+ * the CLI/stack isn't reachable (e.g. local stack stopped), leaving the
+ * process.env fallbacks and the RLS_TEST_ALLOW_REMOTE path intact.
+ */
+function loadLocalSupabaseEnv(): Record<string, string> {
+  try {
+    const out = execSync("supabase status -o env", {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+    const env: Record<string, string> = {};
+    for (const line of out.split("\n")) {
+      const m = line.match(/^([A-Z0-9_]+)="(.*)"$/);
+      if (m) env[m[1]] = m[2];
+    }
+    return env;
+  } catch {
+    return {};
+  }
+}
+
+// Local-stack values WIN (this is a LOCAL-only integration test); process.env is
+// the fallback so the RLS_TEST_ALLOW_REMOTE path still works when the stack is down.
+const local = RUN ? loadLocalSupabaseEnv() : {};
+const pick = (...vals: Array<string | undefined>): string =>
+  vals.find((v) => v != null && v !== "") ?? "";
+
+const SUPABASE_URL = pick(
+  local.API_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.API_URL,
+  "http://127.0.0.1:54321",
+);
+const ANON_KEY = pick(
+  local.ANON_KEY,
+  process.env.NEXT_PUBLIC_SUPABASE_KEY,
+  process.env.ANON_KEY,
+);
+const SERVICE_ROLE_KEY = pick(
+  local.SERVICE_ROLE_KEY,
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  process.env.SERVICE_ROLE_KEY,
+);
+const JWT_SECRET = pick(
+  local.JWT_SECRET,
+  process.env.SUPABASE_JWT_SECRET,
+  process.env.JWT_SECRET,
+  "super-secret-jwt-token-with-at-least-32-characters-long",
+);
 
 // This suite SEEDS and DELETES rows — it must only ever touch a local stack.
 const IS_LOCAL = /\/\/(127\.0\.0\.1|localhost)(:|\/|$)/.test(SUPABASE_URL);
@@ -111,7 +144,7 @@ describe.skipIf(!RUN)("RLS org isolation", () => {
     ).toBe(true);
     expect(
       ANON_KEY,
-      'anon key missing — run: set -a; eval "$(supabase status -o env)"; set +a',
+      "anon key missing — is the local Supabase stack running? run `supabase start`",
     ).not.toBe("");
     expect(SERVICE_ROLE_KEY, "service-role key missing — see above").not.toBe(
       "",
