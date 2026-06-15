@@ -57,9 +57,10 @@ schema_paths = []
 
 [db.seed]
 # If enabled, seeds the database after migrations during a db reset.
-enabled = false
-# Profile simulation uses JSON only - no DB seed.
-# sql_paths = []
+enabled = true
+# Local/dev seed data (UT org + mock profiles + admin emails). Local only — never
+# pushed to prod (only migrations are). See supabase/seed.sql.
+sql_paths = ["./seed.sql"]
 
 [db.network_restrictions]
 # Enable management of network restrictions.
