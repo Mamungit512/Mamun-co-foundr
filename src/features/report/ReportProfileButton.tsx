@@ -69,7 +69,7 @@ export default function ReportProfileButton({
           e.stopPropagation();
           setOpen(true);
         }}
-        className="flex-shrink-0 rounded-full p-2 text-gray-400 transition hover:bg-gray-100 hover:text-red-500 cursor-pointer"
+        className="flex-shrink-0 rounded-full p-2 text-gray-500 transition hover:bg-red-50 hover:text-red-500 cursor-pointer"
         title="Report this profile"
       >
         <FaFlag className="h-4 w-4" />

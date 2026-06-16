@@ -27,6 +27,7 @@ import SwipeLimit from "@/components/SwipeLimit";
 import { MdSkipNext } from "react-icons/md";
 import { trackEvent } from "@/lib/posthog-events";
 import { useProfileViewTracking } from "@/features/profile/useProfileViewTracking";
+import ReportProfileButton from "@/features/report/ReportProfileButton";
 
 function CofoundrMatching() {
   const [showMore, setShowMore] = useState(false);
@@ -404,6 +405,10 @@ function CofoundrMatching() {
                               companyName={curProfile.startupName}
                             />
                           )}
+                          <ReportProfileButton
+                            reportedUserId={curProfile.user_id ?? ""}
+                            reportedName={`${curProfile.firstName ?? ""} ${curProfile.lastName ?? ""}`.trim()}
+                          />
                         </div>
                         <p className="text-base text-gray-300 sm:text-lg md:text-xl">
                           {curProfile.title}
