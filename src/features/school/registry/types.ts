@@ -46,4 +46,5 @@ export type OrgConfig = {
   limits: OrgLimits;
   onboarding: OrgOnboarding;
   privacyPolicy?: OrgPrivacyPolicyMeta;
+  termsAndConditions?: OrgPrivacyPolicyMeta;
 };

@@ -2,7 +2,7 @@ import { FaShieldAlt } from "react-icons/fa";
 
 export default function PendingActivationPage() {
   return (
-    <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center gap-6 p-6 text-center">
+    <div className="flex flex-1 flex-col items-center justify-center gap-6 p-6 text-center">
       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-yellow-500/10">
         <FaShieldAlt className="h-8 w-8 text-yellow-400" />
       </div>

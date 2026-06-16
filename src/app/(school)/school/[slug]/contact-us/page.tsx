@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { getOrganizationBySlug } from "@/features/school/data/organizations";
 import UtContactTabs from "@/features/school/components/contact/UtContactTabs";
-import PublicFooter from "@/features/school/components/landing/PublicFooter";
 
 export default async function UtContactPage({
   params,
@@ -15,7 +14,7 @@ export default async function UtContactPage({
 
   return (
     <>
-      <section className="section-padding min-h-[calc(100vh-64px)] px-6 pt-16 pb-24" style={{ backgroundColor: "#d6d2c4" }}>
+      <section className="section-padding flex-1 px-6 pt-16 pb-24" style={{ backgroundColor: "#d6d2c4" }}>
         <div className="mx-auto max-w-3xl space-y-8">
           <header className="space-y-2">
             <h1 className="text-3xl font-semibold sm:text-4xl" style={{ color: "#333f48" }}>Contact</h1>
@@ -26,7 +25,6 @@ export default async function UtContactPage({
           <UtContactTabs />
         </div>
       </section>
-      <PublicFooter slug={slug} />
     </>
   );
 }

@@ -21,7 +21,7 @@ export default async function SchoolSignInPage({
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-64px)] items-center justify-center px-4 py-12">
+    <div className="flex flex-1 items-center justify-center px-4 py-12">
       <SchoolSignIn
         slug={org.slug}
         schoolName={org.name}

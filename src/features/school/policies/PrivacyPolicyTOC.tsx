@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const SECTIONS = [
+const PRIVACY_SECTIONS = [
   { id: "s1",  title: "1. Who We Are" },
   { id: "s2",  title: "2. Scope" },
   { id: "s3",  title: "3. FERPA Framework" },
@@ -31,6 +31,27 @@ const SECTIONS = [
   { id: "s26", title: "26. Contact & Complaints" },
 ] as const;
 
+export const TERMS_SECTIONS = [
+  { id: "t1",  title: "1. Acceptance of Terms" },
+  { id: "t2",  title: "2. Eligibility" },
+  { id: "t3",  title: "3. How Matching Works" },
+  { id: "t4",  title: "4. Account Accuracy" },
+  { id: "t5",  title: "5. Consent & Deletion" },
+  { id: "t6",  title: "6. Acceptable Use" },
+  { id: "t7",  title: "7. Off-Platform Activity" },
+  { id: "t8",  title: "8. Account Termination" },
+  { id: "t9",  title: "9. Intellectual Property" },
+  { id: "t10", title: "10. Disclaimers" },
+  { id: "t11", title: "11. Limitation of Liability" },
+  { id: "t12", title: "12. Changes to Terms" },
+  { id: "t13", title: "13. Dispute Resolution" },
+  { id: "t14", title: "14. Governing Law" },
+  { id: "t15", title: "15. Key Definitions" },
+  { id: "t16", title: "16. Contact" },
+] as const;
+
+type Section = { id: string; title: string };
+
 function scrollTo(id: string) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -38,8 +59,14 @@ function scrollTo(id: string) {
   window.scrollTo({ top: y, behavior: "smooth" });
 }
 
-export function PrivacyPolicyDesktopTOC({ primaryColor }: { primaryColor: string }) {
-  const [active, setActive] = useState<string>(SECTIONS[0].id);
+export function PolicyDesktopTOC({
+  primaryColor,
+  sections,
+}: {
+  primaryColor: string;
+  sections: readonly Section[];
+}) {
+  const [active, setActive] = useState<string>(sections[0].id);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -51,12 +78,12 @@ export function PrivacyPolicyDesktopTOC({ primaryColor }: { primaryColor: string
       },
       { rootMargin: "-5% 0px -70% 0px", threshold: 0 },
     );
-    SECTIONS.forEach(({ id }) => {
+    sections.forEach(({ id }) => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
     return () => observer.disconnect();
-  }, []);
+  }, [sections]);
 
   return (
     <nav aria-label="Policy table of contents">
@@ -64,7 +91,7 @@ export function PrivacyPolicyDesktopTOC({ primaryColor }: { primaryColor: string
         Contents
       </p>
       <ul className="space-y-0.5">
-        {SECTIONS.map(({ id, title }) => {
+        {sections.map(({ id, title }) => {
           const isActive = active === id;
           return (
             <li key={id}>
@@ -89,7 +116,13 @@ export function PrivacyPolicyDesktopTOC({ primaryColor }: { primaryColor: string
   );
 }
 
-export function PrivacyPolicyMobileTOC({ primaryColor }: { primaryColor: string }) {
+export function PolicyMobileTOC({
+  primaryColor,
+  sections,
+}: {
+  primaryColor: string;
+  sections: readonly Section[];
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -114,7 +147,7 @@ export function PrivacyPolicyMobileTOC({ primaryColor }: { primaryColor: string 
       </button>
       {open && (
         <ul className="divide-y divide-gray-100 border-t border-gray-200">
-          {SECTIONS.map(({ id, title }) => (
+          {sections.map(({ id, title }) => (
             <li key={id}>
               <button
                 onClick={() => {
@@ -131,4 +164,13 @@ export function PrivacyPolicyMobileTOC({ primaryColor }: { primaryColor: string 
       )}
     </div>
   );
+}
+
+// Back-compat exports for the privacy policy page (keeps its import unchanged)
+export function PrivacyPolicyDesktopTOC({ primaryColor }: { primaryColor: string }) {
+  return <PolicyDesktopTOC primaryColor={primaryColor} sections={PRIVACY_SECTIONS} />;
+}
+
+export function PrivacyPolicyMobileTOC({ primaryColor }: { primaryColor: string }) {
+  return <PolicyMobileTOC primaryColor={primaryColor} sections={PRIVACY_SECTIONS} />;
 }

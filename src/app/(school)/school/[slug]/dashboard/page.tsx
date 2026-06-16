@@ -387,7 +387,7 @@ export default function SchoolDashboardPage() {
   ) : null;
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-5xl flex-col px-4 pt-6 pb-8">
+    <div className="mx-auto flex flex-1 min-h-0 max-w-5xl flex-col px-4 pt-6 pb-8">
       <ProfileViewModal profile={viewingProfile} userId={viewingUserId} onClose={closeProfile} />
       {brandingHeader}
 

@@ -106,7 +106,7 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
   };
 
   return (
-    <div className="mx-auto max-w-2xl p-4 pt-6">
+    <div className="mx-auto flex w-full flex-1 flex-col min-h-0 max-w-2xl p-4 pt-6">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -234,8 +234,8 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="flex flex-col rounded-xl border border-[var(--ui-border)] bg-white"
-        style={{ height: "calc(100vh - 320px)", minHeight: "400px" }}
+        className="flex flex-1 min-h-0 flex-col rounded-xl border border-[var(--ui-border)] bg-white"
+        style={{ minHeight: "400px" }}
       >
         <div className="flex-1 overflow-y-auto p-4">
           {isLoading ? (

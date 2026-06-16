@@ -8,7 +8,6 @@ import HowItWorks from "@/features/school/components/landing/HowItWorks";
 import ValuesPillars from "@/features/school/components/landing/ValuesPillars";
 import CtaBand from "@/features/school/components/landing/CtaBand";
 import DepartmentMosaic from "@/features/school/components/landing/DepartmentMosaic";
-import PublicFooter from "@/features/school/components/landing/PublicFooter";
 
 export default async function SchoolLanding({
   params,
@@ -48,7 +47,6 @@ export default async function SchoolLanding({
         <ValuesPillars />
         <CtaBand />
         <DepartmentMosaic />
-        <PublicFooter slug={slug} />
       </>
     );
   }
@@ -58,7 +56,7 @@ export default async function SchoolLanding({
   return (
     <>
       {jsonLdScript}
-      <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center px-6 py-20 text-center">
+      <div className="flex flex-1 flex-col items-center justify-center px-6 py-20 text-center">
       {landing.heroImageUrl && (
         <div className="absolute inset-0 -z-10 opacity-10">
           <Image

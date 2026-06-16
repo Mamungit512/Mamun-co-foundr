@@ -78,6 +78,10 @@ export const ORG_REGISTRY: Record<string, OrgConfig> = {
       downloadUrl: "/orgs/ut/privacy-policy.pdf",
       version: "2026-06-01",
     },
+    termsAndConditions: {
+      downloadUrl: "/orgs/ut/terms-and-conditions.pdf",
+      version: "2026-06-15",
+    },
   },
 };
 
