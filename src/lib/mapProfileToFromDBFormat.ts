@@ -24,7 +24,7 @@ export function mapProfileToOnboardingData(
     education: profile.education,
     experience: profile.experience,
     isTechnical: profile.is_technical ? "yes" : "no",
-    schedulingUrl: undefined, // No field provided in DB object, set to undefined
+    schedulingUrl: profile.scheduling_url ?? undefined,
 
     // OnboardingSocialsFormData
     linkedin: profile.linkedin ?? "",
@@ -85,6 +85,7 @@ export function mapOnboardingDatatoProfileDB(data: OnboardingData) {
     twitter: data.twitter || null,
     git: data.git || null,
     personal_website: data.personalWebsite || null,
+    scheduling_url: data.schedulingUrl || null,
 
     has_startup: data.hasStartup === "yes",
     startup_name: data.startupName || null,
