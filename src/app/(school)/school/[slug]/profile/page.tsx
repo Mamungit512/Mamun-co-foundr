@@ -663,6 +663,17 @@ export default function SchoolProfilePage({ params }: { params: Promise<{ slug: 
                 </div>
               ))}
             </div>
+            <div className="space-y-1.5">
+              <label className={labelClass}>
+                Scheduling Link{" "}
+                <span className="font-normal text-[var(--ui-text-subtle)]">(Calendly, Cal.com…)</span>
+              </label>
+              <FormInput
+                placeholder="https://calendly.com/your-link"
+                type="url"
+                {...register("schedulingUrl")}
+              />
+            </div>
           </div>
 
           {/* ── Sticky action bar ── */}

@@ -8,6 +8,7 @@ import { useStepEntry, useErrorShake } from "@/hooks/useOnboardingAnimation";
 type UTBackgroundAndSocialsData = {
   linkedin?: string;
   git?: string;
+  schedulingUrl?: string;
 };
 
 const LABEL_CLS =
@@ -70,6 +71,20 @@ function UTBackgroundAndSocialsForm({
               type="text"
               placeholder="github.com/yourusername"
               {...register("git")}
+            />
+          </div>
+
+          <div className="flex flex-col gap-y-1.5">
+            <label className={LABEL_CLS}>
+              Scheduling Link
+              <span className="ml-1 font-normal normal-case text-[var(--ui-text-subtle)]">
+                (Calendly, Cal.com…)
+              </span>
+            </label>
+            <FormInput
+              type="url"
+              placeholder="https://calendly.com/your-link"
+              {...register("schedulingUrl")}
             />
           </div>
         </div>
