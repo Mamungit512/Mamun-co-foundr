@@ -33,7 +33,7 @@ export default async function InviteAcceptPage({
   // Expired/revoked/declined invites → show a clear message
   if (invite.status !== "pending" || new Date(invite.expires_at) < new Date()) {
     return (
-      <div className="flex min-h-[calc(100vh-64px)] items-center justify-center px-4 py-12">
+      <div className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-md rounded-2xl border border-[#e8e4dc] bg-white p-8 text-center shadow-sm">
           <p className="text-base font-semibold" style={{ color: "#333f48" }}>
             This invite is no longer valid
@@ -72,7 +72,7 @@ export default async function InviteAcceptPage({
     const initials = inviterName.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
     return (
-      <div className="flex min-h-[calc(100vh-64px)] items-center justify-center px-4 py-12">
+      <div className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-md rounded-2xl border border-[#e8e4dc] bg-white p-8 text-center shadow-sm">
           {inviterProfile?.pfp_url ? (
             <Image

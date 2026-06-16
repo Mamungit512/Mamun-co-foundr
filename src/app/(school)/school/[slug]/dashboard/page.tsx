@@ -20,6 +20,7 @@ import { trackEvent } from "@/lib/posthog-events";
 import { useProfileViewTracking } from "@/features/profile/useProfileViewTracking";
 import { getSchoolFullName, getDegreeAbbreviation, SECTOR_INTEREST_LABELS } from "@/features/school/data/utSchoolsAndMajors";
 import FilterSidebar, { getFilterChipLabels } from "@/features/school/components/dashboard/FilterSidebar";
+import ReportProfileButton from "@/features/report/ReportProfileButton";
 import {
   type DashboardFilters,
   type RelaxSuggestion,
@@ -387,7 +388,7 @@ export default function SchoolDashboardPage() {
   ) : null;
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-5xl flex-col px-4 pt-6 pb-8">
+    <div className="mx-auto flex flex-1 min-h-0 max-w-5xl flex-col px-4 pt-6 pb-8">
       <ProfileViewModal profile={viewingProfile} userId={viewingUserId} onClose={closeProfile} />
       {brandingHeader}
 
@@ -593,6 +594,10 @@ export default function SchoolDashboardPage() {
                             : "The Architect"}
                       </span>
                     )}
+                    <ReportProfileButton
+                      reportedUserId={curProfile.user_id ?? ""}
+                      reportedName={`${curProfile.firstName ?? ""} ${curProfile.lastName ?? ""}`.trim()}
+                    />
                   </div>
                 </div>
 

@@ -75,7 +75,7 @@ export default function AcceptInviteClient({
     ROLE_OPTIONS.find((o) => o.value === selectedRole)?.label ?? selectedRole;
 
   return (
-    <div className="flex min-h-[calc(100vh-64px)] items-center justify-center px-4 py-12">
+    <div className="flex flex-1 items-center justify-center px-4 py-12">
       <div className="w-full max-w-md rounded-2xl border border-[#e8e4dc] bg-white p-8 shadow-sm">
         <div className="mb-6 text-center">
           {inviterPfpUrl ? (

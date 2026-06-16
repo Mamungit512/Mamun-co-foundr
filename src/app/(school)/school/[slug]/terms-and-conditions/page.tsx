@@ -2,10 +2,11 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getOrganizationBySlug } from "@/features/school/data/organizations";
 import { getOrgConfig } from "@/features/school/registry/registry";
-import { getSchoolPolicyComponent } from "@/features/school/policies/index";
+import { getSchoolTermsComponent } from "@/features/school/policies/index";
 import {
-  PrivacyPolicyDesktopTOC,
-  PrivacyPolicyMobileTOC,
+  PolicyDesktopTOC,
+  PolicyMobileTOC,
+  TERMS_SECTIONS,
 } from "@/features/school/policies/PrivacyPolicyTOC";
 
 export async function generateMetadata({
@@ -16,15 +17,14 @@ export async function generateMetadata({
   const { slug } = await params;
   const org = await getOrganizationBySlug(slug);
   const cfg = getOrgConfig(slug);
-  const orgName = org?.name ?? "School Portal";
-  const wordmark = cfg?.branding.wordmark ?? orgName;
+  const wordmark = cfg?.branding.wordmark ?? org?.name ?? "School Portal";
   return {
-    title: `Privacy Policy | ${wordmark} Co-Foundr`,
-    description: `Privacy policy for the ${wordmark} Co-Foundr matching platform.`,
+    title: `Terms & Conditions | ${wordmark} Co-Foundr`,
+    description: `Terms and conditions for the ${wordmark} Co-Foundr matching platform.`,
   };
 }
 
-export default async function SchoolPrivacyPolicyPage({
+export default async function SchoolTermsPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -38,12 +38,12 @@ export default async function SchoolPrivacyPolicyPage({
 
   if (!org || !cfg) notFound();
 
-  const PolicyContent = getSchoolPolicyComponent(slug);
-  if (!PolicyContent) notFound();
+  const TermsContent = getSchoolTermsComponent(slug);
+  if (!TermsContent) notFound();
 
   const primaryColor = cfg.branding.primaryColor;
   const wordmark = cfg.branding.wordmark ?? org.name;
-  const downloadUrl = cfg.privacyPolicy?.downloadUrl;
+  const downloadUrl = cfg.termsAndConditions?.downloadUrl;
 
   return (
     <div className="flex-1 bg-white">
@@ -53,7 +53,7 @@ export default async function SchoolPrivacyPolicyPage({
           {/* Sticky sidebar TOC — desktop only */}
           <aside className="hidden lg:block lg:w-52 xl:w-56 shrink-0">
             <div className="sticky top-8 max-h-[calc(100vh-5rem)] overflow-y-auto pb-4">
-              <PrivacyPolicyDesktopTOC primaryColor={primaryColor} />
+              <PolicyDesktopTOC primaryColor={primaryColor} sections={TERMS_SECTIONS} />
             </div>
           </aside>
 
@@ -61,7 +61,7 @@ export default async function SchoolPrivacyPolicyPage({
           <div className="min-w-0 flex-1">
 
             {/* Mobile TOC */}
-            <PrivacyPolicyMobileTOC primaryColor={primaryColor} />
+            <PolicyMobileTOC primaryColor={primaryColor} sections={TERMS_SECTIONS} />
 
             {/* Header */}
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -70,10 +70,10 @@ export default async function SchoolPrivacyPolicyPage({
                   {wordmark} Co-Foundr
                 </p>
                 <h1 className="text-3xl font-bold text-gray-900">
-                  Privacy Policy
+                  Terms &amp; Conditions
                 </h1>
                 <p className="mt-1 text-sm text-gray-500">
-                  University Platform Edition — FERPA Compliant
+                  University Platform Edition
                 </p>
               </div>
 
@@ -105,8 +105,8 @@ export default async function SchoolPrivacyPolicyPage({
             {/* Divider */}
             <div className="mb-8 h-px" style={{ backgroundColor: primaryColor, opacity: 0.3 }} />
 
-            {/* Policy content */}
-            <PolicyContent primaryColor={primaryColor} />
+            {/* Terms content */}
+            <TermsContent primaryColor={primaryColor} />
           </div>
         </div>
       </div>

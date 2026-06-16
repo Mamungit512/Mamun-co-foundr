@@ -24,6 +24,7 @@ import { useProfileByUserId } from "./useProfile";
 import { useToggleLike, useLikeStatus } from "@/features/likes/useLikes";
 import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import ReportProfileButton from "@/features/report/ReportProfileButton";
 
 interface ProfileViewModalProps {
   /** Pass a full profile when you already have the data (avoids an extra fetch). */
@@ -210,6 +211,10 @@ export default function ProfileViewModal({ profile: profileProp, userId, onClose
                     )}
                   </div>
 
+                  <ReportProfileButton
+                    reportedUserId={targetId}
+                    reportedName={`${profile.firstName ?? ""} ${profile.lastName ?? ""}`.trim()}
+                  />
                   <button
                     onClick={onClose}
                     className="flex-shrink-0 rounded-full p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 cursor-pointer"

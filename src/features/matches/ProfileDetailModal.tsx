@@ -17,6 +17,7 @@ import { FaTimes } from "react-icons/fa";
 import HiringBadge from "@/components/HiringBadge";
 import CoFounderLinks from "@/features/cofounder/CoFounderLinks";
 import ProfileViewModal from "@/features/profile/ProfileViewModal";
+import ReportProfileButton from "@/features/report/ReportProfileButton";
 import {
   getDegreeAbbreviation,
   getSchoolFullName,
@@ -207,6 +208,10 @@ export default function ProfileDetailModal({
                 </div>
 
                 {/* Close button */}
+                <ReportProfileButton
+                  reportedUserId={userId}
+                  reportedName={`${profile.firstName ?? ""} ${profile.lastName ?? ""}`.trim()}
+                />
                 <button
                   onClick={onClose}
                   className="flex-shrink-0 rounded-full p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 cursor-pointer"

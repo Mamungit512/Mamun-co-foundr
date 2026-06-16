@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import {
   getRequiredPrivacyPolicyVersion,
+  getRequiredTermsVersion,
   isConsentSatisfied,
 } from "@/features/legal/consent";
 
@@ -24,6 +25,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/cron/(.*)",
   "/school/:slug",
   "/school/:slug/privacy-policy",
+  "/school/:slug/terms-and-conditions",
   "/school/:slug/sign-up(.*)",
   "/school/:slug/sign-in(.*)",
   "/school/:slug/sso-callback(.*)",
@@ -199,9 +201,10 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
       // subsequent gates; consent version is needed for the privacy-policy gate.
       // Fetching in parallel keeps middleware latency the same as before this gate
       // was added (one round-trip, not two).
-      const [org, acceptedPrivacyVersion] = await Promise.all([
+      const [org, acceptedPrivacyVersion, acceptedTermsVersion] = await Promise.all([
         resolveOrgRecord(orgId),
         resolveAcceptedConsentVersion(userId, "privacy_policy"),
+        resolveAcceptedConsentVersion(userId, "terms_of_service"),
       ]);
 
       if (!org) {
@@ -229,11 +232,15 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
         return NextResponse.next();
       }
 
-      // Privacy-policy consent gate (org active -> consent -> onboard). Runs
-      // before onboarding handling so the onboarding route is gated too. The
-      // required version is read from edge-safe config; no DB call here.
+      // Consent gate: privacy policy + terms (org active -> consent -> onboard).
+      // Runs before onboarding handling so the onboarding route is gated too.
+      // Required versions are read from edge-safe config; no extra DB calls.
       const requiredPrivacyVersion = getRequiredPrivacyPolicyVersion(org.slug);
-      if (!isConsentSatisfied(acceptedPrivacyVersion, requiredPrivacyVersion)) {
+      const requiredTermsVersion = getRequiredTermsVersion(org.slug);
+      const consentSatisfied =
+        isConsentSatisfied(acceptedPrivacyVersion, requiredPrivacyVersion) &&
+        isConsentSatisfied(acceptedTermsVersion, requiredTermsVersion);
+      if (!consentSatisfied) {
         const acceptUrl = new URL(`/school/${org.slug}/accept-policies`, req.url);
         if (pathname !== acceptUrl.pathname) {
           return NextResponse.redirect(acceptUrl);

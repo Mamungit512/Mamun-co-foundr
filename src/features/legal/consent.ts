@@ -8,7 +8,7 @@
 
 import { getOrgConfig } from "@/features/school/registry/registry";
 
-export type ConsentDocument = "privacy_policy"; // future: | "terms_of_service"
+export type ConsentDocument = "privacy_policy" | "terms_of_service";
 
 export type RequiredConsent = {
   document: ConsentDocument;
@@ -18,6 +18,9 @@ export type RequiredConsent = {
 /** Fallback when an org config doesn't pin a privacy-policy version. */
 export const DEFAULT_PRIVACY_POLICY_VERSION = "2026-06-01";
 
+/** Fallback when an org config doesn't pin a terms-and-conditions version. */
+export const DEFAULT_TERMS_VERSION = "2026-06-15";
+
 /**
  * The documents a user of `slug` must accept, paired with the version currently in
  * force. Returns a list so Terms & Conditions can be added later (push another entry
@@ -26,16 +29,24 @@ export const DEFAULT_PRIVACY_POLICY_VERSION = "2026-06-01";
  */
 export function getRequiredConsents(slug: string): RequiredConsent[] {
   const cfg = getOrgConfig(slug);
-  const version = cfg?.privacyPolicy?.version ?? DEFAULT_PRIVACY_POLICY_VERSION;
-  return [{ document: "privacy_policy", version }];
+  const privacyVersion = cfg?.privacyPolicy?.version ?? DEFAULT_PRIVACY_POLICY_VERSION;
+  const termsVersion = cfg?.termsAndConditions?.version ?? DEFAULT_TERMS_VERSION;
+  return [
+    { document: "privacy_policy", version: privacyVersion },
+    { document: "terms_of_service", version: termsVersion },
+  ];
 }
 
-/** The single privacy-policy version a user of `slug` must currently have accepted. */
+/** The privacy-policy version a user of `slug` must currently have accepted. */
 export function getRequiredPrivacyPolicyVersion(slug: string): string {
-  const required = getRequiredConsents(slug).find(
-    (c) => c.document === "privacy_policy",
-  );
-  return required?.version ?? DEFAULT_PRIVACY_POLICY_VERSION;
+  const cfg = getOrgConfig(slug);
+  return cfg?.privacyPolicy?.version ?? DEFAULT_PRIVACY_POLICY_VERSION;
+}
+
+/** The terms-and-conditions version a user of `slug` must currently have accepted. */
+export function getRequiredTermsVersion(slug: string): string {
+  const cfg = getOrgConfig(slug);
+  return cfg?.termsAndConditions?.version ?? DEFAULT_TERMS_VERSION;
 }
 
 /**
