@@ -6,6 +6,7 @@ import { SchoolProvider } from "@/features/school/components/SchoolContext";
 import { getOrganizationBySlug } from "@/features/school/data/organizations";
 import { getOrgConfig, DEFAULT_ORG_CONFIG } from "@/features/school/registry/registry";
 import { getVerifiedPrimaryEmail, getOrgAdminEmails } from "@/features/school/auth/org-admin";
+import PublicFooter from "@/features/school/components/landing/PublicFooter";
 
 export async function generateMetadata({
   params,
@@ -118,10 +119,11 @@ export default async function SchoolSlugLayout({
               : {}),
           } as React.CSSProperties
         }
-        className="min-h-screen bg-[var(--org-bg)] text-[var(--org-text)]"
+        className="flex min-h-screen flex-col bg-[var(--org-bg)] text-[var(--org-text)]"
       >
         <OrgHeaderSwitch slug={slug} schoolName={org.name} config={cfg} isSignedIn={!!userId} isAdmin={isAdmin} />
-        <main>{children}</main>
+        <main className="flex flex-1 flex-col">{children}</main>
+        <PublicFooter slug={slug} />
       </div>
     </SchoolProvider>
   );

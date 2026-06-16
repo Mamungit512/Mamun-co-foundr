@@ -46,7 +46,7 @@ export default async function SchoolPrivacyPolicyPage({
   const downloadUrl = cfg.privacyPolicy?.downloadUrl;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="flex-1 bg-white">
       <div className="mx-auto max-w-7xl px-6 py-12 sm:px-8 lg:px-12">
         <div className="lg:flex lg:gap-12 xl:gap-16">
 
@@ -107,11 +107,6 @@ export default async function SchoolPrivacyPolicyPage({
 
             {/* Policy content */}
             <PolicyContent primaryColor={primaryColor} />
-
-            {/* Footer note */}
-            <div className="mt-12 border-t border-gray-200 pt-6 text-center text-xs text-gray-400">
-              © 2026 {wordmark} Co-Foundr. Powered by Mamun. All rights reserved.
-            </div>
           </div>
         </div>
       </div>

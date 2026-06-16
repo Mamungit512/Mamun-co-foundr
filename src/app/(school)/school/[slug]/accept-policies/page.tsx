@@ -51,7 +51,7 @@ export default function AcceptPoliciesPage() {
     "flex cursor-pointer items-start gap-3 rounded-lg border border-[#e8e4dc] p-3 text-sm";
 
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-64px)] max-w-xl items-center px-4 py-8">
+    <div className="mx-auto flex flex-1 max-w-xl items-center px-4 py-8">
       <div
         className="w-full rounded-2xl border p-8 shadow-sm"
         style={{ borderColor: primary, backgroundColor: "#fff" }}

@@ -84,7 +84,7 @@ export default function PublicFooter({ slug }: { slug: string }) {
               </motion.div>
               <motion.div whileHover={{ color: "#ffffff" }}>
                 <Link
-                  href="/school/ut/contact-us"
+                  href={`/school/${slug}/contact-us`}
                   className="block text-xs hover:text-white transition-colors"
                   style={{ color: "#9cadb7" }}
                 >
