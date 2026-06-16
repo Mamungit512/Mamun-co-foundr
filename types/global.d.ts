@@ -61,6 +61,7 @@ declare global {
     onboarding_complete: boolean;
     personal_intro: string;
     personal_website: string | null;
+    scheduling_url: string | null;
     pfp_url?: string | null;
     priority_areas: string[]; // array of strings
     looking_for: "technical" | "non-technical" | "either" | null;
