@@ -114,7 +114,8 @@ export default function AcceptPoliciesPage() {
               >
                 Terms of Use
               </Link>
-              .
+              , and acknowledge that the platform may introduce new features; material changes to how
+              my data is used will be communicated and I may withdraw consent at any time.
             </span>
           </label>
 

@@ -6,7 +6,6 @@ SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
@@ -28,6 +27,10 @@ COMMENT ON SCHEMA "public" IS 'standard public schema';
 -- they are re-added here. pgvector MUST live in `public` because columns and
 -- functions reference the `public.vector` type. pgmq + pg_net back the
 -- embedding-refresh trigger (pgmq.send / net.http_post).
+--
+-- Note: search_path is blanked AFTER extensions. pgmq and pg_net install
+-- into their own hard-coded schemas (pgmq / net) and fail with 3F000 if
+-- search_path is empty at install time.
 -- ─────────────────────────────────────────────────────────────────────────
 CREATE SCHEMA IF NOT EXISTS "extensions";
 
@@ -36,9 +39,11 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA "extensions";
 CREATE EXTENSION IF NOT EXISTS "pgmq";
 CREATE EXTENSION IF NOT EXISTS "pg_net";
 
+SELECT pg_catalog.set_config('search_path', '', false);
 
 
-CREATE TYPE "public"."battery_level_enum" AS ENUM (
+
+CREATE TYPE IF NOT EXISTS "public"."battery_level_enum" AS ENUM (
     'Energized',
     'Content',
     'Burnt out'
@@ -48,7 +53,7 @@ CREATE TYPE "public"."battery_level_enum" AS ENUM (
 ALTER TYPE "public"."battery_level_enum" OWNER TO "postgres";
 
 
-CREATE TYPE "public"."cofounder_status_enum" AS ENUM (
+CREATE TYPE IF NOT EXISTS "public"."cofounder_status_enum" AS ENUM (
     'Solo founder',
     'Have co-founder(s)',
     'Seeking co-founder'
@@ -58,7 +63,7 @@ CREATE TYPE "public"."cofounder_status_enum" AS ENUM (
 ALTER TYPE "public"."cofounder_status_enum" OWNER TO "postgres";
 
 
-CREATE TYPE "public"."founder_archetype" AS ENUM (
+CREATE TYPE IF NOT EXISTS "public"."founder_archetype" AS ENUM (
     'the_scaler',
     'the_steward',
     'the_architect'
@@ -68,7 +73,7 @@ CREATE TYPE "public"."founder_archetype" AS ENUM (
 ALTER TYPE "public"."founder_archetype" OWNER TO "postgres";
 
 
-CREATE TYPE "public"."fulltime_timeline_enum" AS ENUM (
+CREATE TYPE IF NOT EXISTS "public"."fulltime_timeline_enum" AS ENUM (
     'Already full-time',
     'Within 1 month',
     'Within 3 months',
@@ -81,7 +86,7 @@ CREATE TYPE "public"."fulltime_timeline_enum" AS ENUM (
 ALTER TYPE "public"."fulltime_timeline_enum" OWNER TO "postgres";
 
 
-CREATE TYPE "public"."satisfaction_level" AS ENUM (
+CREATE TYPE IF NOT EXISTS "public"."satisfaction_level" AS ENUM (
     'Happy',
     'Browsing',
     'Content',
@@ -92,7 +97,7 @@ CREATE TYPE "public"."satisfaction_level" AS ENUM (
 ALTER TYPE "public"."satisfaction_level" OWNER TO "postgres";
 
 
-CREATE TYPE "public"."startup_funding_enum" AS ENUM (
+CREATE TYPE IF NOT EXISTS "public"."startup_funding_enum" AS ENUM (
     'Bootstrapped',
     'Pre-seed',
     'Seed',
@@ -106,7 +111,7 @@ CREATE TYPE "public"."startup_funding_enum" AS ENUM (
 ALTER TYPE "public"."startup_funding_enum" OWNER TO "postgres";
 
 
-CREATE TYPE "public"."startup_time_spent_enum" AS ENUM (
+CREATE TYPE IF NOT EXISTS "public"."startup_time_spent_enum" AS ENUM (
     'Just started',
     '1-3 months',
     '3-6 months',
