@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { createClient } from "@supabase/supabase-js";
 import { getMessagesByConversationId } from "@/features/messages/messagesService";
+import { createServerSupabaseClient } from "@/lib/supabaseServer";
 
 // Polling system - no time restrictions, just rate limiting for security
 
@@ -37,11 +37,7 @@ export async function GET(
       );
     }
 
-    // Create Supabase client with service role key for server-side operations
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    );
+    const supabase = await createServerSupabaseClient();
 
     // Fetch messages for the conversation
     const result = await getMessagesByConversationId(

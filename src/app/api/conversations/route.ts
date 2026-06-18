@@ -5,6 +5,7 @@ import {
   getUserConversations,
   createConversation,
 } from "@/features/conversations/conversationService";
+import { createServerSupabaseClient } from "@/lib/supabaseServer";
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,10 +24,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    );
+    const supabase = await createServerSupabaseClient();
 
     const orgId = (sessionClaims?.metadata as Record<string, unknown>)?.organization_id as string | undefined ?? null;
 
