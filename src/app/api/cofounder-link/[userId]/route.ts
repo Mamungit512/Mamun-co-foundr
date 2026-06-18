@@ -24,12 +24,37 @@ export async function GET(
   { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
-    const { userId: requestingUserId } = await auth();
+    const { userId: requestingUserId, sessionClaims } = await auth();
     if (!requestingUserId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { userId } = await params;
+
+    // Access check: caller must be the profile owner or able to see the target
+    // in the matching feed (same org, or both general-pool / null-org).
+    // Blocks the IDOR: a school-org user can't read a different school's links.
+    const isSelf = requestingUserId === userId;
+    if (!isSelf) {
+      const requestingOrgId =
+        ((sessionClaims?.metadata as Record<string, unknown>)
+          ?.organization_id as string | undefined) ?? null;
+
+      const supabase = supa();
+      const { data: targetProfile } = await supabase
+        .from("profiles")
+        .select("organization_id")
+        .eq("user_id", userId)
+        .single();
+
+      const targetOrgId = targetProfile?.organization_id ?? null;
+
+      // Deny if the orgs don't match (covers school↔general and school↔school cross-org)
+      if (requestingOrgId !== targetOrgId) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+    }
+
     const supabase = supa();
 
     const { data: links, error: linkErr } = await supabase
