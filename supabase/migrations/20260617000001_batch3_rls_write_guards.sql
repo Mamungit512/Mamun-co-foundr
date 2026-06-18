@@ -21,6 +21,21 @@
 --                       authenticated users — writes go through service role).
 --   • cofounder_links — writes go through service role (bypasses RLS), but
 --                       add a WITH CHECK as defense-in-depth.
+--
+-- Additionally corrects two bugs in Batch 1 that are invisible under service
+-- role (which bypasses RLS) but break routes when switched to user JWT:
+--
+--   • user_profile_actions — Batch 1 policy joined profiles.user_id to
+--                       user_profile_actions.user_id, but the app stores the
+--                       integer profile id (profiles.id) in that column, not
+--                       the Clerk user id. The EXISTS check never matched →
+--                       deny-all under user JWT. Fixed with correct join.
+--   • school_profiles  — existing own-row policy only exposes the caller's
+--                       own row. Routes that enrich peers' cards with school
+--                       data (likes/profiles, profiles feed) got empty results
+--                       under user JWT. Added additive org-scoped SELECT that
+--                       OR-combines with the own-row policy; writes stay
+--                       owner-only.
 
 -- ============================================================
 -- profiles  (regression fix from batch 1)
@@ -204,7 +219,55 @@ CREATE POLICY "cofounder_links_delete_own" ON cofounder_links
     OR user_b_id = auth.jwt() ->> 'sub'
   );
 
+-- ============================================================
+-- user_profile_actions  (correct join: profiles.id, not profiles.user_id)
+--
+-- Batch 1 joined on profiles.user_id = user_profile_actions.user_id, but the
+-- app writes the integer profile id (profiles.id) into that column. Fixed here
+-- to join on profiles.id::text so the EXISTS check resolves correctly under a
+-- user JWT client.
+-- ============================================================
+DROP POLICY IF EXISTS "user_profile_actions_org_isolation" ON user_profile_actions;
+DROP POLICY IF EXISTS "user_profile_actions_owner"         ON user_profile_actions;
+
+CREATE POLICY "user_profile_actions_owner" ON user_profile_actions
+  FOR ALL
+  USING (
+    EXISTS (
+      SELECT 1 FROM profiles p
+      WHERE p.id::text = user_profile_actions.user_id
+        AND p.user_id = auth.jwt() ->> 'sub'
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM profiles p
+      WHERE p.id::text = user_profile_actions.user_id
+        AND p.user_id = auth.jwt() ->> 'sub'
+    )
+  );
+
+-- ============================================================
+-- school_profiles  (additive org-scoped SELECT for peer enrichment)
+--
+-- The existing own-row policy (FOR ALL, user_id = sub) only exposes the
+-- caller's row. Routes that enrich peer profile cards with school data need
+-- to read classmates' rows. This SELECT policy OR-combines with the owner
+-- policy so writes remain owner-only.
+-- ============================================================
+DROP POLICY IF EXISTS "school_profiles_select_org" ON school_profiles;
+
+CREATE POLICY "school_profiles_select_org" ON school_profiles
+  FOR SELECT
+  USING (
+    (NULLIF(auth.jwt() -> 'metadata' ->> 'organization_id', '') IS NULL
+      AND organization_id IS NULL)
+    OR
+    (NULLIF(auth.jwt() -> 'metadata' ->> 'organization_id', '') IS NOT NULL
+      AND organization_id = NULLIF(auth.jwt() -> 'metadata' ->> 'organization_id', '')::uuid)
+  );
+
 DO $$
 BEGIN
-  RAISE NOTICE '✅ Batch 3 write guards applied: profiles (regression fix), match_intents, cofounder_invites, messages (sender check), cofounder_links (defense-in-depth).';
+  RAISE NOTICE '✅ Batch 3 applied: profiles (regression fix), match_intents, cofounder_invites, messages (sender check), cofounder_links (defense-in-depth), user_profile_actions (join fix), school_profiles (org SELECT).';
 END $$;
