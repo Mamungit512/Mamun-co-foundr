@@ -79,6 +79,9 @@ CREATE POLICY "profiles_delete_own" ON profiles
 DROP POLICY IF EXISTS "match_intents_org_isolation" ON match_intents;
 DROP POLICY IF EXISTS "match_intents_select_org"    ON match_intents;
 DROP POLICY IF EXISTS "match_intents_write_own"     ON match_intents;
+DROP POLICY IF EXISTS "match_intents_insert_own"    ON match_intents;
+DROP POLICY IF EXISTS "match_intents_update_own"    ON match_intents;
+DROP POLICY IF EXISTS "match_intents_delete_own"    ON match_intents;
 
 CREATE POLICY "match_intents_select_org" ON match_intents
   FOR SELECT
@@ -181,6 +184,9 @@ CREATE POLICY "messages_insert_own" ON messages
 DROP POLICY IF EXISTS "cofounder_links_org_isolation" ON cofounder_links;
 DROP POLICY IF EXISTS "cofounder_links_select_org"    ON cofounder_links;
 DROP POLICY IF EXISTS "cofounder_links_write_own"     ON cofounder_links;
+DROP POLICY IF EXISTS "cofounder_links_insert_own"    ON cofounder_links;
+DROP POLICY IF EXISTS "cofounder_links_update_own"    ON cofounder_links;
+DROP POLICY IF EXISTS "cofounder_links_delete_own"    ON cofounder_links;
 
 CREATE POLICY "cofounder_links_select_org" ON cofounder_links
   FOR SELECT
