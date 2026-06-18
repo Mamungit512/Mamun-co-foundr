@@ -26,6 +26,7 @@ const isPublicRoute = createRouteMatcher([
   "/school/:slug",
   "/school/:slug/privacy-policy",
   "/school/:slug/terms-and-conditions",
+  "/school/:slug/not-authorized",
   "/school/:slug/sign-up(.*)",
   "/school/:slug/sign-in(.*)",
   "/school/:slug/sso-callback(.*)",
@@ -141,7 +142,10 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   }
 
   const { userId, sessionClaims, redirectToSignIn } = await auth();
-  const host = req.headers.get("host") ?? "";
+  // x-forwarded-host is set by Vercel and reflects the original hostname even
+  // behind load balancers or proxies that rewrite the Host header.
+  const host =
+    req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? "";
   const isApiRoute = pathname.startsWith("/api/");
   const isStaticAsset = /\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2?|ttf)$/.test(pathname);
 
@@ -209,6 +213,16 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
 
       if (!org) {
         return NextResponse.redirect(new URL("/", req.url));
+      }
+
+      // School users who land on general onboarding (e.g. signed up via the
+      // main site) must be redirected to their school onboarding instead.
+      // This closes the race condition where the user.created webhook sets
+      // organization_id after the user has already been sent to /onboarding.
+      if (isOnboardingRoute(req)) {
+        return NextResponse.redirect(
+          new URL(`/school/${org.slug}/onboarding`, req.url),
+        );
       }
 
       // Path-based tenant enforcement: a signed-in school user must not view
@@ -282,7 +296,11 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     }
 
     if (isSchoolRoute(req) && !isApiRoute && !isPublicRoute(req)) {
-      return NextResponse.redirect(new URL("/cofoundr-matching", req.url));
+      const pathSlug = pathname.match(/^\/school\/([^/]+)/)?.[1];
+      const dest = pathSlug
+        ? `/school/${pathSlug}/not-authorized`
+        : "/cofoundr-matching";
+      return NextResponse.redirect(new URL(dest, req.url));
     }
 
     if (!sessionClaims?.metadata?.onboardingComplete) {
