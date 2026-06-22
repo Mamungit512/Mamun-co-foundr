@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { createClient } from "@supabase/supabase-js";
-
-function supa() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  );
-}
+import { createServerSupabaseClient } from "@/lib/supabaseServer";
 
 export type CofounderLinkProfile = {
   link_id: string;
@@ -31,6 +24,8 @@ export async function GET(
 
     const { userId } = await params;
 
+    const supabase = await createServerSupabaseClient();
+
     // Access check: caller must be the profile owner or able to see the target
     // in the matching feed (same org, or both general-pool / null-org).
     // Blocks the IDOR: a school-org user can't read a different school's links.
@@ -40,7 +35,6 @@ export async function GET(
         ((sessionClaims?.metadata as Record<string, unknown>)
           ?.organization_id as string | undefined) ?? null;
 
-      const supabase = supa();
       const { data: targetProfile } = await supabase
         .from("profiles")
         .select("organization_id")
@@ -54,8 +48,6 @@ export async function GET(
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
     }
-
-    const supabase = supa();
 
     const { data: links, error: linkErr } = await supabase
       .from("cofounder_links")

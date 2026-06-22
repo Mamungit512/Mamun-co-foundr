@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { createServerSupabaseClient } from "@/lib/supabaseServer";
 import { mapProfileToOnboardingData } from "@/lib/mapProfileToFromDBFormat";
 import { parseSearchQuery, type ParsedQuery } from "@/lib/searchQueryParser";
 import {
@@ -336,7 +337,7 @@ export async function POST(req: NextRequest) {
     }
     const orgId = scope.orgId;
 
-    const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
+    const supabase = await createServerSupabaseClient();
     const userFilters = normalizeDashboardFilters(body.userFilters);
     const dismissed = new Set(body.dismissedFilterKeys ?? []);
 
