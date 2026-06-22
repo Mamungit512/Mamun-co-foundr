@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
-import { Resend } from "resend";
 import {
   shouldSendEmailNotification,
-  updateLastEmailSent,
   getUnreadMessagesSinceLastEmail,
 } from "@/lib/emailBatching";
+import { sendMessageNotificationEmail } from "@/lib/email/emails/messageNotification";
 
 export async function POST(
   request: NextRequest,
@@ -146,12 +145,12 @@ export async function POST(
           );
 
           if (shouldSend) {
-            console.log("[email-debug] sender userId:", userId);
-            console.log("[email-debug] recipient.user_id:", recipient.user_id);
             const clerk = await clerkClient();
             const recipientUser = await clerk.users.getUser(recipient.user_id);
             const recipientEmail =
               recipientUser.emailAddresses[0]?.emailAddress;
+            const recipientOrgId =
+              (recipientUser.publicMetadata?.organization_id as string | undefined) ?? null;
 
             const { data: recipientProfile } = await supabase
               .from("profiles")
@@ -170,41 +169,24 @@ export async function POST(
                   process.env.NEXT_PUBLIC_APP_URL ||
                   "https://mamuncofoundr.com";
 
-                if (process.env.RESEND_API_KEY) {
-                  const resend = new Resend(process.env.RESEND_API_KEY);
-
-                  const totalUnreadCount = unreadMessages.length;
-                  const messageWord =
-                    totalUnreadCount === 1 ? "message" : "messages";
-
-                  const slot = (i: number) => ({
-                    sender: unreadMessages[i]?.senderName ?? "",
-                    preview: unreadMessages[i]?.messagePreview ?? "",
-                  });
-                  const [s1, s2, s3] = [slot(0), slot(1), slot(2)];
-
-                  await (resend.emails.send as unknown as (options: Record<string, unknown>) => Promise<unknown>)({
-                    from: "Mamun Co-Foundr <mamun@mamuncofoundr.com>",
-                    to: recipientEmail,
-                    template: {
-                      id: "new-notification-design-trigger",
-                      variables: {
-                        recipientName,
-                        totalUnreadCount: String(totalUnreadCount),
-                        messageWord,
-                        message1_sender: s1.sender,
-                        message1_preview: s1.preview,
-                        message2_sender: s2.sender,
-                        message2_preview: s2.preview,
-                        message3_sender: s3.sender,
-                        message3_preview: s3.preview,
-                        appUrl,
-                      },
-                    },
-                  });
-
-                  await updateLastEmailSent(recipient.user_id);
+                let recipientOrgSlug: string | null = null;
+                if (recipientOrgId) {
+                  const { data: orgRow } = await supabase
+                    .from("organizations")
+                    .select("slug")
+                    .eq("id", recipientOrgId)
+                    .single();
+                  recipientOrgSlug = orgRow?.slug ?? null;
                 }
+
+                await sendMessageNotificationEmail({
+                  recipientId: recipient.user_id,
+                  email: recipientEmail,
+                  orgSlug: recipientOrgSlug,
+                  recipientName,
+                  unreadMessages,
+                  appUrl,
+                });
               }
             }
           }

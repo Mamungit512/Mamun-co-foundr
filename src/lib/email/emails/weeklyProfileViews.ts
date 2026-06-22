@@ -41,6 +41,7 @@ export async function sendWeeklyProfileViewsEmail({
     const result = await sendTemplateEmail({
       type: "weeklyProfileViews",
       to: email,
+      orgSlug,
       variables: {
         primaryColor,
         wordmark,

@@ -12,10 +12,12 @@ export async function sendReEngagementEmail({
   userId,
   email,
   firstName,
+  orgSlug,
 }: {
   userId: string;
   email: string;
   firstName?: string | null;
+  orgSlug?: string | null;
 }): Promise<ReEngagementResult> {
   try {
     const alreadySent = await hasEmailBeenSent(userId, "reEngagement");
@@ -29,6 +31,7 @@ export async function sendReEngagementEmail({
     const result = await sendTemplateEmail({
       type: "reEngagement",
       to: email,
+      orgSlug,
       variables: {
         firstName: firstName || "there",
       },

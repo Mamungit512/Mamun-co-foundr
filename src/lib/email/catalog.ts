@@ -37,6 +37,44 @@ export interface CofounderLinkedEmailVariables {
   dashboardUrl: string;
 }
 
+export interface MessageNotificationEmailVariables {
+  primaryColor: string;
+  wordmark: string;
+  recipientName: string;
+  totalUnreadCount: string;
+  messageWord: string;
+  message1_sender: string;
+  message1_preview: string;
+  message2_sender: string;
+  message2_preview: string;
+  message3_sender: string;
+  message3_preview: string;
+  appUrl: string;
+}
+
+export interface MutualMatchEmailVariables {
+  primaryColor: string;
+  wordmark: string;
+  schoolPill: string;
+  recipientName: string;
+  matchedName: string;
+  matchedInitials: string;
+  matchedTitle: string;
+  matchedCity: string;
+  matchedState: string;
+  schoolStatusLabel: string;
+  archetypeLabel: string;
+  stageLabel: string;
+  bio: string;
+  interestsCsv: string;
+  lookingFor: string;
+  commitment: string;
+  collegeLabel: string;
+  degreeLabel: string;
+  major: string;
+  messageUrl: string;
+}
+
 export interface EmailVariablesByType {
   welcome: WelcomeEmailVariables;
   profileReminder: ProfileReminderEmailVariables;
@@ -44,6 +82,8 @@ export interface EmailVariablesByType {
   weeklyProfileViews: WeeklyProfileViewsEmailVariables;
   cofounderInvite: CofounderInviteEmailVariables;
   cofounderLinked: CofounderLinkedEmailVariables;
+  messageNotification: MessageNotificationEmailVariables;
+  mutualMatch: MutualMatchEmailVariables;
 }
 
 export type EmailType = keyof EmailVariablesByType;
@@ -55,4 +95,7 @@ export const EMAIL_CATALOG: Record<EmailType, { templateId: string }> = {
   weeklyProfileViews: { templateId: "weekly-profile-summary" },
   cofounderInvite: { templateId: "cofounder-invite-01" },
   cofounderLinked: { templateId: "cofounder-linked-01" },
+  messageNotification: { templateId: "new-notification-design-trigger" },
+  mutualMatch: { templateId: "we-match-mutual" },
 };
+

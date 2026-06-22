@@ -47,4 +47,6 @@ export type OrgConfig = {
   onboarding: OrgOnboarding;
   privacyPolicy?: OrgPrivacyPolicyMeta;
   termsAndConditions?: OrgPrivacyPolicyMeta;
+  /** Per-org Resend template ID overrides. Keys are EmailType values. Unlisted keys fall back to the default catalog entry. */
+  emailTemplates?: Partial<Record<string, string>>;
 };
