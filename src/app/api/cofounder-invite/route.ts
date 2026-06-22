@@ -1,16 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { createClient } from "@supabase/supabase-js";
+import { createServerSupabaseClient } from "@/lib/supabaseServer";
 import { isEmailDomainAllowed } from "@/features/school/auth/email-domain";
 import { sendCofounderInviteEmail } from "@/lib/email/emails/cofounderInvite";
 import { randomBytes } from "crypto";
-
-function supa() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  );
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,7 +23,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = supa();
+    const supabase = await createServerSupabaseClient();
 
     const { data: inviterProfile, error: profileErr } = await supabase
       .from("profiles")
@@ -199,7 +192,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const supabase = supa();
+    const supabase = await createServerSupabaseClient();
 
     const { data: invites, error: inviteErr } = await supabase
       .from("cofounder_invites")
