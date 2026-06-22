@@ -1,4 +1,5 @@
 import { clerkClient } from "@clerk/nextjs/server";
+import { createClient } from "@supabase/supabase-js";
 import { sendReEngagementEmail } from "../emails/reEngagement";
 import type { LifecycleResult } from "./index";
 
@@ -22,6 +23,7 @@ export async function runReEngagementReminders(): Promise<LifecycleResult> {
     userId: string;
     email: string;
     firstName: string | null;
+    organizationId: string | null;
   };
 
   const candidates: Candidate[] = [];
@@ -58,11 +60,34 @@ export async function runReEngagementReminders(): Promise<LifecycleResult> {
         userId: user.id,
         email,
         firstName: user.firstName ?? null,
+        organizationId:
+          (user.publicMetadata?.organization_id as string | undefined) ?? null,
       });
     }
 
     if (users.length < PAGE_SIZE) break;
     offset += PAGE_SIZE;
+  }
+
+  // Batch-resolve org slugs for school-branded emails.
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+  const orgIds = [
+    ...new Set(
+      candidates.map((c) => c.organizationId).filter((id): id is string => !!id),
+    ),
+  ];
+  const orgSlugById = new Map<string, string>();
+  if (orgIds.length > 0) {
+    const { data: orgs } = await supabase
+      .from("organizations")
+      .select("id, slug")
+      .in("id", orgIds);
+    for (const org of orgs ?? []) {
+      if (org.slug) orgSlugById.set(org.id, org.slug);
+    }
   }
 
   let sent = 0;
@@ -74,6 +99,7 @@ export async function runReEngagementReminders(): Promise<LifecycleResult> {
       userId: c.userId,
       email: c.email,
       firstName: c.firstName,
+      orgSlug: c.organizationId ? (orgSlugById.get(c.organizationId) ?? null) : null,
     });
     if (result === "sent") sent++;
     else if (result === "skipped") skipped++;

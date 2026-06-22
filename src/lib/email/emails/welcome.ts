@@ -23,6 +23,7 @@ export async function sendWelcomeEmail({
     const result = await sendTemplateEmail({
       type: "welcome",
       to: email,
+      orgSlug,
       variables: {
         primaryColor,
         wordmark,

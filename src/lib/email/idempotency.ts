@@ -8,6 +8,9 @@ const FLAG_KEYS: Record<EmailType, string> = {
   weeklyProfileViews: "weeklyProfileViewsSentAt",
   cofounderInvite: "cofounderInviteSentAt",
   cofounderLinked: "cofounderLinkedSentAt",
+  // These two types use separate dedup mechanisms and are never routed through FLAG_KEYS.
+  messageNotification: "lastEmailSent",
+  mutualMatch: "weMatchNotifiedAt",
 };
 
 export async function hasEmailBeenSent(

@@ -1,5 +1,6 @@
 import { getResendClient, EMAIL_FROM } from "./client";
-import { EMAIL_CATALOG, EmailType, EmailVariablesByType } from "./catalog";
+import { EmailType, EmailVariablesByType } from "./catalog";
+import { resolveTemplateId } from "./templateResolver";
 
 export type SendResult =
   | { ok: true }
@@ -9,11 +10,13 @@ export async function sendTemplateEmail<T extends EmailType>({
   type,
   to,
   variables,
+  orgSlug,
   from = EMAIL_FROM,
 }: {
   type: T;
   to: string;
   variables: EmailVariablesByType[T];
+  orgSlug?: string | null;
   from?: string;
 }): Promise<SendResult> {
   const resend = getResendClient();
@@ -22,7 +25,7 @@ export async function sendTemplateEmail<T extends EmailType>({
     return { ok: false, reason: "no_api_key" };
   }
 
-  const { templateId } = EMAIL_CATALOG[type];
+  const templateId = resolveTemplateId(type, orgSlug);
 
   try {
     const result = (await (
