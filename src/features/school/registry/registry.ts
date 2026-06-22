@@ -82,6 +82,13 @@ export const ORG_REGISTRY: Record<string, OrgConfig> = {
       downloadUrl: "/orgs/ut/terms-and-conditions.pdf",
       version: "2026-06-15",
     },
+    emailTemplates: {
+      welcome: "ut-welcome-email-01",
+      weeklyProfileViews: "ut-weekly-profile-02",
+      reEngagement: "ut-re-engagment-03",
+      messageNotification: "ut-notifications-design-05",
+      mutualMatch: "ut-mutual-match-06",
+    },
   },
 };
 
