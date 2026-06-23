@@ -1,4 +1,4 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher, clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import {
@@ -6,12 +6,12 @@ import {
   getRequiredTermsVersion,
   isConsentSatisfied,
 } from "@/features/legal/consent";
+import { isEmailDomainAllowed } from "@/features/school/auth/email-domain";
 
 const isOnboardingRoute = createRouteMatcher(["/onboarding(.*)"]);
 const isSchoolOnboardingRoute = createRouteMatcher([
   "/school/:slug/onboarding(.*)",
 ]);
-const isSchoolRoute = createRouteMatcher(["/school/:slug(.*)"]);
 const isPublicRoute = createRouteMatcher([
   "/",
   "/careers",
@@ -38,6 +38,7 @@ type OrgRecord = {
   slug: string;
   subdomain: string | null;
   ferpa_dpa_signed_at: string | null;
+  allowed_email_domains: string[];
 };
 
 const APEX_HOSTS = new Set([
@@ -73,8 +74,23 @@ async function resolveOrgBySubdomain(subdomain: string): Promise<OrgRecord | nul
     if (!supabase) return null;
     const { data } = await supabase
       .from("organizations")
-      .select("id, slug, subdomain, ferpa_dpa_signed_at")
+      .select("id, slug, subdomain, ferpa_dpa_signed_at, allowed_email_domains")
       .eq("subdomain", subdomain)
+      .single();
+    return data ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function resolveOrgBySlug(slug: string): Promise<OrgRecord | null> {
+  try {
+    const supabase = supabaseAdmin();
+    if (!supabase) return null;
+    const { data } = await supabase
+      .from("organizations")
+      .select("id, slug, subdomain, ferpa_dpa_signed_at, allowed_email_domains")
+      .eq("slug", slug)
       .single();
     return data ?? null;
   } catch {
@@ -103,16 +119,15 @@ async function resolveAcceptedConsentVersion(
   }
 }
 
-async function resolveOrgRecord(organizationId: string): Promise<OrgRecord | null> {
+async function getVerifiedPrimaryEmail(userId: string): Promise<string | null> {
   try {
-    const supabase = supabaseAdmin();
-    if (!supabase) return null;
-    const { data } = await supabase
-      .from("organizations")
-      .select("id, slug, subdomain, ferpa_dpa_signed_at")
-      .eq("id", organizationId)
-      .single();
-    return data ?? null;
+    const client = await clerkClient();
+    const user = await client.users.getUser(userId);
+    const primary = user.emailAddresses.find(
+      (e) => e.id === user.primaryEmailAddressId,
+    );
+    if (!primary || primary.verification?.status !== "verified") return null;
+    return primary.emailAddress.toLowerCase();
   } catch {
     return null;
   }
@@ -164,17 +179,6 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
 
     const schoolPrefix = `/school/${hostOrg.slug}`;
 
-    // If a signed-in user belongs to a different org, kick them to apex —
-    // unless they're on an auth-flow path, where /sso-complete needs to
-    // render "This isn't your portal" (or the page needs to assign org).
-    if (userId) {
-      const orgId = sessionClaims?.metadata?.organization_id;
-      const isAuthFlowPath = /\/(sign-in|sign-up|sso-callback|sso-complete)(\/|$)/.test(pathname);
-      if (orgId && orgId !== hostOrg.id && !isAuthFlowPath) {
-        return NextResponse.redirect(new URL("/", "https://www.mamuncofoundr.com"));
-      }
-    }
-
     // Already on the rewritten path — no action needed
     if (!pathname.startsWith(schoolPrefix)) {
       const rewritePath = pathname === "/" ? schoolPrefix : schoolPrefix + pathname;
@@ -183,138 +187,137 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   }
 
   // ----------------------------------------------------------------
-  // AUTH GATES
+  // DERIVE CONTEXT FROM PATH
+  // After the subdomain rewrite the pathname is the source of truth:
+  //   /school/<slug>/...  → school context for that slug
+  //   anything else       → general context
   // ----------------------------------------------------------------
+  const pathSlug = pathname.match(/^\/school\/([^/]+)/)?.[1] ?? null;
+  const isSchoolContext = !!pathSlug;
 
+  // ----------------------------------------------------------------
+  // UNAUTHENTICATED
+  // ----------------------------------------------------------------
   if (!userId && !isPublicRoute(req)) {
     return redirectToSignIn({ returnBackUrl: req.url });
   }
 
-  if (userId) {
-    const orgId = sessionClaims?.metadata?.organization_id;
+  if (!userId) {
+    return NextResponse.next();
+  }
 
-    // ----------------------------------------------------------------
-    // SCHOOL USERS
-    // ----------------------------------------------------------------
-    if (orgId) {
-      if (isApiRoute || isPublicRoute(req)) {
-        return NextResponse.next();
+  // ----------------------------------------------------------------
+  // SCHOOL CONTEXT
+  // Runs for everyone on a /school/<slug> path (or after subdomain rewrite),
+  // regardless of the user's global organization_id.
+  // ----------------------------------------------------------------
+  if (isSchoolContext) {
+    if (isApiRoute || isPublicRoute(req)) {
+      return NextResponse.next();
+    }
+
+    const org = await resolveOrgBySlug(pathSlug!);
+    if (!org) {
+      // Unknown slug — let the [slug] layout handle notFound()
+      return NextResponse.next();
+    }
+
+    // MEMBERSHIP / EMAIL-DOMAIN GATE
+    // Skip on auth-flow paths (sign-in/up/sso-*): sso-complete assigns org.
+    const isAuthFlowPath = /\/(sign-in|sign-up|sso-callback|sso-complete)(\/|$)/.test(pathname);
+    if (!isAuthFlowPath) {
+      const claimOrgId = sessionClaims?.metadata?.organization_id;
+      // Fast path: already assigned to this org via Clerk metadata → skip Clerk API call.
+      if (claimOrgId !== org.id) {
+        const email = await getVerifiedPrimaryEmail(userId);
+        if (!email || !isEmailDomainAllowed(email, org.allowed_email_domains)) {
+          const notAuthorizedUrl = new URL(`/school/${pathSlug}/not-authorized`, req.url);
+          if (pathname !== notAuthorizedUrl.pathname) {
+            return NextResponse.redirect(notAuthorizedUrl);
+          }
+          return NextResponse.next();
+        }
       }
+    }
 
-      // Resolve org and latest consent version in parallel. Org is needed for all
-      // subsequent gates; consent version is needed for the privacy-policy gate.
-      // Fetching in parallel keeps middleware latency the same as before this gate
-      // was added (one round-trip, not two).
-      const [org, acceptedPrivacyVersion, acceptedTermsVersion] = await Promise.all([
-        resolveOrgRecord(orgId),
-        resolveAcceptedConsentVersion(userId, "privacy_policy"),
-        resolveAcceptedConsentVersion(userId, "terms_of_service"),
-      ]);
-
-      if (!org) {
-        return NextResponse.redirect(new URL("/", req.url));
+    // FERPA gate
+    if (!org.ferpa_dpa_signed_at) {
+      const pendingUrl = new URL(`/school/${org.slug}/pending-activation`, req.url);
+      if (pathname !== pendingUrl.pathname) {
+        return NextResponse.redirect(pendingUrl);
       }
+      return NextResponse.next();
+    }
 
-      // School users who land on general onboarding (e.g. signed up via the
-      // main site) must be redirected to their school onboarding instead.
-      // This closes the race condition where the user.created webhook sets
-      // organization_id after the user has already been sent to /onboarding.
-      if (isOnboardingRoute(req)) {
-        return NextResponse.redirect(
-          new URL(`/school/${org.slug}/onboarding`, req.url),
-        );
+    // CONSENT gate: privacy policy + terms
+    const [acceptedPrivacyVersion, acceptedTermsVersion] = await Promise.all([
+      resolveAcceptedConsentVersion(userId, "privacy_policy"),
+      resolveAcceptedConsentVersion(userId, "terms_of_service"),
+    ]);
+    const requiredPrivacyVersion = getRequiredPrivacyPolicyVersion(org.slug);
+    const requiredTermsVersion = getRequiredTermsVersion(org.slug);
+    const consentSatisfied =
+      isConsentSatisfied(acceptedPrivacyVersion, requiredPrivacyVersion) &&
+      isConsentSatisfied(acceptedTermsVersion, requiredTermsVersion);
+    if (!consentSatisfied) {
+      const acceptUrl = new URL(`/school/${org.slug}/accept-policies`, req.url);
+      if (pathname !== acceptUrl.pathname) {
+        return NextResponse.redirect(acceptUrl);
       }
+      return NextResponse.next();
+    }
 
-      // Path-based tenant enforcement: a signed-in school user must not view
-      // another org's /school/<slug> portal. Mirrors the subdomain guard above.
-      // On subdomains the rewrite has already aligned the slug, so this is a
-      // no-op there; it only bites on apex /school/<other-slug> access.
-      const pathSlug = pathname.match(/^\/school\/([^/]+)/)?.[1];
-      const isAuthFlowPath = /\/(sign-in|sign-up|sso-callback|sso-complete)(\/|$)/.test(pathname);
-      if (pathSlug && pathSlug !== org.slug && !isAuthFlowPath) {
+    // SCHOOL ONBOARDING gate — per-context flag keyed by org UUID.
+    // Legacy fallback: treat global onboardingComplete as school-done when the
+    // user's organization_id matches this org (users onboarded before the split).
+    const schoolOnboarding = sessionClaims?.metadata?.schoolOnboarding;
+    const schoolDone =
+      schoolOnboarding?.[org.id] === true ||
+      (sessionClaims?.metadata?.onboardingComplete === true &&
+        sessionClaims?.metadata?.organization_id === org.id);
+
+    if (isSchoolOnboardingRoute(req)) {
+      if (schoolDone) {
         return NextResponse.redirect(
           new URL(`/school/${org.slug}/dashboard`, req.url),
         );
       }
+      return NextResponse.next();
+    }
 
-      // FERPA gate
-      if (!org.ferpa_dpa_signed_at) {
-        const pendingUrl = new URL(`/school/${org.slug}/pending-activation`, req.url);
-        if (pathname !== pendingUrl.pathname) {
-          return NextResponse.redirect(pendingUrl);
-        }
-        return NextResponse.next();
-      }
-
-      // Consent gate: privacy policy + terms (org active -> consent -> onboard).
-      // Runs before onboarding handling so the onboarding route is gated too.
-      // Required versions are read from edge-safe config; no extra DB calls.
-      const requiredPrivacyVersion = getRequiredPrivacyPolicyVersion(org.slug);
-      const requiredTermsVersion = getRequiredTermsVersion(org.slug);
-      const consentSatisfied =
-        isConsentSatisfied(acceptedPrivacyVersion, requiredPrivacyVersion) &&
-        isConsentSatisfied(acceptedTermsVersion, requiredTermsVersion);
-      if (!consentSatisfied) {
-        const acceptUrl = new URL(`/school/${org.slug}/accept-policies`, req.url);
-        if (pathname !== acceptUrl.pathname) {
-          return NextResponse.redirect(acceptUrl);
-        }
-        return NextResponse.next();
-      }
-
-      // Keep already-onboarded users out of the onboarding flow.
-      if (isSchoolOnboardingRoute(req)) {
-        if (sessionClaims?.metadata?.onboardingComplete) {
-          return NextResponse.redirect(
-            new URL(`/school/${org.slug}/dashboard`, req.url),
-          );
-        }
-        return NextResponse.next();
-      }
-
-      // Onboarding gate
-      if (!sessionClaims?.metadata?.onboardingComplete) {
-        const schoolOnboardingUrl = new URL(`/school/${org.slug}/onboarding`, req.url);
-        if (pathname !== schoolOnboardingUrl.pathname) {
-          return NextResponse.redirect(schoolOnboardingUrl);
-        }
-        return NextResponse.next();
-      }
-
-      if (!isApiRoute && !isStaticAsset) {
-        updateUserActivity(userId).catch(console.error);
+    if (!schoolDone) {
+      const schoolOnboardingUrl = new URL(`/school/${org.slug}/onboarding`, req.url);
+      if (pathname !== schoolOnboardingUrl.pathname) {
+        return NextResponse.redirect(schoolOnboardingUrl);
       }
       return NextResponse.next();
     }
 
-    // ----------------------------------------------------------------
-    // GENERAL USERS
-    // ----------------------------------------------------------------
-
-    if (isOnboardingRoute(req)) {
-      return NextResponse.next();
-    }
-
-    if (isSchoolRoute(req) && !isApiRoute && !isPublicRoute(req)) {
-      const pathSlug = pathname.match(/^\/school\/([^/]+)/)?.[1];
-      const dest = pathSlug
-        ? `/school/${pathSlug}/not-authorized`
-        : "/cofoundr-matching";
-      return NextResponse.redirect(new URL(dest, req.url));
-    }
-
-    if (!sessionClaims?.metadata?.onboardingComplete) {
-      if (isPublicRoute(req) || isApiRoute) {
-        return NextResponse.next();
-      }
-      return NextResponse.redirect(new URL("/onboarding", req.url));
-    }
-
-    if (!isPublicRoute(req) && !isApiRoute && !isStaticAsset) {
+    if (!isApiRoute && !isStaticAsset) {
       updateUserActivity(userId).catch(console.error);
     }
-
     return NextResponse.next();
+  }
+
+  // ----------------------------------------------------------------
+  // GENERAL CONTEXT
+  // Runs for everyone on the apex/main site, regardless of organization_id.
+  // School users reaching the main site get the general experience.
+  // ----------------------------------------------------------------
+
+  if (isOnboardingRoute(req)) {
+    return NextResponse.next();
+  }
+
+  if (!sessionClaims?.metadata?.onboardingComplete) {
+    if (isPublicRoute(req) || isApiRoute) {
+      return NextResponse.next();
+    }
+    return NextResponse.redirect(new URL("/onboarding", req.url));
+  }
+
+  if (!isPublicRoute(req) && !isApiRoute && !isStaticAsset) {
+    updateUserActivity(userId).catch(console.error);
   }
 
   return NextResponse.next();

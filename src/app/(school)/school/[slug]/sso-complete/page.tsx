@@ -98,7 +98,17 @@ export default async function SSOCompletePage({
     console.error("sso-complete: profile org update failed:", err);
   }
 
-  const destination = user.publicMetadata?.onboardingComplete
+  // Use per-org onboarding flag. Legacy fallback: treat global onboardingComplete
+  // as school-done when the user's organization_id already matches this org
+  // (users who onboarded before the per-context split was introduced).
+  const schoolOnboarding = user.publicMetadata?.schoolOnboarding as
+    | Record<string, boolean>
+    | undefined;
+  const schoolDone =
+    schoolOnboarding?.[org!.id] === true ||
+    (user.publicMetadata?.onboardingComplete === true &&
+      user.publicMetadata?.organization_id === org!.id);
+  const destination = schoolDone
     ? `/school/${slug}/dashboard`
     : `/school/${slug}/onboarding`;
 
