@@ -30,7 +30,7 @@ export default function SchoolOnboardingPage({
   const [initialized, setInitialized] = useState(false);
   const [preFilledNotice, setPreFilledNotice] = useState(false);
 
-  const { schoolName } = useSchool();
+  const { schoolName, orgId } = useSchool();
   const { user } = useUser();
   const { session } = useSession();
   const router = useRouter();
@@ -108,7 +108,7 @@ export default function SchoolOnboardingPage({
         return;
       }
 
-      await completeOnboarding(formData);
+      await completeOnboarding(formData, { kind: "school", orgId });
       await user?.reload();
 
       draft.clear();

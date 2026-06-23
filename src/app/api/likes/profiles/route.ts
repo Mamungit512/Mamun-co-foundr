@@ -5,17 +5,13 @@ import { mapProfileToOnboardingData } from "@/lib/mapProfileToFromDBFormat";
 
 export async function GET() {
   try {
-    const { userId, sessionClaims } = await auth();
+    const { userId } = await auth();
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const supabase = await createServerSupabaseClient();
-
-    const orgId =
-      ((sessionClaims?.metadata as Record<string, unknown>)
-        ?.organization_id as string | undefined) ?? null;
 
     // Get IDs of profiles the user has liked
     const { data: likes, error: likesError } = await supabase
@@ -37,20 +33,16 @@ export async function GET() {
 
     const likedIds = likes.map((l) => l.liked_id);
 
-    // Get full profile data, scoped to the user's organization
-    let profileQuery = supabase
+    // Fetch profiles for liked users. The profiles_select_org RLS (now
+    // membership-based) already scopes what this JWT client can read, so
+    // no explicit org filter is needed — filtering by org_id would be wrong
+    // for dual-pool users whose profiles.organization_id doesn't match their
+    // general-pool membership.
+    const { data: profiles, error: profilesError } = await supabase
       .from("profiles")
       .select("*")
       .in("user_id", likedIds)
       .is("deleted_at", null);
-
-    if (orgId) {
-      profileQuery = profileQuery.eq("organization_id", orgId);
-    } else {
-      profileQuery = profileQuery.is("organization_id", null);
-    }
-
-    const { data: profiles, error: profilesError } = await profileQuery;
 
     if (profilesError) {
       console.error("Error fetching profile data:", profilesError);
@@ -62,8 +54,8 @@ export async function GET() {
 
     let mapped = (profiles ?? []).map(mapProfileToOnboardingData);
 
-    // For school tenants, enrich with school_profiles data
-    if (orgId && mapped.length > 0) {
+    // Enrich with school_profiles data where available
+    if (mapped.length > 0) {
       const userIds = mapped
         .map((p) => p.user_id)
         .filter((id): id is string => Boolean(id));
@@ -73,7 +65,6 @@ export async function GET() {
         .select(
           "user_id, school_status, graduation_year, college, degree_type, major, sector_interests",
         )
-        .eq("organization_id", orgId)
         .in("user_id", userIds);
 
       if (schoolRows && schoolRows.length > 0) {

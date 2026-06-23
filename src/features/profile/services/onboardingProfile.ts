@@ -160,5 +160,20 @@ export async function saveOnboardingProfile({
     }
   }
 
+  // Upsert pool membership so the user appears in the correct matching deck(s).
+  // Uses an RPC function because PostgREST cannot target partial unique indexes
+  // directly via the JS client's .upsert() onConflict option.
+  const { error: membershipError } = await supabase.rpc("upsert_pool_membership", {
+    p_user_id: userId,
+    p_organization_id: organizationId ?? null,
+    p_onboarded_at: new Date().toISOString(),
+  });
+
+  if (membershipError) {
+    console.error("Pool membership upsert error:", membershipError);
+    // Non-fatal: the profile is already saved; membership will be backfilled
+    // by the expand migration. Log and continue rather than rolling back.
+  }
+
   return { ok: true };
 }
