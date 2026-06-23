@@ -27,6 +27,8 @@ declare global {
       organization_id?: string;
       /** Present when the user is a school staff admin for their organization. */
       is_school_admin?: boolean;
+      /** Per-org onboarding completion. Keyed by org UUID; true = done. */
+      schoolOnboarding?: Record<string, boolean>;
     };
   }
 

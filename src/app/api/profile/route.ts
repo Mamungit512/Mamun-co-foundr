@@ -31,8 +31,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const organizationId = sessionClaims?.metadata?.organization_id ?? null;
-    const formData: OnboardingData = await request.json();
+    const body = await request.json();
+    // _saveContext is set explicitly by the calling hook to declare which pool
+    // this save belongs to. Without it, the route falls back to the session
+    // claim — but school-email users on the main site carry their school org_id
+    // in the claim and would be mis-classified as school saves.
+    const { _saveContext, ...formData } = body as { _saveContext?: string } & OnboardingData;
+    const organizationId =
+      _saveContext === "general"
+        ? null
+        : (sessionClaims?.metadata?.organization_id ?? null);
 
     const result = await saveOnboardingProfile({ userId, organizationId, formData });
 

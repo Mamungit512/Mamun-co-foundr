@@ -5,6 +5,7 @@ import type { OrgConfig } from "@/features/school/registry/types";
 
 type SchoolContextValue = {
   slug: string;
+  orgId: string;
   schoolName: string;
   config: OrgConfig;
 };
@@ -13,12 +14,13 @@ const SchoolContext = createContext<SchoolContextValue | null>(null);
 
 export function SchoolProvider({
   slug,
+  orgId,
   schoolName,
   config,
   children,
 }: SchoolContextValue & { children: React.ReactNode }) {
   return (
-    <SchoolContext.Provider value={{ slug, schoolName, config }}>
+    <SchoolContext.Provider value={{ slug, orgId, schoolName, config }}>
       {children}
     </SchoolContext.Provider>
   );

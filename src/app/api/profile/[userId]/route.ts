@@ -9,7 +9,7 @@ export async function GET(
 ) {
   try {
     // Get the authenticated user from Clerk
-    const { userId: requestingUserId, sessionClaims } = await auth();
+    const { userId: requestingUserId } = await auth();
 
     if (!requestingUserId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -31,25 +31,24 @@ export async function GET(
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
-    // Authorization check: Only allow if:
-    // 1. User is requesting their own profile, OR
-    // 2. Both users belong to the same school org, OR
-    // 3. Users are in a conversation together, OR
-    // 4. Users have liked each other (mutual match), OR
-    // 5. Users have a confirmed co-founder link
+    // Authorization: allow if the requesting user shares a pool with the target
+    // (covers same-org school members, general-pool peers, and dual-pool users),
+    // or if they have a direct relationship (conversation / mutual like / co-founder link).
     const isOwnProfile = requestingUserId === userId;
 
-    // Same-org check: school org members can view any profile in their org
-    const requestingOrgId = (sessionClaims?.metadata as { organization_id?: string } | null)?.organization_id ?? null;
-    if (!isOwnProfile && requestingOrgId) {
-      const { data: targetProfile } = await supabase
-        .from("profiles")
-        .select("organization_id")
-        .eq("user_id", userId)
-        .is("deleted_at", null)
-        .single();
-      if (targetProfile?.organization_id === requestingOrgId) {
-        // Same org — fetch and return immediately
+    // Shared-pool check replaces the old single-org claim comparison.
+    // We compare the two users' pool memberships and short-circuit if they share any pool.
+    // Uses two queries (NULL-safe) since PostgREST .in() doesn't handle NULL org IDs.
+    if (!isOwnProfile) {
+      const [{ data: requesterPools }, { data: targetPools }] = await Promise.all([
+        supabase.from("profile_pool_memberships").select("organization_id").eq("user_id", requestingUserId),
+        supabase.from("profile_pool_memberships").select("organization_id").eq("user_id", userId),
+      ]);
+
+      const requesterOrgIds = new Set((requesterPools ?? []).map((r) => r.organization_id as string | null));
+      const sharesPool = (targetPools ?? []).some((t) => requesterOrgIds.has(t.organization_id as string | null));
+
+      if (sharesPool) {
         const { data, error } = await supabase
           .from("profiles")
           .select("*")

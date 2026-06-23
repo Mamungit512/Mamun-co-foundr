@@ -93,7 +93,7 @@ export default async function SchoolSlugLayout({
   }
 
   return (
-    <SchoolProvider slug={slug} schoolName={org.name} config={cfg}>
+    <SchoolProvider slug={slug} orgId={org.id} schoolName={org.name} config={cfg}>
       <div
         style={
           {
