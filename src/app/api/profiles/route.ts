@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createServerSupabaseClient } from "@/lib/supabaseServer";
+import { createClient } from "@supabase/supabase-js";
 import { mapProfileToOnboardingData } from "@/lib/mapProfileToFromDBFormat";
 import {
   filterProfilesByPreferences,
@@ -29,9 +30,32 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ profiles: [] });
     }
 
-    // null = general pool (organization_id IS NULL), UUID = school tenant pool
+    // null = general pool, UUID = school tenant pool
     const useGeneralPool = scope.kind === "general";
     const scopeOrgId = scope.kind === "org" ? scope.orgId : null;
+
+    // Resolve the set of onboarded members in the requested pool via the
+    // membership table. profile_pool_memberships has owner-only RLS so we
+    // must use the service-role client here (bypasses RLS, no JWT needed).
+    const adminClient = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    );
+
+    const memberQuery = adminClient
+      .from("profile_pool_memberships")
+      .select("user_id")
+      .not("onboarded_at", "is", null);
+
+    const { data: memberRows } = useGeneralPool
+      ? await memberQuery.is("organization_id", null)
+      : await memberQuery.eq("organization_id", scopeOrgId);
+
+    const memberIds = memberRows?.map((r: { user_id: string }) => r.user_id) ?? [];
+
+    if (memberIds.length === 0) {
+      return NextResponse.json({ profiles: [], currentUser: null });
+    }
 
     // Get the current user's profile
     const { data: currentUserData, error: currentUserError } = await supabase
@@ -104,19 +128,15 @@ export async function GET(req: NextRequest) {
       schoolUserIds = schoolRows?.map((r) => r.user_id) ?? [];
     }
 
-    // Fetch candidate profiles (excluding self, deleted, already liked)
-    // Hard filter: candidates must belong to the same organization (or null for general pool)
+    // Fetch candidate profiles from the resolved member set (excludes self, deleted, already liked).
+    // Pool filtering is now via membership IDs — profiles.organization_id is no longer authoritative
+    // for pool membership after Design A.
     let query = supabase
       .from("profiles")
       .select("*")
       .neq("user_id", currentUser.user_id)
-      .is("deleted_at", null);
-
-    if (useGeneralPool) {
-      query = query.is("organization_id", null);
-    } else {
-      query = query.eq("organization_id", scopeOrgId);
-    }
+      .is("deleted_at", null)
+      .in("user_id", memberIds);
 
     if (schoolUserIds !== null) {
       if (schoolUserIds.length === 0) {

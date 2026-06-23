@@ -343,7 +343,10 @@ export function useProfileUpsert() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(formData),
+          // _saveContext tells the route to save as general pool (null org)
+          // regardless of the session claim. Required so school-email users
+          // who visit the main site are not mis-classified as school saves.
+          body: JSON.stringify({ ...formData, _saveContext: "general" }),
         });
 
         if (!response.ok) {

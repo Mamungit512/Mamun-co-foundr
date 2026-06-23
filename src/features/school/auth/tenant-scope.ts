@@ -1,7 +1,15 @@
+import { createClient } from "@supabase/supabase-js";
 import { getOrganizationBySlug } from "@/features/school/data/organizations";
 import { getVerifiedPrimaryEmail } from "@/features/school/auth/org-admin";
 
 const STAFF_EMAIL_DOMAIN = "@mamuncofoundr.com";
+
+function serviceRoleClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+}
 
 /**
  * Which matching pool a request is allowed to read.
@@ -35,10 +43,12 @@ export async function isMamunStaff(userId: string): Promise<boolean> {
  */
 export async function resolveTenantScope({
   userId,
-  sessionOrgId,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  sessionOrgId: _sessionOrgId,
   slug,
 }: {
   userId: string;
+  /** @deprecated Kept for call-site compatibility; membership table is authoritative now. */
   sessionOrgId: string | null;
   slug: string | null;
 }): Promise<TenantScope> {
@@ -46,7 +56,18 @@ export async function resolveTenantScope({
     const org = await getOrganizationBySlug(slug);
     if (!org) return { kind: "denied" };
 
-    if (sessionOrgId === org.id) return { kind: "org", orgId: org.id };
+    // Check membership table (authoritative after Design A).
+    // The old sessionOrgId === org.id check is replaced because a dual-pool
+    // user's single JWT claim may not match the page's org even though they
+    // are a valid member.
+    const { data: membership } = await serviceRoleClient()
+      .from("profile_pool_memberships")
+      .select("user_id")
+      .eq("user_id", userId)
+      .eq("organization_id", org.id)
+      .maybeSingle();
+
+    if (membership) return { kind: "org", orgId: org.id };
     if (await isMamunStaff(userId)) return { kind: "org", orgId: org.id };
 
     return { kind: "denied" };
