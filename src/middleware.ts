@@ -7,6 +7,7 @@ import {
   isConsentSatisfied,
 } from "@/features/legal/consent";
 import { isEmailDomainAllowed } from "@/features/school/auth/email-domain";
+import { getOrgConfig } from "@/features/school/registry/registry";
 
 const isOnboardingRoute = createRouteMatcher(["/onboarding(.*)"]);
 const isSchoolOnboardingRoute = createRouteMatcher([
@@ -164,11 +165,22 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   const isApiRoute = pathname.startsWith("/api/");
   const isStaticAsset = /\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2?|ttf)$/.test(pathname);
 
+  const subdomain = getSubdomain(host);
+
+  // Google and browsers probe /favicon.ico on each subdomain hostname.
+  if (pathname === "/favicon.ico" && subdomain) {
+    const hostOrg = await resolveOrgBySubdomain(subdomain);
+    const slug = hostOrg?.slug ?? (getOrgConfig(subdomain) ? subdomain : null);
+    const faviconUrl = slug ? getOrgConfig(slug)?.branding.faviconUrl : undefined;
+    if (faviconUrl) {
+      return NextResponse.rewrite(new URL(faviconUrl, req.url));
+    }
+  }
+
   // ----------------------------------------------------------------
   // SUBDOMAIN REWRITE
   // Runs before auth so the rest of the middleware sees /school/{slug}/*
   // ----------------------------------------------------------------
-  const subdomain = getSubdomain(host);
   if (subdomain && !isApiRoute && !isStaticAsset) {
     const hostOrg = await resolveOrgBySubdomain(subdomain);
 
@@ -325,6 +337,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
 
 export const config = {
   matcher: [
+    "/favicon.ico",
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     "/(api|trpc)(.*)",
   ],
