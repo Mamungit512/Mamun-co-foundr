@@ -43,7 +43,7 @@ export const ORG_REGISTRY: Record<string, OrgConfig> = {
       backgroundColor: "#FFFFFF",
       textColor: "#333F48",
       logoUrl: "/orgs/ut/logo.svg",
-      faviconUrl: "/orgs/ut/mamun-logo.png",
+      faviconUrl: "/orgs/ut/favicon.ico",
       wordmark: "University of Texas",
     },
     landing: {
