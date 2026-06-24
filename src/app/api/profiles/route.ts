@@ -131,7 +131,13 @@ export async function GET(req: NextRequest) {
     // Fetch candidate profiles from the resolved member set (excludes self, deleted, already liked).
     // Pool filtering is now via membership IDs — profiles.organization_id is no longer authoritative
     // for pool membership after Design A.
-    let query = supabase
+    //
+    // Uses the service-role client deliberately: memberIds is already derived from
+    // profile_pool_memberships (service-role read) and represents the fully authorized
+    // candidate set, so running the profiles SELECT through the JWT client would only
+    // re-evaluate the shared-pool RLS per row for no added security benefit. Skipping
+    // that per-row check avoids redundant JOIN overhead on the hottest endpoint.
+    let query = adminClient
       .from("profiles")
       .select("*")
       .neq("user_id", currentUser.user_id)
