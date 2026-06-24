@@ -54,7 +54,7 @@ export async function generateMetadata({
       follow: true,
     },
     icons: cfg.branding.faviconUrl
-      ? { icon: cfg.branding.faviconUrl }
+      ? { icon: `${baseUrl}${cfg.branding.faviconUrl}` }
       : undefined,
   };
 }
