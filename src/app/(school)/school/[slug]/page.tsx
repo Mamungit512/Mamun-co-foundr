@@ -8,6 +8,7 @@ import HowItWorks from "@/features/school/components/landing/HowItWorks";
 import ValuesPillars from "@/features/school/components/landing/ValuesPillars";
 import CtaBand from "@/features/school/components/landing/CtaBand";
 import DepartmentMosaic from "@/features/school/components/landing/DepartmentMosaic";
+import WhyItWorks from "@/features/school/components/landing/WhyItWorks";
 
 export default async function SchoolLanding({
   params,
@@ -43,6 +44,7 @@ export default async function SchoolLanding({
       <>
         {jsonLdScript}
         <Hero />
+        <WhyItWorks />
         <HowItWorks />
         <ValuesPillars />
         <CtaBand />

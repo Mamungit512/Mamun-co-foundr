@@ -7,7 +7,7 @@ export default function PublicSchoolHeader({ slug }: { slug: string }) {
       style={{ backgroundColor: "#bf5700" }}
     >
       <Link href="/" className="text-xs sm:text-sm font-semibold text-white text-center sm:text-left">
-        University of Texas at Austin Co-Foundr
+        University of Texas Co-Foundr
       </Link>
 
       <nav className="flex flex-wrap items-center justify-center gap-3 sm:gap-5">

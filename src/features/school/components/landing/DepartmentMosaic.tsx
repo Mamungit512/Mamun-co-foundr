@@ -173,7 +173,7 @@ export default function DepartmentMosaic() {
           className="mb-10 text-center text-sm"
           style={{ color: "#9cadb7" }}
         >
-          Founders from across every corner of UT Austin — 10 schools, one
+          Founders from across every corner of the University of Texas — 10 schools, one
           platform, one mission.
         </p>
 

@@ -11,7 +11,7 @@ const STEPS = [
   {
     n: 2,
     title: "Get matched",
-    desc: "Engine surfaces verified University of Texas at Austin founders with complementary skills and aligned values.",
+    desc: "Engine surfaces verified University of Texas founders with complementary skills and aligned values.",
   },
   {
     n: 3,
