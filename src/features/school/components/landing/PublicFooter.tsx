@@ -19,7 +19,7 @@ export default function PublicFooter({ slug }: { slug: string }) {
         >
           <div>
             <div className="mb-1 text-sm font-semibold" style={{ color: "#bf5700" }}>
-              University of Texas at Austin Co-Foundr
+              University of Texas Co-Foundr
             </div>
             <div className="text-xs" style={{ color: "#9cadb7" }}>
               Co-Foundr Matching Platform
@@ -102,7 +102,7 @@ export default function PublicFooter({ slug }: { slug: string }) {
             color: "rgba(255,255,255,0.25)",
           }}
         >
-          © 2026 University of Texas at Austin Co-Foundr. Powered by Mamun. All rights
+          © 2026 University of Texas Co-Foundr. Powered by Mamun. All rights
           reserved.
         </div>
       </div>
