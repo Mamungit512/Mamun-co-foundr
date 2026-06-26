@@ -51,7 +51,7 @@ export default function ValuesPillars() {
           viewport={{ once: true }}
           className="mb-1.5 text-center text-2xl font-semibold text-white sm:text-3xl"
         >
-          Built on University of Texas at Austin values
+          Built on University of Texas values
         </motion.h2>
         <motion.p
           initial={{ opacity: 0 }}

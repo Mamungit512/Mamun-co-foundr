@@ -47,7 +47,7 @@ export const ORG_REGISTRY: Record<string, OrgConfig> = {
       wordmark: "University of Texas",
     },
     landing: {
-      headline: "Find your co-founder at UT Austin.",
+      headline: "Find your co-founder at the University of Texas.",
       subheadline:
         "An exclusive co-founder matching community for Longhorns building the next great company.",
       heroImageUrl: "/orgs/ut/hero.jpg",

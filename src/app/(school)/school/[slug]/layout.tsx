@@ -17,7 +17,9 @@ export async function generateMetadata({
   const org = await getOrganizationBySlug(slug);
   const cfg = getOrgConfig(slug) ?? DEFAULT_ORG_CONFIG;
 
-  const orgName = org?.name ?? "School Portal";
+  const orgName = cfg.branding.wordmark
+    ? `${cfg.branding.wordmark} Co-Foundr`
+    : (org?.name ?? "School Portal");
   const description = cfg.landing.subheadline;
   const baseUrl =
     org?.subdomain
