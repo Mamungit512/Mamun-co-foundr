@@ -30,12 +30,6 @@ export default function SchoolMatchesPage({
   const [activeTab, setActiveTab] = useState<Tab>(
     tabParam === "messages" ? "messages" : "liked"
   );
-  const [slug, setSlug] = useState<string>("");
-
-  useEffect(() => {
-    params.then((resolvedParams) => setSlug(resolvedParams.slug));
-  }, [params]);
-
   useEffect(() => {
     if (tabParam === "messages") {
       setActiveTab("messages");
