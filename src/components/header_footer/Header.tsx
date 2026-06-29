@@ -101,15 +101,6 @@ function Header() {
             </Link>
           </li>
 
-          {/*
-          <li className="translate-y text-sm font-semibold sm:text-base">
-            <Link
-              href="https://luma.com/user/usr-eZsILDku7ToYtZZ"
-              className="underline decoration-gray-300 underline-offset-4"
-            >
-              Events
-            </Link>
-          </li> */}
           <SignedIn>
             <li className="translate-y text-sm font-semibold underline underline-offset-4 sm:text-base">
               <Link href="/dashboard/referrals">Ambassador Only</Link>

@@ -35,14 +35,6 @@ function Footer() {
                 Resources
               </p>
               <a
-                href="https://lu.ma/mamun"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-base text-(--mist-white) opacity-80 transition-opacity hover:underline hover:underline-offset-4 hover:opacity-100"
-              >
-                Mamun Luma Events
-              </a>
-              <a
                 href="https://www.cakeequity.com/"
                 target="_blank"
                 rel="noopener noreferrer"

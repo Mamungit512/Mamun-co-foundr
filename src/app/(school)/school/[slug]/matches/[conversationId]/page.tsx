@@ -14,7 +14,6 @@ import AIWriter from "@/components/ui/AIWriter";
 import { trackEvent } from "@/lib/posthog-events";
 import ActivityIndicator from "@/components/ActivityIndicator";
 import ProfileDetailModal from "@/features/matches/ProfileDetailModal";
-import MeetupCard from "@/features/matches/MeetupCard";
 import { useProfileByUserId } from "@/features/profile/useProfile";
 import { useWeMatch, useWeMatchStatus } from "@/features/matches/useWeMatch";
 import { useToggleLike } from "@/features/likes/useLikes";
@@ -227,7 +226,6 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
           </div>
         )}
 
-        {slug === "ut" && mutualSet.has(otherUserId) && <MeetupCard />}
       </div>
 
       {/* Messages */}
