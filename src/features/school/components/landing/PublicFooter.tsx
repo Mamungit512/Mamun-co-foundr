@@ -35,16 +35,6 @@ export default function PublicFooter({ slug }: { slug: string }) {
                 Resources
               </div>
               <motion.a
-                href="https://lu.ma"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mb-1.5 block text-xs hover:text-white transition-colors"
-                style={{ color: "#9cadb7" }}
-                whileHover={{ color: "#ffffff" }}
-              >
-                UT Luma Events
-              </motion.a>
-              <motion.a
                 href="https://www.cakeequity.com/"
                 target="_blank"
                 rel="noopener noreferrer"
