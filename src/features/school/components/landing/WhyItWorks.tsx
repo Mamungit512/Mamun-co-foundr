@@ -79,7 +79,7 @@ export default function WhyItWorks() {
       </div>
 
       {/* Flow diagram */}
-      <div className="mx-auto max-w-5xl flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-center sm:gap-0">
+      <div className="mx-auto max-w-5xl flex flex-col items-center gap-0 sm:flex-row sm:items-center sm:justify-center sm:gap-0">
 
         {/* Schools panel */}
         <motion.div
@@ -128,7 +128,7 @@ export default function WhyItWorks() {
 
         {/* Converging funnel */}
         <div
-          className="flex-shrink-0 flex items-center justify-center sm:rotate-0 rotate-90"
+          className="flex-shrink-0 flex items-center justify-center sm:rotate-0 rotate-90 -my-16 sm:my-0"
           aria-hidden="true"
           style={{ width: 72, height: 200 }}
         >
@@ -179,7 +179,7 @@ export default function WhyItWorks() {
 
         {/* Arrow */}
         <div
-          className="flex-shrink-0 flex items-center justify-center sm:rotate-0 rotate-90"
+          className="flex-shrink-0 flex items-center justify-center sm:rotate-0 rotate-90 my-3.5 sm:my-0"
           aria-hidden="true"
           style={{ width: 44, height: 16 }}
         >
