@@ -67,6 +67,7 @@ END $$;
 --
 -- allowed_email_domains:
 --   utexas.edu           — primary UT EID emails
+--   eid.utexas.edu       — UT EID mailbox alias
 --   mccombs.utexas.edu   — McCombs subdomain
 --   mamuncofoundr.com    — Mamun internal team (revisit before public launch)
 --
@@ -89,7 +90,7 @@ VALUES (
   'ut',
   'ut',
   'school',
-  ARRAY['utexas.edu', 'mccombs.utexas.edu', 'mamuncofoundr.com'],
+  ARRAY['utexas.edu', 'eid.utexas.edu', 'mccombs.utexas.edu', 'mamuncofoundr.com'],
   '2026-05-01T23:21:50.033129+00:00',
   true,
   '{}'::jsonb
