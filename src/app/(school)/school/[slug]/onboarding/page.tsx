@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import { useSession, useUser } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { completeOnboarding } from "@/app/(general)/onboarding/_actions";
 import { useUserProfile } from "@/features/profile/useProfile";
@@ -14,6 +14,10 @@ import { useSchool } from "@/features/school/components/SchoolContext";
 import { getOrgConfig, STEP3_COMPLETIONS } from "@/features/school/registry/registry";
 import { getCompletedSteps } from "@/features/school/onboarding/getCompletedSteps";
 import { STEP_COMPONENTS } from "@/features/school/onboarding/stepRegistry";
+import {
+  getGatedFeatureLabel,
+  resolvePostOnboardingRedirect,
+} from "@/features/school/onboarding/onboardingRedirect";
 
 export default function SchoolOnboardingPage({
   params,
@@ -34,6 +38,9 @@ export default function SchoolOnboardingPage({
   const { user } = useUser();
   const { session } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectParam = searchParams.get("redirect");
+  const [gatedRedirectNotice, setGatedRedirectNotice] = useState(() => Boolean(redirectParam));
   const draft = useOnboardingDraft();
   const { containerRef, transition } = useStepTransition();
   const { data: existingProfile, isLoading: profileLoading } = useUserProfile();
@@ -110,10 +117,14 @@ export default function SchoolOnboardingPage({
 
       await completeOnboarding(formData, { kind: "school", orgId });
       await user?.reload();
+      // Force a fresh session JWT so middleware's schoolOnboarding check sees this
+      // completion immediately — otherwise the next navigation can bounce right back
+      // into onboarding on a stale token.
+      await session?.getToken({ skipCache: true });
 
       draft.clear();
 
-      router.push(`/school/${slug}/dashboard`);
+      router.push(resolvePostOnboardingRedirect(slug, redirectParam));
     } catch {
       setError("Something went wrong. Please try again.");
     }
@@ -141,6 +152,22 @@ export default function SchoolOnboardingPage({
         </h1>
         <p className="mt-1 text-sm text-[var(--ui-text-muted)]">Student Profile Setup</p>
       </div>
+
+      {gatedRedirectNotice && (
+        <div className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] px-4 py-3 text-sm text-[var(--ui-text-muted)]">
+          <span>
+            ✦ Finish setting up your profile before you can {getGatedFeatureLabel(redirectParam)}.
+          </span>
+          <button
+            type="button"
+            onClick={() => setGatedRedirectNotice(false)}
+            className="shrink-0 text-[var(--ui-text-subtle)] hover:text-[var(--ui-text-muted)]"
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {preFilledNotice && (
         <div className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] px-4 py-3 text-sm text-[var(--ui-text-muted)]">

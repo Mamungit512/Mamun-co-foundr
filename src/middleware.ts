@@ -301,6 +301,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     if (!schoolDone) {
       const schoolOnboardingUrl = new URL(`/school/${org.slug}/onboarding`, req.url);
       if (pathname !== schoolOnboardingUrl.pathname) {
+        schoolOnboardingUrl.searchParams.set("redirect", `${pathname}${req.nextUrl.search}`);
         return NextResponse.redirect(schoolOnboardingUrl);
       }
       return NextResponse.next();
