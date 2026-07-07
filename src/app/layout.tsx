@@ -10,7 +10,10 @@ import QueryProvider from "./_providers/QueryProvider";
 import { PostHogProvider } from "./_providers/PostHogProvider";
 import { Toaster } from "react-hot-toast";
 import ReferralTracker from "@/components/referrals/referral-tracker";
-import IntroSurveyModal from "@/components/IntroSurveyModal";
+// Disabled: survey modal doesn't reliably dismiss/stay dismissed across
+// client-side navigation (e.g. browser back/forward). Re-enable once the
+// dismissal/persistence logic in IntroSurveyModal is fixed.
+// import IntroSurveyModal from "@/components/IntroSurveyModal";
 
 const satoshi = localFont({
   src: "../../public/fonts/Satoshi-Variable.ttf",
@@ -49,9 +52,9 @@ export default function RootLayout({
               </QueryProvider>
             </PostHogProvider>
           </Suspense>
-          <Suspense fallback={null}>
+          {/* <Suspense fallback={null}>
             <IntroSurveyModal />
-          </Suspense>
+          </Suspense> */}
           <Toaster position="bottom-right" />
         </body>
       </html>
