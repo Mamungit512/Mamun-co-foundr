@@ -3,6 +3,7 @@
 import { SignInButton, useAuth } from "@clerk/nextjs";
 import ReactLenis from "lenis/react";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { motion } from "motion/react";
@@ -30,6 +31,23 @@ function Page() {
   // if (!accessGranted) {
   //   return <AccessCodeForm onSuccess={() => setAccessGranted(true)} />;
   // }
+
+  const ctaContent = (
+    <div className="translate-y flex cursor-pointer items-center rounded-md bg-(--mist-white) px-3 py-2 font-semibold text-nowrap text-(--charcoal-black) sm:px-4 sm:py-2 md:px-5 md:py-3">
+      <p className="text-sm sm:text-base">Find your co-foundr</p>
+      <motion.div
+        className="flex items-center"
+        animate={{ x: [0, 5, 0] }}
+        transition={{
+          duration: 1.5,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      >
+        <MdKeyboardArrowRight className="size-5 sm:size-6 md:size-7" />
+      </motion.div>
+    </div>
+  );
 
   return (
     <ReactLenis root>
@@ -142,31 +160,29 @@ function Page() {
               transition={{ duration: 0.8, delay: 1.8, ease: "easeOut" }}
             >
               <div className="flex flex-col items-center">
-                <SignInButton forceRedirectUrl="/cofoundr-matching">
-                  <motion.button
-                    className="cursor-pointer"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <div className="translate-y flex cursor-pointer items-center rounded-md bg-(--mist-white) px-3 py-2 font-semibold text-nowrap text-(--charcoal-black) sm:px-4 sm:py-2 md:px-5 md:py-3">
-                      <p className="text-sm sm:text-base">
-                        Find your co-foundr
-                      </p>
-                      <motion.div
-                        className="flex items-center"
-                        animate={{ x: [0, 5, 0] }}
-                        transition={{
-                          duration: 1.5,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
-                      >
-                        <MdKeyboardArrowRight className="size-5 sm:size-6 md:size-7" />
-                      </motion.div>
-                    </div>
-                  </motion.button>
-                </SignInButton>
+                {isSignedIn ? (
+                  <Link href="/cofoundr-matching">
+                    <motion.div
+                      className="cursor-pointer"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      {ctaContent}
+                    </motion.div>
+                  </Link>
+                ) : (
+                  <SignInButton forceRedirectUrl="/cofoundr-matching">
+                    <motion.button
+                      className="cursor-pointer"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      {ctaContent}
+                    </motion.button>
+                  </SignInButton>
+                )}
 
                 <motion.p
                   className="mt-3 text-center text-xs text-gray-400 sm:mt-4 sm:text-sm"

@@ -78,7 +78,7 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
   const navItems = [
     {
       href: `/school/${slug}/dashboard`,
-      label: "Find a co-foundr",
+      label: "Find your co-foundr",
       featured: true,
     },
     {
