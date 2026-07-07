@@ -3,11 +3,14 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UserButton, useClerk } from "@clerk/nextjs";
+import { UserButton, useClerk, useUser } from "@clerk/nextjs";
 import { FaHeart, FaBars, FaUserPen, FaTrash, FaUserPlus } from "react-icons/fa6";
 import { FaTimes } from "react-icons/fa";
 import clsx from "clsx";
+import toast from "react-hot-toast";
 import { useLikedProfilesData } from "@/features/likes/useLikes";
+import { useSchool } from "@/features/school/components/SchoolContext";
+import { getGatedFeatureLabel } from "@/features/school/onboarding/onboardingRedirect";
 import type { OrgConfig } from "@/features/school/registry/types";
 
 type SchoolHeaderProps = {
@@ -24,6 +27,27 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const { data: likedProfilesData } = useLikedProfilesData();
   const { signOut } = useClerk();
+  const { orgId } = useSchool();
+  const { isLoaded, user } = useUser();
+
+  const schoolOnboarding = user?.publicMetadata?.schoolOnboarding as
+    | Record<string, boolean>
+    | undefined;
+  const schoolDone =
+    schoolOnboarding?.[orgId] === true ||
+    (user?.publicMetadata?.onboardingComplete === true &&
+      user?.publicMetadata?.organization_id === orgId);
+  const gateCofounderLink = mounted && isLoaded && !schoolDone;
+  const cofounderPath = `/school/${slug}/cofounder`;
+  const cofounderHref = gateCofounderLink
+    ? `/school/${slug}/onboarding?redirect=${encodeURIComponent(cofounderPath)}`
+    : cofounderPath;
+
+  const handleCofounderClick = () => {
+    if (gateCofounderLink) {
+      toast(`Finish setting up your profile before you can ${getGatedFeatureLabel(cofounderPath)}.`);
+    }
+  };
 
   const handleDeleteAccount = async () => {
     const confirmed = confirm(
@@ -131,7 +155,8 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
 
       <div className="ml-4 flex items-center gap-4 md:ml-8 md:gap-6">
         <Link
-          href={`/school/${slug}/cofounder`}
+          href={cofounderHref}
+          onClick={handleCofounderClick}
           className="hidden items-center gap-1.5 text-sm font-medium text-white/70 transition-colors hover:text-white md:flex"
         >
           <FaUserPlus className="h-3.5 w-3.5" />
@@ -210,9 +235,12 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
             ))}
             <li>
               <Link
-                href={`/school/${slug}/cofounder`}
+                href={cofounderHref}
                 className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:text-white"
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={() => {
+                  handleCofounderClick();
+                  setIsMobileMenuOpen(false);
+                }}
               >
                 <FaUserPlus className="h-3.5 w-3.5" />
                 Invite a co-foundr
