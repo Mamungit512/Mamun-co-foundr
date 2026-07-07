@@ -1,4 +1,5 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 import { getOrganizationBySlug } from "@/features/school/data/organizations";
 import SchoolSignIn from "@/features/school/components/auth/SchoolSignIn";
 
@@ -10,7 +11,13 @@ export default async function SchoolSignInPage({
   searchParams: Promise<{ mismatch?: string; email?: string; redirect?: string }>;
 }) {
   const { slug } = await params;
-  const { mismatch, email, redirect } = await searchParams;
+  const { mismatch, email, redirect: redirectParam } = await searchParams;
+
+  const { userId } = await auth();
+  if (userId) {
+    redirect(redirectParam || `/school/${slug}/dashboard`);
+  }
+
   const org = await getOrganizationBySlug(slug);
   if (!org) notFound();
 
@@ -27,7 +34,7 @@ export default async function SchoolSignInPage({
         schoolName={org.name}
         allowedDomains={org.allowed_email_domains ?? []}
         initialError={initialError}
-        afterAuthRedirect={redirect ?? null}
+        afterAuthRedirect={redirectParam ?? null}
       />
     </div>
   );
