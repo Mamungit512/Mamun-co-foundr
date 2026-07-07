@@ -27,6 +27,7 @@ const isPublicRoute = createRouteMatcher([
   "/school/:slug",
   "/school/:slug/privacy-policy",
   "/school/:slug/terms-and-conditions",
+  "/school/:slug/contact-us",
   "/school/:slug/not-authorized",
   "/school/:slug/sign-up(.*)",
   "/school/:slug/sign-in(.*)",
@@ -300,6 +301,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     if (!schoolDone) {
       const schoolOnboardingUrl = new URL(`/school/${org.slug}/onboarding`, req.url);
       if (pathname !== schoolOnboardingUrl.pathname) {
+        schoolOnboardingUrl.searchParams.set("redirect", `${pathname}${req.nextUrl.search}`);
         return NextResponse.redirect(schoolOnboardingUrl);
       }
       return NextResponse.next();

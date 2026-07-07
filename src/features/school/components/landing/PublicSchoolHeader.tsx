@@ -15,7 +15,7 @@ export default function PublicSchoolHeader({ slug }: { slug: string }) {
           href="#departments"
           className="border-b border-white/40 pb-0.5 text-xs sm:text-sm font-medium text-white whitespace-nowrap"
         >
-          Find a co-foundr
+          Find your co-foundr
         </a>
         <Link
           href={`/school/${slug}/contact-us`}
