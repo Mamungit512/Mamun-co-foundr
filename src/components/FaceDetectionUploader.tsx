@@ -72,22 +72,52 @@ export default function FaceDetectionUploader({
       return;
     }
 
-    if (!file.type.startsWith("image/")) {
+    const { isHeic } = await import("heic-to");
+    // File.type for HEIC/HEIF is unreliable across browsers/OSes (often
+    // empty), so ask heic-to to sniff the actual file bytes instead.
+    const fileIsHeic = await isHeic(file).catch(() => false);
+
+    if (!fileIsHeic && !file.type.startsWith("image/")) {
       const msg = "Please select a valid image file.";
       setStatus({ type: "error", message: msg });
       onValidationFail?.(msg);
       return;
     }
 
+    let workingFile = file;
+
+    if (fileIsHeic) {
+      setStatus({ type: "loading", message: "Converting HEIC photo..." });
+      try {
+        const { heicTo } = await import("heic-to");
+        const convertedBlob = await heicTo({
+          blob: file,
+          type: "image/jpeg",
+          quality: 0.9,
+        });
+        const newName = file.name.replace(/\.hei[cf]$/i, "") + ".jpg";
+        workingFile = new File([convertedBlob], newName, {
+          type: "image/jpeg",
+        });
+      } catch (error) {
+        console.error("HEIC conversion error:", error);
+        const msg =
+          "Couldn't process this photo. Please try a different photo.";
+        setStatus({ type: "error", message: msg });
+        onValidationFail?.(msg);
+        return;
+      }
+    }
+
     setStatus({
       type: "loading",
       message: "Scanning photo with high accuracy...",
     });
-    const objectUrl = URL.createObjectURL(file);
+    const objectUrl = URL.createObjectURL(workingFile);
     setPreviewUrl(objectUrl);
 
     // Create an HTML image element for face-api to use
-const img = new window.Image();
+    const img = new window.Image();
     img.src = objectUrl;
 
     // Wait for image to load before detection
@@ -109,7 +139,7 @@ const img = new window.Image();
           if (bestScore > 0.75) {
             // Extra strict check against good cartoons
             setStatus({ type: "success", message: "✅ Valid face detected!" });
-            onValidationSuccess(file);
+            onValidationSuccess(workingFile);
           } else {
             const msg =
               "⚠️ Cannot clearly verify a real human face. Please try a clearer photo.";
@@ -145,7 +175,7 @@ const img = new window.Image();
       </label>
       <input
         type="file"
-        accept="image/png, image/jpeg, image/webp"
+        accept="image/png, image/jpeg, image/webp, image/heic, image/heif, .heic, .heif"
         onChange={handleFileChange}
         disabled={status.type === "loading" && !isModelReady}
         className="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400"
