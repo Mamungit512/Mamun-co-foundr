@@ -127,11 +127,11 @@ export default function AIWriter({ text, onAccept, fieldType }: AIWriterProps) {
 
           {suggestionMessage && (
             <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-400">{suggestionMessage}</p>
+              <p className="text-sm text-gray-600">{suggestionMessage}</p>
               <button
                 type="button"
                 onClick={rejectSuggestion}
-                className="rounded-md p-1.5 text-gray-400 transition-colors hover:bg-gray-700 hover:text-white"
+                className="rounded-md p-1.5 text-gray-600 transition-colors hover:bg-gray-700 hover:text-white"
               >
                 <FaXmark className="h-4 w-4" />
               </button>
