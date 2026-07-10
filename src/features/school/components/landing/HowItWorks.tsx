@@ -85,7 +85,7 @@ export default function HowItWorks() {
               </div>
               <div
                 className="text-sm leading-relaxed"
-                style={{ color: "#9cadb7" }}
+                style={{ color: "#5f7280" }}
               >
                 {s.desc}
               </div>

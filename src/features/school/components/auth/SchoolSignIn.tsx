@@ -215,7 +215,7 @@ export default function SchoolSignIn({
               </>
             )}
           </h1>
-          <p className="text-sm" style={{ color: "#9cadb7" }}>
+          <p className="text-sm" style={{ color: "#5f7280" }}>
             {pendingSecondFactor
               ? `We sent a 6-digit code to ${email}.`
               : `Use your ${allowedCopy} account.`}
@@ -235,7 +235,7 @@ export default function SchoolSignIn({
             </div>
             <div className="mb-4 flex items-center gap-3">
               <div className="h-px flex-1" style={{ backgroundColor: "#e8e4dc" }} />
-              <span className="text-[10px] uppercase tracking-[0.1em]" style={{ color: "#9cadb7" }}>
+              <span className="text-[10px] uppercase tracking-[0.1em]" style={{ color: "#5f7280" }}>
                 or
               </span>
               <div className="h-px flex-1" style={{ backgroundColor: "#e8e4dc" }} />
@@ -339,7 +339,7 @@ export default function SchoolSignIn({
 
         <div
           className="mt-6 border-t pt-4 text-center text-xs"
-          style={{ borderColor: "#e8e4dc", color: "#9cadb7" }}
+          style={{ borderColor: "#e8e4dc", color: "#5f7280" }}
         >
           Don&apos;t have an account?{" "}
           <Link

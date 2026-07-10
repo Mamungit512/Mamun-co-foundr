@@ -8,7 +8,7 @@ export default function SSOCallbackPage() {
   const complete = `/school/${slug}/sso-complete`;
   return (
     <div className="flex flex-1 items-center justify-center">
-      <div className="text-sm" style={{ color: "#9cadb7" }}>
+      <div className="text-sm" style={{ color: "#5f7280" }}>
         Completing sign-in…
       </div>
       <AuthenticateWithRedirectCallback

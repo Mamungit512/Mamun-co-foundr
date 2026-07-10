@@ -98,7 +98,7 @@ export default function AcceptInviteClient({
             {inviterName} invited you to link as co-founders
           </h1>
           {inviterTitle && (
-            <p className="mt-1 text-sm" style={{ color: "#9cadb7" }}>
+            <p className="mt-1 text-sm" style={{ color: "#5f7280" }}>
               {inviterTitle}
             </p>
           )}
@@ -116,7 +116,7 @@ export default function AcceptInviteClient({
               </p>
             )}
             {note && (
-              <p className="text-sm italic" style={{ color: "#9cadb7" }}>
+              <p className="text-sm italic" style={{ color: "#5f7280" }}>
                 &ldquo;{note}&rdquo;
               </p>
             )}
@@ -136,7 +136,7 @@ export default function AcceptInviteClient({
           </button>
         ) : (
           <div className="mb-4 space-y-1.5">
-            <label className="block text-xs font-medium" style={{ color: "#9cadb7" }}>
+            <label className="block text-xs font-medium" style={{ color: "#5f7280" }}>
               Your role
             </label>
             <select
@@ -155,7 +155,7 @@ export default function AcceptInviteClient({
           </div>
         )}
 
-        <p className="mb-6 text-center text-sm" style={{ color: "#9cadb7" }}>
+        <p className="mb-6 text-center text-sm" style={{ color: "#5f7280" }}>
           Accepting will link your profiles as confirmed co-founders, visible on both your cards.
         </p>
 

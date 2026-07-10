@@ -160,7 +160,7 @@ export default function SchoolSignUp({
               </>
             )}
           </h1>
-          <p className="text-sm" style={{ color: "#9cadb7" }}>
+          <p className="text-sm" style={{ color: "#5f7280" }}>
             {pendingVerification
               ? `We sent a 6-digit code to ${email}.`
               : `Sign up with your ${allowedCopy} email.`}
@@ -180,7 +180,7 @@ export default function SchoolSignUp({
             </div>
             <div className="mb-4 flex items-center gap-3">
               <div className="h-px flex-1" style={{ backgroundColor: "#e8e4dc" }} />
-              <span className="text-[10px] uppercase tracking-[0.1em]" style={{ color: "#9cadb7" }}>
+              <span className="text-[10px] uppercase tracking-[0.1em]" style={{ color: "#5f7280" }}>
                 or
               </span>
               <div className="h-px flex-1" style={{ backgroundColor: "#e8e4dc" }} />
@@ -300,12 +300,12 @@ export default function SchoolSignUp({
               {submitting ? "Creating account…" : "Create account"}
             </button>
 
-            <p className="text-center text-[11px]" style={{ color: "#9cadb7" }}>
+            <p className="text-center text-[11px]" style={{ color: "#5f7280" }}>
               By creating an account, you agree to our{" "}
               <Link
                 href={`/school/${slug}/privacy-policy`}
                 className="font-medium underline hover:opacity-70"
-                style={{ color: "#9cadb7" }}
+                style={{ color: "#5f7280" }}
               >
                 Privacy Policy
               </Link>
@@ -350,7 +350,7 @@ export default function SchoolSignUp({
 
         <div
           className="mt-6 border-t pt-4 text-center text-xs"
-          style={{ borderColor: "#e8e4dc", color: "#9cadb7" }}
+          style={{ borderColor: "#e8e4dc", color: "#5f7280" }}
         >
           Already have an account?{" "}
           <Link
