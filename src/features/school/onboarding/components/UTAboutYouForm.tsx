@@ -43,7 +43,7 @@ function CharCount({ value, max }: { value: string; max: number }) {
   return (
     <p
       className={`text-right text-xs ${
-        remaining < 50 ? "text-amber-400" : "text-[var(--ui-text-subtle)]"
+        remaining < 50 ? "text-amber-700" : "text-[var(--ui-text-subtle)]"
       }`}
     >
       {value.length} / {max}

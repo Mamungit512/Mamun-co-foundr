@@ -36,11 +36,11 @@ export default function Hero() {
         >
           Make it here.
           <br />
-          <span className="text-white/60">Find your founding team.</span>
+          <span className="text-white">Find your founding team.</span>
         </motion.h1>
         <motion.p
           variants={item}
-          className="mx-auto mb-8 max-w-xl text-sm leading-relaxed text-white/70 sm:text-base"
+          className="mx-auto mb-8 max-w-xl text-sm leading-relaxed text-white sm:text-base"
         >
           The University of Texas co-foundr matching platform connects value-aligned students,
           alumni, and faculty ready to build something that changes the world.

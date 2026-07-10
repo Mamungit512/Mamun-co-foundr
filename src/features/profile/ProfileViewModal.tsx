@@ -335,7 +335,7 @@ export default function ProfileViewModal({ profile: profileProp, userId, onClose
                   className={`flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition disabled:opacity-50 cursor-pointer ${
                     likeStatus?.isLiked
                       ? "bg-pink-500 text-white hover:bg-pink-600"
-                      : "bg-[var(--org-primary)] text-white hover:opacity-90"
+                      : "bg-[var(--org-primary)] text-white hover:bg-[#a34800]"
                   }`}
                 >
                   <FaPaperPlane className="h-4 w-4" />

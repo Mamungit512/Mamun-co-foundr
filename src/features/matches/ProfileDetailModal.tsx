@@ -348,7 +348,7 @@ export default function ProfileDetailModal({
                   <button
                     onClick={() => onMessage(userId)}
                     disabled={isMessagePending}
-                    className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[var(--org-primary)] px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50 cursor-pointer"
+                    className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[var(--org-primary)] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#a34800] disabled:opacity-50 cursor-pointer"
                   >
                     <FaHandshake className="h-4 w-4" />
                     It&apos;s a Match!
@@ -376,7 +376,7 @@ export default function ProfileDetailModal({
                 <button
                   onClick={() => onMessage(userId)}
                   disabled={isMessagePending}
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[var(--org-primary)] px-4 py-2.5 text-sm font-medium text-white transition hover:opacity-90 disabled:opacity-50 cursor-pointer"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[var(--org-primary)] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#a34800] disabled:opacity-50 cursor-pointer"
                 >
                   <FaEnvelope className="h-4 w-4" />
                   Message

@@ -28,69 +28,47 @@ export default function PublicFooter({ slug }: { slug: string }) {
 
           <div className="flex gap-12">
             <div>
-              <div
-                className="mb-3 text-[10px] font-semibold uppercase tracking-[0.08em]"
-                style={{ color: "rgba(255,255,255,0.4)" }}
-              >
+              <div className="mb-3 text-[10px] font-semibold text-white/70 uppercase tracking-[0.08em]">
                 Resources
               </div>
-              <motion.a
+              <a
                 href="https://www.cakeequity.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-xs hover:text-white transition-colors"
-                style={{ color: "#9cadb7" }}
-                whileHover={{ color: "#ffffff" }}
+                className="block text-xs text-[#9cadb7] transition-colors duration-300 hover:text-white"
               >
                 Create a Cap Table
-              </motion.a>
+              </a>
             </div>
             <div>
-              <div
-                className="mb-3 text-[10px] font-semibold uppercase tracking-[0.08em]"
-                style={{ color: "rgba(255,255,255,0.4)" }}
-              >
+              <div className="mb-3 text-[10px] font-semibold text-white/70 uppercase tracking-[0.08em]">
                 Company
               </div>
-              <motion.div
-                whileHover={{ color: "#ffffff" }}
+              <Link
+                href={`/school/${slug}/privacy-policy`}
+                className="mb-1.5 block text-xs text-[#9cadb7] transition-colors duration-300 hover:text-white"
               >
-                <Link
-                  href={`/school/${slug}/privacy-policy`}
-                  className="mb-1.5 block text-xs hover:text-white transition-colors"
-                  style={{ color: "#9cadb7" }}
-                >
-                  Privacy Policy
-                </Link>
-              </motion.div>
-              <motion.div whileHover={{ color: "#ffffff" }}>
-                <Link
-                  href={`/school/${slug}/terms-and-conditions`}
-                  className="mb-1.5 block text-xs hover:text-white transition-colors"
-                  style={{ color: "#9cadb7" }}
-                >
-                  Terms &amp; Conditions
-                </Link>
-              </motion.div>
-              <motion.div whileHover={{ color: "#ffffff" }}>
-                <Link
-                  href={`/school/${slug}/contact-us`}
-                  className="block text-xs hover:text-white transition-colors"
-                  style={{ color: "#9cadb7" }}
-                >
-                  Contact Us
-                </Link>
-              </motion.div>
+                Privacy Policy
+              </Link>
+              <Link
+                href={`/school/${slug}/terms-and-conditions`}
+                className="mb-1.5 block text-xs text-[#9cadb7] transition-colors duration-300 hover:text-white"
+              >
+                Terms &amp; Conditions
+              </Link>
+              <Link
+                href={`/school/${slug}/contact-us`}
+                className="block text-xs text-[#9cadb7] transition-colors duration-300 hover:text-white"
+              >
+                Contact Us
+              </Link>
             </div>
           </div>
         </motion.div>
 
         <div
-          className="border-t pt-5 text-xs"
-          style={{
-            borderColor: "rgba(255,255,255,0.08)",
-            color: "rgba(255,255,255,0.25)",
-          }}
+          className="border-t pt-5 text-xs text-white/60"
+          style={{ borderColor: "rgba(255,255,255,0.08)" }}
         >
           © 2026 University of Texas Co-Foundr. Powered by Mamun. All rights
           reserved.

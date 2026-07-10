@@ -17,7 +17,7 @@ export default function SessionRefreshRedirect({ to }: { to: string }) {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <p className="text-sm" style={{ color: "#9cadb7" }}>
+      <p className="text-sm" style={{ color: "#5f7280" }}>
         Setting up your account…
       </p>
     </div>

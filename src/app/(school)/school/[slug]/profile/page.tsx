@@ -50,7 +50,7 @@ const PILL_RADIO_CLS =
 
 function CharCount({ value, max }: { value: string; max: number }) {
   return (
-    <p className={`text-right text-xs ${(value?.length ?? 0) > max - 50 ? "text-amber-400" : "text-[var(--ui-text-subtle)]"}`}>
+    <p className={`text-right text-xs ${(value?.length ?? 0) > max - 50 ? "text-amber-700" : "text-[var(--ui-text-subtle)]"}`}>
       {value?.length ?? 0} / {max}
     </p>
   );

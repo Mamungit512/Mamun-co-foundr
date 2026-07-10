@@ -249,7 +249,7 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
               <p className="text-xs text-[var(--ui-text-muted)]">{error.message}</p>
               <button
                 onClick={() => window.location.reload()}
-                className="mt-2 rounded-lg bg-[var(--org-primary)] px-4 py-2 text-xs font-medium text-white hover:opacity-90 cursor-pointer"
+                className="mt-2 rounded-lg bg-[var(--org-primary)] px-4 py-2 text-xs font-medium text-white cursor-pointer hover:bg-[#a34800]"
               >
                 Try Again
               </button>
@@ -302,7 +302,7 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
             />
             <button
               type="submit"
-              className="rounded-lg bg-[var(--org-primary)] px-4 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:opacity-40 cursor-pointer"
+              className="rounded-lg bg-[var(--org-primary)] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#a34800] disabled:opacity-40 cursor-pointer"
               disabled={!messageInput.trim() || isSending || messages.length >= 20}
             >
               {isSending ? "Sending..." : "Send"}

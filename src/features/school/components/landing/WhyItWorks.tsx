@@ -92,7 +92,7 @@ export default function WhyItWorks() {
         >
           <p
             className="text-[9px] font-bold tracking-widest uppercase text-center mb-3"
-            style={{ color: "#9cadb7" }}
+            style={{ color: "#5f7280" }}
           >
             10 UT Schools · One pool
           </p>
@@ -116,7 +116,7 @@ export default function WhyItWorks() {
                   </span>
                   <span
                     className="block text-[9px] leading-snug whitespace-nowrap mt-0.5"
-                    style={{ color: "#9cadb7" }}
+                    style={{ color: "#5f7280" }}
                   >
                     {s.role}
                   </span>
@@ -244,7 +244,7 @@ export default function WhyItWorks() {
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: 0.2 }}
         className="mt-8 text-center text-xs leading-relaxed"
-        style={{ color: "#9cadb7" }}
+        style={{ color: "#5f7280" }}
       >
         You bring what you&apos;re great at.{" "}
         <strong style={{ color: "#5a6a75", fontWeight: 600 }}>

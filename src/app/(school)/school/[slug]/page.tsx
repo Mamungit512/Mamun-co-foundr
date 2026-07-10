@@ -89,14 +89,14 @@ export default async function SchoolLanding({
       <div className="flex flex-col items-center gap-3 sm:flex-row">
         <Link
           href="/sign-up"
-          className="rounded-lg px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          className="rounded-lg px-6 py-3 text-sm font-semibold text-white shadow-sm transition-shadow hover:shadow-md"
           style={{ backgroundColor: branding.primaryColor }}
         >
           {landing.ctaPrimaryLabel}
         </Link>
         <Link
           href="/sign-in"
-          className="rounded-lg border px-6 py-3 text-sm font-semibold transition-opacity hover:opacity-70"
+          className="rounded-lg border px-6 py-3 text-sm font-semibold transition-colors hover:bg-black/5"
           style={{
             borderColor: branding.accentColor,
             color: branding.accentColor,

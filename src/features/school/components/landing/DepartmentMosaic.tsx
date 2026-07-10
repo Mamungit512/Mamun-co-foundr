@@ -136,7 +136,7 @@ function Card({ dept }: { dept: Dept }) {
       </div>
       <div
         className="mb-2 pl-1 text-[11px]"
-        style={{ color: "#9cadb7" }}
+        style={{ color: "#5f7280" }}
       >
         {dept.programs}
       </div>
@@ -171,7 +171,7 @@ export default function DepartmentMosaic() {
         </h2>
         <p
           className="mb-10 text-center text-sm"
-          style={{ color: "#9cadb7" }}
+          style={{ color: "#5f7280" }}
         >
           Founders from across every corner of the University of Texas — 10 schools, one
           platform, one mission.

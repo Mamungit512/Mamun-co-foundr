@@ -118,7 +118,7 @@ function UTProfilePhotoForm({ onNext, defaultValues }: UTProfilePhotoFormProps) 
             Add your profile photo
           </h2>
           <p className="mt-1.5 text-sm text-[var(--ui-text-muted)]">
-            Our AI verifies it contains a real face to keep profiles authentic.
+            Make sure your face is clearly visible in the photo.
           </p>
         </div>
 

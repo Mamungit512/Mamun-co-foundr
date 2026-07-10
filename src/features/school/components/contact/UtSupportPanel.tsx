@@ -15,7 +15,7 @@ export default function UtSupportPanel() {
       <h2 className="mb-3 text-2xl font-semibold sm:text-3xl" style={{ color: "#333f48" }}>
         Need help with the platform?
       </h2>
-      <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed sm:text-base" style={{ color: "#9cadb7" }}>
+      <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed sm:text-base" style={{ color: "#5f7280" }}>
         Book time with the Mamun team for help with your account, matches, or
         anything else technical on the co-foundr platform.
       </p>
@@ -32,7 +32,7 @@ export default function UtSupportPanel() {
       </Link>
 
       <div className="border-t pt-6" style={{ borderColor: "rgba(0,0,0,0.06)" }}>
-        <p className="mb-1 text-sm" style={{ color: "#9cadb7" }}>
+        <p className="mb-1 text-sm" style={{ color: "#5f7280" }}>
           Or email us at{" "}
           <a
             href="mailto:mamun@mamuncofoundr.com"
@@ -42,7 +42,7 @@ export default function UtSupportPanel() {
             mamun@mamuncofoundr.com
           </a>
         </p>
-        <p className="text-sm" style={{ color: "#9cadb7" }}>
+        <p className="text-sm" style={{ color: "#5f7280" }}>
           Leave your full name and we will get back to you within 1–2 business
           days.
         </p>
