@@ -100,10 +100,11 @@ function SearchResultCard({
               </span>
               {profile.utStatus && (
                 <span
-                  className="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-medium text-white"
-                  style={{
-                    backgroundColor: profile.utStatus === "student" ? "#22c55e" : "#a855f7",
-                  }}
+                  className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-medium ${
+                    profile.utStatus === "student"
+                      ? "bg-emerald-100 text-emerald-800"
+                      : "bg-purple-100 text-purple-800"
+                  }`}
                 >
                   {profile.utStatus === "student" ? "Student" : "Alumni"}
                 </span>
@@ -294,7 +295,7 @@ export default function SchoolDashboardPage() {
       <div className="w-8" />
       <div className="text-center">
         <p className="text-xs font-semibold uppercase tracking-widest">
-          <span className="text-[#84cc16]">Mamun</span>
+          <span className="text-[#4d7c0f]">Mamun</span>
           <span className="text-[var(--ui-text-muted)]"> &times; </span>
           <span className="text-[#a34800]">{schoolName}</span>
         </p>
@@ -577,10 +578,11 @@ export default function SchoolDashboardPage() {
                   <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
                     {curProfile.utStatus && (
                       <span
-                        className="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium text-white"
-                        style={{
-                          backgroundColor: curProfile.utStatus === "student" ? "#22c55e" : "#a855f7",
-                        }}
+                        className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium ${
+                          curProfile.utStatus === "student"
+                            ? "bg-emerald-100 text-emerald-800"
+                            : "bg-purple-100 text-purple-800"
+                        }`}
                       >
                         {curProfile.utStatus === "student" ? "Student" : "Alumni"}
                       </span>
