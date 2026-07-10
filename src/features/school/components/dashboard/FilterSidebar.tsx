@@ -91,7 +91,7 @@ function FilterSelect({
                 role="option"
                 aria-selected={!selected}
                 onClick={() => { onChange(""); setOpen(false); }}
-                className={`cursor-pointer px-4 py-2.5 text-sm transition hover:bg-[#BF5700]/10 ${!selected ? "font-medium text-[#BF5700]" : "text-[#3d1a00]/50"}`}
+                className={`cursor-pointer px-4 py-2.5 text-sm transition hover:bg-[#BF5700]/10 ${!selected ? "font-medium text-[#a34800]" : "text-[#3d1a00]/70"}`}
               >
                 {placeholder}
               </li>
@@ -101,7 +101,7 @@ function FilterSelect({
                   role="option"
                   aria-selected={opt.value === String(value)}
                   onClick={() => { onChange(opt.value); setOpen(false); }}
-                  className={`cursor-pointer px-4 py-2.5 text-sm transition hover:bg-[#BF5700]/10 ${opt.value === String(value) ? "font-medium text-[#BF5700]" : "text-[#3d1a00]"}`}
+                  className={`cursor-pointer px-4 py-2.5 text-sm transition hover:bg-[#BF5700]/10 ${opt.value === String(value) ? "font-medium text-[#a34800]" : "text-[#3d1a00]"}`}
                 >
                   {opt.value === String(value) && <span className="mr-1.5">✓</span>}
                   {opt.label}
@@ -172,7 +172,7 @@ function FilterPanel({
             <button
               type="button"
               onClick={clearAll}
-              className="text-xs font-medium text-[#bf5700] hover:underline cursor-pointer"
+              className="text-xs font-medium text-[#a34800] hover:underline cursor-pointer"
             >
               Clear all
             </button>
