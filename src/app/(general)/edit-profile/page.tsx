@@ -231,8 +231,7 @@ export default function EditProfile() {
                 Profile Picture
               </h2>
               <p className="text-sm text-gray-400">
-                Upload a clear photo of yourself. AI will verify it&apos;s a
-                real human face.
+                Upload a clear photo of yourself with your face visible.
               </p>
             </div>
           </div>
