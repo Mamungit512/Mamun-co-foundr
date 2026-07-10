@@ -294,8 +294,7 @@ export default function SchoolSignIn({
                 <button
                   type="submit"
                   disabled={submitting || !isLoaded}
-                  className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-                  style={{ backgroundColor: "#bf5700" }}
+                  className="w-full rounded-lg bg-[#bf5700] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#a34800] disabled:opacity-50"
                 >
                   {submitting ? "Signing in…" : "Sign in"}
                 </button>
@@ -329,8 +328,7 @@ export default function SchoolSignIn({
             <button
               type="submit"
               disabled={submitting || !isLoaded}
-              className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-              style={{ backgroundColor: "#bf5700" }}
+              className="w-full rounded-lg bg-[#bf5700] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#a34800] disabled:opacity-50"
             >
               {submitting ? "Verifying…" : "Verify and continue"}
             </button>

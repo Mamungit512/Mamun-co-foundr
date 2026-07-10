@@ -356,7 +356,7 @@ export default function SchoolDashboardPage() {
               key={chip.key}
               type="button"
               onClick={() => updateFilters(chip.onRemove())}
-              className="inline-flex items-center gap-1 rounded-md bg-[#bf5700] px-2.5 py-1 text-xs font-medium text-white cursor-pointer hover:opacity-90"
+              className="inline-flex items-center gap-1 rounded-md bg-[#bf5700] px-2.5 py-1 text-xs font-medium text-white cursor-pointer hover:bg-[#a34800]"
             >
               {chip.label}
               <span aria-hidden>&times;</span>

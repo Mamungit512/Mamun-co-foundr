@@ -128,8 +128,7 @@ export default function AcceptInviteClient({
           <button
             type="button"
             onClick={() => setEditingRole(true)}
-            className="mb-4 flex cursor-pointer items-center gap-1.5 text-xs font-medium transition hover:opacity-80"
-            style={{ color: "#bf5700" }}
+            className="mb-4 flex cursor-pointer items-center gap-1.5 text-xs font-medium text-[#bf5700] transition hover:text-[#a34800]"
           >
             <FaPencil className="h-3 w-3" />
             Edit my role
@@ -174,8 +173,7 @@ export default function AcceptInviteClient({
             type="button"
             onClick={handleAccept}
             disabled={accepting || declining}
-            className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-            style={{ backgroundColor: "#bf5700" }}
+            className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#bf5700] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#a34800] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <FaHandshake className="h-4 w-4" />
             {accepting ? "Accepting…" : "Accept"}

@@ -260,8 +260,7 @@ export default function SchoolSignUp({
                     {existingHasPassword && (
                       <Link
                         href={`/school/${slug}/sign-in`}
-                        className="block rounded-lg px-4 py-2 text-center text-xs font-semibold text-white transition-opacity hover:opacity-90"
-                        style={{ backgroundColor: "#bf5700" }}
+                        className="block rounded-lg bg-[#bf5700] px-4 py-2 text-center text-xs font-semibold text-white transition-colors hover:bg-[#a34800]"
                       >
                         Sign in with password
                       </Link>
@@ -294,8 +293,7 @@ export default function SchoolSignUp({
             <button
               type="submit"
               disabled={submitting || !isLoaded}
-              className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-              style={{ backgroundColor: "#bf5700" }}
+              className="w-full rounded-lg bg-[#bf5700] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#a34800] disabled:opacity-50"
             >
               {submitting ? "Creating account…" : "Create account"}
             </button>
@@ -304,8 +302,7 @@ export default function SchoolSignUp({
               By creating an account, you agree to our{" "}
               <Link
                 href={`/school/${slug}/privacy-policy`}
-                className="font-medium underline hover:opacity-70"
-                style={{ color: "#5f7280" }}
+                className="font-medium text-[#5f7280] underline transition-colors hover:text-[#a34800]"
               >
                 Privacy Policy
               </Link>
@@ -340,8 +337,7 @@ export default function SchoolSignUp({
             <button
               type="submit"
               disabled={submitting || !isLoaded}
-              className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-              style={{ backgroundColor: "#bf5700" }}
+              className="w-full rounded-lg bg-[#bf5700] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#a34800] disabled:opacity-50"
             >
               {submitting ? "Verifying…" : "Verify and continue"}
             </button>

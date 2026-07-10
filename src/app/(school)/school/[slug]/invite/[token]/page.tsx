@@ -43,8 +43,7 @@ export default async function InviteAcceptPage({
           </p>
           <Link
             href={`/school/${slug}/dashboard`}
-            className="mt-6 inline-block cursor-pointer rounded-xl px-6 py-2.5 text-sm font-semibold text-white"
-            style={{ backgroundColor: "#bf5700" }}
+            className="mt-6 inline-block cursor-pointer rounded-xl bg-[#bf5700] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#a34800]"
           >
             Go to dashboard
           </Link>
@@ -104,8 +103,7 @@ export default async function InviteAcceptPage({
           <div className="mt-6 flex flex-col gap-3">
             <Link
               href={signInUrl}
-              className="cursor-pointer rounded-xl px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
-              style={{ backgroundColor: "#bf5700" }}
+              className="cursor-pointer rounded-xl bg-[#bf5700] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#a34800]"
             >
               Sign in
             </Link>

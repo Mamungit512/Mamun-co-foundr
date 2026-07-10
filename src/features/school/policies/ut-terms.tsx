@@ -381,7 +381,7 @@ export default function UTTermsAndConditions({ primaryColor }: Props) {
           For any question about these Terms, you can get in touch with us by emailing us at{" "}
           <a
             href="mailto:mamun@mamuncofoundr.com"
-            className="underline hover:opacity-70"
+            className="rounded underline decoration-2 underline-offset-2 transition-colors hover:bg-black/5"
             style={{ color: primaryColor }}
           >
             mamun@mamuncofoundr.com
