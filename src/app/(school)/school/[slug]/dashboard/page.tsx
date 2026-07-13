@@ -183,6 +183,12 @@ function SearchResultCard({
 export default function SchoolDashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const toggleSearch = () => {
+    setSearchOpen((prev) => {
+      if (prev) setSearchQuery("");
+      return !prev;
+    });
+  };
   const [filters, setFilters] = useState<DashboardFilters>(EMPTY_DASHBOARD_FILTERS);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [viewingUserId, setViewingUserId] = useState<string | null>(null);
@@ -312,11 +318,16 @@ export default function SchoolDashboardPage() {
           <IoFilterOutline className="h-4 w-4" />
         </button>
         <button
-          onClick={() => setSearchOpen(true)}
+          onClick={toggleSearch}
           className="flex h-8 w-8 items-center justify-center rounded-full bg-[#fff6f0] text-[#BF5700] hover:bg-[#ffe8d6] transition cursor-pointer"
-          aria-label="Open search"
+          aria-expanded={searchOpen}
+          aria-label={searchOpen ? "Close search" : "Open search"}
         >
-          <IoSearchOutline className="h-4 w-4" />
+          {searchOpen ? (
+            <IoCloseOutline className="h-4 w-4" />
+          ) : (
+            <IoSearchOutline className="h-4 w-4" />
+          )}
         </button>
       </div>
     </div>
@@ -414,7 +425,7 @@ export default function SchoolDashboardPage() {
             className="flex-1 bg-transparent text-sm text-[#3d1a00] placeholder:text-[#a34800] outline-none"
           />
           <button
-            onClick={() => { setSearchQuery(""); setSearchOpen(false); }}
+            onClick={toggleSearch}
             className="flex-shrink-0 text-[#BF5700] hover:text-[#8a3d00] cursor-pointer"
           >
             <IoCloseOutline className="h-4 w-4" />
