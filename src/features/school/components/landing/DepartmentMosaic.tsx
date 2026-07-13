@@ -103,6 +103,78 @@ const TIER_2: Dept[] = [
       { label: "BioTech", bg: "#fdecea", fg: "#922b21" },
     ],
   },
+  {
+    name: "Jackson Geosciences",
+    programs: "Geo Sciences · Env Sci · Energy & Earth Resources",
+    accent: "#ca8a04",
+    chips: [
+      { label: "CleanTech", bg: "#fdf6e3", fg: "#a16207" },
+      { label: "DeepTech", bg: "#fdf6e3", fg: "#a16207" },
+    ],
+  },
+  {
+    name: "Civic Leadership",
+    programs: "BS Civic Leadership",
+    accent: "#4b3f8f",
+    chips: [
+      { label: "Policy", bg: "#eeecf9", fg: "#4b3f8f" },
+      { label: "GovTech", bg: "#eeecf9", fg: "#4b3f8f" },
+    ],
+  },
+  {
+    name: "Education",
+    programs: "Applied Learning · STEM Ed · Youth & Community Studies",
+    accent: "#0f766e",
+    chips: [
+      { label: "EdTech", bg: "#e6f4f3", fg: "#0f766e" },
+      { label: "Impact", bg: "#e6f4f3", fg: "#0f766e" },
+    ],
+  },
+  {
+    name: "Nursing",
+    programs: "BSN · MSN · DNP",
+    accent: "#059669",
+    chips: [
+      { label: "HealthTech", bg: "#e5f5ef", fg: "#059669" },
+      { label: "BioTech", bg: "#e5f5ef", fg: "#059669" },
+    ],
+  },
+  {
+    name: "Pharmacy",
+    programs: "PharmD · Pharmaceutical Sciences",
+    accent: "#7c3aed",
+    chips: [
+      { label: "HealthTech", bg: "#f1eafd", fg: "#7c3aed" },
+      { label: "BioTech", bg: "#f1eafd", fg: "#7c3aed" },
+    ],
+  },
+  {
+    name: "Social Work",
+    programs: "BSW · MSSW",
+    accent: "#65a30d",
+    chips: [
+      { label: "Impact", bg: "#f0f6e3", fg: "#65a30d" },
+      { label: "Policy", bg: "#f0f6e3", fg: "#65a30d" },
+    ],
+  },
+  {
+    name: "Law",
+    programs: "JD · LLM",
+    accent: "#57534e",
+    chips: [
+      { label: "Policy", bg: "#eeece9", fg: "#57534e" },
+      { label: "GovTech", bg: "#eeece9", fg: "#57534e" },
+    ],
+  },
+  {
+    name: "Pre-Med, Pre-Law & Teaching",
+    programs: "Pre-Med · Pre-Law · Pre-Teaching",
+    accent: "#0284c7",
+    chips: [
+      { label: "HealthTech", bg: "#e5f3fb", fg: "#0284c7" },
+      { label: "EdTech", bg: "#e5f3fb", fg: "#0284c7" },
+    ],
+  },
 ];
 
 function Card({ dept }: { dept: Dept }) {
@@ -173,7 +245,7 @@ export default function DepartmentMosaic() {
           className="mb-10 text-center text-sm"
           style={{ color: "#5f7280" }}
         >
-          Founders from across every corner of the University of Texas — 10 schools, one
+          Founders from across every corner of the University of Texas — 18 schools, one
           platform, one mission.
         </p>
 

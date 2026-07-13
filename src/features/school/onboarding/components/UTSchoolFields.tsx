@@ -156,7 +156,7 @@ export default function UTSchoolFields<T extends FieldValues>({ register, watch,
             Select relevant sectors aligned with your program
           </p>
           <div className="flex flex-wrap gap-2">
-            {UT_SCHOOLS_AND_PROGRAMS[utCollegeValue].sectorInterests.map((sector) => (
+            {(Object.keys(SECTOR_INTEREST_LABELS) as UTSectorInterest[]).map((sector) => (
               <label
                 key={sector}
                 className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-all duration-150 ${
