@@ -124,6 +124,90 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
       { degreeType: 'masters', name: 'Health Innovation', abbreviation: 'Health Innovation' },
     ] as const,
   },
+  jackson_geosciences: {
+    label: 'Jackson Geosciences',
+    fullName: 'Jackson School of Geosciences',
+    tier: 'partner',
+    color: 'from-yellow-600 to-yellow-700',
+    programs: [
+      { degreeType: 'bachelors', name: 'Geological Sciences', abbreviation: 'Geo Sciences' },
+      { degreeType: 'bachelors', name: 'Environmental Science', abbreviation: 'Env Sci' },
+      { degreeType: 'masters', name: 'Energy and Earth Resources', abbreviation: 'Energy & Earth Resources' },
+    ] as const,
+  },
+  school_of_civic_leadership: {
+    label: 'Civic Leadership',
+    fullName: 'School of Civic Leadership',
+    tier: 'partner',
+    color: 'from-indigo-600 to-indigo-700',
+    programs: [
+      { degreeType: 'bachelors', name: 'Civic Leadership', abbreviation: 'BS Civic Leadership' },
+    ] as const,
+  },
+  college_of_education: {
+    label: 'Education',
+    fullName: 'College of Education',
+    tier: 'partner',
+    color: 'from-teal-600 to-teal-700',
+    programs: [
+      { degreeType: 'bachelors', name: 'Applied Learning & Development', abbreviation: 'ALD' },
+      { degreeType: 'bachelors', name: 'STEM Education', abbreviation: 'STEM Ed' },
+      { degreeType: 'bachelors', name: 'Youth & Community Studies', abbreviation: 'YCS' },
+      { degreeType: 'masters', name: 'Curriculum & Instruction', abbreviation: 'M.Ed.' },
+    ] as const,
+  },
+  school_of_nursing: {
+    label: 'Nursing',
+    fullName: 'School of Nursing',
+    tier: 'partner',
+    color: 'from-emerald-600 to-emerald-700',
+    programs: [
+      { degreeType: 'bachelors', name: 'Nursing', abbreviation: 'BSN' },
+      { degreeType: 'masters', name: 'Nursing', abbreviation: 'MSN' },
+      { degreeType: 'professional', name: 'Doctor of Nursing Practice', abbreviation: 'DNP' },
+    ] as const,
+  },
+  college_of_pharmacy: {
+    label: 'Pharmacy',
+    fullName: 'College of Pharmacy',
+    tier: 'partner',
+    color: 'from-violet-600 to-violet-700',
+    programs: [
+      { degreeType: 'professional', name: 'Doctor of Pharmacy', abbreviation: 'PharmD' },
+      { degreeType: 'masters', name: 'Pharmaceutical Sciences', abbreviation: 'Pharm Sci' },
+    ] as const,
+  },
+  school_of_social_work: {
+    label: 'Social Work',
+    fullName: 'School of Social Work',
+    tier: 'partner',
+    color: 'from-lime-600 to-lime-700',
+    programs: [
+      { degreeType: 'bachelors', name: 'Social Work', abbreviation: 'BSW' },
+      { degreeType: 'masters', name: 'Social Work', abbreviation: 'MSSW' },
+    ] as const,
+  },
+  school_of_law: {
+    label: 'Law',
+    fullName: 'School of Law',
+    tier: 'partner',
+    color: 'from-stone-600 to-stone-700',
+    programs: [
+      { degreeType: 'professional', name: 'Juris Doctor', abbreviation: 'JD' },
+      { degreeType: 'masters', name: 'Law', abbreviation: 'LLM' },
+    ] as const,
+  },
+  pre_med_pre_law_teaching: {
+    label: 'Pre-Med, Pre-Law & Teaching',
+    fullName: 'Pre-Med, Pre-Law & Teaching',
+    tier: 'partner',
+    color: 'from-sky-600 to-sky-700',
+    programs: [
+      { degreeType: 'other', name: 'Pre-Med', abbreviation: 'Pre-Med' },
+      { degreeType: 'other', name: 'Pre-Law', abbreviation: 'Pre-Law' },
+      { degreeType: 'other', name: 'Pre-Teaching', abbreviation: 'Pre-Teaching' },
+    ] as const,
+  },
 } as const;
 
 export const DEGREE_TYPE_LABELS: Record<DegreeType, string> = {

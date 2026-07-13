@@ -13,6 +13,14 @@ const SCHOOLS = [
   { name: "Architecture", role: "Space · Systems", color: "#333f48" },
   { name: "LBJ", role: "Public Affairs", color: "#9cadb7" },
   { name: "Dell Medical", role: "Health · Clinical", color: "#c0392b" },
+  { name: "Jackson Geosciences", role: "Geosciences · Energy", color: "#ca8a04" },
+  { name: "Civic Leadership", role: "Leadership · Policy", color: "#4b3f8f" },
+  { name: "Education", role: "Education · Impact", color: "#0f766e" },
+  { name: "Nursing", role: "Health · Care", color: "#059669" },
+  { name: "Pharmacy", role: "Pharma · Health", color: "#7c3aed" },
+  { name: "Social Work", role: "Social Work · Impact", color: "#65a30d" },
+  { name: "Law", role: "Law · Policy", color: "#57534e" },
+  { name: "Pre-Professional", role: "Pre-Med · Pre-Law · Teaching", color: "#0284c7" },
 ];
 
 const container = {
@@ -74,7 +82,7 @@ export default function WhyItWorks() {
         >
           An engineer who can&apos;t sell. A business student with no one to
           build. A designer working alone. The matching engine reaches across all
-          10 schools and assembles the team none of them could find on their own.
+          18 schools and assembles the team none of them could find on their own.
         </motion.p>
       </div>
 
@@ -94,7 +102,7 @@ export default function WhyItWorks() {
             className="text-[9px] font-bold tracking-widest uppercase text-center mb-3"
             style={{ color: "#5f7280" }}
           >
-            10 UT Schools · One pool
+            18 UT Schools · One pool
           </p>
           <div className="grid grid-cols-2 gap-x-5 gap-y-3">
             {SCHOOLS.map((s) => (
