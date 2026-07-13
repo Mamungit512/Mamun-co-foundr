@@ -36,6 +36,7 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
   const [isLimitReached, setIsLimitReached] = React.useState<boolean>(false);
   const [showProfile, setShowProfile] = React.useState<boolean>(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
   React.useEffect(() => {
     params.then((resolvedParams) => {
@@ -62,9 +63,15 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Grow the message box to fit its content, up to a max height
+  React.useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+  }, [messageInput]);
 
+  const sendCurrentMessage = async () => {
     if (!messageInput.trim() || isSending) return;
 
     setIsSending(true);
@@ -102,6 +109,11 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
     } finally {
       setIsSending(false);
     }
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await sendCurrentMessage();
   };
 
   return (
@@ -200,8 +212,8 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
 
       {/* Notices */}
       <div className="mb-4 space-y-2">
-        <div className="rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] p-3">
-          <p className="text-xs text-[var(--ui-text-muted)]">
+        <div className="rounded-lg border border-blue-300 bg-blue-50 p-3">
+          <p className="text-xs font-medium text-blue-700">
             This is a starting point to connect outside of Mamun. Messages are
             not encrypted, so please don&apos;t share sensitive data here.
           </p>
@@ -286,9 +298,10 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
             />
           </div>
 
-          <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-            <input
-              type="text"
+          <form onSubmit={handleSendMessage} className="flex items-end gap-2">
+            <textarea
+              ref={textareaRef}
+              rows={1}
               placeholder={
                 messages.length >= 20
                   ? "Message limit reached"
@@ -296,7 +309,13 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
               }
               value={messageInput}
               onChange={(e) => setMessageInput(e.target.value)}
-              className="flex-1 rounded-lg border border-[var(--ui-border)] bg-white px-3 py-2 text-sm text-[var(--ui-text)] placeholder-[var(--ui-text-subtle)] focus:border-[var(--org-primary)] focus:outline-none"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  sendCurrentMessage();
+                }
+              }}
+              className="max-h-40 flex-1 resize-none overflow-y-auto rounded-lg border border-[var(--ui-border)] bg-white px-3 py-2 text-sm text-[var(--ui-text)] placeholder-[var(--ui-text-subtle)] focus:border-[var(--org-primary)] focus:outline-none"
               disabled={isSending || messages.length >= 20}
               maxLength={1000}
             />
