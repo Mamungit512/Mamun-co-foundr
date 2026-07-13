@@ -19,7 +19,6 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
       { degreeType: 'masters', name: 'Finance', abbreviation: 'MFinance' },
       { degreeType: 'masters', name: 'Information Systems', abbreviation: 'MIS' },
     ] as const,
-    sectorInterests: ['b2b_saas', 'fintech'] as const,
   },
   cockrell_engineering: {
     label: 'Cockrell Engineering',
@@ -33,7 +32,6 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
       { degreeType: 'bachelors', name: 'Biomedical Engineering', abbreviation: 'Biomedical' },
       { degreeType: 'bachelors', name: 'Chemical Engineering', abbreviation: 'ChE' },
     ] as const,
-    sectorInterests: ['ai_ml', 'deeptech'] as const,
   },
   school_of_information: {
     label: 'School of Information',
@@ -46,7 +44,6 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
       { degreeType: 'masters', name: 'Human-Computer Interaction', abbreviation: 'HCI' },
       { degreeType: 'masters', name: 'Information Systems', abbreviation: 'MIS' },
     ] as const,
-    sectorInterests: ['data', 'ux'] as const,
   },
   natural_sciences: {
     label: 'Natural Sciences',
@@ -58,7 +55,6 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
       { degreeType: 'bachelors', name: 'Chemistry', abbreviation: 'Chemistry' },
       { degreeType: 'bachelors', name: 'Neuroscience', abbreviation: 'Neuroscience' },
     ] as const,
-    sectorInterests: ['healthtech', 'biotech'] as const,
   },
   liberal_arts: {
     label: 'Liberal Arts',
@@ -70,7 +66,6 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
       { degreeType: 'bachelors', name: 'Government', abbreviation: 'Government' },
       { degreeType: 'bachelors', name: 'Plan II Honors', abbreviation: 'Plan II' },
     ] as const,
-    sectorInterests: ['policy', 'impact'] as const,
   },
   moody_communication: {
     label: 'Moody Communication',
@@ -83,7 +78,6 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
       { degreeType: 'bachelors', name: 'Public Relations', abbreviation: 'PR' },
       { degreeType: 'bachelors', name: 'Radio-Television-Film', abbreviation: 'RTF' },
     ] as const,
-    sectorInterests: ['media', 'consumer'] as const,
   },
   college_of_fine_arts: {
     label: 'College of Fine Arts',
@@ -96,7 +90,6 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
       { degreeType: 'bachelors', name: 'Music', abbreviation: 'Music' },
       { degreeType: 'bachelors', name: 'Theatre', abbreviation: 'Theatre' },
     ] as const,
-    sectorInterests: ['edtech', 'consumer'] as const,
   },
   school_of_architecture: {
     label: 'School of Architecture',
@@ -108,7 +101,6 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
       { degreeType: 'masters', name: 'Architecture', abbreviation: 'MArch' },
       { degreeType: 'masters', name: 'Urban Design', abbreviation: 'Urban Design' },
     ] as const,
-    sectorInterests: ['proptech', 'cleantech'] as const,
   },
   lbj_public_affairs: {
     label: 'LBJ Public Affairs',
@@ -120,7 +112,6 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
       { degreeType: 'masters', name: 'Global Policy', abbreviation: 'Global Policy' },
       { degreeType: 'professional', name: 'Juris Doctor / Public Affairs', abbreviation: 'JD/MPAff' },
     ] as const,
-    sectorInterests: ['govtech', 'impact'] as const,
   },
   dell_medical_school: {
     label: 'Dell Medical School',
@@ -132,7 +123,6 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
       { degreeType: 'professional', name: 'Doctor of Medicine / Doctor of Philosophy', abbreviation: 'MD/PhD' },
       { degreeType: 'masters', name: 'Health Innovation', abbreviation: 'Health Innovation' },
     ] as const,
-    sectorInterests: ['healthtech', 'biotech'] as const,
   },
 } as const;
 
@@ -183,12 +173,6 @@ export const getProgramsForSchoolAndDegreeType = (
   return getProgramsForSchool(school).filter(
     p => p.degreeType === degreeType,
   );
-};
-
-export const getSectorInterestsForSchool = (
-  school: UTCollege,
-): readonly UTSectorInterest[] => {
-  return UT_SCHOOLS_AND_PROGRAMS[school].sectorInterests;
 };
 
 export const getSchoolLabel = (school: UTCollege): string => {
