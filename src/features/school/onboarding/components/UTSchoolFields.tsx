@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import {
   UseFormRegister,
   UseFormWatch,
@@ -15,6 +16,7 @@ import {
   DEGREE_TYPE_LABELS,
   SECTOR_INTEREST_LABELS,
 } from "@/features/school/data/utSchoolsAndMajors";
+import { deriveUtStatus } from "@/features/school/onboarding/deriveUtStatus";
 
 const LABEL_CLS =
   "text-xs font-semibold tracking-widest text-[var(--ui-text-muted)] uppercase";
@@ -49,6 +51,14 @@ export default function UTSchoolFields<T extends FieldValues>({ register, watch,
   const utCollegeValue = w("utCollege");
   const utDegreeTypeValue = w("utDegreeType");
   const utSectorInterestsValue = w("utSectorInterests") || [];
+  const gradYearValue = w("gradYear");
+
+  // A graduation year that's already passed means the person is alumni,
+  // even if they'd previously selected (or defaulted to) "student".
+  useEffect(() => {
+    const corrected = deriveUtStatus(utStatusValue, gradYearValue);
+    if (corrected && corrected !== utStatusValue) sv("utStatus", corrected);
+  }, [utStatusValue, gradYearValue, sv]);
 
   const availableDegreeTypes = utCollegeValue ? getDegreeTypesForSchool(utCollegeValue) : [];
   const availablePrograms =
