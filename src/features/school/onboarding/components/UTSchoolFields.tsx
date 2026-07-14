@@ -60,6 +60,11 @@ export default function UTSchoolFields<T extends FieldValues>({ register, watch,
     if (corrected && corrected !== utStatusValue) sv("utStatus", corrected);
   }, [utStatusValue, gradYearValue, sv]);
 
+  const currentYear = new Date().getFullYear();
+  const isAlumni = utStatusValue === "alumni";
+  const gradYearMin = isAlumni ? 1965 : currentYear;
+  const gradYearMax = isAlumni ? currentYear : currentYear + 10;
+
   const availableDegreeTypes = utCollegeValue ? getDegreeTypesForSchool(utCollegeValue) : [];
   const availablePrograms =
     utCollegeValue && utDegreeTypeValue
@@ -202,8 +207,14 @@ export default function UTSchoolFields<T extends FieldValues>({ register, watch,
           placeholder="e.g. 2026"
           {...reg("gradYear", {
             valueAsNumber: true,
-            min: { value: 1900, message: "Invalid year" },
-            max: { value: 2035, message: "Invalid year" },
+            min: {
+              value: gradYearMin,
+              message: isAlumni ? "Invalid year" : "Graduation year can't be in the past for students",
+            },
+            max: {
+              value: gradYearMax,
+              message: isAlumni ? "Graduation year can't be in the future for alumni" : "Invalid year",
+            },
           })}
         />
         {errs.gradYear && (
