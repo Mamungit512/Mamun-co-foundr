@@ -21,7 +21,8 @@ export default async function SSOCompletePage({
 
   const org = await getOrganizationBySlug(slug);
   if (!org) {
-    redirect("/");
+    console.error("sso-complete: org lookup failed for slug", slug);
+    return <AutoRetry />;
   }
 
   const clerk = await clerkClient();

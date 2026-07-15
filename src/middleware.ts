@@ -31,6 +31,7 @@ const isPublicRoute = createRouteMatcher([
   "/school/:slug/not-authorized",
   "/school/:slug/sign-up(.*)",
   "/school/:slug/sign-in(.*)",
+  "/school/:slug/reset-password(.*)",
   "/school/:slug/sso-callback(.*)",
   "/school/:slug/sso-complete(.*)",
 ]);
@@ -225,7 +226,13 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   // regardless of the user's global organization_id.
   // ----------------------------------------------------------------
   if (isSchoolContext) {
-    if (isApiRoute || isPublicRoute(req)) {
+    // The bare school landing page ("/school/:slug") is public so anonymous
+    // visitors and users of other orgs can view the marketing page, but it
+    // must not become a dead end for a just-signed-up member of *this* org —
+    // see the dedicated check below, run after org resolution.
+    const isBareSchoolLanding = pathname === `/school/${pathSlug}`;
+
+    if (isApiRoute || (isPublicRoute(req) && !isBareSchoolLanding)) {
       return NextResponse.next();
     }
 
@@ -235,9 +242,26 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
       return NextResponse.next();
     }
 
+    if (isBareSchoolLanding) {
+      const claimOrgId = sessionClaims?.metadata?.organization_id;
+      if (claimOrgId === org.id) {
+        const schoolOnboarding = sessionClaims?.metadata?.schoolOnboarding;
+        const schoolDone =
+          schoolOnboarding?.[org.id] === true ||
+          (sessionClaims?.metadata?.onboardingComplete === true &&
+            sessionClaims?.metadata?.organization_id === org.id);
+        if (!schoolDone) {
+          return NextResponse.redirect(
+            new URL(`/school/${org.slug}/onboarding`, req.url),
+          );
+        }
+      }
+      return NextResponse.next();
+    }
+
     // MEMBERSHIP / EMAIL-DOMAIN GATE
     // Skip on auth-flow paths (sign-in/up/sso-*): sso-complete assigns org.
-    const isAuthFlowPath = /\/(sign-in|sign-up|sso-callback|sso-complete)(\/|$)/.test(pathname);
+    const isAuthFlowPath = /\/(sign-in|sign-up|reset-password|sso-callback|sso-complete)(\/|$)/.test(pathname);
     if (!isAuthFlowPath) {
       const claimOrgId = sessionClaims?.metadata?.organization_id;
       // Fast path: already assigned to this org via Clerk metadata → skip Clerk API call.

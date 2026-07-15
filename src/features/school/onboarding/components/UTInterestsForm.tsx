@@ -142,10 +142,17 @@ function UTInterestsForm({
 
   const selectedAreas = watch("priorityAreas") || [];
 
+  // defaultValues crosses a JSON boundary (localStorage draft / API response),
+  // so its shape isn't guaranteed to match the string[] type at runtime.
+  const defaultPriorityAreas = Array.isArray(defaultValues?.priorityAreas)
+    ? defaultValues.priorityAreas
+    : [];
+
   useEffect(() => {
-    if (defaultValues?.priorityAreas) {
-      reset(defaultValues);
+    if (defaultPriorityAreas.length > 0) {
+      reset({ priorityAreas: defaultPriorityAreas });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues, reset]);
 
   const errCount = Object.keys(errors).length;
@@ -209,9 +216,7 @@ function UTInterestsForm({
                         value={tag}
                         {...register("priorityAreas")}
                         disabled={isDisabled}
-                        defaultChecked={defaultValues?.priorityAreas?.includes(
-                          tag,
-                        )}
+                        defaultChecked={defaultPriorityAreas.includes(tag)}
                         className="sr-only"
                       />
                       {tag}

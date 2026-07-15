@@ -34,10 +34,12 @@ const PILL_RADIO_CLS =
 function AboutYouForm({
   onNext,
   onBack,
+  onManualSave,
   defaultValues,
 }: {
   onNext: (data: AboutYouData) => void;
   onBack: () => void;
+  onManualSave?: (data: Partial<AboutYouData>) => void;
   defaultValues?: Partial<AboutYouData>;
 }) {
   const fieldsRef = useStepEntry();
@@ -50,6 +52,7 @@ function AboutYouForm({
     reset,
     watch,
     setValue,
+    getValues,
   } = useForm<AboutYouData>({ defaultValues });
 
   const titleValue = watch("title") || "";
@@ -409,6 +412,15 @@ function AboutYouForm({
           >
             ← Back
           </button>
+          {onManualSave && (
+            <button
+              type="button"
+              onClick={() => onManualSave(getValues())}
+              className="text-sm font-medium text-[var(--ui-text-muted)] underline-offset-2 hover:text-[var(--ui-text)] hover:underline"
+            >
+              Save progress
+            </button>
+          )}
           <button
             type="submit"
             className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-[var(--ui-btn-bg)] px-8 py-3.5 text-sm font-semibold text-[var(--ui-btn-text)] shadow-lg shadow-black/5 transition-all duration-200 hover:bg-[var(--ui-btn-bg)]/90 active:scale-[0.98] sm:flex-none"

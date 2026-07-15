@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import {
   UseFormRegister,
   UseFormWatch,
@@ -15,6 +16,7 @@ import {
   DEGREE_TYPE_LABELS,
   SECTOR_INTEREST_LABELS,
 } from "@/features/school/data/utSchoolsAndMajors";
+import { deriveUtStatus } from "@/features/school/onboarding/deriveUtStatus";
 
 const LABEL_CLS =
   "text-xs font-semibold tracking-widest text-[var(--ui-text-muted)] uppercase";
@@ -49,6 +51,19 @@ export default function UTSchoolFields<T extends FieldValues>({ register, watch,
   const utCollegeValue = w("utCollege");
   const utDegreeTypeValue = w("utDegreeType");
   const utSectorInterestsValue = w("utSectorInterests") || [];
+  const gradYearValue = w("gradYear");
+
+  // A graduation year that's already passed means the person is alumni,
+  // even if they'd previously selected (or defaulted to) "student".
+  useEffect(() => {
+    const corrected = deriveUtStatus(utStatusValue, gradYearValue);
+    if (corrected && corrected !== utStatusValue) sv("utStatus", corrected);
+  }, [utStatusValue, gradYearValue, sv]);
+
+  const currentYear = new Date().getFullYear();
+  const isAlumni = utStatusValue === "alumni";
+  const gradYearMin = isAlumni ? 1965 : currentYear;
+  const gradYearMax = isAlumni ? currentYear : currentYear + 10;
 
   const availableDegreeTypes = utCollegeValue ? getDegreeTypesForSchool(utCollegeValue) : [];
   const availablePrograms =
@@ -192,8 +207,14 @@ export default function UTSchoolFields<T extends FieldValues>({ register, watch,
           placeholder="e.g. 2026"
           {...reg("gradYear", {
             valueAsNumber: true,
-            min: { value: 1900, message: "Invalid year" },
-            max: { value: 2035, message: "Invalid year" },
+            min: {
+              value: gradYearMin,
+              message: isAlumni ? "Invalid year" : "Graduation year can't be in the past for students",
+            },
+            max: {
+              value: gradYearMax,
+              message: isAlumni ? "Graduation year can't be in the future for alumni" : "Invalid year",
+            },
           })}
         />
         {errs.gradYear && (

@@ -10,6 +10,7 @@ import OnboardingProgressBar from "@/components/ui/OnboardingProgressBar";
 import { useOnboardingDraft } from "@/hooks/useOnboardingDraft";
 import { useStepTransition } from "@/hooks/useOnboardingAnimation";
 import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 
 type CreateProfileProps = {
   onSubmit: (
@@ -127,6 +128,17 @@ function CreateProfile({ onSubmit, initialData, onSuccess, onError }: CreateProf
     goToStep(stepNumber - 1, "back");
   };
 
+  const handleManualSave = (stepData: Partial<OnboardingData>) => {
+    const merged = { ...formData, ...stepData };
+    setFormData(merged);
+    const ok = draft.save(stepNumber, merged);
+    if (ok) {
+      toast.success("Progress saved");
+    } else {
+      toast.error("Couldn't save — your browser storage may be full or disabled");
+    }
+  };
+
   const handleEditStep = (step: number) => {
     goToStep(step, step < stepNumber ? "back" : "forward");
   };
@@ -178,6 +190,7 @@ function CreateProfile({ onSubmit, initialData, onSuccess, onError }: CreateProf
           <AboutYouForm
             onBack={handleBack}
             onNext={(newData) => advanceStep(newData, 3)}
+            onManualSave={handleManualSave}
             defaultValues={formData}
           />
         )}
@@ -185,6 +198,7 @@ function CreateProfile({ onSubmit, initialData, onSuccess, onError }: CreateProf
           <StartupForm
             onBack={handleBack}
             onNext={(newData) => advanceStep(newData, 4)}
+            onManualSave={handleManualSave}
             defaultValues={formData}
           />
         )}
@@ -192,6 +206,7 @@ function CreateProfile({ onSubmit, initialData, onSuccess, onError }: CreateProf
           <BackgroundAndSocialsForm
             onBack={handleBack}
             onNext={(newData) => advanceStep(newData, 5)}
+            onManualSave={handleManualSave}
             defaultValues={formData}
           />
         )}
@@ -199,6 +214,7 @@ function CreateProfile({ onSubmit, initialData, onSuccess, onError }: CreateProf
           <InterestsAndValuesForm
             onBack={handleBack}
             onNext={(newData) => advanceStep(newData, 6)}
+            onManualSave={handleManualSave}
             defaultValues={formData}
           />
         )}
