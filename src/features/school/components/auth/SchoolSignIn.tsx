@@ -9,10 +9,10 @@ import {
   formatAllowedDomainsForCopy,
 } from "@/features/school/auth/email-domain";
 import {
-  assignSchoolOrg,
   checkExistingUser,
   type ExistingUserInfo,
 } from "@/features/school/auth/school-auth";
+import { completeSchoolSignIn } from "./complete-school-signin";
 import GoogleOAuthButton from "./GoogleOAuthButton";
 
 type Props = {
@@ -73,14 +73,15 @@ export default function SchoolSignIn({
   async function completeSignIn(sessionId: string | null) {
     // setActive is guaranteed defined here: every caller only reaches this
     // after `isLoaded` was already checked truthy in the calling handler.
-    await setActive!({ session: sessionId });
-    const assigned = await assignSchoolOrg(slug);
-    if ("error" in assigned) {
-      setError(assigned.error);
-      return;
-    }
-    await getToken({ skipCache: true });
-    router.push(afterAuthRedirect ?? `/school/${slug}`);
+    const { error: assignError } = await completeSchoolSignIn({
+      setActive: setActive!,
+      getToken,
+      router,
+      slug,
+      sessionId,
+      afterAuthRedirect,
+    });
+    if (assignError) setError(assignError);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -269,13 +270,28 @@ export default function SchoolSignIn({
 
               {showPasswordField && (
                 <div>
-                  <label
-                    htmlFor="password"
-                    className="mb-1 block text-xs font-medium"
-                    style={{ color: "#333f48" }}
-                  >
-                    Password
-                  </label>
+                  <div className="mb-1 flex items-center justify-between">
+                    <label
+                      htmlFor="password"
+                      className="block text-xs font-medium"
+                      style={{ color: "#333f48" }}
+                    >
+                      Password
+                    </label>
+                    <Link
+                      href={`/school/${slug}/reset-password?email=${encodeURIComponent(
+                        email,
+                      )}${
+                        afterAuthRedirect
+                          ? `&redirect=${encodeURIComponent(afterAuthRedirect)}`
+                          : ""
+                      }`}
+                      className="text-xs font-medium hover:underline"
+                      style={{ color: "#bf5700" }}
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
                   <input
                     id="password"
                     type="password"

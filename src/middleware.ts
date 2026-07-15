@@ -31,6 +31,7 @@ const isPublicRoute = createRouteMatcher([
   "/school/:slug/not-authorized",
   "/school/:slug/sign-up(.*)",
   "/school/:slug/sign-in(.*)",
+  "/school/:slug/reset-password(.*)",
   "/school/:slug/sso-callback(.*)",
   "/school/:slug/sso-complete(.*)",
 ]);
@@ -260,7 +261,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
 
     // MEMBERSHIP / EMAIL-DOMAIN GATE
     // Skip on auth-flow paths (sign-in/up/sso-*): sso-complete assigns org.
-    const isAuthFlowPath = /\/(sign-in|sign-up|sso-callback|sso-complete)(\/|$)/.test(pathname);
+    const isAuthFlowPath = /\/(sign-in|sign-up|reset-password|sso-callback|sso-complete)(\/|$)/.test(pathname);
     if (!isAuthFlowPath) {
       const claimOrgId = sessionClaims?.metadata?.organization_id;
       // Fast path: already assigned to this org via Clerk metadata → skip Clerk API call.
