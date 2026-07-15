@@ -225,13 +225,36 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   // regardless of the user's global organization_id.
   // ----------------------------------------------------------------
   if (isSchoolContext) {
-    if (isApiRoute || isPublicRoute(req)) {
+    // The bare school landing page ("/school/:slug") is public so anonymous
+    // visitors and users of other orgs can view the marketing page, but it
+    // must not become a dead end for a just-signed-up member of *this* org —
+    // see the dedicated check below, run after org resolution.
+    const isBareSchoolLanding = pathname === `/school/${pathSlug}`;
+
+    if (isApiRoute || (isPublicRoute(req) && !isBareSchoolLanding)) {
       return NextResponse.next();
     }
 
     const org = await resolveOrgBySlug(pathSlug!);
     if (!org) {
       // Unknown slug — let the [slug] layout handle notFound()
+      return NextResponse.next();
+    }
+
+    if (isBareSchoolLanding) {
+      const claimOrgId = sessionClaims?.metadata?.organization_id;
+      if (claimOrgId === org.id) {
+        const schoolOnboarding = sessionClaims?.metadata?.schoolOnboarding;
+        const schoolDone =
+          schoolOnboarding?.[org.id] === true ||
+          (sessionClaims?.metadata?.onboardingComplete === true &&
+            sessionClaims?.metadata?.organization_id === org.id);
+        if (!schoolDone) {
+          return NextResponse.redirect(
+            new URL(`/school/${org.slug}/onboarding`, req.url),
+          );
+        }
+      }
       return NextResponse.next();
     }
 
