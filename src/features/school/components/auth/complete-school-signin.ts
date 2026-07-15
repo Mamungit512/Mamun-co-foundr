@@ -30,6 +30,6 @@ export async function completeSchoolSignIn(opts: {
     return { error: assigned.error };
   }
   await getToken({ skipCache: true });
-  router.push(afterAuthRedirect ?? `/school/${slug}`);
+  router.push(afterAuthRedirect ?? `/school/${slug}/dashboard`);
   return {};
 }
