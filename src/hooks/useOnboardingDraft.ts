@@ -37,14 +37,16 @@ export function useOnboardingDraft() {
     }
   };
 
-  const save = (step: number, data: OnboardingData) => {
+  const save = (step: number, data: OnboardingData): boolean => {
     try {
       localStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({ step, data: stripPhoto(data) }),
       );
+      return true;
     } catch {
-      // Storage full or unavailable — fail silently
+      // Storage full or unavailable
+      return false;
     }
   };
 
