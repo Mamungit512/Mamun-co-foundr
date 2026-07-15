@@ -5,6 +5,7 @@ import {
   mapSchoolProfileToUTData,
   mapUTDataToSchoolProfileRow,
 } from "@/lib/mapProfileToFromDBFormat";
+import { deriveUtStatus } from "@/features/school/onboarding/deriveUtStatus";
 
 // Shared onboarding-profile service used by the unified /api/profile endpoint
 // (and its deprecated /api/ut-profile alias). A user's school membership is
@@ -84,6 +85,13 @@ export async function saveOnboardingProfile({
       status: 400,
       error: "utStatus is required for school profiles",
     };
+  }
+
+  // A self-reported "student" whose graduation year has already passed is
+  // actually alumni — correct it here so the DB stays right even if a client
+  // bug (or a direct API call) submits a stale/inconsistent utStatus.
+  if (isSchool) {
+    formData = { ...formData, utStatus: deriveUtStatus(formData.utStatus, formData.gradYear) };
   }
 
   const supabase = serviceRoleClient();

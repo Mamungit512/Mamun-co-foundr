@@ -29,6 +29,7 @@ function ConversationPage({ params }: ConversationPageProps) {
   const [sendError, setSendError] = React.useState<string | null>(null);
   const [isLimitReached, setIsLimitReached] = React.useState<boolean>(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
   React.useEffect(() => {
     params.then((resolvedParams) => {
@@ -47,9 +48,15 @@ function ConversationPage({ params }: ConversationPageProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Grow the message box to fit its content, up to a max height
+  React.useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+  }, [messageInput]);
 
+  const sendCurrentMessage = async () => {
     if (!messageInput.trim() || isSending) return;
 
     setIsSending(true);
@@ -88,6 +95,11 @@ function ConversationPage({ params }: ConversationPageProps) {
     } finally {
       setIsSending(false);
     }
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await sendCurrentMessage();
   };
 
   return (
@@ -168,12 +180,12 @@ function ConversationPage({ params }: ConversationPageProps) {
         {/* Notifications - Always Visible */}
         <div className="space-y-3">
           {/* Privacy Notice */}
-          <div className="rounded-lg border border-white bg-(--charcoal-black) p-3">
-            <div className="mb-2 flex items-center gap-2 text-yellow-400">
+          <div className="rounded-lg border border-blue-500/30 bg-blue-500/20 p-3">
+            <div className="mb-2 flex items-center gap-2 text-blue-400">
               <div className="h-4 w-4 rounded-full bg-blue-500"></div>
               <span className="text-sm font-medium">Privacy Notice</span>
             </div>
-            <p className="text-xs text-white">
+            <p className="text-xs text-blue-300">
               This is a starting point to connect outside of Mamun. Messages are
               not encrypted, so please don&apos;t write any sensitive data in
               the chat.
@@ -290,11 +302,12 @@ function ConversationPage({ params }: ConversationPageProps) {
 
             <form
               onSubmit={handleSendMessage}
-              className="flex items-center gap-3"
+              className="flex items-end gap-3"
             >
               <div className="flex-1">
-                <input
-                  type="text"
+                <textarea
+                  ref={textareaRef}
+                  rows={1}
                   placeholder={
                     messages.length >= 20
                       ? "Message limit reached"
@@ -302,7 +315,13 @@ function ConversationPage({ params }: ConversationPageProps) {
                   }
                   value={messageInput}
                   onChange={(e) => setMessageInput(e.target.value)}
-                  className="w-full rounded-lg border border-white/30 bg-[var(--charcoal-black)] px-4 py-2 text-white placeholder-white/30 transition-colors focus:border-white focus:outline-none"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      sendCurrentMessage();
+                    }
+                  }}
+                  className="max-h-40 w-full resize-none overflow-y-auto rounded-lg border border-white/30 bg-[var(--charcoal-black)] px-4 py-2 text-white placeholder-white/30 transition-colors focus:border-white focus:outline-none"
                   disabled={isSending || messages.length >= 20}
                   maxLength={1000}
                 />
@@ -325,7 +344,7 @@ function ConversationPage({ params }: ConversationPageProps) {
               </button>
             </form>
             <p className="mt-2 text-center text-xs text-white/30">
-              Press Enter or click Send to send your message
+              Press Enter to send, Shift+Enter for a new line
             </p>
           </div>
         </motion.div>

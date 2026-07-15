@@ -98,7 +98,7 @@ export default function AcceptInviteClient({
             {inviterName} invited you to link as co-founders
           </h1>
           {inviterTitle && (
-            <p className="mt-1 text-sm" style={{ color: "#9cadb7" }}>
+            <p className="mt-1 text-sm" style={{ color: "#5f7280" }}>
               {inviterTitle}
             </p>
           )}
@@ -116,7 +116,7 @@ export default function AcceptInviteClient({
               </p>
             )}
             {note && (
-              <p className="text-sm italic" style={{ color: "#9cadb7" }}>
+              <p className="text-sm italic" style={{ color: "#5f7280" }}>
                 &ldquo;{note}&rdquo;
               </p>
             )}
@@ -128,15 +128,14 @@ export default function AcceptInviteClient({
           <button
             type="button"
             onClick={() => setEditingRole(true)}
-            className="mb-4 flex cursor-pointer items-center gap-1.5 text-xs font-medium transition hover:opacity-80"
-            style={{ color: "#bf5700" }}
+            className="mb-4 flex cursor-pointer items-center gap-1.5 text-xs font-medium text-[#bf5700] transition hover:text-[#a34800]"
           >
             <FaPencil className="h-3 w-3" />
             Edit my role
           </button>
         ) : (
           <div className="mb-4 space-y-1.5">
-            <label className="block text-xs font-medium" style={{ color: "#9cadb7" }}>
+            <label className="block text-xs font-medium" style={{ color: "#5f7280" }}>
               Your role
             </label>
             <select
@@ -155,7 +154,7 @@ export default function AcceptInviteClient({
           </div>
         )}
 
-        <p className="mb-6 text-center text-sm" style={{ color: "#9cadb7" }}>
+        <p className="mb-6 text-center text-sm" style={{ color: "#5f7280" }}>
           Accepting will link your profiles as confirmed co-founders, visible on both your cards.
         </p>
 
@@ -174,8 +173,7 @@ export default function AcceptInviteClient({
             type="button"
             onClick={handleAccept}
             disabled={accepting || declining}
-            className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-            style={{ backgroundColor: "#bf5700" }}
+            className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#bf5700] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#a34800] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <FaHandshake className="h-4 w-4" />
             {accepting ? "Accepting…" : "Accept"}

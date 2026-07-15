@@ -178,7 +178,7 @@ export default function CoFounderPanel({
           <button
             type="submit"
             disabled={sendInvite.isPending || !email.trim()}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--ui-btn-bg)] px-4 py-2 text-sm font-medium text-[var(--ui-btn-text)] transition hover:opacity-90 disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--ui-btn-bg)] px-4 py-2 text-sm font-medium text-[var(--ui-btn-text)] transition hover:bg-[#a34800] disabled:opacity-50"
           >
             <FaUserPlus className="h-3.5 w-3.5" />
             {sendInvite.isPending ? "Sending…" : "Send invite"}

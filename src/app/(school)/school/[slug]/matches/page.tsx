@@ -297,7 +297,7 @@ export default function SchoolMatchesPage({
                           <button
                             onClick={() => profile.user_id && handleMessage(profile.user_id)}
                             disabled={createConversationMutation.isPending}
-                            className="flex items-center gap-1.5 rounded-full bg-[var(--org-primary)] px-4 py-2 text-xs font-semibold text-white transition hover:opacity-90 disabled:opacity-50 cursor-pointer"
+                            className="flex items-center gap-1.5 rounded-full bg-[var(--org-primary)] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#a34800] disabled:opacity-50 cursor-pointer"
                           >
                             <FaHandshake className="h-3.5 w-3.5" />
                             It&apos;s a Match!
@@ -332,7 +332,7 @@ export default function SchoolMatchesPage({
                             profile.user_id && handleMessage(profile.user_id)
                           }
                           disabled={createConversationMutation.isPending}
-                          className="rounded-full bg-[var(--org-primary)] px-4 py-2 text-xs font-medium text-white transition hover:opacity-90 disabled:opacity-50 cursor-pointer"
+                          className="rounded-full bg-[var(--org-primary)] px-4 py-2 text-xs font-medium text-white transition hover:bg-[#a34800] disabled:opacity-50 cursor-pointer"
                         >
                           Message
                         </button>

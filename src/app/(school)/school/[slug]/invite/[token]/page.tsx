@@ -38,13 +38,12 @@ export default async function InviteAcceptPage({
           <p className="text-base font-semibold" style={{ color: "#333f48" }}>
             This invite is no longer valid
           </p>
-          <p className="mt-2 text-sm" style={{ color: "#9cadb7" }}>
+          <p className="mt-2 text-sm" style={{ color: "#5f7280" }}>
             It may have expired, been revoked, or already accepted.
           </p>
           <Link
             href={`/school/${slug}/dashboard`}
-            className="mt-6 inline-block cursor-pointer rounded-xl px-6 py-2.5 text-sm font-semibold text-white"
-            style={{ backgroundColor: "#bf5700" }}
+            className="mt-6 inline-block cursor-pointer rounded-xl bg-[#bf5700] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#a34800]"
           >
             Go to dashboard
           </Link>
@@ -94,18 +93,17 @@ export default async function InviteAcceptPage({
             {inviterName} wants to link as co-founders
           </h1>
           {inviterProfile?.title && (
-            <p className="mt-1 text-sm" style={{ color: "#9cadb7" }}>
+            <p className="mt-1 text-sm" style={{ color: "#5f7280" }}>
               {inviterProfile.title}
             </p>
           )}
-          <p className="mt-4 text-sm" style={{ color: "#9cadb7" }}>
+          <p className="mt-4 text-sm" style={{ color: "#5f7280" }}>
             Sign in or create an account to accept this invite.
           </p>
           <div className="mt-6 flex flex-col gap-3">
             <Link
               href={signInUrl}
-              className="cursor-pointer rounded-xl px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
-              style={{ backgroundColor: "#bf5700" }}
+              className="cursor-pointer rounded-xl bg-[#bf5700] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#a34800]"
             >
               Sign in
             </Link>

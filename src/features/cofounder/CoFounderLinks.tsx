@@ -41,7 +41,7 @@ export default function CoFounderLinks({ userId, onClickCofounder }: Props) {
                   className="h-9 w-9 flex-shrink-0 rounded-full object-cover"
                 />
               ) : (
-                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#bf5700]/20 text-sm font-bold text-[#bf5700]">
+                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#bf5700]/20 text-sm font-bold text-[#a34800]">
                   {initials}
                 </span>
               )}

@@ -9,10 +9,10 @@ import {
   formatAllowedDomainsForCopy,
 } from "@/features/school/auth/email-domain";
 import {
-  assignSchoolOrg,
   checkExistingUser,
   type ExistingUserInfo,
 } from "@/features/school/auth/school-auth";
+import { completeSchoolSignIn } from "./complete-school-signin";
 import GoogleOAuthButton from "./GoogleOAuthButton";
 
 type Props = {
@@ -73,14 +73,15 @@ export default function SchoolSignIn({
   async function completeSignIn(sessionId: string | null) {
     // setActive is guaranteed defined here: every caller only reaches this
     // after `isLoaded` was already checked truthy in the calling handler.
-    await setActive!({ session: sessionId });
-    const assigned = await assignSchoolOrg(slug);
-    if ("error" in assigned) {
-      setError(assigned.error);
-      return;
-    }
-    await getToken({ skipCache: true });
-    router.push(afterAuthRedirect ?? `/school/${slug}`);
+    const { error: assignError } = await completeSchoolSignIn({
+      setActive: setActive!,
+      getToken,
+      router,
+      slug,
+      sessionId,
+      afterAuthRedirect,
+    });
+    if (assignError) setError(assignError);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -215,7 +216,7 @@ export default function SchoolSignIn({
               </>
             )}
           </h1>
-          <p className="text-sm" style={{ color: "#9cadb7" }}>
+          <p className="text-sm" style={{ color: "#5f7280" }}>
             {pendingSecondFactor
               ? `We sent a 6-digit code to ${email}.`
               : `Use your ${allowedCopy} account.`}
@@ -235,7 +236,7 @@ export default function SchoolSignIn({
             </div>
             <div className="mb-4 flex items-center gap-3">
               <div className="h-px flex-1" style={{ backgroundColor: "#e8e4dc" }} />
-              <span className="text-[10px] uppercase tracking-[0.1em]" style={{ color: "#9cadb7" }}>
+              <span className="text-[10px] uppercase tracking-[0.1em]" style={{ color: "#5f7280" }}>
                 or
               </span>
               <div className="h-px flex-1" style={{ backgroundColor: "#e8e4dc" }} />
@@ -269,13 +270,28 @@ export default function SchoolSignIn({
 
               {showPasswordField && (
                 <div>
-                  <label
-                    htmlFor="password"
-                    className="mb-1 block text-xs font-medium"
-                    style={{ color: "#333f48" }}
-                  >
-                    Password
-                  </label>
+                  <div className="mb-1 flex items-center justify-between">
+                    <label
+                      htmlFor="password"
+                      className="block text-xs font-medium"
+                      style={{ color: "#333f48" }}
+                    >
+                      Password
+                    </label>
+                    <Link
+                      href={`/school/${slug}/reset-password?email=${encodeURIComponent(
+                        email,
+                      )}${
+                        afterAuthRedirect
+                          ? `&redirect=${encodeURIComponent(afterAuthRedirect)}`
+                          : ""
+                      }`}
+                      className="text-xs font-medium hover:underline"
+                      style={{ color: "#bf5700" }}
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
                   <input
                     id="password"
                     type="password"
@@ -294,8 +310,7 @@ export default function SchoolSignIn({
                 <button
                   type="submit"
                   disabled={submitting || !isLoaded}
-                  className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-                  style={{ backgroundColor: "#bf5700" }}
+                  className="w-full rounded-lg bg-[#bf5700] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#a34800] disabled:opacity-50"
                 >
                   {submitting ? "Signing in…" : "Sign in"}
                 </button>
@@ -329,8 +344,7 @@ export default function SchoolSignIn({
             <button
               type="submit"
               disabled={submitting || !isLoaded}
-              className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-              style={{ backgroundColor: "#bf5700" }}
+              className="w-full rounded-lg bg-[#bf5700] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#a34800] disabled:opacity-50"
             >
               {submitting ? "Verifying…" : "Verify and continue"}
             </button>
@@ -339,7 +353,7 @@ export default function SchoolSignIn({
 
         <div
           className="mt-6 border-t pt-4 text-center text-xs"
-          style={{ borderColor: "#e8e4dc", color: "#9cadb7" }}
+          style={{ borderColor: "#e8e4dc", color: "#5f7280" }}
         >
           Don&apos;t have an account?{" "}
           <Link

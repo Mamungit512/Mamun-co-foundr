@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import {
   UseFormRegister,
   UseFormWatch,
@@ -15,12 +16,13 @@ import {
   DEGREE_TYPE_LABELS,
   SECTOR_INTEREST_LABELS,
 } from "@/features/school/data/utSchoolsAndMajors";
+import { deriveUtStatus } from "@/features/school/onboarding/deriveUtStatus";
 
 const LABEL_CLS =
   "text-xs font-semibold tracking-widest text-[var(--ui-text-muted)] uppercase";
 
 const SELECT_CLS =
-  "w-full rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] px-4 py-3.5 text-[var(--ui-text)] placeholder-[var(--ui-text-subtle)] transition-all duration-200 focus:border-[var(--ui-border-strong)] focus:bg-[var(--ui-surface)] focus:ring-2 focus:ring-[var(--ui-border)] focus:outline-none hover:border-[var(--ui-border-strong)]";
+  "w-full rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] px-4 py-3.5 text-[var(--ui-text)] placeholder-[var(--ui-text-subtle)] transition-all duration-200 focus:border-[var(--ui-border-strong)] focus:bg-[var(--ui-surface)] focus:ring-2 focus:ring-[var(--ui-border)] focus:outline-none hover:border-[var(--ui-border-strong)] [&>option]:bg-[var(--ui-popover-bg)] [&>option]:text-[var(--ui-text)]";
 
 type UTSchoolFieldsData = {
   utStatus: "student" | "alumni";
@@ -49,6 +51,19 @@ export default function UTSchoolFields<T extends FieldValues>({ register, watch,
   const utCollegeValue = w("utCollege");
   const utDegreeTypeValue = w("utDegreeType");
   const utSectorInterestsValue = w("utSectorInterests") || [];
+  const gradYearValue = w("gradYear");
+
+  // A graduation year that's already passed means the person is alumni,
+  // even if they'd previously selected (or defaulted to) "student".
+  useEffect(() => {
+    const corrected = deriveUtStatus(utStatusValue, gradYearValue);
+    if (corrected && corrected !== utStatusValue) sv("utStatus", corrected);
+  }, [utStatusValue, gradYearValue, sv]);
+
+  const currentYear = new Date().getFullYear();
+  const isAlumni = utStatusValue === "alumni";
+  const gradYearMin = isAlumni ? 1965 : currentYear;
+  const gradYearMax = isAlumni ? currentYear : currentYear + 10;
 
   const availableDegreeTypes = utCollegeValue ? getDegreeTypesForSchool(utCollegeValue) : [];
   const availablePrograms =
@@ -156,7 +171,7 @@ export default function UTSchoolFields<T extends FieldValues>({ register, watch,
             Select relevant sectors aligned with your program
           </p>
           <div className="flex flex-wrap gap-2">
-            {UT_SCHOOLS_AND_PROGRAMS[utCollegeValue].sectorInterests.map((sector) => (
+            {(Object.keys(SECTOR_INTEREST_LABELS) as UTSectorInterest[]).map((sector) => (
               <label
                 key={sector}
                 className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-all duration-150 ${
@@ -192,8 +207,14 @@ export default function UTSchoolFields<T extends FieldValues>({ register, watch,
           placeholder="e.g. 2026"
           {...reg("gradYear", {
             valueAsNumber: true,
-            min: { value: 1900, message: "Invalid year" },
-            max: { value: 2035, message: "Invalid year" },
+            min: {
+              value: gradYearMin,
+              message: isAlumni ? "Invalid year" : "Graduation year can't be in the past for students",
+            },
+            max: {
+              value: gradYearMax,
+              message: isAlumni ? "Graduation year can't be in the future for alumni" : "Invalid year",
+            },
           })}
         />
         {errs.gradYear && (

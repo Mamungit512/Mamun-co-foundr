@@ -87,7 +87,7 @@ export function PolicyDesktopTOC({
 
   return (
     <nav aria-label="Policy table of contents">
-      <p className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400">
+      <p className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-gray-600">
         Contents
       </p>
       <ul className="space-y-0.5">

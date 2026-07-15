@@ -160,7 +160,7 @@ export default function SchoolSignUp({
               </>
             )}
           </h1>
-          <p className="text-sm" style={{ color: "#9cadb7" }}>
+          <p className="text-sm" style={{ color: "#5f7280" }}>
             {pendingVerification
               ? `We sent a 6-digit code to ${email}.`
               : `Sign up with your ${allowedCopy} email.`}
@@ -180,7 +180,7 @@ export default function SchoolSignUp({
             </div>
             <div className="mb-4 flex items-center gap-3">
               <div className="h-px flex-1" style={{ backgroundColor: "#e8e4dc" }} />
-              <span className="text-[10px] uppercase tracking-[0.1em]" style={{ color: "#9cadb7" }}>
+              <span className="text-[10px] uppercase tracking-[0.1em]" style={{ color: "#5f7280" }}>
                 or
               </span>
               <div className="h-px flex-1" style={{ backgroundColor: "#e8e4dc" }} />
@@ -260,8 +260,7 @@ export default function SchoolSignUp({
                     {existingHasPassword && (
                       <Link
                         href={`/school/${slug}/sign-in`}
-                        className="block rounded-lg px-4 py-2 text-center text-xs font-semibold text-white transition-opacity hover:opacity-90"
-                        style={{ backgroundColor: "#bf5700" }}
+                        className="block rounded-lg bg-[#bf5700] px-4 py-2 text-center text-xs font-semibold text-white transition-colors hover:bg-[#a34800]"
                       >
                         Sign in with password
                       </Link>
@@ -294,18 +293,16 @@ export default function SchoolSignUp({
             <button
               type="submit"
               disabled={submitting || !isLoaded}
-              className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-              style={{ backgroundColor: "#bf5700" }}
+              className="w-full rounded-lg bg-[#bf5700] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#a34800] disabled:opacity-50"
             >
               {submitting ? "Creating account…" : "Create account"}
             </button>
 
-            <p className="text-center text-[11px]" style={{ color: "#9cadb7" }}>
+            <p className="text-center text-[11px]" style={{ color: "#5f7280" }}>
               By creating an account, you agree to our{" "}
               <Link
                 href={`/school/${slug}/privacy-policy`}
-                className="font-medium underline hover:opacity-70"
-                style={{ color: "#9cadb7" }}
+                className="font-medium text-[#5f7280] underline transition-colors hover:text-[#a34800]"
               >
                 Privacy Policy
               </Link>
@@ -340,8 +337,7 @@ export default function SchoolSignUp({
             <button
               type="submit"
               disabled={submitting || !isLoaded}
-              className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-              style={{ backgroundColor: "#bf5700" }}
+              className="w-full rounded-lg bg-[#bf5700] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#a34800] disabled:opacity-50"
             >
               {submitting ? "Verifying…" : "Verify and continue"}
             </button>
@@ -350,7 +346,7 @@ export default function SchoolSignUp({
 
         <div
           className="mt-6 border-t pt-4 text-center text-xs"
-          style={{ borderColor: "#e8e4dc", color: "#9cadb7" }}
+          style={{ borderColor: "#e8e4dc", color: "#5f7280" }}
         >
           Already have an account?{" "}
           <Link

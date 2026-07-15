@@ -100,16 +100,17 @@ function SearchResultCard({
               </span>
               {profile.utStatus && (
                 <span
-                  className="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-medium text-white"
-                  style={{
-                    backgroundColor: profile.utStatus === "student" ? "#22c55e" : "#a855f7",
-                  }}
+                  className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-medium ${
+                    profile.utStatus === "student"
+                      ? "bg-emerald-100 text-emerald-800"
+                      : "bg-purple-100 text-purple-800"
+                  }`}
                 >
                   {profile.utStatus === "student" ? "Student" : "Alumni"}
                 </span>
               )}
               {profile.isTechnical && (
-                <span className="inline-flex items-center rounded-md border border-[#bf5700] px-2 py-0.5 text-[10px] font-medium text-[#bf5700]">
+                <span className="inline-flex items-center rounded-md border border-[#bf5700] px-2 py-0.5 text-[10px] font-medium text-[#a34800]">
                   {profile.isTechnical === "yes" ? "Technical" : "Non-technical"}
                 </span>
               )}
@@ -182,6 +183,12 @@ function SearchResultCard({
 export default function SchoolDashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const toggleSearch = () => {
+    setSearchOpen((prev) => {
+      if (prev) setSearchQuery("");
+      return !prev;
+    });
+  };
   const [filters, setFilters] = useState<DashboardFilters>(EMPTY_DASHBOARD_FILTERS);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [viewingUserId, setViewingUserId] = useState<string | null>(null);
@@ -294,9 +301,9 @@ export default function SchoolDashboardPage() {
       <div className="w-8" />
       <div className="text-center">
         <p className="text-xs font-semibold uppercase tracking-widest">
-          <span className="text-[#84cc16]">Mamun</span>
+          <span className="text-[#4d7c0f]">Mamun</span>
           <span className="text-[var(--ui-text-muted)]"> &times; </span>
-          <span className="text-[#BF5700]">{schoolName}</span>
+          <span className="text-[#a34800]">{schoolName}</span>
         </p>
         <h1 className="mt-0.5 text-base font-semibold text-[var(--ui-text)]">
           UT co-foundr Matching
@@ -311,11 +318,16 @@ export default function SchoolDashboardPage() {
           <IoFilterOutline className="h-4 w-4" />
         </button>
         <button
-          onClick={() => setSearchOpen(true)}
+          onClick={toggleSearch}
           className="flex h-8 w-8 items-center justify-center rounded-full bg-[#fff6f0] text-[#BF5700] hover:bg-[#ffe8d6] transition cursor-pointer"
-          aria-label="Open search"
+          aria-expanded={searchOpen}
+          aria-label={searchOpen ? "Close search" : "Open search"}
         >
-          <IoSearchOutline className="h-4 w-4" />
+          {searchOpen ? (
+            <IoCloseOutline className="h-4 w-4" />
+          ) : (
+            <IoSearchOutline className="h-4 w-4" />
+          )}
         </button>
       </div>
     </div>
@@ -356,7 +368,7 @@ export default function SchoolDashboardPage() {
               key={chip.key}
               type="button"
               onClick={() => updateFilters(chip.onRemove())}
-              className="inline-flex items-center gap-1 rounded-md bg-[#bf5700] px-2.5 py-1 text-xs font-medium text-white cursor-pointer hover:opacity-90"
+              className="inline-flex items-center gap-1 rounded-md bg-[#bf5700] px-2.5 py-1 text-xs font-medium text-white cursor-pointer hover:bg-[#a34800]"
             >
               {chip.label}
               <span aria-hidden>&times;</span>
@@ -410,10 +422,10 @@ export default function SchoolDashboardPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by skill, major, industry…"
-            className="flex-1 bg-transparent text-sm text-[#3d1a00] placeholder:text-[#bf5700]/60 outline-none"
+            className="flex-1 bg-transparent text-sm text-[#3d1a00] placeholder:text-[#a34800] outline-none"
           />
           <button
-            onClick={() => { setSearchQuery(""); setSearchOpen(false); }}
+            onClick={toggleSearch}
             className="flex-shrink-0 text-[#BF5700] hover:text-[#8a3d00] cursor-pointer"
           >
             <IoCloseOutline className="h-4 w-4" />
@@ -454,7 +466,7 @@ export default function SchoolDashboardPage() {
                         key={s.dimension}
                         type="button"
                         onClick={() => handleRelax(s)}
-                        className="flex items-center justify-between gap-2 rounded-lg border border-[#bf5700]/30 bg-[#fff6f0] px-3 py-2 text-sm text-[#bf5700] transition hover:bg-[#ffe8d6] cursor-pointer"
+                        className="flex items-center justify-between gap-2 rounded-lg border border-[#bf5700]/30 bg-[#fff6f0] px-3 py-2 text-sm text-[#a34800] transition hover:bg-[#ffe8d6] cursor-pointer"
                       >
                         <span className="font-medium">Drop &ldquo;{s.label}&rdquo;</span>
                         <span className="flex-shrink-0 rounded-full bg-[#bf5700] px-2 py-0.5 text-xs font-semibold text-white">
@@ -471,7 +483,7 @@ export default function SchoolDashboardPage() {
               )}
               <button
                 onClick={() => setSearchQuery("")}
-                className="mt-1 text-sm font-medium text-[#bf5700] hover:underline cursor-pointer"
+                className="mt-1 text-sm font-medium text-[#a34800] hover:underline cursor-pointer"
               >
                 Clear search
               </button>
@@ -504,7 +516,7 @@ export default function SchoolDashboardPage() {
                 <button
                   type="button"
                   onClick={() => updateFilters(EMPTY_DASHBOARD_FILTERS)}
-                  className="mt-1 text-sm font-medium text-[#bf5700] hover:underline cursor-pointer"
+                  className="mt-1 text-sm font-medium text-[#a34800] hover:underline cursor-pointer"
                 >
                   Clear filters
                 </button>
@@ -577,16 +589,17 @@ export default function SchoolDashboardPage() {
                   <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
                     {curProfile.utStatus && (
                       <span
-                        className="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium text-white"
-                        style={{
-                          backgroundColor: curProfile.utStatus === "student" ? "#22c55e" : "#a855f7",
-                        }}
+                        className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium ${
+                          curProfile.utStatus === "student"
+                            ? "bg-emerald-100 text-emerald-800"
+                            : "bg-purple-100 text-purple-800"
+                        }`}
                       >
                         {curProfile.utStatus === "student" ? "Student" : "Alumni"}
                       </span>
                     )}
                     {curProfile.archetype && (
-                      <span className="inline-flex items-center rounded-md border border-[#bf5700] px-2.5 py-1 text-xs font-medium text-[#bf5700]">
+                      <span className="inline-flex items-center rounded-md border border-[#bf5700] px-2.5 py-1 text-xs font-medium text-[#a34800]">
                         {curProfile.archetype === "the_scaler"
                           ? "The Scaler"
                           : curProfile.archetype === "the_steward"
@@ -602,7 +615,7 @@ export default function SchoolDashboardPage() {
                 </div>
 
                 {curProfile.isTechnical && (
-                  <div className="mb-3 inline-flex items-center rounded-md border border-[#bf5700] px-2.5 py-1 text-xs font-medium text-[#bf5700]">
+                  <div className="mb-3 inline-flex items-center rounded-md border border-[#bf5700] px-2.5 py-1 text-xs font-medium text-[#a34800]">
                     {curProfile.isTechnical === "yes" ? "Technical founder" : "Non-technical founder"}
                   </div>
                 )}
@@ -715,7 +728,7 @@ export default function SchoolDashboardPage() {
                             href={href}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-1.5 rounded-full border border-[var(--ui-border)] px-3 py-1.5 text-xs font-medium text-[var(--ui-text-muted)] transition hover:border-[#bf5700] hover:text-[#bf5700]"
+                            className="flex items-center gap-1.5 rounded-full border border-[var(--ui-border)] px-3 py-1.5 text-xs font-medium text-[var(--ui-text-muted)] transition hover:border-[#bf5700] hover:text-[#a34800]"
                           >
                             {icon}
                             {label}

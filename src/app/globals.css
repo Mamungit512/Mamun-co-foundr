@@ -6,6 +6,7 @@
   --charcoal-black: #1c1c1c;
 
   /* - semantic UI tokens (dark-mode defaults — overridden by school layout for light orgs) - */
+  --ui-bg: #0d0d0d;
   --ui-text: #ffffff;
   --ui-text-muted: rgba(255, 255, 255, 0.5);
   --ui-text-subtle: rgba(255, 255, 255, 0.3);

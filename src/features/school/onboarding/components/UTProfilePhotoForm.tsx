@@ -112,13 +112,13 @@ function UTProfilePhotoForm({ onNext, defaultValues }: UTProfilePhotoFormProps) 
         {/* Header */}
         <div className="pb-4">
           <p className="mb-1 text-xs font-semibold tracking-widest text-[var(--ui-text-muted)] uppercase">
-            Step 1 of 5
+            Step 1 of 6
           </p>
           <h2 className="text-2xl font-bold text-[var(--ui-text)]">
             Add your profile photo
           </h2>
           <p className="mt-1.5 text-sm text-[var(--ui-text-muted)]">
-            Our AI verifies it contains a real face to keep profiles authentic.
+            Make sure your face is clearly visible in the photo.
           </p>
         </div>
 

@@ -103,13 +103,16 @@ export default async function SchoolSlugLayout({
             "--org-accent": cfg.branding.accentColor,
             "--org-bg": cfg.branding.backgroundColor,
             "--org-text": cfg.branding.textColor,
-            // Semantic UI tokens — light-mode overrides for school orgs with white bg
+            // Semantic UI tokens — light-mode overrides for school orgs with white bg.
+            // Text/subtle values are chosen to clear WCAG AA (4.5:1) on white — see
+            // the plan doc for the full contrast audit.
             ...(cfg.branding.backgroundColor === "#FFFFFF" ||
             cfg.branding.backgroundColor === "#ffffff"
               ? {
+                  "--ui-bg": "#ffffff",
                   "--ui-text": cfg.branding.textColor,
-                  "--ui-text-muted": "#9cadb7",
-                  "--ui-text-subtle": "rgba(51,63,72,0.45)",
+                  "--ui-text-muted": "#5f7280",
+                  "--ui-text-subtle": "#64757e",
                   "--ui-border": "#e8e4dc",
                   "--ui-border-strong": "#c8c3b8",
                   "--ui-surface": "rgba(51,63,72,0.04)",

@@ -81,7 +81,7 @@ export default async function SchoolTermsPage({
                 <a
                   href={downloadUrl}
                   download
-                  className="inline-flex shrink-0 items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                  className="inline-flex shrink-0 items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2"
                   style={{ backgroundColor: primaryColor }}
                 >
                   <svg

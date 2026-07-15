@@ -44,7 +44,15 @@ declare global {
     | "college_of_fine_arts"
     | "school_of_architecture"
     | "lbj_public_affairs"
-    | "dell_medical_school";
+    | "dell_medical_school"
+    | "school_of_civic_leadership"
+    | "college_of_education"
+    | "school_of_nursing"
+    | "college_of_pharmacy"
+    | "school_of_social_work"
+    | "school_of_law"
+    | "pre_med_pre_law_teaching"
+    | "jackson_geosciences";
 
   type UTDegreeType = "bachelors" | "masters" | "professional" | "other";
 

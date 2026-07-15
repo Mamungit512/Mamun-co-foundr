@@ -42,7 +42,7 @@ export default async function NotAuthorizedPage({
       <div className="flex flex-col items-center gap-3">
         <Link
           href={`/school/${slug}/sign-up`}
-          className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-shadow hover:shadow-md"
           style={{ backgroundColor: "var(--org-primary)" }}
         >
           Sign up with your school email

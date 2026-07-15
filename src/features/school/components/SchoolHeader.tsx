@@ -127,7 +127,7 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
     >
       <Link
         href={`/school/${slug}`}
-        className="text-base font-semibold tracking-tight text-white/70 transition-colors hover:text-white"
+        className="text-base font-semibold tracking-tight text-white transition-[font-weight] duration-300 hover:font-bold"
       >
         {headerText}
       </Link>
@@ -139,12 +139,12 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
             key={href}
             href={href}
             className={featured
-              ? "rounded-lg border border-white/30 px-3 py-1.5 text-sm font-medium text-white/70 transition-colors hover:text-white hover:border-white/60"
+              ? "rounded-lg border border-white/30 px-3 py-1.5 text-sm font-medium text-white transition-[border-color,font-weight] duration-300 hover:font-semibold hover:border-white/60"
               : clsx(
-                  "text-sm font-medium transition-colors border-b-2",
+                  "text-sm font-medium transition-[border-color,font-weight] duration-300 border-b-2",
                   pathname.startsWith(href)
                     ? "text-white border-white"
-                    : "text-white/70 hover:text-white border-transparent",
+                    : "text-white hover:font-semibold border-transparent",
                 )
             }
           >
@@ -157,7 +157,7 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
         <Link
           href={cofounderHref}
           onClick={handleCofounderClick}
-          className="hidden items-center gap-1.5 text-sm font-medium text-white/70 transition-colors hover:text-white md:flex"
+          className="hidden items-center gap-1.5 text-sm font-medium text-white transition-[font-weight] duration-300 hover:font-semibold md:flex"
         >
           <FaUserPlus className="h-3.5 w-3.5" />
           Invite a co-foundr
@@ -165,7 +165,7 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
 
         <Link
           href={`/school/${slug}/matches`}
-          className="relative flex items-center justify-center text-white/70 transition-colors hover:text-white"
+          className="relative flex items-center justify-center text-white transition-transform duration-300 hover:scale-110"
         >
           <FaHeart className="h-5 w-5 text-white" />
           {savedMatchesCount > 0 && (
@@ -204,7 +204,7 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
         {/* Mobile hamburger */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="cursor-pointer rounded-lg p-1.5 text-white/70 transition-colors hover:text-white md:hidden"
+          className="cursor-pointer rounded-lg p-1.5 text-white transition-transform duration-300 hover:scale-110 md:hidden"
           aria-label="Toggle menu"
         >
           {isMobileMenuOpen ? <FaTimes className="h-5 w-5" /> : <FaBars className="h-5 w-5" />}
@@ -224,8 +224,8 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
                 <Link
                   href={href}
                   className={featured
-                    ? "block rounded-lg border border-white/30 px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:text-white hover:border-white/60"
-                    : "block rounded-lg px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:text-white"
+                    ? "block rounded-lg border border-white/30 px-3 py-2 text-sm font-medium text-white transition-[border-color,font-weight] duration-300 hover:font-semibold hover:border-white/60"
+                    : "block rounded-lg px-3 py-2 text-sm font-medium text-white transition-[font-weight] duration-300 hover:font-semibold"
                   }
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -236,7 +236,7 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
             <li>
               <Link
                 href={cofounderHref}
-                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:text-white"
+                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-white transition-[font-weight] duration-300 hover:font-semibold"
                 onClick={() => {
                   handleCofounderClick();
                   setIsMobileMenuOpen(false);

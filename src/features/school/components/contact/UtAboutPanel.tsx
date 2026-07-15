@@ -13,15 +13,14 @@ export default function UtAboutPanel() {
     >
       <div className="px-6 py-10 sm:px-12 sm:py-14">
         <p
-          className="mb-2 text-[10px] font-medium uppercase tracking-[0.1em]"
-          style={{ color: "rgba(255,255,255,0.55)" }}
+          className="mb-2 text-[10px] font-medium text-white uppercase tracking-[0.1em]"
         >
           University of Texas at Austin
         </p>
         <h2 className="mb-4 text-2xl font-bold text-white sm:text-3xl">
           Have a school question?
         </h2>
-        <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed text-white/80">
+        <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed text-white">
           For questions about UT programs, events, or anything school-related
           that isn&apos;t about the co-foundr platform, reach out to McCombs
           directly.

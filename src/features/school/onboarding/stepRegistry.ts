@@ -4,6 +4,7 @@ import UTProfilePhotoForm from "@/features/school/onboarding/components/UTProfil
 import UTAboutYouForm from "@/features/school/onboarding/components/UTAboutYouForm";
 import UTStartupForm from "@/features/school/onboarding/components/UTStartupForm";
 import UTBackgroundAndSocialsForm from "@/features/school/onboarding/components/UTBackgroundAndSocialsForm";
+import UTInterestsForm from "@/features/school/onboarding/components/UTInterestsForm";
 
 export type StepProps = {
   onNext: (data: Partial<OnboardingData>) => void;
@@ -19,4 +20,5 @@ export const STEP_COMPONENTS: Record<StepStepId, ComponentType<StepProps>> = {
   about: UTAboutYouForm as ComponentType<StepProps>,
   startup: UTStartupForm as ComponentType<StepProps>,
   background: UTBackgroundAndSocialsForm as ComponentType<StepProps>,
+  priorities: UTInterestsForm as ComponentType<StepProps>,
 };

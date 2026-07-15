@@ -33,7 +33,7 @@ export default function CtaBand() {
         <motion.div
           variants={item}
           className="mb-2 text-[10px] font-medium uppercase tracking-[0.1em]"
-          style={{ color: "rgba(255,255,255,0.5)" }}
+          style={{ color: "#ffffff" }}
         >
           University of Texas
         </motion.div>
@@ -45,7 +45,7 @@ export default function CtaBand() {
         </motion.h2>
         <motion.p
           variants={item}
-          className="mx-auto mb-7 max-w-md text-sm leading-relaxed text-white/70"
+          className="mx-auto mb-7 max-w-md text-sm leading-relaxed text-white"
         >
           Join the University of Texas co-foundr community — verified, value-aligned, and
           ready to build something that changes the world.
@@ -59,7 +59,7 @@ export default function CtaBand() {
             Create your profile
           </Link>
         </motion.div>
-        <motion.div variants={item} className="text-xs text-white/40">
+        <motion.div variants={item} className="text-xs text-white">
           Exclusively for University of Texas students, alumni, and faculty
         </motion.div>
       </motion.div>

@@ -100,7 +100,7 @@ export default function AcceptPoliciesPage() {
               <Link
                 href={`/school/${slug}/privacy-policy`}
                 target="_blank"
-                className="font-semibold underline hover:opacity-70"
+                className="rounded font-semibold underline decoration-2 underline-offset-2 transition-colors hover:bg-black/5"
                 style={{ color: primary }}
               >
                 Privacy Policy
@@ -109,7 +109,7 @@ export default function AcceptPoliciesPage() {
               <Link
                 href={`/school/${slug}/terms-and-conditions`}
                 target="_blank"
-                className="font-semibold underline hover:opacity-70"
+                className="rounded font-semibold underline decoration-2 underline-offset-2 transition-colors hover:bg-black/5"
                 style={{ color: primary }}
               >
                 Terms of Use
@@ -171,7 +171,7 @@ export default function AcceptPoliciesPage() {
             type="button"
             onClick={handleContinue}
             disabled={!allChecked || submitting}
-            className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
             style={{ backgroundColor: primary }}
           >
             {submitting ? "Saving…" : "I Agree & Continue"}

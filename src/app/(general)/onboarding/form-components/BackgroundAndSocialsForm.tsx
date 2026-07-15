@@ -25,10 +25,12 @@ const LABEL_CLS = "text-xs font-semibold tracking-widest text-[var(--ui-text-mut
 function BackgroundAndSocialsForm({
   onNext,
   onBack,
+  onManualSave,
   defaultValues,
 }: {
   onNext: (data: BackgroundAndSocialsData) => void;
   onBack: () => void;
+  onManualSave?: (data: Partial<BackgroundAndSocialsData>) => void;
   defaultValues?: Partial<BackgroundAndSocialsData>;
 }) {
   const fieldsRef = useStepEntry();
@@ -39,6 +41,7 @@ function BackgroundAndSocialsForm({
     handleSubmit,
     watch,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<BackgroundAndSocialsData>({ defaultValues });
 
@@ -174,6 +177,15 @@ function BackgroundAndSocialsForm({
           >
             ← Back
           </button>
+          {onManualSave && (
+            <button
+              type="button"
+              onClick={() => onManualSave(getValues())}
+              className="text-sm font-medium text-[var(--ui-text-muted)] underline-offset-2 hover:text-[var(--ui-text)] hover:underline"
+            >
+              Save progress
+            </button>
+          )}
           <button
             type="submit"
             className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-[var(--ui-btn-bg)] px-8 py-3.5 text-sm font-semibold text-[var(--ui-btn-text)] shadow-lg shadow-black/5 transition-all duration-200 hover:bg-[var(--ui-btn-bg)]/90 active:scale-[0.98] sm:flex-none"

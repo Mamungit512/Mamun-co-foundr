@@ -226,7 +226,7 @@ export default function LocationSelector({
     <div className="space-y-4">
       {/* Country */}
       <div className="flex flex-col gap-y-2">
-        <label className="text-sm font-medium text-gray-300">Country *</label>
+        <label className="text-sm font-medium text-[var(--ui-text)]">Country *</label>
         <select
           className={selectClass}
           value={selectedCountryIso}
@@ -256,7 +256,7 @@ export default function LocationSelector({
       {/* State — US only */}
       {isUS && (
         <div className="flex flex-col gap-y-2">
-          <label className="text-sm font-medium text-gray-300">State *</label>
+          <label className="text-sm font-medium text-[var(--ui-text)]">State *</label>
           <select
             className={selectClass}
             value={selectedStateIso}
@@ -287,7 +287,7 @@ export default function LocationSelector({
 
       {/* City — constrained combobox */}
       <div className="flex flex-col gap-y-2">
-        <label className="text-sm font-medium text-gray-300">City *</label>
+        <label className="text-sm font-medium text-[var(--ui-text)]">City *</label>
         <div ref={comboboxRef} className="relative">
           <input
             ref={inputRef}

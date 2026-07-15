@@ -19,13 +19,13 @@ export default function PublicSchoolHeader({ slug }: { slug: string }) {
         </a>
         <Link
           href={`/school/${slug}/contact-us`}
-          className="text-xs sm:text-sm font-medium text-white/75 hover:text-white whitespace-nowrap"
+          className="text-xs sm:text-sm font-medium text-white transition-[font-weight] duration-300 hover:font-semibold whitespace-nowrap"
         >
           Contact us
         </Link>
         <Link
           href={`/school/${slug}/privacy-policy`}
-          className="text-xs sm:text-sm font-medium text-white/75 hover:text-white whitespace-nowrap"
+          className="text-xs sm:text-sm font-medium text-white transition-[font-weight] duration-300 hover:font-semibold whitespace-nowrap"
         >
           Privacy Policy
         </Link>
