@@ -66,7 +66,7 @@ function UTStartupForm({
         {/* ── Header ── */}
         <div className="pb-4">
           <p className="mb-1 text-xs font-semibold tracking-widest text-[var(--ui-text-muted)] uppercase">
-            Step 3 of 5
+            Step 3 of 6
           </p>
           <h2 className="text-2xl font-bold text-[var(--ui-text)]">Startup or idea</h2>
           <p className="mt-1.5 text-sm text-[var(--ui-text-muted)]">

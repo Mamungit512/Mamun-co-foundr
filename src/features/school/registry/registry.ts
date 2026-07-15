@@ -59,9 +59,9 @@ export const ORG_REGISTRY: Record<string, OrgConfig> = {
       unlimitedMessages: true,
     },
     onboarding: {
-      totalSteps: 5,
+      totalSteps: 6,
       apiEndpoint: "/api/profile",
-      steps: ["photo", "about", "startup", "background", "review"],
+      steps: ["photo", "about", "startup", "background", "priorities", "review"],
       step2RequiredFields: [
         "firstName",
         "lastName",

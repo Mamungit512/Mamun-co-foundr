@@ -21,7 +21,13 @@ export type OrgLimits = {
   unlimitedMessages: boolean;
 };
 
-export type OnboardingStepId = "photo" | "about" | "startup" | "background" | "review";
+export type OnboardingStepId =
+  | "photo"
+  | "about"
+  | "startup"
+  | "background"
+  | "priorities"
+  | "review";
 
 export type OrgOnboarding = {
   totalSteps: number;
