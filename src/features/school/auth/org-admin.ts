@@ -25,6 +25,18 @@ export async function getVerifiedPrimaryEmail(
   }
 }
 
+/**
+ * Global platform-admin emails configured via env var, comma-separated.
+ * Lets us grant admin access without a DB migration/PR.
+ */
+export function getEnvAdminEmails(): string[] {
+  return (
+    process.env.ADMIN_EMAILS?.split(",")
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean) ?? []
+  );
+}
+
 export async function getOrgAdminEmails(orgId: string): Promise<string[]> {
   const supabase = supabaseAdmin();
   const { data } = await supabase
@@ -32,8 +44,9 @@ export async function getOrgAdminEmails(orgId: string): Promise<string[]> {
     .select("settings")
     .eq("id", orgId)
     .single();
-  const emails: string[] = data?.settings?.admin_emails ?? [];
-  return emails.map((e) => e.trim().toLowerCase());
+  const dbEmails: string[] = data?.settings?.admin_emails ?? [];
+  const emails = [...dbEmails.map((e) => e.trim().toLowerCase()), ...getEnvAdminEmails()];
+  return Array.from(new Set(emails));
 }
 
 export async function isOrgAdmin({
