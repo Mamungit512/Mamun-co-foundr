@@ -296,7 +296,7 @@ function StartupForm({
             <button
               type="button"
               onClick={() => onManualSave(getValues())}
-              className="text-sm font-medium text-[var(--ui-text-muted)] underline-offset-2 hover:text-[var(--ui-text)] hover:underline"
+              className="cursor-pointer text-sm font-medium text-[var(--ui-text-muted)] underline-offset-2 hover:text-[var(--ui-text)] hover:underline"
             >
               Save progress
             </button>
