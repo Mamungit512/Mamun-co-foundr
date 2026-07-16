@@ -8,6 +8,7 @@ export type MatchPerson = {
   last_name: string | null;
   title: string | null;
   is_technical: boolean | null;
+  startup_name: string | null;
   email?: string | null;
 };
 
@@ -39,7 +40,7 @@ export async function getMatchConnections(
   // 1. Fetch all active org profiles
   const { data: profiles, error: profilesError } = await supabase
     .from("profiles")
-    .select("user_id, first_name, last_name, title, is_technical")
+    .select("user_id, first_name, last_name, title, is_technical, startup_name")
     .eq("organization_id", orgId)
     .is("deleted_at", null);
 
@@ -66,9 +67,7 @@ export async function getMatchConnections(
   // 4. Fetch pending cofounder_invites for org
   const { data: invites } = await supabase
     .from("cofounder_invites")
-    .select(
-      "id, inviter_user_id, invitee_email, invitee_user_id, created_at",
-    )
+    .select("id, inviter_user_id, invitee_email, invitee_user_id, created_at")
     .eq("organization_id", orgId)
     .eq("status", "pending")
     .order("created_at", { ascending: false });
@@ -86,6 +85,7 @@ export async function getMatchConnections(
       last_name: p.last_name,
       title: p.title,
       is_technical: p.is_technical,
+      startup_name: p.startup_name,
     };
   };
 
@@ -188,6 +188,7 @@ export async function getMatchConnections(
         last_name: null,
         title: null,
         is_technical: null,
+        startup_name: null,
         email: invite.invitee_email as string,
       };
     }
