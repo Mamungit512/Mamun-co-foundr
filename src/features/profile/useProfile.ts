@@ -16,6 +16,7 @@ export function useGetProfiles(filters?: DashboardFilters, orgSlug?: string) {
   const {
     data: profiles,
     isLoading,
+    isFetching,
     error,
   } = useQuery({
     queryKey: ["profiles", filters, orgSlug],
@@ -60,7 +61,38 @@ export function useGetProfiles(filters?: DashboardFilters, orgSlug?: string) {
     retry: 1,
   });
 
-  return { data: profiles, isLoading, error };
+  return { data: profiles, isLoading, isFetching, error };
+}
+
+// Resets the viewer's matching_queue cycle counters to 0, so candidates
+// they've already cycled through this round reappear from the top.
+export function useResetMatchingRound() {
+  const { session } = useSession();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const token = await session?.getToken();
+      if (!token) throw new Error("No authentication token");
+
+      const response = await fetch("/api/profiles/reset-round", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to reset matching round");
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profiles"] });
+    },
+  });
 }
 
 export function useUserProfile() {
