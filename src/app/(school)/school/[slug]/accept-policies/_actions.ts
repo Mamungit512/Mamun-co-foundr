@@ -3,6 +3,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 import { getRequiredConsents } from "@/features/legal/consent";
+import { getOrganizationBySlug } from "@/features/school/data/organizations";
 
 type RecordConsentResult = { ok: true } | { ok: false; error: string };
 
@@ -20,7 +21,15 @@ export async function recordPolicyConsents(
     return { ok: false, error: "No logged-in user." };
   }
 
-  const organizationId = sessionClaims?.metadata?.organization_id ?? null;
+  // Prefer the session claim, but fall back to resolving the org from the slug.
+  // A just-signed-in user (e.g. an invited co-founder) can hit this action before
+  // Clerk's organization_id metadata has propagated onto their JWT — the slug is
+  // authoritative for which school's policies are being accepted, so it is both a
+  // safe and more robust source of org context.
+  const organizationId =
+    sessionClaims?.metadata?.organization_id ??
+    (await getOrganizationBySlug(slug))?.id ??
+    null;
   if (!organizationId) {
     return { ok: false, error: "No organization context for this user." };
   }
