@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useSession } from "@clerk/nextjs";
 import {
   FaUserGraduate,
@@ -91,6 +91,7 @@ export default function SchoolAdminPage() {
   );
   const [matchesLoading, setMatchesLoading] = useState(false);
   const [matchesFetched, setMatchesFetched] = useState(false);
+  const [matchYearFilter, setMatchYearFilter] = useState<string>("");
 
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
@@ -193,6 +194,28 @@ export default function SchoolAdminPage() {
     fetchAnalytics,
   ]);
 
+  const matchYears = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          matchConnections.map((c) => new Date(c.matched_at).getFullYear()),
+        ),
+      ).sort((a, b) => b - a),
+    [matchConnections],
+  );
+
+  const filteredMatchConnections = useMemo(
+    () =>
+      matchYearFilter
+        ? matchConnections.filter(
+            (c) =>
+              new Date(c.matched_at).getFullYear().toString() ===
+              matchYearFilter,
+          )
+        : matchConnections,
+    [matchConnections, matchYearFilter],
+  );
+
   const handleDelete = async (userId: string, name: string) => {
     if (
       !confirm(
@@ -268,10 +291,8 @@ export default function SchoolAdminPage() {
       const a = document.createElement("a");
       a.href = url;
       a.download =
-        res
-          .headers
-          .get("Content-Disposition")
-          ?.match(/filename="(.+)"/)?.[1] ?? "report.csv";
+        res.headers.get("Content-Disposition")?.match(/filename="(.+)"/)?.[1] ??
+        "report.csv";
       a.click();
       URL.revokeObjectURL(url);
     } catch {
@@ -475,7 +496,7 @@ export default function SchoolAdminPage() {
                     ].map((h) => (
                       <th
                         key={h}
-                        className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider"
+                        className="px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase"
                         style={{ color: "var(--ui-text-muted)" }}
                       >
                         {h}
@@ -524,7 +545,7 @@ export default function SchoolAdminPage() {
                       </td>
                       <td className="px-4 py-3">
                         <span
-                          className={`inline-block whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ${
+                          className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap ${
                             student.is_technical
                               ? "bg-blue-500/15 text-blue-600 dark:text-blue-400"
                               : "bg-purple-500/15 text-purple-600 dark:text-purple-400"
@@ -548,7 +569,7 @@ export default function SchoolAdminPage() {
                             )
                           }
                           disabled={deletingId === student.user_id}
-                          className="cursor-pointer rounded p-1.5 transition hover:bg-red-500/15 hover:text-red-500 disabled:opacity-30 disabled:cursor-not-allowed"
+                          className="cursor-pointer rounded p-1.5 transition hover:bg-red-500/15 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-30"
                           style={{ color: "var(--ui-text-subtle)" }}
                           title="Delete account"
                         >
@@ -569,7 +590,7 @@ export default function SchoolAdminPage() {
         <>
           {/* Sub-toggle */}
           <div
-            className="mb-4 flex gap-1 rounded-lg border p-1 w-fit"
+            className="mb-4 flex w-fit gap-1 rounded-lg border p-1"
             style={{
               borderColor: "var(--ui-border)",
               backgroundColor: "var(--ui-surface)",
@@ -642,129 +663,168 @@ export default function SchoolAdminPage() {
                   </p>
                 </div>
               ) : (
-                <div
-                  className="overflow-hidden rounded-xl border"
-                  style={{ borderColor: "var(--ui-border)" }}
-                >
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr
-                        className="border-b"
-                        style={{
-                          borderColor: "var(--ui-border)",
-                          backgroundColor: "var(--ui-surface)",
-                        }}
-                      >
-                        {["Match", "Type Fit", "Date", "Status"].map((h) => (
-                          <th
-                            key={h}
-                            className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider"
-                            style={{ color: "var(--ui-text-muted)" }}
-                          >
-                            {h}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {matchConnections.map((conn, i) => {
-                        const nameOf = (
-                          p: MatchConnection["person1"],
-                        ): string => {
-                          if (p.first_name || p.last_name)
-                            return `${p.first_name ?? ""} ${p.last_name ?? ""}`.trim();
-                          return p.email ?? "Unknown";
-                        };
+                <>
+                  <div className="mb-3 flex justify-end">
+                    <select
+                      value={matchYearFilter}
+                      onChange={(e) => setMatchYearFilter(e.target.value)}
+                      className="rounded-lg border px-3 py-1.5 text-xs font-medium"
+                      style={{
+                        borderColor: "var(--ui-border)",
+                        backgroundColor: "var(--ui-surface)",
+                        color: "var(--ui-text)",
+                      }}
+                    >
+                      <option value="">All years</option>
+                      {matchYears.map((year) => (
+                        <option key={year} value={year}>
+                          {year}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div
+                    className="overflow-hidden rounded-xl border"
+                    style={{ borderColor: "var(--ui-border)" }}
+                  >
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr
+                          className="border-b"
+                          style={{
+                            borderColor: "var(--ui-border)",
+                            backgroundColor: "var(--ui-surface)",
+                          }}
+                        >
+                          {[
+                            "Match",
+                            "Type Fit",
+                            "Startup",
+                            "Date",
+                            "Status",
+                          ].map((h) => (
+                            <th
+                              key={h}
+                              className="px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase"
+                              style={{ color: "var(--ui-text-muted)" }}
+                            >
+                              {h}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredMatchConnections.map((conn, i) => {
+                          const nameOf = (
+                            p: MatchConnection["person1"],
+                          ): string => {
+                            if (p.first_name || p.last_name)
+                              return `${p.first_name ?? ""} ${p.last_name ?? ""}`.trim();
+                            return p.email ?? "Unknown";
+                          };
 
-                        const StatusBadge = () => {
-                          if (conn.kind === "linked")
+                          const StatusBadge = () => {
+                            if (conn.kind === "linked")
+                              return (
+                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                                  <FaLink className="h-2.5 w-2.5" />
+                                  Linked
+                                </span>
+                              );
+                            if (conn.kind === "mutual")
+                              return (
+                                <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-medium text-amber-600 dark:text-amber-400">
+                                  <FaHandshake className="h-2.5 w-2.5" />
+                                  Mutual
+                                </span>
+                              );
                             return (
-                              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                                <FaLink className="h-2.5 w-2.5" />
-                                Linked
+                              <span className="inline-flex items-center gap-1 rounded-full bg-gray-500/15 px-2 py-0.5 text-xs font-medium text-gray-500 dark:text-gray-400">
+                                <FaClock className="h-2.5 w-2.5" />
+                                Pending
                               </span>
                             );
-                          if (conn.kind === "mutual")
+                          };
+
+                          const TypeBadge = ({
+                            p,
+                          }: {
+                            p: MatchConnection["person1"];
+                          }) => {
+                            if (p.is_technical === null) return null;
                             return (
-                              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-medium text-amber-600 dark:text-amber-400">
-                                <FaHandshake className="h-2.5 w-2.5" />
-                                Mutual
+                              <span
+                                className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap ${
+                                  p.is_technical
+                                    ? "bg-blue-500/15 text-blue-600 dark:text-blue-400"
+                                    : "bg-purple-500/15 text-purple-600 dark:text-purple-400"
+                                }`}
+                              >
+                                {p.is_technical ? "Tech" : "Non-tech"}
                               </span>
                             );
-                          return (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-gray-500/15 px-2 py-0.5 text-xs font-medium text-gray-500 dark:text-gray-400">
-                              <FaClock className="h-2.5 w-2.5" />
-                              Pending
-                            </span>
-                          );
-                        };
+                          };
 
-                        const TypeBadge = ({
-                          p,
-                        }: {
-                          p: MatchConnection["person1"];
-                        }) => {
-                          if (p.is_technical === null) return null;
                           return (
-                            <span
-                              className={`inline-block whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ${
-                                p.is_technical
-                                  ? "bg-blue-500/15 text-blue-600 dark:text-blue-400"
-                                  : "bg-purple-500/15 text-purple-600 dark:text-purple-400"
-                              }`}
+                            <tr
+                              key={conn.id}
+                              className="border-b transition"
+                              style={{
+                                borderColor: "var(--ui-border)",
+                                backgroundColor:
+                                  i % 2 !== 0 ? "var(--ui-surface)" : undefined,
+                              }}
                             >
-                              {p.is_technical ? "Tech" : "Non-tech"}
-                            </span>
+                              <td className="px-4 py-3">
+                                <div
+                                  className="font-medium"
+                                  style={{ color: "var(--ui-text)" }}
+                                >
+                                  {nameOf(conn.person1)}
+                                </div>
+                                <div
+                                  className="text-xs"
+                                  style={{ color: "var(--ui-text-muted)" }}
+                                >
+                                  × {nameOf(conn.person2)}
+                                </div>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex flex-wrap gap-1">
+                                  <TypeBadge p={conn.person1} />
+                                  <TypeBadge p={conn.person2} />
+                                </div>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div
+                                  className="font-medium"
+                                  style={{ color: "var(--ui-text)" }}
+                                >
+                                  {conn.person1.startup_name ?? "—"}
+                                </div>
+                                <div
+                                  className="text-xs"
+                                  style={{ color: "var(--ui-text-muted)" }}
+                                >
+                                  {conn.person2.startup_name ?? "—"}
+                                </div>
+                              </td>
+                              <td
+                                className="px-4 py-3 text-xs"
+                                style={{ color: "var(--ui-text-subtle)" }}
+                              >
+                                {new Date(conn.matched_at).toLocaleDateString()}
+                              </td>
+                              <td className="px-4 py-3">
+                                <StatusBadge />
+                              </td>
+                            </tr>
                           );
-                        };
-
-                        return (
-                          <tr
-                            key={conn.id}
-                            className="border-b transition"
-                            style={{
-                              borderColor: "var(--ui-border)",
-                              backgroundColor:
-                                i % 2 !== 0
-                                  ? "var(--ui-surface)"
-                                  : undefined,
-                            }}
-                          >
-                            <td className="px-4 py-3">
-                              <div
-                                className="font-medium"
-                                style={{ color: "var(--ui-text)" }}
-                              >
-                                {nameOf(conn.person1)}
-                              </div>
-                              <div
-                                className="text-xs"
-                                style={{ color: "var(--ui-text-muted)" }}
-                              >
-                                × {nameOf(conn.person2)}
-                              </div>
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex flex-wrap gap-1">
-                                <TypeBadge p={conn.person1} />
-                                <TypeBadge p={conn.person2} />
-                              </div>
-                            </td>
-                            <td
-                              className="px-4 py-3 text-xs"
-                              style={{ color: "var(--ui-text-subtle)" }}
-                            >
-                              {new Date(conn.matched_at).toLocaleDateString()}
-                            </td>
-                            <td className="px-4 py-3">
-                              <StatusBadge />
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
               )}
             </>
           )}
@@ -812,7 +872,7 @@ export default function SchoolAdminPage() {
                         ].map((h) => (
                           <th
                             key={h}
-                            className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider"
+                            className="px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase"
                             style={{ color: "var(--ui-text-muted)" }}
                           >
                             {h}
@@ -1011,8 +1071,9 @@ export default function SchoolAdminPage() {
       {activeTab === "reports" && (
         <div className="space-y-5">
           <p className="text-sm" style={{ color: "var(--ui-text-muted)" }}>
-            Generate CSV snapshots of the current cohort and matching outcomes on
-            demand. Each export reflects live data at the moment you download it.
+            Generate CSV snapshots of the current cohort and matching outcomes
+            on demand. Each export reflects live data at the moment you download
+            it.
           </p>
 
           <div className="grid gap-4 sm:grid-cols-2">
