@@ -14,6 +14,7 @@ import {
   EMPTY_DASHBOARD_FILTERS,
   hasActiveFilters,
 } from "@/features/school/data/dashboardFilters";
+import Skeleton from "@/components/ui/Skeleton";
 
 type SelectOption = { value: string; label: string };
 
@@ -124,6 +125,8 @@ type FilterSidebarProps = {
   variant?: "sidebar" | "drawer";
   /** Desktop sidebar height — should match the profile card */
   panelHeightClass?: string;
+  /** Show a skeleton in place of the real filter controls while profile data is loading */
+  isLoading?: boolean;
 };
 
 const INTENT_OPTIONS = [
@@ -285,6 +288,53 @@ function FilterPanel({
   );
 }
 
+function FilterPanelSkeleton() {
+  return (
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="mb-4 flex shrink-0 items-center justify-between">
+        <Skeleton className="h-5 w-16" />
+      </div>
+
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden">
+        {/* School department */}
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <Skeleton className="h-4 w-28" />
+          <Skeleton className="h-10 w-full rounded-xl" />
+        </div>
+
+        {/* Industry / interest */}
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <Skeleton className="h-4 w-32" />
+          <div className="flex flex-wrap gap-1">
+            <Skeleton className="h-5 w-12" />
+            <Skeleton className="h-5 w-16" />
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-5 w-14" />
+            <Skeleton className="h-5 w-16" />
+            <Skeleton className="h-5 w-12" />
+          </div>
+        </div>
+
+        {/* Graduation year */}
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <Skeleton className="h-4 w-28" />
+          <Skeleton className="h-10 w-full rounded-xl" />
+        </div>
+
+        {/* Intent */}
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <Skeleton className="h-4 w-16" />
+          <div className="flex flex-col gap-1.5">
+            <Skeleton className="h-9 w-full rounded-xl" />
+            <Skeleton className="h-9 w-full rounded-xl" />
+            <Skeleton className="h-9 w-full rounded-xl" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function FilterSidebar({
   filters,
   onChange,
@@ -292,6 +342,7 @@ export default function FilterSidebar({
   onClose,
   variant = "sidebar",
   panelHeightClass = "",
+  isLoading = false,
 }: FilterSidebarProps) {
   useEffect(() => {
     if (variant !== "drawer" || !isOpen) return;
@@ -307,7 +358,11 @@ export default function FilterSidebar({
       <aside
         className={`hidden w-64 shrink-0 flex-col overflow-hidden rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4 lg:flex ${panelHeightClass}`}
       >
-        <FilterPanel filters={filters} onChange={onChange} scrollable={true} />
+        {isLoading ? (
+          <FilterPanelSkeleton />
+        ) : (
+          <FilterPanel filters={filters} onChange={onChange} scrollable={true} />
+        )}
       </aside>
     );
   }
@@ -332,13 +387,17 @@ export default function FilterSidebar({
             transition={{ type: "spring", damping: 28, stiffness: 320 }}
             className="fixed left-0 top-0 z-50 flex h-full w-[85vw] max-w-sm flex-col overflow-x-hidden border-r border-[var(--ui-border)] bg-[var(--ui-popover-bg,var(--org-bg,#ffffff))] p-4 shadow-xl"
           >
-            <FilterPanel
-              filters={filters}
-              onChange={onChange}
-              onClose={onClose}
-              showClose
-              scrollable
-            />
+            {isLoading ? (
+              <FilterPanelSkeleton />
+            ) : (
+              <FilterPanel
+                filters={filters}
+                onChange={onChange}
+                onClose={onClose}
+                showClose
+                scrollable
+              />
+            )}
           </motion.aside>
         </>
       )}
