@@ -4,6 +4,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 import { getOrganizationBySlug } from "@/features/school/data/organizations";
 import { isEmailDomainAllowed } from "@/features/school/auth/email-domain";
+import { getEnvAdminEmails } from "@/features/school/auth/org-admin";
 
 export type ExistingUserInfo = {
   exists: boolean;
@@ -58,7 +59,8 @@ export async function assignSchoolOrg(
   const email = primary?.emailAddress;
   if (!email) return { error: "No email on account." };
 
-  if (!isEmailDomainAllowed(email, org.allowed_email_domains)) {
+  const isGlobalAdmin = getEnvAdminEmails().includes(email.toLowerCase());
+  if (!isGlobalAdmin && !isEmailDomainAllowed(email, org.allowed_email_domains)) {
     return {
       error: `This account's email is not eligible for ${org.name}.`,
     };
