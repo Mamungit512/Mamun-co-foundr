@@ -19,6 +19,8 @@ type Props = {
   inviterPfpUrl: string | null;
   inviteeRole: string | null;
   note: string | null;
+  startupName: string | null;
+  startupWebsite: string | null;
 };
 
 export default function AcceptInviteClient({
@@ -29,6 +31,8 @@ export default function AcceptInviteClient({
   inviterPfpUrl,
   inviteeRole,
   note,
+  startupName,
+  startupWebsite,
 }: Props) {
   const router = useRouter();
   const [accepting, setAccepting] = useState(false);
@@ -104,6 +108,30 @@ export default function AcceptInviteClient({
           )}
         </div>
 
+        {/* Proposed startup name/site — read-only, approved by accepting */}
+        {startupName && (
+          <div
+            className="mb-4 rounded-xl border border-[#e8e4dc] bg-[#faf8f4] px-4 py-3 space-y-1 text-center"
+          >
+            <p className="text-xs" style={{ color: "#5f7280" }}>
+              Your team will be named
+            </p>
+            <p className="text-base font-semibold" style={{ color: "#333f48" }}>
+              {startupName}
+            </p>
+            {startupWebsite && (
+              <a
+                href={startupWebsite}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-[#bf5700] hover:underline"
+              >
+                {startupWebsite}
+              </a>
+            )}
+          </div>
+        )}
+
         {/* Role assigned by inviter */}
         {(inviteeRole || note) && (
           <div
@@ -155,7 +183,10 @@ export default function AcceptInviteClient({
         )}
 
         <p className="mb-6 text-center text-sm" style={{ color: "#5f7280" }}>
-          Accepting will link your profiles as confirmed co-founders, visible on both your cards.
+          Accepting will link your profiles as confirmed co-founders, visible on both your cards
+          {startupName
+            ? `, and set your startup name to "${startupName}" on both profiles.`
+            : "."}
         </p>
 
         <div className="flex gap-3">

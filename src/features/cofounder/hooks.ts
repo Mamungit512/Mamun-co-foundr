@@ -9,6 +9,8 @@ export type CofounderInvite = {
   invitee_email: string;
   invitee_role: string | null;
   note: string | null;
+  startup_name: string | null;
+  startup_website: string | null;
   status: "pending" | "accepted" | "declined" | "revoked" | "expired";
   created_at: string;
   expires_at: string;
@@ -35,17 +37,27 @@ export function useSendCofounderInvite() {
   return useMutation({
     mutationFn: async ({
       inviteeEmail,
+      startupName,
+      startupWebsite,
       inviteeRole,
       note,
     }: {
       inviteeEmail: string;
+      startupName: string;
+      startupWebsite?: string;
       inviteeRole?: string;
       note?: string;
     }) => {
       const res = await fetch("/api/cofounder-invite", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ inviteeEmail, inviteeRole, note }),
+        body: JSON.stringify({
+          inviteeEmail,
+          startupName,
+          startupWebsite,
+          inviteeRole,
+          note,
+        }),
       });
       if (!res.ok) {
         const data = await res.json();

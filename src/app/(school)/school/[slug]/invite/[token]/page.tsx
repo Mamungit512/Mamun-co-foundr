@@ -24,7 +24,9 @@ export default async function InviteAcceptPage({
 
   const { data: invite } = await supabase
     .from("cofounder_invites")
-    .select("id, inviter_user_id, organization_id, status, expires_at, invitee_role, note")
+    .select(
+      "id, inviter_user_id, organization_id, status, expires_at, invitee_role, note, startup_name, startup_website",
+    )
     .eq("token", token)
     .single();
 
@@ -134,6 +136,8 @@ export default async function InviteAcceptPage({
       inviterPfpUrl={inviterProfile?.pfp_url ?? null}
       inviteeRole={invite.invitee_role ?? null}
       note={invite.note ?? null}
+      startupName={invite.startup_name ?? null}
+      startupWebsite={invite.startup_website ?? null}
     />
   );
 }
