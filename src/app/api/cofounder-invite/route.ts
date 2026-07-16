@@ -12,13 +12,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { inviteeEmail, inviteeRole, note } = await request.json();
+    const { inviteeEmail, startupName, startupWebsite, inviteeRole, note } =
+      await request.json();
     const normalizedEmail = (inviteeEmail ?? "").trim().toLowerCase();
+    const normalizedStartupName = (startupName ?? "").trim() || null;
+    const normalizedStartupWebsite = (startupWebsite ?? "").trim() || null;
     const normalizedRole = (inviteeRole ?? "").trim() || null;
     const normalizedNote = (note ?? "").trim() || null;
     if (!normalizedEmail) {
       return NextResponse.json(
         { error: "Missing inviteeEmail" },
+        { status: 400 },
+      );
+    }
+    if (!normalizedStartupName) {
+      return NextResponse.json(
+        { error: "Missing startupName" },
         { status: 400 },
       );
     }
@@ -122,17 +131,31 @@ export async function POST(request: NextRequest) {
     // Pending invite already exists check (via partial unique index)
     const { data: existingInvite } = await supabase
       .from("cofounder_invites")
-      .select("id")
+      .select("id, expires_at")
       .eq("inviter_user_id", userId)
       .eq("status", "pending")
       .ilike("invitee_email", normalizedEmail)
       .maybeSingle();
 
     if (existingInvite) {
-      return NextResponse.json(
-        { error: "A pending invite already exists for this email" },
-        { status: 409 },
-      );
+      if (new Date(existingInvite.expires_at) < new Date()) {
+        const { error: expireErr } = await supabase
+          .from("cofounder_invites")
+          .update({ status: "expired" })
+          .eq("id", existingInvite.id);
+        if (expireErr) {
+          console.error("[cofounder-invite] expire stale invite error:", expireErr);
+          return NextResponse.json(
+            { error: "Failed to create invite" },
+            { status: 500 },
+          );
+        }
+      } else {
+        return NextResponse.json(
+          { error: "A pending invite already exists for this email" },
+          { status: 409 },
+        );
+      }
     }
 
     const token = randomBytes(32).toString("hex");
@@ -147,6 +170,8 @@ export async function POST(request: NextRequest) {
         inviter_user_id: userId,
         organization_id: inviterProfile.organization_id,
         invitee_email: normalizedEmail,
+        startup_name: normalizedStartupName,
+        startup_website: normalizedStartupWebsite,
         invitee_role: normalizedRole,
         note: normalizedNote,
         invitee_user_id: inviteeUserId,
@@ -197,7 +222,7 @@ export async function GET() {
     const { data: invites, error: inviteErr } = await supabase
       .from("cofounder_invites")
       .select(
-        "id, token, invitee_email, invitee_role, note, status, created_at, expires_at",
+        "id, token, invitee_email, invitee_role, note, startup_name, startup_website, status, created_at, expires_at",
       )
       .eq("inviter_user_id", userId)
       .order("created_at", { ascending: false });

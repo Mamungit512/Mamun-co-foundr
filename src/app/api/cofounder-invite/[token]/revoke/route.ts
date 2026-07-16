@@ -34,10 +34,17 @@ export async function POST(
       );
     }
 
-    await supabase
+    const { error: updateErr } = await supabase
       .from("cofounder_invites")
       .update({ status: "revoked", responded_at: new Date().toISOString() })
-      .eq("id", invite.id);
+      .eq("id", invite.id)
+      .select("id")
+      .single();
+
+    if (updateErr) {
+      console.error("[cofounder-invite revoke] update error:", updateErr);
+      return NextResponse.json({ error: "Failed to revoke invite" }, { status: 500 });
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

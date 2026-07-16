@@ -246,6 +246,17 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    // If every eligible candidate has already been skipped at least once since the
+    // last reset, the viewer has completed a full pass through the deck. Show the
+    // empty state instead of looping the same candidates in score order forever.
+    const roundComplete = enrichedFiltered.every(
+      (profile) => (queueMap.get(profile.user_id!)?.cycle ?? 0) >= 1,
+    );
+
+    if (roundComplete) {
+      return NextResponse.json({ profiles: [], currentUser, roundComplete: true });
+    }
+
     // Sort by: cycle asc (skipped profiles go to back) → score desc (best match first within same cycle)
     const sorted = enrichedFiltered
       .map((profile) => {

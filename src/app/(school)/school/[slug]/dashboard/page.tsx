@@ -12,7 +12,7 @@ import toast from "react-hot-toast";
 import HiringBadge from "@/components/HiringBadge";
 import CoFounderLinks from "@/features/cofounder/CoFounderLinks";
 import ProfileViewModal from "@/features/profile/ProfileViewModal";
-import { useGetProfiles, useSearchProfiles } from "@/features/profile/useProfile";
+import { useGetProfiles, useSearchProfiles, useResetMatchingRound } from "@/features/profile/useProfile";
 import { useSchool } from "@/features/school/components/SchoolContext";
 import { useToggleLike, useLikeStatus, useMutualLikes } from "@/features/likes/useLikes";
 import { useSkipProfile } from "@/features/user-actions/useUserActions";
@@ -20,6 +20,7 @@ import { trackEvent } from "@/lib/posthog-events";
 import { useProfileViewTracking } from "@/features/profile/useProfileViewTracking";
 import { getSchoolFullName, getDegreeAbbreviation, SECTOR_INTEREST_LABELS } from "@/features/school/data/utSchoolsAndMajors";
 import FilterSidebar, { getFilterChipLabels } from "@/features/school/components/dashboard/FilterSidebar";
+import { SwipeCardSkeleton, SearchResultCardSkeleton } from "@/features/school/components/dashboard/ProfileCardSkeletons";
 import ReportProfileButton from "@/features/report/ReportProfileButton";
 import {
   type DashboardFilters,
@@ -210,7 +211,12 @@ export default function SchoolDashboardPage() {
   const cardRef = useRef<HTMLDivElement>(null);
 
   const { schoolName, slug } = useSchool();
-  const { data: profiles, isLoading: isLoadingProfiles } = useGetProfiles(filters, slug);
+  const {
+    data: profiles,
+    isLoading: isLoadingProfiles,
+    isFetching: isFetchingProfiles,
+  } = useGetProfiles(filters, slug);
+  const resetRoundMutation = useResetMatchingRound();
 
   useEffect(() => {
     setFilters(loadDashboardFilters());
@@ -293,6 +299,14 @@ export default function SchoolDashboardPage() {
       queryClient.invalidateQueries({ queryKey: ["profiles"] });
     } catch {
       toast.error("Failed to skip profile");
+    }
+  };
+
+  const handleStartOver = async () => {
+    try {
+      await resetRoundMutation.mutateAsync();
+    } catch {
+      toast.error("Failed to refresh profiles");
     }
   };
 
@@ -410,6 +424,7 @@ export default function SchoolDashboardPage() {
         onChange={updateFilters}
         isOpen={filterDrawerOpen}
         onClose={() => setFilterDrawerOpen(false)}
+        isLoading={isLoadingProfiles}
       />
 
       {/* Search bar — only shown when open */}
@@ -441,6 +456,7 @@ export default function SchoolDashboardPage() {
           variant="sidebar"
           filters={filters}
           onChange={updateFilters}
+          isLoading={isLoadingProfiles}
         />
 
         <div className="mx-auto flex w-full min-w-0 max-w-2xl flex-1 flex-col min-h-0">
@@ -448,9 +464,11 @@ export default function SchoolDashboardPage() {
       {isSearchActive ? (
         <div>
           {isSearching && (
-            <p className="mb-4 text-center text-sm text-[var(--ui-text-muted)]">
-              Searching…
-            </p>
+            <div className="flex flex-col gap-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <SearchResultCardSkeleton key={i} />
+              ))}
+            </div>
           )}
           {!isSearching && searchResults && searchResults.length === 0 && (
             <div className="flex flex-col items-center gap-3 py-16 text-center">
@@ -500,9 +518,7 @@ export default function SchoolDashboardPage() {
       ) : (
         /* Swipe card */
         isLoadingProfiles ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
-            <p className="text-sm text-[var(--ui-text-muted)]">Loading profiles…</p>
-          </div>
+          <SwipeCardSkeleton />
         ) : !curProfile ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
             {filtersActive ? (
@@ -527,8 +543,16 @@ export default function SchoolDashboardPage() {
                   No more co-founders to show right now
                 </p>
                 <p className="text-sm text-[var(--ui-text-muted)]">
-                  Check back later — more students from your program will be joining.
+                  Check back later. More students from your program will be joining.
                 </p>
+                <button
+                  type="button"
+                  onClick={handleStartOver}
+                  disabled={resetRoundMutation.isPending || isFetchingProfiles}
+                  className="mt-1 inline-flex items-center gap-2 rounded-full bg-[#BF5700] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#a34800] disabled:opacity-60 cursor-pointer"
+                >
+                  {resetRoundMutation.isPending || isFetchingProfiles ? "Checking…" : "Start over"}
+                </button>
               </>
             )}
           </div>

@@ -27,7 +27,9 @@ export async function POST(
 
     const { data: invite, error: inviteErr } = await supabase
       .from("cofounder_invites")
-      .select("id, inviter_user_id, organization_id, invitee_email, status, expires_at")
+      .select(
+        "id, inviter_user_id, organization_id, invitee_email, status, expires_at, startup_name, startup_website",
+      )
       .eq("token", token)
       .single();
 
@@ -110,6 +112,20 @@ export async function POST(
     if (linkErr) {
       console.error("[cofounder-invite accept] link insert error:", linkErr);
       return NextResponse.json({ error: "Failed to create co-founder link" }, { status: 500 });
+    }
+
+    // Overwrite both profiles' startup identity with the agreed-on name/site
+    if (invite.startup_name) {
+      const { error: profileSyncErr } = await supabase
+        .from("profiles")
+        .update({
+          startup_name: invite.startup_name,
+          startup_website: invite.startup_website,
+        })
+        .in("user_id", [invite.inviter_user_id, userId]);
+      if (profileSyncErr) {
+        console.error("[cofounder-invite accept] profile sync error:", profileSyncErr);
+      }
     }
 
     await supabase
