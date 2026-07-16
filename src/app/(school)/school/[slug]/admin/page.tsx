@@ -699,7 +699,7 @@ export default function SchoolAdminPage() {
                           {[
                             "Match",
                             "Type Fit",
-                            "Startup",
+                            "Team",
                             "Date",
                             "Status",
                           ].map((h) => (
@@ -796,18 +796,44 @@ export default function SchoolAdminPage() {
                                 </div>
                               </td>
                               <td className="px-4 py-3">
-                                <div
-                                  className="font-medium"
-                                  style={{ color: "var(--ui-text)" }}
-                                >
-                                  {conn.person1.startup_name ?? "—"}
-                                </div>
-                                <div
-                                  className="text-xs"
-                                  style={{ color: "var(--ui-text-muted)" }}
-                                >
-                                  {conn.person2.startup_name ?? "—"}
-                                </div>
+                                {(() => {
+                                  const teamName =
+                                    conn.person1.startup_name ??
+                                    conn.person2.startup_name;
+                                  const teamWebsite =
+                                    conn.person1.startup_website ??
+                                    conn.person2.startup_website;
+                                  if (!teamName) {
+                                    return (
+                                      <span
+                                        style={{ color: "var(--ui-text-muted)" }}
+                                      >
+                                        —
+                                      </span>
+                                    );
+                                  }
+                                  if (teamWebsite) {
+                                    return (
+                                      <a
+                                        href={teamWebsite}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="font-medium hover:underline"
+                                        style={{ color: "var(--ui-text)" }}
+                                      >
+                                        {teamName}
+                                      </a>
+                                    );
+                                  }
+                                  return (
+                                    <div
+                                      className="font-medium"
+                                      style={{ color: "var(--ui-text)" }}
+                                    >
+                                      {teamName}
+                                    </div>
+                                  );
+                                })()}
                               </td>
                               <td
                                 className="px-4 py-3 text-xs"

@@ -32,6 +32,8 @@ export default function CoFounderPanel({
   allowedDomains?: string[];
 }) {
   const [email, setEmail] = useState("");
+  const [startupName, setStartupName] = useState("");
+  const [startupWebsite, setStartupWebsite] = useState("");
   const [role, setRole] = useState("");
   const [note, setNote] = useState("");
   const { data, isLoading } = useCofounderManagement();
@@ -49,15 +51,20 @@ export default function CoFounderPanel({
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
     const trimmed = email.trim().toLowerCase();
-    if (!trimmed) return;
+    const trimmedStartupName = startupName.trim();
+    if (!trimmed || !trimmedStartupName) return;
     try {
       await sendInvite.mutateAsync({
         inviteeEmail: trimmed,
+        startupName: trimmedStartupName,
+        startupWebsite: startupWebsite.trim() || undefined,
         inviteeRole: role || undefined,
         note: note.trim() || undefined,
       });
       toast.success(`Invite sent to ${trimmed}`);
       setEmail("");
+      setStartupName("");
+      setStartupWebsite("");
       setRole("");
       setNote("");
     } catch (err) {
@@ -156,6 +163,21 @@ export default function CoFounderPanel({
             className="w-full rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-sm text-[var(--ui-text)] placeholder-[var(--ui-text-subtle)] focus:border-[var(--ui-border-strong)] focus:outline-none focus:ring-1 focus:ring-[var(--ui-border)]"
             required
           />
+          <input
+            type="text"
+            value={startupName}
+            onChange={(e) => setStartupName(e.target.value)}
+            placeholder="Startup or project name"
+            className="w-full rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-sm text-[var(--ui-text)] placeholder-[var(--ui-text-subtle)] focus:border-[var(--ui-border-strong)] focus:outline-none focus:ring-1 focus:ring-[var(--ui-border)]"
+            required
+          />
+          <input
+            type="url"
+            value={startupWebsite}
+            onChange={(e) => setStartupWebsite(e.target.value)}
+            placeholder="https://yourstartup.com (optional)"
+            className="w-full rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-sm text-[var(--ui-text)] placeholder-[var(--ui-text-subtle)] focus:border-[var(--ui-border-strong)] focus:outline-none focus:ring-1 focus:ring-[var(--ui-border)]"
+          />
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
@@ -177,7 +199,7 @@ export default function CoFounderPanel({
           />
           <button
             type="submit"
-            disabled={sendInvite.isPending || !email.trim()}
+            disabled={sendInvite.isPending || !email.trim() || !startupName.trim()}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--ui-btn-bg)] px-4 py-2 text-sm font-medium text-[var(--ui-btn-text)] transition hover:bg-[#a34800] disabled:opacity-50"
           >
             <FaUserPlus className="h-3.5 w-3.5" />
