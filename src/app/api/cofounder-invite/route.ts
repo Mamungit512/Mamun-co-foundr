@@ -131,17 +131,31 @@ export async function POST(request: NextRequest) {
     // Pending invite already exists check (via partial unique index)
     const { data: existingInvite } = await supabase
       .from("cofounder_invites")
-      .select("id")
+      .select("id, expires_at")
       .eq("inviter_user_id", userId)
       .eq("status", "pending")
       .ilike("invitee_email", normalizedEmail)
       .maybeSingle();
 
     if (existingInvite) {
-      return NextResponse.json(
-        { error: "A pending invite already exists for this email" },
-        { status: 409 },
-      );
+      if (new Date(existingInvite.expires_at) < new Date()) {
+        const { error: expireErr } = await supabase
+          .from("cofounder_invites")
+          .update({ status: "expired" })
+          .eq("id", existingInvite.id);
+        if (expireErr) {
+          console.error("[cofounder-invite] expire stale invite error:", expireErr);
+          return NextResponse.json(
+            { error: "Failed to create invite" },
+            { status: 500 },
+          );
+        }
+      } else {
+        return NextResponse.json(
+          { error: "A pending invite already exists for this email" },
+          { status: 409 },
+        );
+      }
     }
 
     const token = randomBytes(32).toString("hex");
