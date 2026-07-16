@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from "react";
 import { useSession, useUser } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
+import toast from "react-hot-toast";
 
 import { completeOnboarding } from "@/app/(general)/onboarding/_actions";
 import { useUserProfile } from "@/features/profile/useProfile";
@@ -87,6 +88,17 @@ export default function SchoolOnboardingPage({
   };
 
   const handleBack = () => goToStep(stepNumber - 1, "back");
+
+  const handleManualSave = (stepData: Partial<OnboardingData>) => {
+    const merged = { ...formData, ...stepData };
+    setFormData(merged);
+    const ok = draft.save(stepNumber, merged);
+    if (ok) {
+      toast.success("Progress saved");
+    } else {
+      toast.error("Couldn't save — your browser storage may be full or disabled");
+    }
+  };
 
   const handleEditStep = (step: number) =>
     goToStep(step, step < stepNumber ? "back" : "forward");
@@ -223,6 +235,7 @@ export default function SchoolOnboardingPage({
               key={stepId}
               onNext={(newData) => advanceStep(newData, stepNum + 1)}
               onBack={stepNum > 1 ? handleBack : undefined}
+              onManualSave={handleManualSave}
               defaultValues={formData}
             />
           );

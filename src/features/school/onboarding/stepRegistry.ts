@@ -9,6 +9,7 @@ import UTInterestsForm from "@/features/school/onboarding/components/UTInterests
 export type StepProps = {
   onNext: (data: Partial<OnboardingData>) => void;
   onBack?: () => void;
+  onManualSave?: (data: Partial<OnboardingData>) => void;
   defaultValues: OnboardingData;
 };
 

@@ -212,7 +212,7 @@ function InterestsAndValuesForm({
             <button
               type="button"
               onClick={() => onManualSave(withOtherPriority(getValues()))}
-              className="text-sm font-medium text-[var(--ui-text-muted)] underline-offset-2 hover:text-[var(--ui-text)] hover:underline"
+              className="cursor-pointer text-sm font-medium text-[var(--ui-text-muted)] underline-offset-2 hover:text-[var(--ui-text)] hover:underline"
             >
               Save progress
             </button>

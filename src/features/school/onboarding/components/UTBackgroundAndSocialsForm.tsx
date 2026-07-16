@@ -17,10 +17,12 @@ const LABEL_CLS =
 function UTBackgroundAndSocialsForm({
   onNext,
   onBack,
+  onManualSave,
   defaultValues,
 }: {
   onNext: (data: UTBackgroundAndSocialsData) => void;
   onBack: () => void;
+  onManualSave?: (data: Partial<UTBackgroundAndSocialsData>) => void;
   defaultValues?: Partial<UTBackgroundAndSocialsData>;
 }) {
   const fieldsRef = useStepEntry();
@@ -29,6 +31,7 @@ function UTBackgroundAndSocialsForm({
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<UTBackgroundAndSocialsData>({ defaultValues });
 
@@ -98,6 +101,15 @@ function UTBackgroundAndSocialsForm({
           >
             ← Back
           </button>
+          {onManualSave && (
+            <button
+              type="button"
+              onClick={() => onManualSave(getValues())}
+              className="cursor-pointer text-sm font-medium text-[var(--ui-text-muted)] underline-offset-2 hover:text-[var(--ui-text)] hover:underline"
+            >
+              Save progress
+            </button>
+          )}
           <button
             type="submit"
             className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-[var(--ui-btn-bg)] px-8 py-3.5 text-sm font-semibold text-[var(--ui-btn-text)] shadow-lg shadow-black/5 transition-all duration-200 hover:bg-[var(--ui-btn-bg)]/90 active:scale-[0.98] sm:flex-none"
