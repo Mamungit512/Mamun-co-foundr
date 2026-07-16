@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import Image from "next/image";
-import { FaUserPlus, FaTrash, FaUserMinus } from "react-icons/fa6";
+import { FaUserPlus, FaTrash, FaUserMinus, FaPaperPlane, FaRotateRight } from "react-icons/fa6";
 import {
   useCofounderManagement,
   useSendCofounderInvite,
   useRevokeCofounderInvite,
+  useResendCofounderInvite,
   useUnlinkCofounder,
+  type CofounderInvite,
 } from "./hooks";
 import { formatAllowedDomainsForCopy } from "@/features/school/auth/email-domain";
 
@@ -25,6 +27,13 @@ const ROLE_OPTIONS = [
   { value: "non-technical", label: "Non-technical founder" },
 ];
 
+function effectiveStatus(invite: CofounderInvite): CofounderInvite["status"] {
+  if (invite.status === "pending" && new Date(invite.expires_at) < new Date()) {
+    return "expired";
+  }
+  return invite.status;
+}
+
 export default function CoFounderPanel({
   allowedDomains = [],
 }: {
@@ -36,13 +45,15 @@ export default function CoFounderPanel({
   const [startupWebsite, setStartupWebsite] = useState("");
   const [role, setRole] = useState("");
   const [note, setNote] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
   const { data, isLoading } = useCofounderManagement();
   const sendInvite = useSendCofounderInvite();
   const revokeInvite = useRevokeCofounderInvite();
+  const resendInvite = useResendCofounderInvite();
   const unlink = useUnlinkCofounder();
 
-  const pendingInvites = (data?.invites ?? []).filter((i) => i.status === "pending");
-  const pastInvites = (data?.invites ?? []).filter((i) => i.status !== "pending");
+  const pendingInvites = (data?.invites ?? []).filter((i) => effectiveStatus(i) === "pending");
+  const pastInvites = (data?.invites ?? []).filter((i) => effectiveStatus(i) !== "pending");
   const links = data?.links ?? [];
 
   const emailPlaceholder = `cofounder@${allowedDomains[0] ?? "utexas.edu"}`;
@@ -79,6 +90,39 @@ export default function CoFounderPanel({
       toast.success("Invite revoked");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to revoke");
+    }
+  }
+
+  async function handleResend(token: string) {
+    try {
+      await resendInvite.mutateAsync(token);
+      toast.success("Invite re-sent");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to resend invite");
+    }
+  }
+
+  async function handleReinvite(invite: CofounderInvite) {
+    if (!invite.startup_name) {
+      setEmail(invite.invitee_email);
+      setStartupWebsite(invite.startup_website ?? "");
+      setRole(invite.invitee_role ?? "");
+      setNote(invite.note ?? "");
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      toast("Add the startup name to re-send this invite", { icon: "✏️" });
+      return;
+    }
+    try {
+      await sendInvite.mutateAsync({
+        inviteeEmail: invite.invitee_email,
+        startupName: invite.startup_name,
+        startupWebsite: invite.startup_website ?? undefined,
+        inviteeRole: invite.invitee_role ?? undefined,
+        note: invite.note ?? undefined,
+      });
+      toast.success(`Invite re-sent to ${invite.invitee_email}`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to re-invite");
     }
   }
 
@@ -154,7 +198,7 @@ export default function CoFounderPanel({
           Enter their school email address — they&apos;ll receive a link to accept.
           {allowedDomainsCopy && ` Must be a ${allowedDomainsCopy} email.`}
         </p>
-        <form onSubmit={handleSend} className="space-y-2">
+        <form ref={formRef} onSubmit={handleSend} className="space-y-2">
           <input
             type="email"
             value={email}
@@ -223,15 +267,26 @@ export default function CoFounderPanel({
                   Expires {new Date(invite.expires_at).toLocaleDateString()}
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => handleRevoke(invite.token)}
-                disabled={revokeInvite.isPending}
-                className="flex items-center gap-1.5 rounded-lg border border-[var(--ui-border)] px-3 py-1.5 text-xs text-[var(--ui-text-muted)] transition hover:border-red-500/30 hover:text-red-500 disabled:opacity-50"
-              >
-                <FaTrash className="h-3 w-3" />
-                Revoke
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleResend(invite.token)}
+                  disabled={resendInvite.isPending}
+                  className="flex items-center gap-1.5 rounded-lg border border-[var(--ui-border)] px-3 py-1.5 text-xs text-[var(--ui-text-muted)] transition hover:border-[var(--ui-border-strong)] hover:text-[var(--ui-text)] disabled:opacity-50"
+                >
+                  <FaPaperPlane className="h-3 w-3" />
+                  Resend
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleRevoke(invite.token)}
+                  disabled={revokeInvite.isPending}
+                  className="flex items-center gap-1.5 rounded-lg border border-[var(--ui-border)] px-3 py-1.5 text-xs text-[var(--ui-text-muted)] transition hover:border-red-500/30 hover:text-red-500 disabled:opacity-50"
+                >
+                  <FaTrash className="h-3 w-3" />
+                  Revoke
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -241,17 +296,34 @@ export default function CoFounderPanel({
       {pastInvites.length > 0 && (
         <div className="space-y-2">
           <label className={labelClass}>Past invites</label>
-          {pastInvites.map((invite) => (
-            <div
-              key={invite.id}
-              className="flex items-center justify-between gap-3 rounded-xl border border-[var(--ui-border)] px-4 py-3 opacity-60"
-            >
-              <p className="truncate text-sm text-[var(--ui-text)]">{invite.invitee_email}</p>
-              <span className="text-xs text-[var(--ui-text-subtle)]">
-                {STATUS_LABELS[invite.status] ?? invite.status}
-              </span>
-            </div>
-          ))}
+          {pastInvites.map((invite) => {
+            const status = effectiveStatus(invite);
+            const canReinvite = status === "revoked" || status === "declined" || status === "expired";
+            return (
+              <div
+                key={invite.id}
+                className="flex items-center justify-between gap-3 rounded-xl border border-[var(--ui-border)] px-4 py-3 opacity-60"
+              >
+                <p className="truncate text-sm text-[var(--ui-text)]">{invite.invitee_email}</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-[var(--ui-text-subtle)]">
+                    {STATUS_LABELS[status] ?? status}
+                  </span>
+                  {canReinvite && (
+                    <button
+                      type="button"
+                      onClick={() => handleReinvite(invite)}
+                      disabled={sendInvite.isPending}
+                      className="flex items-center gap-1.5 rounded-lg border border-[var(--ui-border)] px-3 py-1.5 text-xs text-[var(--ui-text-muted)] transition hover:border-[var(--ui-border-strong)] hover:text-[var(--ui-text)] disabled:opacity-50"
+                    >
+                      <FaRotateRight className="h-3 w-3" />
+                      Re-invite
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 

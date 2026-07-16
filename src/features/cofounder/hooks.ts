@@ -86,6 +86,22 @@ export function useRevokeCofounderInvite() {
   });
 }
 
+export function useResendCofounderInvite() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (token: string) => {
+      const res = await fetch(`/api/cofounder-invite/${token}/resend`, { method: "POST" });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error ?? "Failed to resend invite");
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cofounder-management"] });
+    },
+  });
+}
+
 export function useUnlinkCofounder() {
   const queryClient = useQueryClient();
   return useMutation({
