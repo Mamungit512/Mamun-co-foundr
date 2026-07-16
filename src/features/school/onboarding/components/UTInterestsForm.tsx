@@ -123,10 +123,12 @@ type UTInterestsData = {
 function UTInterestsForm({
   onBack,
   onNext,
+  onManualSave,
   defaultValues,
 }: {
   onBack: () => void;
   onNext: (data: UTInterestsData) => void;
+  onManualSave?: (data: Partial<UTInterestsData>) => void;
   defaultValues?: Partial<UTInterestsData>;
 }) {
   const fieldsRef = useStepEntry();
@@ -137,6 +139,7 @@ function UTInterestsForm({
     handleSubmit,
     reset,
     watch,
+    getValues,
     formState: { errors },
   } = useForm<UTInterestsData>({ defaultValues });
 
@@ -237,6 +240,15 @@ function UTInterestsForm({
           >
             ← Back
           </button>
+          {onManualSave && (
+            <button
+              type="button"
+              onClick={() => onManualSave(getValues())}
+              className="cursor-pointer text-sm font-medium text-[var(--ui-text-muted)] underline-offset-2 hover:text-[var(--ui-text)] hover:underline"
+            >
+              Save progress
+            </button>
+          )}
           <button
             type="submit"
             className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-[var(--ui-btn-bg)] px-8 py-3.5 text-sm font-semibold text-[var(--ui-btn-text)] shadow-lg shadow-black/5 transition-all duration-200 hover:bg-[var(--ui-btn-bg)]/90 active:scale-[0.98] sm:flex-none"

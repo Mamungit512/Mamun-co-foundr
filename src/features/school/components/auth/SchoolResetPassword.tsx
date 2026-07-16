@@ -383,7 +383,7 @@ export default function SchoolResetPassword({
               )}
             </div>
 
-            <div id="clerk-captcha" />
+            <div id="clerk-captcha" className="w-fit max-w-full overflow-x-auto" />
 
             {!isGoogleOnly && (
               <button
