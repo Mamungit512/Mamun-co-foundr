@@ -11,6 +11,7 @@ import {
 import {
   assignSchoolOrg,
   checkExistingUser,
+  isGlobalAdminEmail,
   type ExistingUserInfo,
 } from "@/features/school/auth/school-auth";
 import GoogleOAuthButton from "./GoogleOAuthButton";
@@ -71,7 +72,10 @@ export default function SchoolSignUp({
     if (!isLoaded) return;
     setError(null);
 
-    if (!isEmailDomainAllowed(email, allowedDomains)) {
+    if (
+      !isEmailDomainAllowed(email, allowedDomains) &&
+      !(await isGlobalAdminEmail(email))
+    ) {
       setError(
         `Sign-up at ${schoolName} requires a ${allowedCopy} email address.`,
       );

@@ -3,14 +3,25 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 import { getOrganizationBySlug } from "@/features/school/data/organizations";
-import { isEmailDomainAllowed } from "@/features/school/auth/email-domain";
-import { getEnvAdminEmails } from "@/features/school/auth/org-admin";
+import {
+  getEnvAdminEmails,
+  isSchoolSignInEligible,
+} from "@/features/school/auth/org-admin";
 
 export type ExistingUserInfo = {
   exists: boolean;
   hasPassword: boolean;
   oauthProviders: string[];
 };
+
+/**
+ * Whether an email is on the global platform-admin allowlist (ADMIN_EMAILS).
+ * Lets the client sign-in forms honor the admin override to the domain block
+ * without exposing the allowlist itself.
+ */
+export async function isGlobalAdminEmail(email: string): Promise<boolean> {
+  return getEnvAdminEmails().includes(email.trim().toLowerCase());
+}
 
 export async function checkExistingUser(
   email: string,
@@ -59,8 +70,7 @@ export async function assignSchoolOrg(
   const email = primary?.emailAddress;
   if (!email) return { error: "No email on account." };
 
-  const isGlobalAdmin = getEnvAdminEmails().includes(email.toLowerCase());
-  if (!isGlobalAdmin && !isEmailDomainAllowed(email, org.allowed_email_domains)) {
+  if (!isSchoolSignInEligible(email, org.allowed_email_domains)) {
     return {
       error: `This account's email is not eligible for ${org.name}.`,
     };
