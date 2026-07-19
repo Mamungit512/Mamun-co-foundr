@@ -10,6 +10,7 @@ import {
 } from "@/features/school/auth/email-domain";
 import {
   checkExistingUser,
+  isGlobalAdminEmail,
   type ExistingUserInfo,
 } from "@/features/school/auth/school-auth";
 import { completeSchoolSignIn } from "./complete-school-signin";
@@ -89,7 +90,10 @@ export default function SchoolSignIn({
     if (!isLoaded) return;
     setError(null);
 
-    if (!isEmailDomainAllowed(email, allowedDomains)) {
+    if (
+      !isEmailDomainAllowed(email, allowedDomains) &&
+      !(await isGlobalAdminEmail(email))
+    ) {
       setError(
         `This portal is for ${schoolName}. Sign in at mamuncofoundr.com instead, or use a ${allowedCopy} email.`,
       );

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 import { getOrganizationBySlug } from "@/features/school/data/organizations";
-import { isEmailDomainAllowed } from "@/features/school/auth/email-domain";
+import { isSchoolSignInEligible } from "@/features/school/auth/org-admin";
 import SessionRefreshRedirect from "@/features/school/components/auth/SessionRefreshRedirect";
 import AutoRetry from "@/features/school/components/auth/AutoRetry";
 import SignOutRedirect from "@/features/school/components/auth/SignOutOnMount";
@@ -64,7 +64,7 @@ export default async function SSOCompletePage({
     return <SignOutRedirect redirectUrl={signInUrl} />;
   }
 
-  if (!isEmailDomainAllowed(primaryEmail, org!.allowed_email_domains)) {
+  if (!isSchoolSignInEligible(primaryEmail, org!.allowed_email_domains)) {
     await revokeSession();
     const params = new URLSearchParams({
       mismatch: "1",
