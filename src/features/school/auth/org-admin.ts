@@ -1,6 +1,7 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { isEmailDomainAllowed } from "@/features/school/auth/email-domain";
 
 function supabaseAdmin() {
   return createClient(
@@ -34,6 +35,21 @@ export function getEnvAdminEmails(): string[] {
     process.env.ADMIN_EMAILS?.split(",")
       .map((e) => e.trim().toLowerCase())
       .filter(Boolean) ?? []
+  );
+}
+
+/**
+ * Sign-in eligibility for a school portal: allowed when the email's domain is on
+ * the org allowlist OR the email is a configured global admin. Global admins
+ * override the domain block so support/staff can access any school portal.
+ */
+export function isSchoolSignInEligible(
+  email: string,
+  allowedDomains: string[],
+): boolean {
+  return (
+    getEnvAdminEmails().includes(email.trim().toLowerCase()) ||
+    isEmailDomainAllowed(email, allowedDomains)
   );
 }
 

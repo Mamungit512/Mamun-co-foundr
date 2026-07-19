@@ -6,7 +6,7 @@ import {
   getRequiredTermsVersion,
   isConsentSatisfied,
 } from "@/features/legal/consent";
-import { isEmailDomainAllowed } from "@/features/school/auth/email-domain";
+import { isSchoolSignInEligible } from "@/features/school/auth/org-admin";
 import { getOrgConfig } from "@/features/school/registry/registry";
 
 const isOnboardingRoute = createRouteMatcher(["/onboarding(.*)"]);
@@ -267,7 +267,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
       // Fast path: already assigned to this org via Clerk metadata → skip Clerk API call.
       if (claimOrgId !== org.id) {
         const email = await getVerifiedPrimaryEmail(userId);
-        if (!email || !isEmailDomainAllowed(email, org.allowed_email_domains)) {
+        if (!email || !isSchoolSignInEligible(email, org.allowed_email_domains)) {
           const notAuthorizedUrl = new URL(`/school/${pathSlug}/not-authorized`, req.url);
           if (pathname !== notAuthorizedUrl.pathname) {
             return NextResponse.redirect(notAuthorizedUrl);
