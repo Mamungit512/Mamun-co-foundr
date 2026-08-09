@@ -6,17 +6,17 @@ export default function PublicSchoolHeader({ slug }: { slug: string }) {
       className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0 px-4 sm:px-6 py-3 sm:py-4"
       style={{ backgroundColor: "#bf5700" }}
     >
-      <Link href="/" className="text-xs sm:text-sm font-semibold text-white text-center sm:text-left">
+      <Link href={`/school/${slug}`} className="text-xs sm:text-sm font-semibold text-white text-center sm:text-left">
         University of Texas Co-Foundr
       </Link>
 
       <nav className="flex flex-wrap items-center justify-center gap-3 sm:gap-5">
-        <a
-          href="#departments"
+        <Link
+          href={`/school/${slug}/sign-in?redirect=${encodeURIComponent(`/school/${slug}/dashboard`)}`}
           className="border-b border-white/40 pb-0.5 text-xs sm:text-sm font-medium text-white whitespace-nowrap"
         >
           Find your co-foundr
-        </a>
+        </Link>
         <Link
           href={`/school/${slug}/contact-us`}
           className="text-xs sm:text-sm font-medium text-white transition-[font-weight] duration-300 hover:font-semibold whitespace-nowrap"

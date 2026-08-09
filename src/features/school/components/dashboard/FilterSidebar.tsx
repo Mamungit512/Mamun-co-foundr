@@ -131,8 +131,8 @@ type FilterSidebarProps = {
 
 const INTENT_OPTIONS = [
   { value: null, label: "Any" },
-  { value: "join_me" as const, label: "Join me" },
-  { value: "seeking_to_join" as const, label: "Seeking to join" },
+  { value: "join_me" as const, label: "Seeking a cofounder" },
+  { value: "seeking_to_join" as const, label: "Seeking a startup to join" },
 ];
 
 function FilterPanel({
@@ -451,14 +451,14 @@ export function getFilterChipLabels(filters: DashboardFilters): FilterChipLabel[
     chips.push({
       key: "intent-join_me",
       dismissKey: "intent",
-      label: "Join me",
+      label: "Seeking a cofounder",
       onRemove: () => ({ ...filters, intent: null }),
     });
   } else if (filters.intent === "seeking_to_join") {
     chips.push({
       key: "intent-seeking",
       dismissKey: "intent",
-      label: "Seeking to join",
+      label: "Seeking a startup to join",
       onRemove: () => ({ ...filters, intent: null }),
     });
   }

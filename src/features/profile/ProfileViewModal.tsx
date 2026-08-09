@@ -34,22 +34,33 @@ interface ProfileViewModalProps {
   onClose: () => void;
 }
 
-export default function ProfileViewModal({ profile: profileProp, userId, onClose }: ProfileViewModalProps) {
+export default function ProfileViewModal({
+  profile: profileProp,
+  userId,
+  onClose,
+}: ProfileViewModalProps) {
   // Internal navigation: when user clicks a linked cofounder, we navigate to their profile.
   // navUserId overrides the props while set; clearing it returns to the root profile.
   const [navUserId, setNavUserId] = useState<string | null>(null);
 
   // Reset internal nav whenever the root target changes (modal opened for a new person)
   const rootId = profileProp?.user_id ?? userId ?? null;
-  useEffect(() => { setNavUserId(null); }, [rootId]);
+  useEffect(() => {
+    setNavUserId(null);
+  }, [rootId]);
 
   const targetId = navUserId ?? rootId;
   const isNavigated = !!navUserId;
 
   // Only fetch when we don't have the profile directly (or we've navigated away)
   const shouldFetch = isNavigated || (!profileProp && !!targetId);
-  const { data: fetchedProfile, isLoading } = useProfileByUserId(targetId ?? "", shouldFetch && !!targetId);
-  const profile = isNavigated ? (fetchedProfile ?? null) : (profileProp ?? fetchedProfile ?? null);
+  const { data: fetchedProfile, isLoading } = useProfileByUserId(
+    targetId ?? "",
+    shouldFetch && !!targetId,
+  );
+  const profile = isNavigated
+    ? (fetchedProfile ?? null)
+    : (profileProp ?? fetchedProfile ?? null);
 
   const { toggleLike, isLoading: isLikeLoading } = useToggleLike();
   const { data: likeStatus } = useLikeStatus(targetId ?? "");
@@ -69,7 +80,8 @@ export default function ProfileViewModal({ profile: profileProp, userId, onClose
   if (!targetId) return null;
 
   const initials = profile
-    ? (profile.firstName?.[0] ?? "").toUpperCase() + (profile.lastName?.[0] ?? "").toUpperCase()
+    ? (profile.firstName?.[0] ?? "").toUpperCase() +
+      (profile.lastName?.[0] ?? "").toUpperCase()
     : "";
 
   const degreeAbbrev =
@@ -86,17 +98,42 @@ export default function ProfileViewModal({ profile: profileProp, userId, onClose
     : undefined;
 
   const isOnline = profile?.last_active_at
-    ? new Date().getTime() - new Date(profile.last_active_at).getTime() < 5 * 60 * 1000
+    ? new Date().getTime() - new Date(profile.last_active_at).getTime() <
+      5 * 60 * 1000
     : false;
 
   const socialLinks = profile
-    ? [
-        profile.linkedin && { href: profile.linkedin, icon: <FaLinkedin className="h-4 w-4" />, label: "LinkedIn" },
-        profile.twitter && { href: profile.twitter, icon: <FaTwitter className="h-4 w-4" />, label: "Twitter / X" },
-        profile.git && { href: profile.git, icon: <FaGithub className="h-4 w-4" />, label: "GitHub" },
-        profile.personalWebsite && { href: profile.personalWebsite, icon: <FaGlobe className="h-4 w-4" />, label: "Website" },
-        profile.schedulingUrl && { href: profile.schedulingUrl, icon: <FaCalendar className="h-4 w-4" />, label: "Schedule a call" },
-      ].filter(Boolean) as { href: string; icon: React.ReactNode; label: string }[]
+    ? ([
+        profile.linkedin && {
+          href: profile.linkedin,
+          icon: <FaLinkedin className="h-4 w-4" />,
+          label: "LinkedIn",
+        },
+        profile.twitter && {
+          href: profile.twitter,
+          icon: <FaTwitter className="h-4 w-4" />,
+          label: "Twitter / X",
+        },
+        profile.git && {
+          href: profile.git,
+          icon: <FaGithub className="h-4 w-4" />,
+          label: "GitHub",
+        },
+        profile.personalWebsite && {
+          href: profile.personalWebsite,
+          icon: <FaGlobe className="h-4 w-4" />,
+          label: "Website",
+        },
+        profile.schedulingUrl && {
+          href: profile.schedulingUrl,
+          icon: <FaCalendar className="h-4 w-4" />,
+          label: "Schedule a call",
+        },
+      ].filter(Boolean) as {
+        href: string;
+        icon: React.ReactNode;
+        label: string;
+      }[])
     : [];
 
   const showLoading = isLoading && shouldFetch;
@@ -116,7 +153,7 @@ export default function ProfileViewModal({ profile: profileProp, userId, onClose
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 40 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="flex h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl border border-[var(--ui-border)] bg-[var(--ui-popover-bg)] shadow-2xl sm:rounded-2xl sm:h-[85vh]"
+            className="flex h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl border border-[var(--ui-border)] bg-[var(--ui-popover-bg)] shadow-2xl sm:h-[85vh] sm:rounded-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Sticky header */}
@@ -135,7 +172,7 @@ export default function ProfileViewModal({ profile: profileProp, userId, onClose
                   {isNavigated && (
                     <button
                       onClick={() => setNavUserId(null)}
-                      className="mt-1 flex-shrink-0 rounded-full p-2 text-[var(--ui-text-muted)] transition hover:bg-[var(--ui-surface-active)] hover:text-[var(--ui-text)] cursor-pointer"
+                      className="mt-1 flex-shrink-0 cursor-pointer rounded-full p-2 text-[var(--ui-text-muted)] transition hover:bg-[var(--ui-surface-active)] hover:text-[var(--ui-text)]"
                       title="Back"
                     >
                       <FaArrowLeft className="h-4 w-4" />
@@ -157,7 +194,7 @@ export default function ProfileViewModal({ profile: profileProp, userId, onClose
                       </div>
                     )}
                     <div
-                      className={`absolute bottom-0.5 right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white ${isOnline ? "bg-green-500" : "bg-gray-300"}`}
+                      className={`absolute right-0.5 bottom-0.5 h-3.5 w-3.5 rounded-full border-2 border-white ${isOnline ? "bg-green-500" : "bg-gray-300"}`}
                     />
                   </div>
 
@@ -178,7 +215,9 @@ export default function ProfileViewModal({ profile: profileProp, userId, onClose
                     <div className="flex flex-wrap gap-1.5">
                       {profile.utStatus && (
                         <span className="inline-flex items-center rounded-md border border-[var(--ui-border-strong)] px-2 py-0.5 text-xs font-medium text-[var(--ui-text-muted)]">
-                          {profile.utStatus === "student" ? "Student" : "Alumni"}
+                          {profile.utStatus === "student"
+                            ? "Student"
+                            : "Alumni"}
                         </span>
                       )}
                       {profile.archetype && (
@@ -192,21 +231,44 @@ export default function ProfileViewModal({ profile: profileProp, userId, onClose
                       )}
                       {profile.isTechnical && (
                         <span className="inline-flex items-center rounded-md border border-[var(--org-primary)] px-2 py-0.5 text-xs font-medium text-[var(--org-primary)]">
-                          {profile.isTechnical === "yes" ? "Technical founder" : "Non-technical founder"}
+                          {profile.isTechnical === "yes"
+                            ? "Technical founder"
+                            : "Non-technical founder"}
+                        </span>
+                      )}
+                      {(profile.intent === "join_me" ||
+                        profile.intent === "seeking_to_join") && (
+                        <span className="inline-flex items-center rounded-md bg-[var(--org-primary)] px-2 py-0.5 text-xs font-semibold text-white">
+                          {profile.intent === "join_me"
+                            ? "Seeking a cofounder"
+                            : "Seeking a startup to join"}
+                        </span>
+                      )}
+                      {profile.intent === "no_preference" && (
+                        <span className="inline-flex items-center rounded-md bg-[var(--org-primary)] px-2 py-0.5 text-xs font-semibold text-white">
+                          Open to either: Seeking a cofounder or joining a
+                          startup
                         </span>
                       )}
                     </div>
 
                     {(degreeAbbrev || schoolFullName) && (
                       <p className="mt-1.5 text-xs text-[var(--ui-text-muted)]">
-                        {degreeAbbrev && yearSuffix ? `${degreeAbbrev} ${yearSuffix}` : degreeAbbrev ?? ""}
-                        {schoolFullName && profile.utMajor ? ` · ${schoolFullName} — ${profile.utMajor}` : ""}
+                        {degreeAbbrev && yearSuffix
+                          ? `${degreeAbbrev} ${yearSuffix}`
+                          : (degreeAbbrev ?? "")}
+                        {schoolFullName && profile.utMajor
+                          ? ` · ${schoolFullName} — ${profile.utMajor}`
+                          : ""}
                       </p>
                     )}
 
                     {targetId && (
                       <div className="mt-2">
-                        <CoFounderLinks userId={targetId} onClickCofounder={setNavUserId} />
+                        <CoFounderLinks
+                          userId={targetId}
+                          onClickCofounder={setNavUserId}
+                        />
                       </div>
                     )}
                   </div>
@@ -217,7 +279,7 @@ export default function ProfileViewModal({ profile: profileProp, userId, onClose
                   />
                   <button
                     onClick={onClose}
-                    className="flex-shrink-0 rounded-full p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 cursor-pointer"
+                    className="flex-shrink-0 cursor-pointer rounded-full p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
                   >
                     <FaTimes className="h-4 w-4" />
                   </button>
@@ -237,29 +299,40 @@ export default function ProfileViewModal({ profile: profileProp, userId, onClose
                     </Section>
                   )}
 
-                  {profile.utSectorInterests && profile.utSectorInterests.length > 0 && (
-                    <Section title="Sector Interests">
-                      <div className="flex flex-wrap gap-1.5">
-                        {profile.utSectorInterests.map((interest: string, i: number) => (
-                          <span
-                            key={interest}
-                            className="rounded-md px-2.5 py-1 text-xs font-medium"
-                            style={
-                              i < 2
-                                ? { backgroundColor: "var(--org-primary)", color: "#fff" }
-                                : { backgroundColor: "#f3f4f6", color: "#6b7280" }
-                            }
-                          >
-                            {SECTOR_INTEREST_LABELS[interest as keyof typeof SECTOR_INTEREST_LABELS] || interest}
-                          </span>
-                        ))}
-                      </div>
-                    </Section>
-                  )}
+                  {profile.utSectorInterests &&
+                    profile.utSectorInterests.length > 0 && (
+                      <Section title="Sector Interests">
+                        <div className="flex flex-wrap gap-1.5">
+                          {profile.utSectorInterests.map(
+                            (interest: string, i: number) => (
+                              <span
+                                key={interest}
+                                className="rounded-md px-2.5 py-1 text-xs font-medium"
+                                style={
+                                  i < 2
+                                    ? {
+                                        backgroundColor: "var(--org-primary)",
+                                        color: "#fff",
+                                      }
+                                    : {
+                                        backgroundColor: "#f3f4f6",
+                                        color: "#6b7280",
+                                      }
+                                }
+                              >
+                                {SECTOR_INTEREST_LABELS[
+                                  interest as keyof typeof SECTOR_INTEREST_LABELS
+                                ] || interest}
+                              </span>
+                            ),
+                          )}
+                        </div>
+                      </Section>
+                    )}
 
                   {profile.education && (
                     <Section title="Education">
-                      <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--ui-text)]">
+                      <p className="text-sm leading-relaxed whitespace-pre-line text-[var(--ui-text)]">
                         {profile.education}
                       </p>
                     </Section>
@@ -267,7 +340,7 @@ export default function ProfileViewModal({ profile: profileProp, userId, onClose
 
                   {profile.experience && (
                     <Section title="Experience">
-                      <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--ui-text)]">
+                      <p className="text-sm leading-relaxed whitespace-pre-line text-[var(--ui-text)]">
                         {profile.experience}
                       </p>
                     </Section>
@@ -275,7 +348,7 @@ export default function ProfileViewModal({ profile: profileProp, userId, onClose
 
                   {profile.accomplishments && (
                     <Section title="Accomplishments">
-                      <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--ui-text)]">
+                      <p className="text-sm leading-relaxed whitespace-pre-line text-[var(--ui-text)]">
                         {profile.accomplishments}
                       </p>
                     </Section>
@@ -283,7 +356,9 @@ export default function ProfileViewModal({ profile: profileProp, userId, onClose
 
                   {profile.hasStartup === "yes" && profile.startupName && (
                     <Section title="Startup">
-                      <p className="mb-1 font-medium text-[var(--ui-text)]">{profile.startupName}</p>
+                      <p className="mb-1 font-medium text-[var(--ui-text)]">
+                        {profile.startupName}
+                      </p>
                       {profile.startupDescription && (
                         <p className="text-sm leading-relaxed text-[var(--ui-text-muted)]">
                           {profile.startupDescription}
@@ -332,7 +407,7 @@ export default function ProfileViewModal({ profile: profileProp, userId, onClose
                 <button
                   onClick={handleInvite}
                   disabled={isLikeLoading}
-                  className={`flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition disabled:opacity-50 cursor-pointer ${
+                  className={`flex w-full cursor-pointer items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition disabled:opacity-50 ${
                     likeStatus?.isLiked
                       ? "bg-pink-500 text-white hover:bg-pink-600"
                       : "bg-[var(--org-primary)] text-white hover:bg-[#a34800]"
@@ -350,10 +425,16 @@ export default function ProfileViewModal({ profile: profileProp, userId, onClose
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <div>
-      <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[var(--ui-text-muted)]">
+      <p className="mb-2 text-[10px] font-semibold tracking-wider text-[var(--ui-text-muted)] uppercase">
         {title}
       </p>
       {children}
