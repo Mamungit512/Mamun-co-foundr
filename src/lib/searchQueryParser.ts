@@ -11,7 +11,7 @@ export type ParsedQuery = {
 };
 
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const GROQ_MODEL = "llama-3.3-70b-versatile";
+const GROQ_MODEL = "openai/gpt-oss-20b";
 const GROQ_TIMEOUT_MS = 1500;
 const CACHE_MAX = 1000;
 const CACHE_TTL_MS = 60 * 60 * 1000;

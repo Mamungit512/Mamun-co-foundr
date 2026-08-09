@@ -263,7 +263,7 @@ async function enrichWithSchoolData(
   const { data: schoolEnrichRows } = await supabase
     .from("school_profiles")
     .select(
-      "user_id, school_status, graduation_year, college, degree_type, major, sector_interests",
+      "user_id, school_status, graduation_year, college, degree_type, major, sector_interests, intent",
     )
     .eq("organization_id", orgId)
     .in("user_id", candidateIds);
@@ -278,6 +278,7 @@ async function enrichWithSchoolData(
         utDegreeType: row.degree_type,
         utMajor: row.major,
         utSectorInterests: row.sector_interests,
+        intent: row.intent,
       },
     ]) ?? [],
   );

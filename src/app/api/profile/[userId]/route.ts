@@ -188,8 +188,32 @@ export async function GET(
 
     const mappedProfile = mapProfileToOnboardingData(data);
 
+    // Merge UT/school-specific fields (utStatus, utMajor, intent, etc.) so the
+    // profile view modal shows the same badges here as it does when the caller
+    // already has an enriched profile object (e.g. from /api/profiles).
+    const { data: schoolRows } = await supabase
+      .from("school_profiles")
+      .select("school_status, graduation_year, college, degree_type, major, sector_interests, intent")
+      .eq("user_id", userId)
+      .limit(1);
+
+    const schoolRow = schoolRows?.[0];
+
+    const enrichedProfile = schoolRow
+      ? {
+          ...mappedProfile,
+          utStatus: schoolRow.school_status,
+          gradYear: schoolRow.graduation_year,
+          utCollege: schoolRow.college,
+          utDegreeType: schoolRow.degree_type,
+          utMajor: schoolRow.major,
+          utSectorInterests: schoolRow.sector_interests,
+          intent: schoolRow.intent,
+        }
+      : mappedProfile;
+
     return NextResponse.json({
-      profile: mappedProfile,
+      profile: enrichedProfile,
     });
   } catch (error) {
     console.error("Error in profile by user ID API:", error);

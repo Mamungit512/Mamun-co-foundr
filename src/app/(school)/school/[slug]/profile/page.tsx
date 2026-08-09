@@ -422,7 +422,7 @@ export default function SchoolProfilePage({ params }: { params: Promise<{ slug: 
               <div className="flex items-center justify-between">
                 <label className={labelClass}>Founder Archetype *</label>
                 <a
-                  href="/founder-archetypes"
+                  href={`/school/${slug}/founder-archetypes`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs text-[var(--ui-text-subtle)] underline-offset-2 hover:text-[var(--ui-text-muted)] hover:underline"

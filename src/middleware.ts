@@ -28,6 +28,7 @@ const isPublicRoute = createRouteMatcher([
   "/school/:slug/privacy-policy",
   "/school/:slug/terms-and-conditions",
   "/school/:slug/contact-us",
+  "/school/:slug/founder-archetypes",
   "/school/:slug/not-authorized",
   "/school/:slug/sign-up(.*)",
   "/school/:slug/sign-in(.*)",

@@ -6,6 +6,7 @@ import FormInput from "@/components/ui/FormInput";
 import LocationSelector from "@/components/ui/LocationSelector";
 import { useStepEntry, useErrorShake } from "@/hooks/useOnboardingAnimation";
 import UTSchoolFields from "@/features/school/onboarding/components/UTSchoolFields";
+import { useSchool } from "@/features/school/components/SchoolContext";
 
 type UTAboutYouData = {
   firstName: string;
@@ -64,6 +65,7 @@ function UTAboutYouForm({
 }) {
   const fieldsRef = useStepEntry();
   const { formRef, triggerShake } = useErrorShake();
+  const { slug } = useSchool();
 
   const {
     register,
@@ -223,7 +225,7 @@ function UTAboutYouForm({
               </p>
             </div>
             <a
-              href="/founder-archetypes"
+              href={`/school/${slug}/founder-archetypes`}
               target="_blank"
               rel="noopener noreferrer"
               className="shrink-0 mt-0.5 text-xs text-[var(--ui-text-subtle)] underline-offset-2 transition-colors duration-150 hover:text-[var(--ui-text-muted)] hover:underline"
