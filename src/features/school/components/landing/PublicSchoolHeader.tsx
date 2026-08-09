@@ -6,7 +6,7 @@ export default function PublicSchoolHeader({ slug }: { slug: string }) {
       className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0 px-4 sm:px-6 py-3 sm:py-4"
       style={{ backgroundColor: "#bf5700" }}
     >
-      <Link href="/" className="text-xs sm:text-sm font-semibold text-white text-center sm:text-left">
+      <Link href={`/school/${slug}`} className="text-xs sm:text-sm font-semibold text-white text-center sm:text-left">
         University of Texas Co-Foundr
       </Link>
 

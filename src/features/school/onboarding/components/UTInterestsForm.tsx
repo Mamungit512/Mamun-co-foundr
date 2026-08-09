@@ -110,8 +110,6 @@ const INTEREST_DOMAINS = [
       "Human Augmentation",
       "Metaverse",
       "Smart Cities",
-      "Halal Tech",
-      "Islamic Fintech",
     ],
   },
 ] as const;
