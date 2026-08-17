@@ -164,6 +164,13 @@ function FilterPanel({
     onChange({ ...filters, sectors: next });
   };
 
+  const toggleCollege = (college: string) => {
+    const next = filters.colleges.includes(college)
+      ? filters.colleges.filter((c) => c !== college)
+      : [...filters.colleges, college];
+    onChange({ ...filters, colleges: next });
+  };
+
   const clearAll = () => onChange(EMPTY_DASHBOARD_FILTERS);
 
   return (
@@ -201,15 +208,25 @@ function FilterPanel({
           <label className="text-xs font-semibold uppercase tracking-wider text-[var(--ui-text-muted)]">
             School Department
           </label>
-          <FilterSelect
-            value={filters.college ?? ""}
-            onChange={(val) => onChange({ ...filters, college: val || null })}
-            options={Object.keys(UT_SCHOOLS_AND_PROGRAMS).map((key) => ({
-              value: key,
-              label: getSchoolLabel(key as UTCollege),
-            }))}
-            placeholder="All schools"
-          />
+          <div className="flex flex-wrap gap-1">
+            {Object.keys(UT_SCHOOLS_AND_PROGRAMS).map((key) => {
+              const selected = filters.colleges.includes(key);
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => toggleCollege(key)}
+                  className={`rounded-md px-2 py-0.5 text-[11px] font-medium transition cursor-pointer ${
+                    selected
+                      ? "bg-[#bf5700] text-white"
+                      : "bg-[var(--ui-surface-active)] text-[var(--ui-text-muted)] hover:text-[var(--ui-text)]"
+                  }`}
+                >
+                  {getSchoolLabel(key as UTCollege)}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Industry / interest */}
@@ -416,12 +433,15 @@ export type FilterChipLabel = {
 export function getFilterChipLabels(filters: DashboardFilters): FilterChipLabel[] {
   const chips: FilterChipLabel[] = [];
 
-  if (filters.college) {
+  for (const college of filters.colleges) {
     chips.push({
-      key: `college-${filters.college}`,
-      dismissKey: "college",
-      label: getSchoolLabel(filters.college as UTCollege),
-      onRemove: () => ({ ...filters, college: null }),
+      key: `college-${college}`,
+      dismissKey: `college:${college}`,
+      label: getSchoolLabel(college as UTCollege),
+      onRemove: () => ({
+        ...filters,
+        colleges: filters.colleges.filter((c) => c !== college),
+      }),
     });
   }
 
