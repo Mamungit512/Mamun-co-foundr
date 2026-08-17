@@ -63,8 +63,9 @@ function mergeFilters(
 ): DashboardFilters {
   const merged: DashboardFilters = { ...user };
 
-  if (!merged.college && inferred.college && !dismissed.has("college")) {
-    merged.college = inferred.college;
+  if (merged.colleges.length === 0 && inferred.colleges && inferred.colleges.length > 0) {
+    const kept = inferred.colleges.filter((c) => !dismissed.has(`college:${c}`));
+    if (kept.length > 0) merged.colleges = kept;
   }
   if (merged.sectors.length === 0 && inferred.sectors && inferred.sectors.length > 0) {
     const kept = inferred.sectors.filter((s) => !dismissed.has(`sector:${s}`));
@@ -106,8 +107,8 @@ async function fetchEligibleUserIds(
     .select("user_id")
     .eq("organization_id", orgId);
 
-  if (filters.college) {
-    schoolQuery = schoolQuery.eq("college", filters.college);
+  if (filters.colleges.length > 0) {
+    schoolQuery = schoolQuery.in("college", filters.colleges);
   }
   if (filters.sectors.length > 0) {
     schoolQuery = schoolQuery.overlaps("sector_interests", filters.sectors);
@@ -139,8 +140,11 @@ function buildInferredResponse(
 ): ParsedQuery {
   const filters: Partial<DashboardFilters> = {};
 
-  if (parsedFilters.college && !userFilters.college && !dismissed.has("college")) {
-    filters.college = parsedFilters.college;
+  if (parsedFilters.colleges?.length && userFilters.colleges.length === 0) {
+    const kept = parsedFilters.colleges.filter(
+      (c) => !dismissed.has(`college:${c}`),
+    );
+    if (kept.length > 0) filters.colleges = kept;
   }
   if (parsedFilters.sectors?.length && userFilters.sectors.length === 0) {
     const kept = parsedFilters.sectors.filter(
@@ -172,6 +176,7 @@ const RELAX_DIMENSIONS: RelaxDimension[] = [
 function activeDimensions(f: DashboardFilters): RelaxDimension[] {
   return RELAX_DIMENSIONS.filter((d) => {
     if (d === "sectors") return f.sectors.length > 0;
+    if (d === "college") return f.colleges.length > 0;
     return f[d] !== null;
   });
 }
@@ -180,8 +185,9 @@ function withoutDimension(
   f: DashboardFilters,
   d: RelaxDimension,
 ): DashboardFilters {
-  const next: DashboardFilters = { ...f, sectors: [...f.sectors] };
+  const next: DashboardFilters = { ...f, sectors: [...f.sectors], colleges: [...f.colleges] };
   if (d === "sectors") next.sectors = [];
+  else if (d === "college") next.colleges = [];
   else next[d] = null;
   return next;
 }
@@ -189,7 +195,7 @@ function withoutDimension(
 function relaxLabel(d: RelaxDimension, f: DashboardFilters): string {
   switch (d) {
     case "college":
-      return getSchoolLabel(f.college as UTCollege);
+      return f.colleges.map((c) => getSchoolLabel(c as UTCollege)).join(", ");
     case "sectors":
       return f.sectors
         .map((s) => SECTOR_INTEREST_LABELS[s as UTSectorInterest] ?? s)
@@ -203,6 +209,7 @@ function relaxLabel(d: RelaxDimension, f: DashboardFilters): string {
 
 function dismissKeysFor(d: RelaxDimension, f: DashboardFilters): string[] {
   if (d === "sectors") return f.sectors.map((s) => `sector:${s}`);
+  if (d === "college") return f.colleges.map((c) => `college:${c}`);
   return [d];
 }
 
@@ -211,6 +218,7 @@ function sourceOf(
   userFilters: DashboardFilters,
 ): "user" | "inferred" {
   if (d === "sectors") return userFilters.sectors.length > 0 ? "user" : "inferred";
+  if (d === "college") return userFilters.colleges.length > 0 ? "user" : "inferred";
   return userFilters[d] !== null ? "user" : "inferred";
 }
 

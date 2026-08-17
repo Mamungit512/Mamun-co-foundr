@@ -330,7 +330,7 @@ export default function SchoolAdminPage() {
   return (
     <div className="mx-auto max-w-5xl p-4 pt-6">
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <FaShieldAlt
             className="h-5 w-5"
@@ -414,7 +414,7 @@ export default function SchoolAdminPage() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className="flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition"
+            className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition"
             style={
               activeTab === tab.id
                 ? {
@@ -425,7 +425,7 @@ export default function SchoolAdminPage() {
             }
           >
             {tab.icon}
-            {tab.label}
+            <span className="truncate">{tab.label}</span>
             {tab.id === "roster" && activeStudents.length > 0 && (
               <span
                 className="rounded-full px-1.5 py-0.5 text-xs"
@@ -473,11 +473,79 @@ export default function SchoolAdminPage() {
               </p>
             </div>
           ) : (
-            <div
-              className="overflow-hidden rounded-xl border"
-              style={{ borderColor: "var(--ui-border)" }}
-            >
-              <table className="w-full text-sm">
+            <>
+              {/* Mobile card list */}
+              <div className="flex flex-col gap-2 md:hidden">
+                {activeStudents.map((student) => (
+                  <div
+                    key={student.user_id}
+                    className="rounded-xl border p-3"
+                    style={{ borderColor: "var(--ui-border)" }}
+                  >
+                    <div className="mb-2 flex items-start justify-between gap-2">
+                      <div>
+                        <div
+                          className="font-medium"
+                          style={{ color: "var(--ui-text)" }}
+                        >
+                          {student.first_name} {student.last_name}
+                        </div>
+                        {student.title && (
+                          <div
+                            className="text-xs"
+                            style={{ color: "var(--ui-text-muted)" }}
+                          >
+                            {student.title}
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        onClick={() =>
+                          handleDelete(
+                            student.user_id,
+                            `${student.first_name} ${student.last_name}`,
+                          )
+                        }
+                        disabled={deletingId === student.user_id}
+                        className="shrink-0 cursor-pointer rounded p-1.5 transition hover:bg-red-500/15 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-30"
+                        style={{ color: "var(--ui-text-subtle)" }}
+                        title="Delete account"
+                      >
+                        <FaTrash className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                    <div
+                      className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs"
+                      style={{ color: "var(--ui-text-muted)" }}
+                    >
+                      <span>{toHumanLabel(student.education) ?? "—"}</span>
+                      <span>
+                        {student.city}, {student.country}
+                      </span>
+                      <span
+                        className={`inline-block rounded-full px-2 py-0.5 font-medium whitespace-nowrap ${
+                          student.is_technical
+                            ? "bg-blue-500/15 text-blue-600 dark:text-blue-400"
+                            : "bg-purple-500/15 text-purple-600 dark:text-purple-400"
+                        }`}
+                      >
+                        {student.is_technical ? "Technical" : "Non-technical"}
+                      </span>
+                      <span style={{ color: "var(--ui-text-subtle)" }}>
+                        Joined {new Date(student.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop table */}
+              <div
+                className="hidden overflow-hidden rounded-xl border md:block"
+                style={{ borderColor: "var(--ui-border)" }}
+              >
+              <div className="overflow-x-auto">
+              <table className="w-full min-w-[640px] text-sm">
                 <thead>
                   <tr
                     className="border-b"
@@ -580,7 +648,9 @@ export default function SchoolAdminPage() {
                   ))}
                 </tbody>
               </table>
-            </div>
+              </div>
+              </div>
+            </>
           )}
         </>
       )}
@@ -683,11 +753,142 @@ export default function SchoolAdminPage() {
                       ))}
                     </select>
                   </div>
-                  <div
-                    className="overflow-hidden rounded-xl border"
-                    style={{ borderColor: "var(--ui-border)" }}
-                  >
-                    <table className="w-full text-sm">
+
+                  {(() => {
+                    const nameOf = (
+                      p: MatchConnection["person1"],
+                    ): string => {
+                      if (p.first_name || p.last_name)
+                        return `${p.first_name ?? ""} ${p.last_name ?? ""}`.trim();
+                      return p.email ?? "Unknown";
+                    };
+
+                    const StatusBadge = ({
+                      conn,
+                    }: {
+                      conn: MatchConnection;
+                    }) => {
+                      if (conn.kind === "linked")
+                        return (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                            <FaLink className="h-2.5 w-2.5" />
+                            Linked
+                          </span>
+                        );
+                      if (conn.kind === "mutual")
+                        return (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-medium text-amber-600 dark:text-amber-400">
+                            <FaHandshake className="h-2.5 w-2.5" />
+                            Mutual
+                          </span>
+                        );
+                      return (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-gray-500/15 px-2 py-0.5 text-xs font-medium text-gray-500 dark:text-gray-400">
+                          <FaClock className="h-2.5 w-2.5" />
+                          Pending
+                        </span>
+                      );
+                    };
+
+                    const TypeBadge = ({
+                      p,
+                    }: {
+                      p: MatchConnection["person1"];
+                    }) => {
+                      if (p.is_technical === null) return null;
+                      return (
+                        <span
+                          className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap ${
+                            p.is_technical
+                              ? "bg-blue-500/15 text-blue-600 dark:text-blue-400"
+                              : "bg-purple-500/15 text-purple-600 dark:text-purple-400"
+                          }`}
+                        >
+                          {p.is_technical ? "Tech" : "Non-tech"}
+                        </span>
+                      );
+                    };
+
+                    const teamOf = (conn: MatchConnection) => {
+                      const teamName =
+                        conn.person1.startup_name ?? conn.person2.startup_name;
+                      const teamWebsite =
+                        conn.person1.startup_website ??
+                        conn.person2.startup_website;
+                      return { teamName, teamWebsite };
+                    };
+
+                    return (
+                      <>
+                        {/* Mobile card list */}
+                        <div className="flex flex-col gap-2 md:hidden">
+                          {filteredMatchConnections.map((conn) => {
+                            const { teamName, teamWebsite } = teamOf(conn);
+                            return (
+                              <div
+                                key={conn.id}
+                                className="rounded-xl border p-3"
+                                style={{ borderColor: "var(--ui-border)" }}
+                              >
+                                <div className="mb-2 flex items-start justify-between gap-2">
+                                  <div>
+                                    <div
+                                      className="font-medium"
+                                      style={{ color: "var(--ui-text)" }}
+                                    >
+                                      {nameOf(conn.person1)}
+                                    </div>
+                                    <div
+                                      className="text-xs"
+                                      style={{ color: "var(--ui-text-muted)" }}
+                                    >
+                                      × {nameOf(conn.person2)}
+                                    </div>
+                                  </div>
+                                  <StatusBadge conn={conn} />
+                                </div>
+                                <div
+                                  className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs"
+                                  style={{ color: "var(--ui-text-muted)" }}
+                                >
+                                  <div className="flex flex-wrap gap-1">
+                                    <TypeBadge p={conn.person1} />
+                                    <TypeBadge p={conn.person2} />
+                                  </div>
+                                  {teamName &&
+                                    (teamWebsite ? (
+                                      <a
+                                        href={teamWebsite}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="font-medium hover:underline"
+                                        style={{ color: "var(--ui-text)" }}
+                                      >
+                                        {teamName}
+                                      </a>
+                                    ) : (
+                                      <span className="font-medium">
+                                        {teamName}
+                                      </span>
+                                    ))}
+                                  <span style={{ color: "var(--ui-text-subtle)" }}>
+                                    {new Date(
+                                      conn.matched_at,
+                                    ).toLocaleDateString()}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Desktop table */}
+                        <div
+                          className="hidden overflow-hidden rounded-xl border md:block"
+                          style={{ borderColor: "var(--ui-border)" }}
+                        >
+                    <div className="overflow-x-auto">
+                    <table className="w-full min-w-[560px] text-sm">
                       <thead>
                         <tr
                           className="border-b"
@@ -715,56 +916,6 @@ export default function SchoolAdminPage() {
                       </thead>
                       <tbody>
                         {filteredMatchConnections.map((conn, i) => {
-                          const nameOf = (
-                            p: MatchConnection["person1"],
-                          ): string => {
-                            if (p.first_name || p.last_name)
-                              return `${p.first_name ?? ""} ${p.last_name ?? ""}`.trim();
-                            return p.email ?? "Unknown";
-                          };
-
-                          const StatusBadge = () => {
-                            if (conn.kind === "linked")
-                              return (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                                  <FaLink className="h-2.5 w-2.5" />
-                                  Linked
-                                </span>
-                              );
-                            if (conn.kind === "mutual")
-                              return (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-medium text-amber-600 dark:text-amber-400">
-                                  <FaHandshake className="h-2.5 w-2.5" />
-                                  Mutual
-                                </span>
-                              );
-                            return (
-                              <span className="inline-flex items-center gap-1 rounded-full bg-gray-500/15 px-2 py-0.5 text-xs font-medium text-gray-500 dark:text-gray-400">
-                                <FaClock className="h-2.5 w-2.5" />
-                                Pending
-                              </span>
-                            );
-                          };
-
-                          const TypeBadge = ({
-                            p,
-                          }: {
-                            p: MatchConnection["person1"];
-                          }) => {
-                            if (p.is_technical === null) return null;
-                            return (
-                              <span
-                                className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap ${
-                                  p.is_technical
-                                    ? "bg-blue-500/15 text-blue-600 dark:text-blue-400"
-                                    : "bg-purple-500/15 text-purple-600 dark:text-purple-400"
-                                }`}
-                              >
-                                {p.is_technical ? "Tech" : "Non-tech"}
-                              </span>
-                            );
-                          };
-
                           return (
                             <tr
                               key={conn.id}
@@ -842,14 +993,18 @@ export default function SchoolAdminPage() {
                                 {new Date(conn.matched_at).toLocaleDateString()}
                               </td>
                               <td className="px-4 py-3">
-                                <StatusBadge />
+                                <StatusBadge conn={conn} />
                               </td>
                             </tr>
                           );
                         })}
                       </tbody>
                     </table>
-                  </div>
+                    </div>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </>
               )}
             </>
@@ -880,7 +1035,8 @@ export default function SchoolAdminPage() {
                   className="overflow-hidden rounded-xl border"
                   style={{ borderColor: "var(--ui-border)" }}
                 >
-                  <table className="w-full text-sm">
+                  <div className="overflow-x-auto">
+                  <table className="w-full min-w-[560px] text-sm">
                     <thead>
                       <tr
                         className="border-b"
@@ -975,6 +1131,7 @@ export default function SchoolAdminPage() {
                       ))}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               )}
             </>

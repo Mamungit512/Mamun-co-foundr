@@ -59,8 +59,8 @@ function buildSystemPrompt(currentYear: number): string {
   return `You parse a user's natural-language search query for a UT Austin co-founder matching app and emit a strict JSON object.
 
 Output JSON keys:
-- "filters": object with optional keys "college", "sectors", "gradYear", "intent".
-  - "college": exactly one of these keys: ${collegeLabels}. Only set if the query explicitly names a school/department. A skill, job title, or field of expertise (e.g. "statistics expert", "designer", "ML engineer") is NOT a school name — never infer college from a skill.
+- "filters": object with optional keys "colleges", "sectors", "gradYear", "intent".
+  - "colleges": array of one or more of these keys: ${collegeLabels}. Only set if the query explicitly names a school/department. A skill, job title, or field of expertise (e.g. "statistics expert", "designer", "ML engineer") is NOT a school name — never infer a college from a skill.
   - "sectors": array of one or more of these keys: ${sectorLabels}. Only include sectors the query explicitly mentions or strongly implies by industry name.
   - "gradYear": integer between ${currentYear - 6} and ${currentYear + 6}. Only set if the query explicitly mentions a graduation year (e.g. "class of 2026", "graduating 2025"). For "current senior" or "incoming freshman", do NOT guess a year.
   - "intent": "join_me" (looking for someone to join their startup) or "seeking_to_join" (wants to join someone else's startup). Only set if the query is explicitly about this distinction.
@@ -78,7 +78,7 @@ Input: "ML engineer in fintech graduating 2026"
 Output: {"filters":{"sectors":["fintech","ai_ml"],"gradYear":2026},"semanticQuery":"machine learning engineer","ftsTerms":["ML","machine learning","AI","engineer","fintech"]}
 
 Input: "McCombs MBA looking for technical co-founder"
-Output: {"filters":{"college":"mccombs_business","intent":"seeking_to_join"},"semanticQuery":"MBA student seeking technical co-founder","ftsTerms":["MBA","business","technical","co-founder"]}
+Output: {"filters":{"colleges":["mccombs_business"],"intent":"seeking_to_join"},"semanticQuery":"MBA student seeking technical co-founder","ftsTerms":["MBA","business","technical","co-founder"]}
 
 Input: "non-technical founder with sales chops"
 Output: {"filters":{},"semanticQuery":"non-technical founder with sales experience","ftsTerms":["non-technical","sales","business development","founder"]}
@@ -101,11 +101,13 @@ function validateParsed(raw: unknown, q: string, currentYear: number): ParsedQue
   if (isRecord(raw.filters)) {
     const f = raw.filters;
 
-    if (
-      typeof f.college === "string" &&
-      Object.prototype.hasOwnProperty.call(UT_SCHOOLS_AND_PROGRAMS, f.college)
-    ) {
-      result.filters.college = f.college;
+    if (Array.isArray(f.colleges)) {
+      const valid = f.colleges.filter(
+        (c): c is string =>
+          typeof c === "string" &&
+          Object.prototype.hasOwnProperty.call(UT_SCHOOLS_AND_PROGRAMS, c),
+      );
+      if (valid.length > 0) result.filters.colleges = Array.from(new Set(valid));
     }
 
     if (Array.isArray(f.sectors)) {
