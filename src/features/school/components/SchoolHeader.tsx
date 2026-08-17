@@ -8,6 +8,7 @@ import { FaHeart, FaBars, FaUserPen, FaTrash, FaUserPlus } from "react-icons/fa6
 import { FaTimes } from "react-icons/fa";
 import clsx from "clsx";
 import toast from "react-hot-toast";
+import BetaBadge from "@/components/BetaBadge";
 import { useLikedProfilesData } from "@/features/likes/useLikes";
 import { useSchool } from "@/features/school/components/SchoolContext";
 import { getGatedFeatureLabel } from "@/features/school/onboarding/onboardingRedirect";
@@ -125,12 +126,15 @@ export default function SchoolHeader({ slug, schoolName, config, isAdmin }: Scho
       className="relative flex items-center justify-between px-6 py-4"
       style={{ backgroundColor: config.branding.primaryColor, color: "#ffffff" }}
     >
-      <Link
-        href={`/school/${slug}`}
-        className="text-base font-semibold tracking-tight text-white transition-[font-weight] duration-300 hover:font-bold"
-      >
-        {headerText}
-      </Link>
+      <div className="flex items-center gap-2">
+        <Link
+          href={`/school/${slug}`}
+          className="text-base font-semibold tracking-tight text-white transition-[font-weight] duration-300 hover:font-bold"
+        >
+          {headerText}
+        </Link>
+        <BetaBadge />
+      </div>
 
       {/* Desktop nav */}
       <nav className="hidden flex-1 items-center justify-end gap-8 md:flex">

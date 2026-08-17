@@ -1,4 +1,5 @@
 import Link from "next/link";
+import BetaBadge from "@/components/BetaBadge";
 
 export default function PublicSchoolHeader({ slug }: { slug: string }) {
   return (
@@ -6,9 +7,12 @@ export default function PublicSchoolHeader({ slug }: { slug: string }) {
       className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0 px-4 sm:px-6 py-3 sm:py-4"
       style={{ backgroundColor: "#bf5700" }}
     >
-      <Link href={`/school/${slug}`} className="text-xs sm:text-sm font-semibold text-white text-center sm:text-left">
-        University of Texas Co-Foundr
-      </Link>
+      <div className="flex items-center gap-2">
+        <Link href={`/school/${slug}`} className="text-xs sm:text-sm font-semibold text-white text-center sm:text-left">
+          University of Texas Co-Foundr
+        </Link>
+        <BetaBadge />
+      </div>
 
       <nav className="flex flex-wrap items-center justify-center gap-3 sm:gap-5">
         <Link
