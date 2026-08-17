@@ -298,8 +298,10 @@ export default function SchoolDashboardPage() {
     const next: DashboardFilters = {
       ...filters,
       sectors: [...filters.sectors],
+      colleges: [...filters.colleges],
     };
     if (s.dimension === "sectors") next.sectors = [];
+    else if (s.dimension === "college") next.colleges = [];
     else next[s.dimension] = null;
     updateFilters(next);
   };

@@ -1,14 +1,14 @@
 export type ProfileIntentFilter = "join_me" | "seeking_to_join";
 
 export type DashboardFilters = {
-  college: string | null;
+  colleges: string[];
   sectors: string[];
   gradYear: number | null;
   intent: ProfileIntentFilter | null;
 };
 
 export const EMPTY_DASHBOARD_FILTERS: DashboardFilters = {
-  college: null,
+  colleges: [],
   sectors: [],
   gradYear: null,
   intent: null,
@@ -38,7 +38,9 @@ export function normalizeDashboardFilters(
 ): DashboardFilters {
   if (!input) return EMPTY_DASHBOARD_FILTERS;
   return {
-    college: typeof input.college === "string" ? input.college : null,
+    colleges: Array.isArray(input.colleges)
+      ? input.colleges.filter((c): c is string => typeof c === "string")
+      : [],
     sectors: Array.isArray(input.sectors)
       ? input.sectors.filter((s): s is string => typeof s === "string")
       : [],
@@ -59,7 +61,7 @@ export function loadDashboardFilters(): DashboardFilters {
     if (!raw) return EMPTY_DASHBOARD_FILTERS;
     const parsed = JSON.parse(raw) as DashboardFilters;
     return {
-      college: parsed.college ?? null,
+      colleges: Array.isArray(parsed.colleges) ? parsed.colleges : [],
       sectors: Array.isArray(parsed.sectors) ? parsed.sectors : [],
       gradYear:
         typeof parsed.gradYear === "number" ? parsed.gradYear : null,
@@ -80,7 +82,7 @@ export function saveDashboardFilters(filters: DashboardFilters): void {
 
 export function hasActiveFilters(filters: DashboardFilters): boolean {
   return (
-    filters.college !== null ||
+    filters.colleges.length > 0 ||
     filters.sectors.length > 0 ||
     filters.gradYear !== null ||
     filters.intent !== null
@@ -96,7 +98,9 @@ export function getDashboardPanelHeightClass(searchOpen: boolean): string {
 
 export function buildProfilesQueryString(filters: DashboardFilters): string {
   const params = new URLSearchParams();
-  if (filters.college) params.set("college", filters.college);
+  if (filters.colleges.length > 0) {
+    params.set("colleges", filters.colleges.join(","));
+  }
   if (filters.sectors.length > 0) {
     params.set("sectors", filters.sectors.join(","));
   }

@@ -88,10 +88,16 @@ export async function GET(req: NextRequest) {
     // organization_id to avoid leaking cross-tenant existence.
     const inSchoolTenant = !useGeneralPool && !!scopeOrgId;
 
-    const collegeFilter = req.nextUrl.searchParams.get("college");
+    const collegesParam = req.nextUrl.searchParams.get("colleges");
     const sectorsParam = req.nextUrl.searchParams.get("sectors");
     const gradYearParam = req.nextUrl.searchParams.get("gradYear");
     const intentFilter = req.nextUrl.searchParams.get("intent");
+
+    const collegeFilters =
+      collegesParam
+        ?.split(",")
+        .map((c) => c.trim())
+        .filter(Boolean) ?? [];
 
     const sectorFilters =
       sectorsParam
@@ -111,8 +117,8 @@ export async function GET(req: NextRequest) {
         .select("user_id")
         .eq("organization_id", scopeOrgId);
 
-      if (collegeFilter) {
-        schoolQuery = schoolQuery.eq("college", collegeFilter);
+      if (collegeFilters.length > 0) {
+        schoolQuery = schoolQuery.in("college", collegeFilters);
       }
       if (gradYearFilter !== null) {
         schoolQuery = schoolQuery.eq("graduation_year", gradYearFilter);
