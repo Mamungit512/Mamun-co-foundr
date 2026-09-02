@@ -137,7 +137,7 @@ export function mapUTDataToSchoolProfileRow(
     school_status: data.utStatus,
     graduation_year: data.gradYear ?? null,
     college: data.utCollege ?? null,
-    degree_type: data.utDegreeType ?? null,
+    degree_type: data.utDegreeType || null,
     major: data.utMajor ?? null,
     sector_interests: data.utSectorInterests ?? null,
     additional_education: data.additionalEducation ?? null,

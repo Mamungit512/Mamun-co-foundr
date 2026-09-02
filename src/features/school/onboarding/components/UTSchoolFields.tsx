@@ -71,6 +71,12 @@ export default function UTSchoolFields<T extends FieldValues>({ register, watch,
       ? getProgramsForSchoolAndDegreeType(utCollegeValue, utDegreeTypeValue)
       : [];
 
+  useEffect(() => {
+    if (availableDegreeTypes.length === 1 && !utDegreeTypeValue) {
+      sv("utDegreeType", availableDegreeTypes[0]);
+    }
+  }, [availableDegreeTypes, utDegreeTypeValue, sv]);
+
   return (
     <>
       {/* ── Student or Alumni ── */}
