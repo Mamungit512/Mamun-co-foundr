@@ -240,10 +240,11 @@ export default function SchoolMatchesPage({
                   (profile.firstName?.[0] ?? "").toUpperCase() +
                   (profile.lastName?.[0] ?? "").toUpperCase();
 
-                const degreeAbbrev =
-                  profile.utCollege && profile.utMajor
-                    ? getDegreeAbbreviation(profile.utCollege, profile.utMajor)
-                    : undefined;
+                const degreeAbbrev = getDegreeAbbreviation(
+                  profile.utCollege,
+                  profile.utDegreeType,
+                  profile.utMajor,
+                );
 
                 const yearSuffix = profile.gradYear
                   ? `'${String(profile.gradYear).slice(-2)}`

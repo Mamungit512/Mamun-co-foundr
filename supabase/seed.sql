@@ -330,7 +330,7 @@ BEGIN
     ('user_mock_ut_004', ut_org_id, 'student',  2026, 'natural_sciences',     'bachelors',    'Neuroscience',                ARRAY['healthtech','biotech'],                NULL),
     ('user_mock_ut_005', ut_org_id, 'student',  2026, 'liberal_arts',         'bachelors',    'Economics',                   ARRAY['policy','impact','govtech'],           NULL),
     ('user_mock_ut_006', ut_org_id, 'student',  2026, 'moody_communication',  'bachelors',    'Advertising',                 ARRAY['media','consumer','b2b_saas'],         NULL),
-    ('user_mock_ut_007', ut_org_id, 'student',  2028, 'dell_medical_school',  'professional', 'Doctor of Medicine',          ARRAY['healthtech','biotech','ai_ml'],        NULL),
+    ('user_mock_ut_007', ut_org_id, 'student',  2028, 'dell_medical_school',  'doctorate',    'Doctor of Medicine',          ARRAY['healthtech','biotech','ai_ml'],        NULL),
     ('user_mock_ut_008', ut_org_id, 'alumni',   2023, 'lbj_public_affairs',   'masters',      'Public Affairs',              ARRAY['govtech','impact','policy'],           NULL),
     ('user_mock_ut_009', ut_org_id, 'alumni',   2022, 'school_of_architecture','masters',     'Architecture',                ARRAY['cleantech','proptech'],                NULL),
     ('user_mock_ut_010', ut_org_id, 'alumni',   2020, 'mccombs_business',     'masters',      'Business Administration',     ARRAY['fintech','b2b_saas','ai_ml'],          'BA Economics, Princeton (2014)')

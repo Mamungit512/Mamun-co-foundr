@@ -24,7 +24,7 @@ declare global {
     school_status: "student" | "alumni";
     graduation_year: number | null;
     college: string | null;
-    degree_type: "bachelors" | "masters" | "professional" | "other" | null;
+    degree_type: UTDegreeType | null;
     major: string | null;
     sector_interests: string[] | null;
     intent: "join_me" | "seeking_to_join" | "no_preference" | null;
@@ -54,7 +54,11 @@ declare global {
     | "pre_med_pre_law_teaching"
     | "jackson_geosciences";
 
-  type UTDegreeType = "bachelors" | "masters" | "professional" | "other";
+  // Degree level, independent of college. Kept in sync with the
+  // school_profiles_degree_type_check constraint (see
+  // supabase/migrations/20260917000000_generalize_school_degree_type.sql)
+  // and DEGREE_TYPE_LABELS in src/features/school/data/utSchoolsAndMajors.ts.
+  type UTDegreeType = "bachelors" | "masters" | "doctorate" | "certificate";
 
   type UTSectorInterest =
     | "b2b_saas"
