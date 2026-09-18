@@ -72,6 +72,8 @@ export const ORG_REGISTRY: Record<string, OrgConfig> = {
         "personalIntro",
         "isTechnical",
         "utStatus",
+        "utCollege",
+        "utDegreeType",
       ],
     },
     privacyPolicy: {

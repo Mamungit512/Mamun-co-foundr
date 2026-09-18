@@ -6,6 +6,7 @@ import {
   mapUTDataToSchoolProfileRow,
 } from "@/lib/mapProfileToFromDBFormat";
 import { deriveUtStatus } from "@/features/school/onboarding/deriveUtStatus";
+import { isUTCollege, normalizeDegreeType } from "@/features/school/data/utSchoolsAndMajors";
 
 // Shared onboarding-profile service used by the unified /api/profile endpoint
 // (and its deprecated /api/ut-profile alias). A user's school membership is
@@ -87,11 +88,34 @@ export async function saveOnboardingProfile({
     };
   }
 
-  // A self-reported "student" whose graduation year has already passed is
-  // actually alumni — correct it here so the DB stays right even if a client
-  // bug (or a direct API call) submits a stale/inconsistent utStatus.
   if (isSchool) {
-    formData = { ...formData, utStatus: deriveUtStatus(formData.utStatus, formData.gradYear) };
+    if (!isUTCollege(formData.utCollege)) {
+      return {
+        ok: false,
+        status: 400,
+        error: "Please select your UT college or school.",
+      };
+    }
+
+    const utDegreeType = normalizeDegreeType(formData.utDegreeType);
+    if (!utDegreeType) {
+      return {
+        ok: false,
+        status: 400,
+        error: "Please select your degree level.",
+      };
+    }
+
+    // A self-reported "student" whose graduation year has already passed is
+    // actually alumni — correct it here so the DB stays right even if a client
+    // bug (or a direct API call) submits a stale/inconsistent utStatus.
+    // Normalizing utDegreeType handles a stale client or saved draft that
+    // still holds the retired "professional" value.
+    formData = {
+      ...formData,
+      utStatus: deriveUtStatus(formData.utStatus, formData.gradYear),
+      utDegreeType,
+    };
   }
 
   const supabase = serviceRoleClient();
