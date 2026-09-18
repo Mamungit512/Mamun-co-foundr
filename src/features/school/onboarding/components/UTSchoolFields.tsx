@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   UseFormRegister,
   UseFormWatch,
@@ -25,8 +25,6 @@ const LABEL_CLS =
 
 const SELECT_CLS =
   "w-full rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] px-4 py-3.5 text-[var(--ui-text)] placeholder-[var(--ui-text-subtle)] transition-all duration-200 focus:border-[var(--ui-border-strong)] focus:bg-[var(--ui-surface)] focus:ring-2 focus:ring-[var(--ui-border)] focus:outline-none hover:border-[var(--ui-border-strong)] [&>option]:bg-[var(--ui-popover-bg)] [&>option]:text-[var(--ui-text)]";
-
-const OTHER_MAJOR = "__other__";
 
 type UTSchoolFieldsData = {
   utStatus: "student" | "alumni";
@@ -58,8 +56,6 @@ export default function UTSchoolFields<T extends FieldValues>({ register, watch,
   const utSectorInterestsValue = w("utSectorInterests") || [];
   const gradYearValue = w("gradYear");
 
-  const [otherMajor, setOtherMajor] = useState(false);
-
   // A graduation year that's already passed means the person is alumni,
   // even if they'd previously selected (or defaulted to) "student".
   useEffect(() => {
@@ -83,8 +79,14 @@ export default function UTSchoolFields<T extends FieldValues>({ register, watch,
   const gradYearMax = isAlumni ? currentYear : currentYear + 10;
 
   const majorOptions = getMajorOptions(utCollegeValue, utDegreeTypeValue);
-  const isCustomMajor = !!utMajorValue && !majorOptions.includes(utMajorValue);
-  const showOtherMajor = otherMajor || isCustomMajor;
+  // Preserve an already-saved major even if it's since dropped out of the
+  // catalog list for this college/level, so switching levels doesn't
+  // silently discard real data — but new entries are catalog-only, no free
+  // text, to keep this a closed vocabulary.
+  const majorSelectOptions =
+    utMajorValue && !majorOptions.includes(utMajorValue)
+      ? [utMajorValue, ...majorOptions]
+      : majorOptions;
 
   return (
     <>
@@ -124,7 +126,6 @@ export default function UTSchoolFields<T extends FieldValues>({ register, watch,
             required: true,
             onChange: () => {
               sv("utMajor", undefined);
-              setOtherMajor(false);
               sv("utSectorInterests", []);
             },
           })}
@@ -165,35 +166,14 @@ export default function UTSchoolFields<T extends FieldValues>({ register, watch,
       {utCollegeValue && (
         <div className="flex flex-col gap-y-1.5">
           <label className={LABEL_CLS}>Program / Major</label>
-          <select
-            value={showOtherMajor ? OTHER_MAJOR : utMajorValue ?? ""}
-            onChange={(e) => {
-              if (e.target.value === OTHER_MAJOR) {
-                setOtherMajor(true);
-                sv("utMajor", "");
-              } else {
-                setOtherMajor(false);
-                sv("utMajor", e.target.value);
-              }
-            }}
-            className={SELECT_CLS}
-          >
+          <select {...reg("utMajor")} className={SELECT_CLS}>
             <option value="">Select a program...</option>
-            {majorOptions.map((name) => (
+            {majorSelectOptions.map((name) => (
               <option key={name} value={name}>
                 {name}
               </option>
             ))}
-            <option value={OTHER_MAJOR}>Other (not listed)</option>
           </select>
-          {showOtherMajor && (
-            <FormInput
-              type="text"
-              maxLength={120}
-              placeholder="Enter your program or major"
-              {...reg("utMajor")}
-            />
-          )}
         </div>
       )}
 
