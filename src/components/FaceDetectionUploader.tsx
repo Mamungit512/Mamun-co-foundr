@@ -20,10 +20,15 @@ export default function FaceDetectionUploader({
   }>({ type: "idle", message: "" });
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isModelReady, setIsModelReady] = useState(false);
+  const [modelLoadAttempt, setModelLoadAttempt] = useState(0);
+
+  const MODEL_LOAD_TIMEOUT_MS = 15000;
 
   // 1. Load SSD Mobilenet V1 Model
   // This model is larger but much more accurate than BlazeFace.
   useEffect(() => {
+    let timedOut = false;
+
     const loadModels = async () => {
       try {
         setStatus({
@@ -35,7 +40,20 @@ export default function FaceDetectionUploader({
         // SSD Mobilenet V1 is highly accurate for distinguishing real faces.
         const modelUrl =
           "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/";
-        await faceapi.nets.ssdMobilenetv1.loadFromUri(modelUrl);
+
+        // The CDN fetch can hang without ever resolving or rejecting (e.g.
+        // blocked by a firewall/ad-blocker), which would otherwise leave the
+        // uploader stuck on "loading" forever. Race it against a timeout so
+        // it always reaches an error state the user can recover from.
+        await Promise.race([
+          faceapi.nets.ssdMobilenetv1.loadFromUri(modelUrl),
+          new Promise((_, reject) => {
+            setTimeout(() => {
+              timedOut = true;
+              reject(new Error("Model load timed out"));
+            }, MODEL_LOAD_TIMEOUT_MS);
+          }),
+        ]);
 
         // Optional: Load landmark model if you want even stricter checks (e.g. eyes open) later.
         // await faceapi.nets.faceLandmark68Net.loadFromUri(modelUrl);
@@ -49,12 +67,19 @@ export default function FaceDetectionUploader({
         console.error("Model loading error:", error);
         setStatus({
           type: "error",
-          message: "Failed to load AI model. Please refresh.",
+          message: timedOut
+            ? "AI model failed to load. Check your connection and try again."
+            : "Failed to load AI model. Please try again.",
         });
       }
     };
     loadModels();
-  }, []);
+  }, [modelLoadAttempt]);
+
+  const handleRetryModelLoad = () => {
+    setIsModelReady(false);
+    setModelLoadAttempt((attempt) => attempt + 1);
+  };
 
   // 2. Validation Process
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -214,6 +239,16 @@ export default function FaceDetectionUploader({
           >
             {status.message}
           </p>
+        )}
+
+        {status.type === "error" && !isModelReady && (
+          <button
+            type="button"
+            onClick={handleRetryModelLoad}
+            className="text-sm font-medium text-blue-500 underline hover:text-blue-600"
+          >
+            Retry loading AI model
+          </button>
         )}
 
         {previewUrl && (
