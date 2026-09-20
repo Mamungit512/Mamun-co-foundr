@@ -30,14 +30,14 @@ flowchart LR
 
   subgraph Vercel["Vercel"]
     MW["Edge middleware<br/>src/middleware.ts<br/>subdomain rewrite, Clerk session,<br/>domain / FERPA / consent / onboarding gates"]
-    App["Next.js 15 app (Vercel Functions)<br/>(general)/* and (school)/school/[slug]/*<br/>~45 route handlers under /api/*"]
+    App["Next.js 15 app (Vercel Functions)<br/>(general)/* and (school)/school/[slug]/*<br/>~41 route handlers under /api/*"]
     Cron["Vercel Cron (vercel.json, UTC)<br/>0 3 * * * lifecycle-emails<br/>0 9 * * 0 weekly-profile-views"]
   end
 
   subgraph Supabase["Supabase (one project per env)"]
     PG[("Postgres 17<br/>RLS by organization_id<br/>pgvector(384) + tsvector<br/>search_profiles_hybrid()<br/>pgmq: embedding_refresh<br/>pg_net")]
     Embed["Edge Function: embed (Deno)<br/>gte-small, 384 dims<br/>mode=query | mode=drain"]
-    Storage[("Storage (public buckets)<br/>profile-pic<br/>resume-uploads")]
+    Storage[("Storage (public buckets)<br/>profile-pic")]
   end
 
   subgraph SaaS["Third-party services"]
@@ -92,7 +92,7 @@ flowchart LR
 | Hybrid search | `search_profiles_hybrid()` | Fuses full-text (`search_tsv`), vector (`embedding`), and partial-name matches with reciprocal rank fusion. |
 | Embedding queue | `enqueue_embedding_refresh()` trigger | On profile change, sends `{user_id}` to pgmq `embedding_refresh`, then POSTs `{mode: "drain"}` to the Edge Function via `pg_net` if `app.embed_fn_url` and `app.edge_fn_token` are set. |
 | Edge Function `embed` | `supabase/functions/embed/index.ts` | `mode=query` embeds a search string; `mode=drain` processes up to 20 queue messages and writes `profiles.embedding`. |
-| Storage | `profile-pic`, `resume-uploads` | Written by `/api/upload-profile-pic` and `/api/upload-resume`. Both return public URLs. |
+| Storage | `profile-pic` | Written by `/api/upload-profile-pic`. Returns a public URL. `resume-uploads` was retired with the Hiring-badge attachment feature (see [F-1](./DEPLOYMENT_FINDINGS.md#f-1-resumes-are-stored-in-a-public-bucket)) — the bucket itself still needs manual deletion in the Supabase dashboard. |
 
 ### Supabase clients in the app
 
@@ -220,7 +220,6 @@ sequenceDiagram
 | --- | --- | --- |
 | `0 3 * * *` | `/api/cron/lifecycle-emails` | Profile-completion reminders and re-engagement emails (`src/lib/email/lifecycle/`). |
 | `0 9 * * 0` | `/api/cron/weekly-profile-views` | Weekly profile-view digests. |
-| not scheduled | `/api/cron/sync-posthog-activity` | Syncs PostHog activity into `user_activity_summary`. Route exists, no entry in `vercel.json`. |
 
 ## Environments
 
