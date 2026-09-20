@@ -74,16 +74,24 @@ export async function POST(req: NextRequest) {
             process.env.SUPABASE_SERVICE_ROLE_KEY!,
           );
 
-          // Look up referrer if using internal mamun-xxx code
+          // Look up referrer if using internal mamun-xxx code. referralCode
+          // comes from Clerk unsafe_metadata, which is client-writable at
+          // signup, so validate the shape (referral-action.ts generates it as
+          // `mamun-${user.id.slice(-8)}`, i.e. exactly 8 alphanumeric chars)
+          // before using it in an ilike pattern — an unvalidated value could
+          // otherwise carry `%`/`_` wildcards and self-attribute referral
+          // credit to an arbitrary user.
           let referrerUserId = null;
           if (referralCode?.startsWith("mamun-")) {
             const shortId = referralCode.replace("mamun-", "");
-            const { data: referrerProfile } = await supabase
-              .from("profiles")
-              .select("user_id")
-              .ilike("user_id", `%${shortId}`)
-              .single();
-            referrerUserId = referrerProfile?.user_id || null;
+            if (/^[A-Za-z0-9]{8}$/.test(shortId)) {
+              const { data: referrerProfile } = await supabase
+                .from("profiles")
+                .select("user_id")
+                .ilike("user_id", `%${shortId}`)
+                .single();
+              referrerUserId = referrerProfile?.user_id || null;
+            }
           }
 
           // Insert referral record into database

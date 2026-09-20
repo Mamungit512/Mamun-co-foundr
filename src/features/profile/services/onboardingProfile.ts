@@ -8,10 +8,10 @@ import {
 import { deriveUtStatus } from "@/features/school/onboarding/deriveUtStatus";
 import { isUTCollege, normalizeDegreeType } from "@/features/school/data/utSchoolsAndMajors";
 
-// Shared onboarding-profile service used by the unified /api/profile endpoint
-// (and its deprecated /api/ut-profile alias). A user's school membership is
-// derived from organization_id on the Clerk session: when present, the school
-// path additionally validates and persists a school_profiles row.
+// Shared onboarding-profile service used by the unified /api/profile endpoint.
+// A user's school membership is derived from organization_id on the Clerk
+// session: when present, the school path additionally validates and persists
+// a school_profiles row.
 
 function serviceRoleClient() {
   return createClient(

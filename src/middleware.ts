@@ -24,6 +24,7 @@ const isPublicRoute = createRouteMatcher([
   "/founder-archetypes",
   "/api/webhooks/clerk",
   "/api/cron/(.*)",
+  "/api/send",
   "/school/:slug",
   "/school/:slug/privacy-policy",
   "/school/:slug/terms-and-conditions",

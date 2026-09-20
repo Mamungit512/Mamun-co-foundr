@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createServerSupabaseClient } from "@/lib/supabaseServer";
+import { isValidClerkUserId } from "@/lib/validation";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,9 +13,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const rateLimit = await checkRateLimit({
+      key: `like:${userId}`,
+      limit: 300,
+      windowSeconds: 60 * 60,
+    });
+    if (!rateLimit.allowed) {
+      return rateLimitResponse(rateLimit);
+    }
+
     const { likedId } = await request.json();
 
-    if (!likedId) {
+    if (!isValidClerkUserId(likedId)) {
       return NextResponse.json({ error: "Missing likedId" }, { status: 400 });
     }
 
@@ -91,7 +102,7 @@ export async function DELETE(request: NextRequest) {
 
     const { likedId } = await request.json();
 
-    if (!likedId) {
+    if (!isValidClerkUserId(likedId)) {
       return NextResponse.json({ error: "Missing likedId" }, { status: 400 });
     }
 

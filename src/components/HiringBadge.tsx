@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import EnhancedEmailComponent from "./EnhancedEmailComponent";
 
 interface HiringBadgeProps {
   hiringEmail?: string;
@@ -23,6 +22,12 @@ export default function HiringBadge({
 
   const handleCloseModal = () => {
     setShowEmailModal(false);
+  };
+
+  const handleEmailClick = () => {
+    const subject = `Inquiry about ${companyName || "opportunity"} via Mamun`;
+    const mailtoLink = `mailto:${hiringEmail}?subject=${encodeURIComponent(subject)}`;
+    window.open(mailtoLink, "_blank");
   };
 
   return (
@@ -52,10 +57,13 @@ export default function HiringBadge({
               </button>
             </div>
 
-            <EnhancedEmailComponent
-              hiringEmail={hiringEmail!}
-              companyName={companyName}
-            />
+            <button
+              onClick={handleEmailClick}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-green-500/30 bg-green-500/20 px-4 py-3 text-sm font-medium text-green-400 transition-all duration-200 hover:border-green-500/50 hover:bg-green-500/30"
+            >
+              <div className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
+              <span>Send Email Inquiry</span>
+            </button>
           </div>
         </div>
       )}
