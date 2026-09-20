@@ -55,15 +55,24 @@ export default function OnboardingComponent() {
 
       await user?.reload();
 
-      // Identify user in PostHog after successful onboarding
-      posthog.identify(userId, {
-        email: user?.primaryEmailAddress?.emailAddress,
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        city: formData.city,
-        country: formData.country,
-        is_technical: formData.isTechnical,
-      });
+      // Identify user in PostHog after successful onboarding — suppressed for
+      // school users (FERPA), mirroring the guard in PostHogProvider.tsx. A
+      // school-email user can reach this general onboarding flow (e.g. before
+      // school membership assignment, or via the general path directly), and
+      // organization_id in publicMetadata is preserved across the merge in
+      // completeOnboarding()/the user.created webhook, so it's reliable here
+      // right after reload().
+      const isSchoolUser = Boolean(user?.publicMetadata?.organization_id);
+      if (!isSchoolUser) {
+        posthog.identify(userId, {
+          email: user?.primaryEmailAddress?.emailAddress,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          city: formData.city,
+          country: formData.country,
+          is_technical: formData.isTechnical,
+        });
+      }
 
       trackEvent.onboardingCompleted({
         city: formData.city,
