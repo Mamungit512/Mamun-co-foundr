@@ -44,3 +44,4 @@ next-env.d.ts
 /.clerk/
 
 DEPLOYMENT_FINDINGS.md
+SECURITY_FINDINGS.md
