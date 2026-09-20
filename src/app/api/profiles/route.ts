@@ -8,6 +8,7 @@ import {
   scoreCandidate,
 } from "@/features/matching/matchingService";
 import { resolveTenantScope } from "@/features/school/auth/tenant-scope";
+import { isValidClerkUserId } from "@/lib/validation";
 
 export async function GET(req: NextRequest) {
   try {
@@ -80,7 +81,14 @@ export async function GET(req: NextRequest) {
       .select("liked_id")
       .eq("liker_id", currentUser.user_id);
 
-    const likedIds = likedProfiles?.map((like) => like.liked_id) || [];
+    // Filtered defensively: liked_id has no format constraint at the DB level,
+    // and this value is about to be string-concatenated into a raw PostgREST
+    // filter below, so anything that isn't a well-formed Clerk id is dropped
+    // rather than trusted (belt-and-suspenders with the write-side validation
+    // in /api/like).
+    const likedIds = (likedProfiles?.map((like) => like.liked_id) ?? []).filter(
+      isValidClerkUserId,
+    );
 
     // For any school tenant, restrict candidates to users who have completed
     // school-specific onboarding (i.e. have a row in school_profiles for this

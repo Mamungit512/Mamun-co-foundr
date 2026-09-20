@@ -1,38 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
-/** In-memory rate limit: 3 parses per user per 24 hours. Resets on server restart. */
+/** 3 parses per user per 24 hours. Postgres-backed — see src/lib/rateLimit.ts. */
 const PARSE_LIMIT = 3;
-const WINDOW_MS = 24 * 60 * 60 * 1000;
-
-const rateLimit = new Map<string, { count: number; resetAt: number }>();
-
-function checkRateLimit(
-  userId: string,
-): { allowed: boolean; retryAfter?: number } {
-  const now = Date.now();
-  const entry = rateLimit.get(userId);
-  if (!entry) return { allowed: true };
-  const { count, resetAt } = entry;
-  if (now >= resetAt) {
-    rateLimit.delete(userId);
-    return { allowed: true };
-  }
-  if (count >= PARSE_LIMIT) {
-    return { allowed: false, retryAfter: Math.ceil((resetAt - now) / 1000) };
-  }
-  return { allowed: true };
-}
-
-function incrementRateLimit(userId: string): void {
-  const now = Date.now();
-  const entry = rateLimit.get(userId);
-  if (!entry || now >= entry.resetAt) {
-    rateLimit.set(userId, { count: 1, resetAt: now + WINDOW_MS });
-  } else {
-    entry.count += 1;
-  }
-}
+const PARSE_WINDOW_SECONDS = 24 * 60 * 60;
 
 type AffindaWorkExperience = {
   jobTitle?: string;
@@ -280,18 +252,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { allowed, retryAfter } = checkRateLimit(userId);
-    if (!allowed) {
-      return NextResponse.json(
-        {
-          error:
-            "Resume parsing limit reached. You can try again later or fill in your details manually.",
-        },
-        {
-          status: 429,
-          headers: retryAfter ? { "Retry-After": String(retryAfter) } : undefined,
-        },
-      );
+    const rateLimit = await checkRateLimit({
+      key: `parse-resume:${userId}`,
+      limit: PARSE_LIMIT,
+      windowSeconds: PARSE_WINDOW_SECONDS,
+    });
+    if (!rateLimit.allowed) {
+      return rateLimitResponse(rateLimit);
     }
 
     const formData = await request.formData();
@@ -308,8 +275,6 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
-
-    incrementRateLimit(userId);
 
     const affindaForm = new FormData();
     affindaForm.append("file", file);

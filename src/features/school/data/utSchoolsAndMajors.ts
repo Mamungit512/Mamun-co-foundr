@@ -1,7 +1,9 @@
-export type DegreeType = 'bachelors' | 'masters' | 'professional' | 'other';
-
+// Degree level is general and independent of college (see UTDegreeType in
+// src/features/school/types.d.ts). The programs below are suggestions and
+// abbreviation lookups only — they no longer limit which levels a user can
+// pick for a given college.
 interface UTDegreeProgram {
-  degreeType: DegreeType;
+  degreeType: UTDegreeType;
   name: string;
   abbreviation: string;
 }
@@ -110,7 +112,7 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
     programs: [
       { degreeType: 'masters', name: 'Public Affairs', abbreviation: 'MPAff' },
       { degreeType: 'masters', name: 'Global Policy', abbreviation: 'Global Policy' },
-      { degreeType: 'professional', name: 'Juris Doctor / Public Affairs', abbreviation: 'JD/MPAff' },
+      { degreeType: 'doctorate', name: 'Juris Doctor / Public Affairs', abbreviation: 'JD/MPAff' },
     ] as const,
   },
   dell_medical_school: {
@@ -119,8 +121,8 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
     tier: 'partner',
     color: 'from-rose-600 to-rose-700',
     programs: [
-      { degreeType: 'professional', name: 'Doctor of Medicine', abbreviation: 'MD' },
-      { degreeType: 'professional', name: 'Doctor of Medicine / Doctor of Philosophy', abbreviation: 'MD/PhD' },
+      { degreeType: 'doctorate', name: 'Doctor of Medicine', abbreviation: 'MD' },
+      { degreeType: 'doctorate', name: 'Doctor of Medicine / Doctor of Philosophy', abbreviation: 'MD/PhD' },
       { degreeType: 'masters', name: 'Health Innovation', abbreviation: 'Health Innovation' },
     ] as const,
   },
@@ -164,7 +166,7 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
     programs: [
       { degreeType: 'bachelors', name: 'Nursing', abbreviation: 'BSN' },
       { degreeType: 'masters', name: 'Nursing', abbreviation: 'MSN' },
-      { degreeType: 'professional', name: 'Doctor of Nursing Practice', abbreviation: 'DNP' },
+      { degreeType: 'doctorate', name: 'Doctor of Nursing Practice', abbreviation: 'DNP' },
     ] as const,
   },
   college_of_pharmacy: {
@@ -173,7 +175,7 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
     tier: 'partner',
     color: 'from-violet-600 to-violet-700',
     programs: [
-      { degreeType: 'professional', name: 'Doctor of Pharmacy', abbreviation: 'PharmD' },
+      { degreeType: 'doctorate', name: 'Doctor of Pharmacy', abbreviation: 'PharmD' },
       { degreeType: 'masters', name: 'Pharmaceutical Sciences', abbreviation: 'Pharm Sci' },
     ] as const,
   },
@@ -193,7 +195,7 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
     tier: 'partner',
     color: 'from-stone-600 to-stone-700',
     programs: [
-      { degreeType: 'professional', name: 'Juris Doctor', abbreviation: 'JD' },
+      { degreeType: 'doctorate', name: 'Juris Doctor', abbreviation: 'JD' },
       { degreeType: 'masters', name: 'Law', abbreviation: 'LLM' },
     ] as const,
   },
@@ -203,19 +205,29 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
     tier: 'partner',
     color: 'from-sky-600 to-sky-700',
     programs: [
-      { degreeType: 'other', name: 'Pre-Med', abbreviation: 'Pre-Med' },
-      { degreeType: 'other', name: 'Pre-Law', abbreviation: 'Pre-Law' },
-      { degreeType: 'other', name: 'Pre-Teaching', abbreviation: 'Pre-Teaching' },
+      { degreeType: 'bachelors', name: 'Pre-Med', abbreviation: 'Pre-Med' },
+      { degreeType: 'bachelors', name: 'Pre-Law', abbreviation: 'Pre-Law' },
+      { degreeType: 'bachelors', name: 'Pre-Teaching', abbreviation: 'Pre-Teaching' },
     ] as const,
   },
 } as const;
 
-export const DEGREE_TYPE_LABELS: Record<DegreeType, string> = {
+export const DEGREE_TYPE_LABELS: Record<UTDegreeType, string> = {
   bachelors: "Bachelor's Degree",
   masters: "Master's Degree",
-  professional: 'Professional Degree',
-  other: 'Other',
+  doctorate: 'Doctorate',
+  certificate: 'Certificate',
 };
+
+// Compact form for profile-card badges and emails, e.g. "Master's '26".
+export const DEGREE_TYPE_SHORT_LABELS: Record<UTDegreeType, string> = {
+  bachelors: "Bachelor's",
+  masters: "Master's",
+  doctorate: 'Doctorate',
+  certificate: 'Certificate',
+};
+
+export const DEGREE_TYPES = Object.keys(DEGREE_TYPE_LABELS) as UTDegreeType[];
 
 export const SECTOR_INTEREST_LABELS: Record<UTSectorInterest, string> = {
   b2b_saas: 'B2B SaaS',
@@ -236,27 +248,47 @@ export const SECTOR_INTEREST_LABELS: Record<UTSectorInterest, string> = {
   govtech: 'GovTech',
 };
 
+export const isDegreeType = (value: unknown): value is UTDegreeType =>
+  typeof value === 'string' && (DEGREE_TYPES as string[]).includes(value);
+
+// Retired 'professional' (MD/JD/PharmD/DNP) maps forward to 'doctorate'.
+// Retired 'other' carried no level and has no equivalent, so it returns
+// undefined — callers should treat that the same as a missing value.
+export const normalizeDegreeType = (value: unknown): UTDegreeType | undefined => {
+  if (isDegreeType(value)) return value;
+  if (value === 'professional') return 'doctorate';
+  return undefined;
+};
+
+export const getDegreeTypeLabel = (value: unknown): string | undefined => {
+  const degreeType = normalizeDegreeType(value);
+  return degreeType ? DEGREE_TYPE_LABELS[degreeType] : undefined;
+};
+
+export const isUTCollege = (value: unknown): value is UTCollege =>
+  typeof value === 'string' &&
+  Object.prototype.hasOwnProperty.call(UT_SCHOOLS_AND_PROGRAMS, value);
+
 export const getProgramsForSchool = (
   school: UTCollege,
 ): readonly UTDegreeProgram[] => {
   return UT_SCHOOLS_AND_PROGRAMS[school].programs;
 };
 
-export const getDegreeTypesForSchool = (
-  school: UTCollege,
-): DegreeType[] => {
-  const programs = getProgramsForSchool(school);
-  const types = new Set(programs.map(p => p.degreeType));
-  return Array.from(types) as DegreeType[];
-};
-
-export const getProgramsForSchoolAndDegreeType = (
-  school: UTCollege,
-  degreeType: DegreeType,
-): readonly UTDegreeProgram[] => {
-  return getProgramsForSchool(school).filter(
-    p => p.degreeType === degreeType,
-  );
+// Program names for (college, degree level), for use as suggestions — never
+// as a restriction on what a user can pick. Falls back to all of the
+// college's program names when none are listed at that level. Deduped, in
+// catalog order.
+export const getMajorOptions = (
+  college: string | null | undefined,
+  degreeType: string | null | undefined,
+): string[] => {
+  if (!isUTCollege(college)) return [];
+  const programs = getProgramsForSchool(college);
+  const level = normalizeDegreeType(degreeType);
+  const atLevel = level ? programs.filter(p => p.degreeType === level) : [];
+  const pool = atLevel.length ? atLevel : programs;
+  return Array.from(new Set(pool.map(p => p.name)));
 };
 
 export const getSchoolLabel = (school: UTCollege): string => {
@@ -267,12 +299,27 @@ export const getSchoolFullName = (school: UTCollege): string => {
   return UT_SCHOOLS_AND_PROGRAMS[school].fullName;
 };
 
+// Prefers a catalog abbreviation for the exact (college, level, major) match
+// (fixes e.g. a masters "Business Administration" rendering as "BBA" instead
+// of "MBA"). Falls back to the level's short label, then to the major name
+// itself, so a free-text major or an unlisted college still renders something
+// reasonable. Inputs are loose because callers pass raw, possibly-legacy DB
+// values.
 export const getDegreeAbbreviation = (
-  school: UTCollege,
-  majorName: string | undefined,
+  college: string | null | undefined,
+  degreeType: string | null | undefined,
+  majorName: string | null | undefined,
 ): string | undefined => {
-  if (!majorName) return undefined;
-  const programs = getProgramsForSchool(school);
-  const program = programs.find(p => p.name === majorName);
-  return program?.abbreviation || majorName;
+  const major = majorName?.trim().toLowerCase();
+  const matches =
+    major && isUTCollege(college)
+      ? getProgramsForSchool(college).filter(p => p.name.toLowerCase() === major)
+      : [];
+  const level = normalizeDegreeType(degreeType);
+
+  if (level) {
+    return matches.find(p => p.degreeType === level)?.abbreviation ?? DEGREE_TYPE_SHORT_LABELS[level];
+  }
+  // Legacy rows with no level: keep the old name-only lookup.
+  return matches[0]?.abbreviation ?? (majorName?.trim() || undefined);
 };

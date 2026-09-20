@@ -1,5 +1,8 @@
 # Architecture overview
 
+For how the app is deployed (Vercel, Supabase, Clerk, third-party services) see
+[`DEPLOYMENT.md`](./DEPLOYMENT.md).
+
 ## Folder conventions
 
 ```

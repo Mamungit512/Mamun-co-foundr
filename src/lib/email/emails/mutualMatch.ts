@@ -1,5 +1,6 @@
 import { clerkClient } from "@clerk/nextjs/server";
 import { SupabaseClient } from "@supabase/supabase-js";
+import { getDegreeAbbreviation, getDegreeTypeLabel } from "@/features/school/data/utSchoolsAndMajors";
 import { resolveOrgBranding } from "../branding";
 import { sendTemplateEmail } from "../send";
 
@@ -35,14 +36,7 @@ function initials(first: string | null, last: string | null) {
 function schoolStatusLabel(s: SchoolProfileRow | null): string {
   if (!s) return "";
   const status = s.school_status === "alumni" ? "Alumni" : "Student";
-  const degree = (() => {
-    if (!s.degree_type) return "";
-    if (s.degree_type === "masters" && s.major?.toLowerCase().includes("business")) return "MBA";
-    if (s.degree_type === "bachelors") return "Bachelors";
-    if (s.degree_type === "masters") return "Masters";
-    if (s.degree_type === "professional") return s.major ?? "Professional";
-    return s.degree_type;
-  })();
+  const degree = getDegreeAbbreviation(s.college, s.degree_type, s.major) ?? "";
   const year = s.graduation_year ?? "";
   return [status, [degree, year].filter(Boolean).join(" ")].filter(Boolean).join(" · ");
 }
@@ -140,7 +134,7 @@ export async function sendMutualMatchEmails({
         lookingFor: matchedProfile.cofounder_status ?? "",
         commitment: matchedProfile.startup_time_spent ?? "",
         collegeLabel: matchedSchool?.college ?? "",
-        degreeLabel: matchedSchool?.degree_type ?? "",
+        degreeLabel: getDegreeTypeLabel(matchedSchool?.degree_type) ?? "",
         major: matchedSchool?.major ?? "",
         messageUrl: `${appUrl}/messages?startWith=${matchedId}`,
       },

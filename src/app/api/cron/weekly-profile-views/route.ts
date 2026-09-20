@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { runWeeklyProfileViews } from "@/lib/email/lifecycle";
+import { verifyCronSecret } from "@/lib/cronAuth";
 
 export async function GET(req: NextRequest) {
   try {
-    const authHeader = req.headers.get("authorization");
-    const cronSecret = process.env.CRON_SECRET;
-
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json(
-        { error: "Unauthorized - Invalid cron secret" },
-        { status: 401 },
-      );
-    }
+    const authError = verifyCronSecret(req);
+    if (authError) return authError;
 
     const result = await runWeeklyProfileViews();
     console.log(

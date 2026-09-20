@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { getCompletedSteps } from "./getCompletedSteps";
+import { ORG_REGISTRY } from "@/features/school/registry/registry";
 import type { OrgOnboarding } from "@/features/school/registry/types";
 
 const UT_ONBOARDING: OrgOnboarding = {
@@ -115,6 +116,27 @@ describe("getCompletedSteps", () => {
     it("uses visited-based completion when step3Completion is undefined (generic config)", () => {
       const result = getCompletedSteps({} as OnboardingData, new Set([3]), GENERIC_ONBOARDING);
       expect(result.has(3)).toBe(true);
+    });
+  });
+
+  describe("step 2 — real UT registry requires college and degree level", () => {
+    const utOnboarding = ORG_REGISTRY.ut.onboarding;
+
+    it("is incomplete with only the base fields plus utStatus", () => {
+      const data: Partial<OnboardingData> = { ...BASE_STEP2_FIELDS, utStatus: "student" };
+      const result = getCompletedSteps(data as OnboardingData, new Set(), utOnboarding, utStep3Completion);
+      expect(result.has(2)).toBe(false);
+    });
+
+    it("is complete once utCollege and utDegreeType are also set", () => {
+      const data: Partial<OnboardingData> = {
+        ...BASE_STEP2_FIELDS,
+        utStatus: "student",
+        utCollege: "college_of_fine_arts",
+        utDegreeType: "masters",
+      };
+      const result = getCompletedSteps(data as OnboardingData, new Set(), utOnboarding, utStep3Completion);
+      expect(result.has(2)).toBe(true);
     });
   });
 

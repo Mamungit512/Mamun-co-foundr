@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 import { sendMutualMatchEmails } from "@/lib/email/emails/mutualMatch";
+import { isValidClerkUserId } from "@/lib/validation";
 
 function supa() {
   return createClient(
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { toUserId } = await request.json();
-    if (!toUserId) {
+    if (!isValidClerkUserId(toUserId)) {
       return NextResponse.json({ error: "Missing toUserId" }, { status: 400 });
     }
     if (toUserId === userId) {

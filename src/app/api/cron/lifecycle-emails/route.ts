@@ -4,6 +4,7 @@ import {
   runReEngagementReminders,
   type LifecycleResult,
 } from "@/lib/email/lifecycle";
+import { verifyCronSecret } from "@/lib/cronAuth";
 
 /**
  * Unified lifecycle email cron — runs all lifecycle checks daily.
@@ -26,15 +27,8 @@ const CHECKS = [runProfileCompletionReminders, runReEngagementReminders];
 
 export async function GET(req: NextRequest) {
   try {
-    const authHeader = req.headers.get("authorization");
-    const cronSecret = process.env.CRON_SECRET;
-
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json(
-        { error: "Unauthorized - Invalid cron secret" },
-        { status: 401 },
-      );
-    }
+    const authError = verifyCronSecret(req);
+    if (authError) return authError;
 
     const results: LifecycleResult[] = [];
 

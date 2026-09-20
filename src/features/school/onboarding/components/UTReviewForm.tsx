@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useStepEntry } from "@/hooks/useOnboardingAnimation";
+import { getDegreeTypeLabel } from "@/features/school/data/utSchoolsAndMajors";
 
 type UTReviewFormProps = {
   data: OnboardingData;
@@ -60,6 +61,8 @@ export default function UTReviewForm({
                 : "—",
             },
             { label: "Education", value: educationParts || "—" },
+            { label: "Degree", value: getDegreeTypeLabel(data.utDegreeType) ?? "—" },
+            { label: "Major", value: data.utMajor || "—" },
             {
               label: "Addl. Education",
               value: data.additionalEducation || "—",

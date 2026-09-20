@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,6 +10,15 @@ export async function POST(request: NextRequest) {
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const rateLimit = await checkRateLimit({
+      key: `upload-profile-pic:${userId}`,
+      limit: 10,
+      windowSeconds: 60 * 60,
+    });
+    if (!rateLimit.allowed) {
+      return rateLimitResponse(rateLimit);
     }
 
     // Create Supabase client with service role key for server-side operations
@@ -24,9 +34,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // Validate file type
-    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-    if (!allowedTypes.includes(file.type)) {
+    // Validate file type. The storage key's extension is derived from this
+    // MIME allowlist (below), not from the client-supplied file.name, since
+    // an unsanitized filename could inject "/" or ".." into the storage key.
+    const extensionByMimeType: Record<string, string> = {
+      "image/jpeg": "jpg",
+      "image/jpg": "jpg",
+      "image/png": "png",
+      "image/webp": "webp",
+    };
+    const fileExt = extensionByMimeType[file.type];
+    if (!fileExt) {
       return NextResponse.json(
         { error: "Invalid file type. Only JPEG, PNG, and WebP are allowed." },
         { status: 400 },
@@ -47,7 +65,6 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(arrayBuffer);
 
     const timestamp = Date.now();
-    const fileExt = file.name.split(".").pop() || "jpg";
     const filePath = `${userId}_${timestamp}.${fileExt}`;
 
     // Clean up old profile pictures for this user
