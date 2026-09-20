@@ -4,12 +4,22 @@ import { createServerSupabaseClient } from "@/lib/supabaseServer";
 import { isEmailDomainAllowed } from "@/features/school/auth/email-domain";
 import { sendCofounderInviteEmail } from "@/lib/email/emails/cofounderInvite";
 import { randomBytes } from "crypto";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const rateLimit = await checkRateLimit({
+      key: `cofounder-invite:${userId}`,
+      limit: 20,
+      windowSeconds: 24 * 60 * 60,
+    });
+    if (!rateLimit.allowed) {
+      return rateLimitResponse(rateLimit);
     }
 
     const { inviteeEmail, startupName, startupWebsite, inviteeRole, note } =

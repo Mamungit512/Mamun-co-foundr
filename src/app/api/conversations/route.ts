@@ -5,6 +5,7 @@ import {
   getUserConversations,
   createConversation,
 } from "@/features/conversations/conversationService";
+import { isValidClerkUserId } from "@/lib/validation";
 
 export async function GET(request: NextRequest) {
   try {
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
     // Get the other user ID from request body
     const { otherUserId } = await request.json();
 
-    if (!otherUserId) {
+    if (!isValidClerkUserId(otherUserId)) {
       return NextResponse.json(
         { error: "Other user ID is required" },
         { status: 400 },

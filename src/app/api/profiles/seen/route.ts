@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createServerSupabaseClient } from "@/lib/supabaseServer";
+import { isValidClerkUserId } from "@/lib/validation";
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -12,7 +13,7 @@ export async function PATCH(request: NextRequest) {
 
     const { candidate_user_id } = await request.json();
 
-    if (!candidate_user_id) {
+    if (!isValidClerkUserId(candidate_user_id)) {
       return NextResponse.json(
         { error: "candidate_user_id is required" },
         { status: 400 },
