@@ -1,3 +1,5 @@
+import { getCurrentCohortLabel } from "@/lib/cohort";
+
 export default function CohortBadge() {
   return (
     <span
@@ -8,7 +10,7 @@ export default function CohortBadge() {
         boxShadow: "0 0 10px rgba(91, 95, 224, 0.5)",
       }}
     >
-      Fall 2026 Cohort
+      {getCurrentCohortLabel()}
     </span>
   );
 }
