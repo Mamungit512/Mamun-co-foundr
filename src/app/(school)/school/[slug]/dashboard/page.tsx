@@ -36,6 +36,7 @@ import {
 } from "@/features/likes/useLikes";
 import { useSkipProfile } from "@/features/user-actions/useUserActions";
 import { trackEvent } from "@/lib/posthog-events";
+import { ensureAbsoluteUrl } from "@/lib/url";
 import { useProfileViewTracking } from "@/features/profile/useProfileViewTracking";
 import {
   getSchoolFullName,
@@ -890,27 +891,27 @@ export default function SchoolDashboardPage() {
                   {(() => {
                     const links = [
                       curProfile.linkedin && {
-                        href: curProfile.linkedin,
+                        href: ensureAbsoluteUrl(curProfile.linkedin),
                         icon: <FaLinkedin className="h-3.5 w-3.5" />,
                         label: "LinkedIn",
                       },
                       curProfile.twitter && {
-                        href: curProfile.twitter,
+                        href: ensureAbsoluteUrl(curProfile.twitter),
                         icon: <FaTwitter className="h-3.5 w-3.5" />,
                         label: "Twitter / X",
                       },
                       curProfile.git && {
-                        href: curProfile.git,
+                        href: ensureAbsoluteUrl(curProfile.git),
                         icon: <FaGithub className="h-3.5 w-3.5" />,
                         label: "GitHub",
                       },
                       curProfile.personalWebsite && {
-                        href: curProfile.personalWebsite,
+                        href: ensureAbsoluteUrl(curProfile.personalWebsite),
                         icon: <FaGlobe className="h-3.5 w-3.5" />,
                         label: "Website",
                       },
                       curProfile.schedulingUrl && {
-                        href: curProfile.schedulingUrl,
+                        href: ensureAbsoluteUrl(curProfile.schedulingUrl),
                         icon: <FaCalendar className="h-3.5 w-3.5" />,
                         label: "Schedule a call",
                       },

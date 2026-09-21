@@ -1,4 +1,6 @@
 // Mapping Functions to Convert Data to/from Database
+import { ensureAbsoluteUrl } from "./url";
+
 export function mapProfileToOnboardingData(
   profile: UserProfileFromDb,
 ): OnboardingData {
@@ -81,11 +83,11 @@ export function mapOnboardingDatatoProfileDB(data: OnboardingData) {
     experience: data.experience || null,
     is_technical: data.isTechnical === "yes",
 
-    linkedin: data.linkedin || null,
-    twitter: data.twitter || null,
-    git: data.git || null,
-    personal_website: data.personalWebsite || null,
-    scheduling_url: data.schedulingUrl || null,
+    linkedin: ensureAbsoluteUrl(data.linkedin),
+    twitter: ensureAbsoluteUrl(data.twitter),
+    git: ensureAbsoluteUrl(data.git),
+    personal_website: ensureAbsoluteUrl(data.personalWebsite),
+    scheduling_url: ensureAbsoluteUrl(data.schedulingUrl),
 
     has_startup: data.hasStartup === "yes",
     startup_name: data.startupName || null,

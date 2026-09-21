@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "motion/react";
 import Link from "next/link";
+import { ensureAbsoluteUrl } from "@/lib/url";
 
 function CofoundrShowMore({ curProfile }: { curProfile: OnboardingData }) {
   const hasStartup = curProfile?.hasStartup === "yes";
@@ -120,7 +121,7 @@ function CofoundrShowMore({ curProfile }: { curProfile: OnboardingData }) {
         <div className="grid gap-4 sm:grid-cols-2">
           {curProfile?.linkedin ? (
             <Link
-              href={curProfile.linkedin}
+              href={ensureAbsoluteUrl(curProfile.linkedin) ?? ""}
               target="_blank"
               rel="noopener noreferrer"
               className="flex cursor-pointer items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3 hover:border-gray-600 hover:bg-gray-800/50"
@@ -143,7 +144,7 @@ function CofoundrShowMore({ curProfile }: { curProfile: OnboardingData }) {
 
           {curProfile?.twitter ? (
             <Link
-              href={curProfile.twitter}
+              href={ensureAbsoluteUrl(curProfile.twitter) ?? ""}
               target="_blank"
               rel="noopener noreferrer"
               className="flex cursor-pointer items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3 hover:border-gray-600 hover:bg-gray-800/50"
@@ -166,7 +167,7 @@ function CofoundrShowMore({ curProfile }: { curProfile: OnboardingData }) {
 
           {curProfile?.git ? (
             <Link
-              href={curProfile.git}
+              href={ensureAbsoluteUrl(curProfile.git) ?? ""}
               target="_blank"
               rel="noopener noreferrer"
               className="flex cursor-pointer items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3 hover:border-gray-600 hover:bg-gray-800/50"
@@ -189,7 +190,7 @@ function CofoundrShowMore({ curProfile }: { curProfile: OnboardingData }) {
 
           {curProfile?.personalWebsite ? (
             <Link
-              href={curProfile.personalWebsite}
+              href={ensureAbsoluteUrl(curProfile.personalWebsite) ?? ""}
               target="_blank"
               rel="noopener noreferrer"
               className="flex cursor-pointer items-center space-x-3 rounded-lg border border-gray-700/30 bg-gray-800/30 p-3 hover:border-gray-600 hover:bg-gray-800/50"
