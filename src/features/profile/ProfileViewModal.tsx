@@ -15,6 +15,7 @@ import {
 import { FaTimes } from "react-icons/fa";
 import HiringBadge from "@/components/HiringBadge";
 import CoFounderLinks from "@/features/cofounder/CoFounderLinks";
+import { ensureAbsoluteUrl } from "@/lib/url";
 import {
   getDegreeAbbreviation,
   getSchoolFullName,
@@ -106,27 +107,27 @@ export default function ProfileViewModal({
   const socialLinks = profile
     ? ([
         profile.linkedin && {
-          href: profile.linkedin,
+          href: ensureAbsoluteUrl(profile.linkedin),
           icon: <FaLinkedin className="h-4 w-4" />,
           label: "LinkedIn",
         },
         profile.twitter && {
-          href: profile.twitter,
+          href: ensureAbsoluteUrl(profile.twitter),
           icon: <FaTwitter className="h-4 w-4" />,
           label: "Twitter / X",
         },
         profile.git && {
-          href: profile.git,
+          href: ensureAbsoluteUrl(profile.git),
           icon: <FaGithub className="h-4 w-4" />,
           label: "GitHub",
         },
         profile.personalWebsite && {
-          href: profile.personalWebsite,
+          href: ensureAbsoluteUrl(profile.personalWebsite),
           icon: <FaGlobe className="h-4 w-4" />,
           label: "Website",
         },
         profile.schedulingUrl && {
-          href: profile.schedulingUrl,
+          href: ensureAbsoluteUrl(profile.schedulingUrl),
           icon: <FaCalendar className="h-4 w-4" />,
           label: "Schedule a call",
         },
