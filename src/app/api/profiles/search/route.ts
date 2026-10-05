@@ -14,6 +14,7 @@ import {
   getSchoolLabel,
   SECTOR_INTEREST_LABELS,
 } from "@/features/school/data/utSchoolsAndMajors";
+import { fetchEligibleUserIds } from "./eligibleSearchProfiles";
 import { resolveTenantScope } from "@/features/school/auth/tenant-scope";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -88,42 +89,6 @@ function buildTsquery(terms: string[], fallbackQ: string): string {
     .filter((w) => w.length > 0)
     .map((w) => `${w}:*`)
     .join(" | ");
-}
-
-async function fetchEligibleUserIds(
-  supabase: SupabaseClient,
-  userId: string,
-  orgId: string,
-  filters: DashboardFilters,
-): Promise<string[]> {
-  const { data: likedProfiles } = await supabase
-    .from("likes")
-    .select("liked_id")
-    .eq("liker_id", userId);
-  const likedIds = new Set(likedProfiles?.map((l) => l.liked_id) ?? []);
-
-  let schoolQuery = supabase
-    .from("school_profiles")
-    .select("user_id")
-    .eq("organization_id", orgId);
-
-  if (filters.colleges.length > 0) {
-    schoolQuery = schoolQuery.in("college", filters.colleges);
-  }
-  if (filters.sectors.length > 0) {
-    schoolQuery = schoolQuery.overlaps("sector_interests", filters.sectors);
-  }
-  if (filters.gradYear !== null) {
-    schoolQuery = schoolQuery.eq("graduation_year", filters.gradYear);
-  }
-  if (filters.intent) {
-    schoolQuery = schoolQuery.in("intent", [filters.intent, "no_preference"]);
-  }
-
-  const { data: schoolRows } = await schoolQuery;
-  const ids = schoolRows?.map((r) => r.user_id) ?? [];
-
-  return ids.filter((id) => id !== userId && !likedIds.has(id));
 }
 
 /**

@@ -169,8 +169,8 @@ export async function GET(req: NextRequest) {
       query = query.not("user_id", "in", `(${likedIds.join(",")})`);
     }
 
-    // Fetch more candidates than we return so preference filtering still yields a full page
-    const { data: profilesData, error } = await query.limit(50);
+    // Fetch more candidates than we return so preference filtering still yields a full page.
+    const { data: profilesData, error } = await query.limit(250);
 
     if (error) {
       return NextResponse.json(
