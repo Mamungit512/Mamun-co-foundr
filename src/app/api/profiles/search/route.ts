@@ -96,12 +96,9 @@ async function fetchEligibleUserIds(
   orgId: string,
   filters: DashboardFilters,
 ): Promise<string[]> {
-  const { data: likedProfiles } = await supabase
-    .from("likes")
-    .select("liked_id")
-    .eq("liker_id", userId);
-  const likedIds = new Set(likedProfiles?.map((l) => l.liked_id) ?? []);
-
+  // Liked (invited) profiles are intentionally NOT excluded here, unlike the
+  // swipe deck: search is a lookup tool, and hiding everyone the viewer has
+  // invited made those people unfindable. The result card shows "Invited ✓".
   let schoolQuery = supabase
     .from("school_profiles")
     .select("user_id")
@@ -123,7 +120,7 @@ async function fetchEligibleUserIds(
   const { data: schoolRows } = await schoolQuery;
   const ids = schoolRows?.map((r) => r.user_id) ?? [];
 
-  return ids.filter((id) => id !== userId && !likedIds.has(id));
+  return ids.filter((id) => id !== userId);
 }
 
 /**

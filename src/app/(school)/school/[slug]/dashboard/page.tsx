@@ -224,7 +224,7 @@ function SearchResultCard({
           }`}
         >
           <FaPaperPlane className="h-3.5 w-3.5" />
-          <span>Invite</span>
+          <span>{likeStatus?.isLiked ? "Invited ✓" : "Invite"}</span>
         </button>
       </div>
     </div>
