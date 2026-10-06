@@ -48,6 +48,9 @@ describe("getProfileByUserId", () => {
   // beforeEach: sets up predictable testing environment before running test
   beforeEach(() => {
     vi.clearAllMocks(); // reset mock function state
+    // Silence expected service logs so test output stays readable
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    vi.spyOn(console, "error").mockImplementation(() => {});
     mockCreateSupabaseClientWithToken.mockReturnValue(mockSupabase); // specify to return "mockSupabase" object when using createSupabaseClientWithToken
   });
 
@@ -107,28 +110,8 @@ describe("getProfileByUserId", () => {
     await expect(getProfileByUserId("123", "fake-token")).rejects.toThrow();
   });
 
-  it("should pass the correct token to Supabase client", async () => {
-    // Arrange
-    const testToken = "test-auth-token";
-    const fakeDbData = { id: "456", first_name: "Bob" };
-    const fakeMapped = { id: "456", firstName: "Bob" };
-
-    mockGetUser.mockResolvedValue({
-      data: { user: { id: "456" } },
-      error: null,
-    });
-    mockSingle.mockResolvedValue({ data: fakeDbData, error: null });
-    mockMapProfileToOnboardingData.mockReturnValue(fakeMapped);
-
-    // Act
-    await getProfileByUserId("456", testToken);
-
-    // Assert
-    expect(mockCreateSupabaseClientWithToken).toHaveBeenCalledWith(testToken);
-  });
-
   //   --- Test 4: Token Verification ---
-  it("should pass the correct token to Supabase client (duplicate)", async () => {
+  it("should pass the correct token to Supabase client", async () => {
     // Arrange
     const testToken = "test-auth-token";
     const fakeDbData = { id: "456", first_name: "Bob" };

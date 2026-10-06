@@ -253,13 +253,11 @@ export function filterProfilesByPreferences(
       switch (userPreferences.lookingFor) {
         case "technical":
           if (!candidateIsTechnical) {
-            console.log(`❌ Filtered out ${profile.firstName} - not technical`);
             return false;
           }
           break;
         case "non-technical":
           if (candidateIsTechnical) {
-            console.log(`❌ Filtered out ${profile.firstName} - is technical`);
             return false;
           }
           break;
@@ -277,15 +275,11 @@ export function filterProfilesByPreferences(
       switch (userPreferences.preferredLocation) {
         case "same-city":
           if (!sameCity) {
-            console.log(`❌ Filtered out ${profile.firstName} - not same city`);
             return false;
           }
           break;
         case "same-country":
           if (!sameCountry) {
-            console.log(
-              `❌ Filtered out ${profile.firstName} - not same country`,
-            );
             return false;
           }
           break;
