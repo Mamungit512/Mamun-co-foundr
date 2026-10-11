@@ -137,6 +137,22 @@ describe.skipIf(!RUN)("RLS org isolation", () => {
   const BOB = "user_rlstest_bob";
   const VIEW_TARGET = "user_rlstest_target";
 
+  // UT mock user_ids that seed.sql inserts — we seed their pool memberships here
+  // because seed.sql runs AFTER migrations, so the backfill in
+  // 20260623000001 doesn't pick them up.
+  const UT_MOCK_IDS = [
+    "user_mock_ut_001",
+    "user_mock_ut_002",
+    "user_mock_ut_003",
+    "user_mock_ut_004",
+    "user_mock_ut_005",
+    "user_mock_ut_006",
+    "user_mock_ut_007",
+    "user_mock_ut_008",
+    "user_mock_ut_009",
+    "user_mock_ut_010",
+  ];
+
   beforeAll(async () => {
     expect(
       IS_LOCAL || process.env.RLS_TEST_ALLOW_REMOTE === "1",
@@ -160,6 +176,26 @@ describe.skipIf(!RUN)("RLS org isolation", () => {
     expect(orgErr, "UT org seed must exist (run UT seed migration)").toBeNull();
     utOrgId = org!.id;
 
+    // Seed pool membership rows for the UT mock profiles so the
+    // membership-based profiles_select_org policy can see them.
+    // seed.sql inserts profiles AFTER migrations run, so the backfill
+    // in 20260623000001 misses these rows — we fill the gap here.
+    const now = new Date().toISOString();
+    const utMemberships = UT_MOCK_IDS.map((id) => ({
+      user_id: id,
+      organization_id: utOrgId,
+      onboarded_at: now,
+    }));
+    await service
+      .from("profile_pool_memberships")
+      .delete()
+      .eq("organization_id", utOrgId)
+      .in("user_id", UT_MOCK_IDS);
+    const { error: membershipSeedErr } = await service
+      .from("profile_pool_memberships")
+      .insert(utMemberships);
+    expect(membershipSeedErr, "UT mock membership seed must succeed").toBeNull();
+
     // Seed two profile_views rows owned by different users (service role bypasses RLS).
     await service
       .from("profile_views")
@@ -178,6 +214,13 @@ describe.skipIf(!RUN)("RLS org isolation", () => {
       .from("profile_views")
       .delete()
       .in("viewer_user_id", [ALICE, BOB]);
+    // Remove the UT mock memberships we seeded (profiles themselves stay — they
+    // come from seed.sql and will be reset by the next supabase db reset).
+    await service
+      .from("profile_pool_memberships")
+      .delete()
+      .eq("organization_id", utOrgId)
+      .in("user_id", UT_MOCK_IDS);
   });
 
   // ── profiles: the linchpin policy, validated read-only against the UT mock seed ──
@@ -242,5 +285,120 @@ describe.skipIf(!RUN)("RLS org isolation", () => {
       organization_id: "00000000-0000-0000-0000-000000000000", // not the UT org
     });
     expect(error, "same-org trigger must reject mismatched organization_id").not.toBeNull();
+  });
+
+  // ── pool-membership visibility: validates shares_pool_with() SECURITY DEFINER fix ──
+  //
+  // Migration 20260623000002 introduced a profiles_select_org policy that proved
+  // "viewer and target share a pool" by self-joining profile_pool_memberships.
+  // The ppm_owner RLS on that table clipped the target_m side, making the EXISTS
+  // always false for anyone but the viewer — effectively limiting each user to
+  // seeing only their own profile. Migration 20260623000004 fixes this with a
+  // SECURITY DEFINER helper (shares_pool_with) that bypasses ppm_owner when
+  // evaluating the join. These tests assert the corrected behavior.
+  describe("pool-membership visibility (shares_pool_with)", () => {
+    // Minimal test profiles — these IDs are only used here.
+    const GP_ALICE = "user_rlstest_pool_alice";   // general pool
+    const GP_BOB   = "user_rlstest_pool_bob";     // general pool
+    const ORG_CAROL = "user_rlstest_org_carol";   // UT org pool only
+
+    const TEST_PROFILE_IDS = [GP_ALICE, GP_BOB, ORG_CAROL];
+
+    // Minimal profile shape that satisfies all NOT NULL constraints.
+    function minimalProfile(userId: string, orgId: string | null = null) {
+      return {
+        user_id: userId,
+        first_name: "Test",
+        last_name: "User",
+        title: "Test Profile",
+        city: "Austin",
+        country: "United States",
+        satisfaction: "Happy",
+        personal_intro: "RLS test fixture — safe to delete.",
+        is_technical: false,
+        has_startup: false,
+        onboarding_complete: true,
+        ...(orgId ? { organization_id: orgId } : {}),
+      };
+    }
+
+    beforeAll(async () => {
+      // Clean up any leftover rows from a previous aborted run.
+      await service.from("profiles").delete().in("user_id", TEST_PROFILE_IDS);
+
+      // Seed profiles (service role bypasses RLS + write-guard triggers).
+      const { error: profileErr } = await service.from("profiles").insert([
+        minimalProfile(GP_ALICE),
+        minimalProfile(GP_BOB),
+        minimalProfile(ORG_CAROL, utOrgId),
+      ]);
+      expect(profileErr, "pool-membership test profiles must seed").toBeNull();
+
+      // Seed memberships — explicitly set onboarded_at so the API-layer
+      // .not("onboarded_at", "is", null) filter passes in any route that
+      // uses these fixtures.
+      const now = new Date().toISOString();
+      const { error: memberErr } = await service
+        .from("profile_pool_memberships")
+        .insert([
+          { user_id: GP_ALICE,   organization_id: null,    onboarded_at: now },
+          { user_id: GP_BOB,     organization_id: null,    onboarded_at: now },
+          { user_id: ORG_CAROL,  organization_id: utOrgId, onboarded_at: now },
+        ]);
+      expect(memberErr, "pool-membership rows must seed").toBeNull();
+    });
+
+    afterAll(async () => {
+      // Deleting profiles cascades to profile_pool_memberships (ON DELETE CASCADE).
+      await service.from("profiles").delete().in("user_id", TEST_PROFILE_IDS);
+    });
+
+    it("general-pool user sees a general-pool co-member's profile", async () => {
+      const alice = clientAs(mintToken({ sub: GP_ALICE }));
+      const { data, error } = await alice
+        .from("profiles")
+        .select("user_id")
+        .eq("user_id", GP_BOB);
+      expect(error).toBeNull();
+      expect((data ?? []).map((r) => r.user_id)).toContain(GP_BOB);
+    });
+
+    it("general-pool user cannot see a profile that is only in an org pool", async () => {
+      const alice = clientAs(mintToken({ sub: GP_ALICE }));
+      const { data, error } = await alice
+        .from("profiles")
+        .select("user_id")
+        .eq("user_id", ORG_CAROL);
+      expect(error).toBeNull();
+      expect(data ?? []).toHaveLength(0);
+    });
+
+    it("org-pool user sees a co-member's profile in the same org pool", async () => {
+      // user_mock_ut_001 has a UT org membership seeded in the outer beforeAll.
+      // ORG_CAROL also has a UT org membership — they share the pool.
+      const utUser = clientAs(
+        mintToken({ sub: "user_mock_ut_001", organization_id: utOrgId }),
+      );
+      const { data, error } = await utUser
+        .from("profiles")
+        .select("user_id")
+        .eq("user_id", ORG_CAROL);
+      expect(error).toBeNull();
+      expect((data ?? []).map((r) => r.user_id)).toContain(ORG_CAROL);
+    });
+
+    it("org-pool user cannot see a profile that is only in the general pool", async () => {
+      // user_mock_ut_001 is in the UT org pool only (no general-pool membership).
+      // GP_BOB is in the general pool only — they share no pool.
+      const utUser = clientAs(
+        mintToken({ sub: "user_mock_ut_001", organization_id: utOrgId }),
+      );
+      const { data, error } = await utUser
+        .from("profiles")
+        .select("user_id")
+        .eq("user_id", GP_BOB);
+      expect(error).toBeNull();
+      expect(data ?? []).toHaveLength(0);
+    });
   });
 });
