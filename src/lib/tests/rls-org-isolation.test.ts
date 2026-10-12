@@ -182,7 +182,9 @@ describe.skipIf(!RUN)("RLS org isolation", () => {
 
   // ── profiles: the linchpin policy, validated read-only against the UT mock seed ──
   it("UT-claim user sees the UT mock profiles", async () => {
-    const ut = clientAs(mintToken({ sub: "user_mock_ut_001", organization_id: utOrgId }));
+    const ut = clientAs(
+      mintToken({ sub: "user_mock_ut_001", organization_id: utOrgId }),
+    );
     const { data, error } = await ut
       .from("profiles")
       .select("user_id")
@@ -225,13 +227,49 @@ describe.skipIf(!RUN)("RLS org isolation", () => {
     const blocked = await alice
       .from("profile_views")
       .insert({ viewer_user_id: BOB, target_user_id: "user_rlstest_t3" });
-    expect(blocked.error, "WITH CHECK must reject spoofed viewer").not.toBeNull();
+    expect(
+      blocked.error,
+      "WITH CHECK must reject spoofed viewer",
+    ).not.toBeNull();
 
     await service
       .from("profile_views")
       .delete()
       .eq("viewer_user_id", ALICE)
       .eq("target_user_id", "user_rlstest_t2");
+  });
+
+  // ── admin_exports: audit log reachable only by the service role ──
+  it("anon and authenticated keys cannot read or write admin_exports", async () => {
+    const row = {
+      organization_id: utOrgId,
+      admin_user_id: "user_rlstest_admin",
+      admin_email: "rlstest@example.com",
+      kind: "rls-test",
+      row_count: 0,
+    };
+
+    const anon = createClient(SUPABASE_URL, ANON_KEY);
+    const asUser = clientAs(
+      mintToken({ sub: "user_rlstest_admin", organization_id: utOrgId }),
+    );
+    for (const client of [anon, asUser]) {
+      expect(
+        (await client.from("admin_exports").select("id").limit(1)).error,
+      ).not.toBeNull();
+      expect(
+        (await client.from("admin_exports").insert(row)).error,
+      ).not.toBeNull();
+    }
+
+    // The service role (the export route) still can.
+    const ok = await service
+      .from("admin_exports")
+      .insert(row)
+      .select("id")
+      .single();
+    expect(ok.error).toBeNull();
+    await service.from("admin_exports").delete().eq("kind", "rls-test");
   });
 
   // ── write-time cross-org enforcement: the match_intents same-org trigger ──
@@ -241,6 +279,9 @@ describe.skipIf(!RUN)("RLS org isolation", () => {
       to_user_id: "user_mock_ut_002",
       organization_id: "00000000-0000-0000-0000-000000000000", // not the UT org
     });
-    expect(error, "same-org trigger must reject mismatched organization_id").not.toBeNull();
+    expect(
+      error,
+      "same-org trigger must reject mismatched organization_id",
+    ).not.toBeNull();
   });
 });

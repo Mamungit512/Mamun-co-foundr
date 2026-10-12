@@ -5,6 +5,7 @@ import Skeleton from "@/components/ui/Skeleton";
 import type { RetentionOverview } from "@/app/api/school/retention/overview/route";
 import RetentionChart, { type ChartMode } from "./RetentionChart";
 import { percent } from "./freshness";
+import { overviewViewState } from "./overviewState";
 
 type Props = {
   data: RetentionOverview | null;
@@ -107,9 +108,11 @@ export default function OverviewTab({
 }: Props) {
   const [mode, setMode] = useState<ChartMode>("cumulative");
 
-  if (loading && !data) return <LoadingState />;
+  const view = overviewViewState(data, loading, error);
 
-  if (error || !data) {
+  if (view === "loading") return <LoadingState />;
+
+  if (view === "error" || !data) {
     return (
       <div className="flex flex-col items-start gap-3 py-8">
         <p className="font-medium" style={{ color: "var(--ui-text)" }}>
@@ -135,7 +138,7 @@ export default function OverviewTab({
 
   const { reconciliation: r, connections, monthlySeries } = data;
 
-  if (r.student_accounts === 0) {
+  if (view === "empty") {
     return (
       <div className={card} style={cardStyle}>
         <p className="font-medium" style={{ color: "var(--ui-text)" }}>

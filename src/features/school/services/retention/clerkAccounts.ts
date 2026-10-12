@@ -91,7 +91,7 @@ async function pageAll(
   return users;
 }
 
-async function fetchDomainRecords(
+export async function fetchDomainRecords(
   orgId: string,
   allowedDomains: string[],
 ): Promise<DomainFetch> {

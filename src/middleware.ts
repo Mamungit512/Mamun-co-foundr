@@ -153,7 +153,7 @@ async function updateUserActivity(userId: string) {
   }
 }
 
-export default clerkMiddleware(async (auth, req: NextRequest) => {
+export default clerkMiddleware(async (auth, req: NextRequest, event) => {
   const pathname = req.nextUrl.pathname;
 
   // Crawler metadata routes must bypass subdomain rewrite and auth gates
@@ -334,7 +334,9 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     }
 
     if (!isApiRoute && !isStaticAsset) {
-      updateUserActivity(userId).catch(console.error);
+      // waitUntil keeps the write alive after the response is returned; an
+      // unawaited promise can be dropped when the serverless runtime freezes.
+      event.waitUntil(updateUserActivity(userId));
     }
     return NextResponse.next();
   }
@@ -357,7 +359,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   }
 
   if (!isPublicRoute(req) && !isApiRoute && !isStaticAsset) {
-    updateUserActivity(userId).catch(console.error);
+    event.waitUntil(updateUserActivity(userId));
   }
 
   return NextResponse.next();
