@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { getCompletedProfiles } from "@/features/school/services/retention";
 
 export type OrgConnection = {
   conversation_id: string;
@@ -25,16 +26,11 @@ export async function getConnections(orgId: string): Promise<OrgConnection[]> {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
 
-  // 1. Get all user IDs in the org
-  const { data: orgProfiles, error: profilesError } = await supabase
-    .from("profiles")
-    .select("user_id")
-    .eq("organization_id", orgId)
-    .is("deleted_at", null);
-
-  if (profilesError) throw new Error("Failed to fetch org profiles");
-
-  const orgUserIds = new Set((orgProfiles ?? []).map((p) => p.user_id));
+  // 1. Members are students with a completed profile, the same definition the
+  // Overview counts use, so the badge and this list agree.
+  const orgUserIds = new Set(
+    (await getCompletedProfiles(orgId)).map((p) => p.userId),
+  );
   if (orgUserIds.size === 0) return [];
 
   // 2. Get conversation IDs where an org user is a participant
