@@ -162,6 +162,27 @@ export default function SchoolAdminPage() {
     fetchOverview();
   }, [fetchOverview]);
 
+  // Clears the cached Clerk accounts, then reloads. A 429 just means the data
+  // was refreshed in the last minute, so we still reload what is there.
+  const [refreshingRetention, setRefreshingRetention] = useState(false);
+  const [ghostRefreshKey, setGhostRefreshKey] = useState(0);
+  const refreshRetention = async () => {
+    if (!session) return;
+    setRefreshingRetention(true);
+    try {
+      const token = await session.getToken();
+      await fetch("/api/school/retention/refresh", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch {
+      // Fall through: reloading is still correct, just possibly not fresher.
+    }
+    setGhostRefreshKey((k) => k + 1);
+    await fetchOverview();
+    setRefreshingRetention(false);
+  };
+
   useEffect(() => {
     if (activeTab === "connections" && !matchesFetched) fetchMatchConnections();
     if (activeTab === "connections" && !connectionsFetched) fetchConnections();
@@ -325,9 +346,14 @@ export default function SchoolAdminPage() {
         <FaSync className="h-3 w-3" />
         Refresh
       </AdminSecondaryButton>
-    ) : activeTab === "overview" ? (
-      <AdminSecondaryButton onClick={fetchOverview}>
-        <FaSync className="h-3 w-3" />
+    ) : activeTab === "overview" || activeTab === "sources" ? (
+      <AdminSecondaryButton
+        onClick={refreshRetention}
+        disabled={refreshingRetention}
+      >
+        <FaSync
+          className={`h-3 w-3 ${refreshingRetention ? "animate-spin" : ""}`}
+        />
         Refresh
       </AdminSecondaryButton>
     ) : null;
@@ -393,6 +419,7 @@ export default function SchoolAdminPage() {
           onRetry={fetchOverview}
           downloadingReport={downloadingReport}
           downloadReport={downloadReport}
+          refreshKey={ghostRefreshKey}
         />
       )}
 

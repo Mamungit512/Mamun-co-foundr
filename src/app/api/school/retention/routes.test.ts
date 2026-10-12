@@ -7,9 +7,19 @@ const getGhostAccounts = vi.fn();
 const getGhostExportRows = vi.fn();
 const recordAdminExport = vi.fn();
 const getOrgSlug = vi.fn();
+const revalidateTag = vi.fn();
+const checkRateLimit = vi.fn();
 
 vi.mock("@/features/school/auth/org-admin", () => ({
   requireOrgAdmin: () => requireOrgAdmin(),
+}));
+vi.mock("next/cache", () => ({
+  revalidateTag: (...a: unknown[]) => revalidateTag(...a),
+}));
+vi.mock("@/lib/rateLimit", () => ({
+  checkRateLimit: (...a: unknown[]) => checkRateLimit(...a),
+  rateLimitResponse: () =>
+    Response.json({ error: "slow down" }, { status: 429 }),
 }));
 vi.mock("@/features/school/services/retention", () => ({
   getOverview: (...a: unknown[]) => getOverview(...a),
@@ -24,10 +34,13 @@ vi.mock("@/features/school/services/retention/exports", () => ({
 import { GET as overviewGET } from "./overview/route";
 import { GET as ghostsGET } from "./ghosts/route";
 import { GET as exportGET } from "../reports/ghost-accounts/route";
+import { POST as refreshPOST } from "./refresh/route";
 
 const ADMIN = { userId: "u1", orgId: "org-a", email: "dir@utexas.edu" };
-const signedOut = () => NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-const notAdmin = () => NextResponse.json({ error: "Forbidden" }, { status: 403 });
+const signedOut = () =>
+  NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+const notAdmin = () =>
+  NextResponse.json({ error: "Forbidden" }, { status: 403 });
 const req = (url: string) => new NextRequest(`http://localhost${url}`);
 
 beforeEach(() => {
@@ -38,6 +51,8 @@ beforeEach(() => {
     getGhostExportRows,
     recordAdminExport,
     getOrgSlug,
+    revalidateTag,
+    checkRateLimit,
   ]) {
     fn.mockReset();
   }
@@ -55,12 +70,14 @@ beforeEach(() => {
     },
   ]);
   recordAdminExport.mockResolvedValue(undefined);
+  checkRateLimit.mockResolvedValue({ allowed: true });
 });
 
 describe.each([
   ["overview", () => overviewGET()],
   ["ghosts", () => ghostsGET(req("/api/school/retention/ghosts"))],
   ["ghost export", () => exportGET()],
+  ["refresh", () => refreshPOST()],
 ])("%s route access", (_name, call) => {
   it("returns 401 signed out and touches no data", async () => {
     requireOrgAdmin.mockResolvedValue(signedOut());
@@ -69,6 +86,7 @@ describe.each([
     expect(getGhostAccounts).not.toHaveBeenCalled();
     expect(getGhostExportRows).not.toHaveBeenCalled();
     expect(recordAdminExport).not.toHaveBeenCalled();
+    expect(revalidateTag).not.toHaveBeenCalled();
   });
 
   it("returns 403 for a non-admin and touches no data", async () => {
@@ -78,6 +96,7 @@ describe.each([
     expect(getGhostAccounts).not.toHaveBeenCalled();
     expect(getGhostExportRows).not.toHaveBeenCalled();
     expect(recordAdminExport).not.toHaveBeenCalled();
+    expect(revalidateTag).not.toHaveBeenCalled();
   });
 });
 
@@ -85,7 +104,9 @@ describe("org comes from the session, never the request", () => {
   beforeEach(() => requireOrgAdmin.mockResolvedValue(ADMIN));
 
   it("ghost list ignores ?orgId= and ?slug=", async () => {
-    await ghostsGET(req("/api/school/retention/ghosts?orgId=org-b&slug=other&page=2"));
+    await ghostsGET(
+      req("/api/school/retention/ghosts?orgId=org-b&slug=other&page=2"),
+    );
     expect(getGhostAccounts).toHaveBeenCalledWith("org-a", 25, 50);
   });
 
@@ -131,5 +152,27 @@ describe("ghost export", () => {
     expect(res.status).toBe(500);
     expect(res.headers.get("Content-Type")).toContain("application/json");
     expect(await res.text()).not.toContain("alice@utexas.edu");
+  });
+});
+
+describe("refresh", () => {
+  beforeEach(() => requireOrgAdmin.mockResolvedValue(ADMIN));
+
+  it("clears the Clerk cache and rate-limits per school", async () => {
+    const res = await refreshPOST();
+    expect(res.status).toBe(200);
+    expect(revalidateTag).toHaveBeenCalledWith("clerk-accounts");
+    expect(checkRateLimit).toHaveBeenCalledWith({
+      key: "retention-refresh:org-a",
+      limit: 1,
+      windowSeconds: 60,
+    });
+  });
+
+  it("returns 429 and leaves the cache alone inside the cooldown", async () => {
+    checkRateLimit.mockResolvedValue({ allowed: false });
+    const res = await refreshPOST();
+    expect(res.status).toBe(429);
+    expect(revalidateTag).not.toHaveBeenCalled();
   });
 });

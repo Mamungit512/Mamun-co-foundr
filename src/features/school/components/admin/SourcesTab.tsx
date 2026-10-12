@@ -17,6 +17,8 @@ type Props = {
   onRetry: () => void;
   downloadingReport: string | null;
   downloadReport: (path: string) => void;
+  // Bump to reload the ghost list, e.g. after a refresh.
+  refreshKey?: number;
 };
 
 type GhostPage = { rows: GhostRow[]; total: number; pageSize: number };
@@ -89,6 +91,7 @@ export default function SourcesTab({
   onRetry,
   downloadingReport,
   downloadReport,
+  refreshKey = 0,
 }: Props) {
   const { session } = useSession();
   const [page, setPage] = useState(0);
@@ -117,7 +120,7 @@ export default function SourcesTab({
 
   useEffect(() => {
     fetchGhosts();
-  }, [fetchGhosts]);
+  }, [fetchGhosts, refreshKey]);
 
   if (loading && !data) {
     return (
