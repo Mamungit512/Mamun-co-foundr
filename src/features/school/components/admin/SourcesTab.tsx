@@ -17,6 +17,8 @@ type Props = {
   onRetry: () => void;
   downloadingReport: string | null;
   downloadReport: (path: string) => void;
+  // Bump to reload the ghost list, e.g. after a refresh.
+  refreshKey?: number;
 };
 
 type GhostPage = { rows: GhostRow[]; total: number; pageSize: number };
@@ -89,6 +91,7 @@ export default function SourcesTab({
   onRetry,
   downloadingReport,
   downloadReport,
+  refreshKey = 0,
 }: Props) {
   const { session } = useSession();
   const [page, setPage] = useState(0);
@@ -117,7 +120,7 @@ export default function SourcesTab({
 
   useEffect(() => {
     fetchGhosts();
-  }, [fetchGhosts]);
+  }, [fetchGhosts, refreshKey]);
 
   if (loading && !data) {
     return (
@@ -204,19 +207,18 @@ export default function SourcesTab({
           value={r.student_accounts + r.staff_accounts}
           unit="accounts for this school"
         >
-          Everyone who signed up with a school email, including{" "}
-          {r.staff_accounts} staff{" "}
-          {r.staff_accounts === 1 ? "account" : "accounts"}.
+          {r.student_accounts}{" "}
+          {r.student_accounts === 1 ? "student" : "students"} plus{" "}
+          {r.staff_accounts} staff. Overview counts the students only.
         </CountCard>
         <CountCard
           label="Completed profiles"
           value={r.completed_profiles}
           unit="finished onboarding"
         >
-          Written only when a student finishes the last step.{" "}
-          {r.orphan > 0
-            ? `${r.orphan} of these ${r.orphan === 1 ? "belongs" : "belong"} to an account that no longer exists.`
-            : "None belong to deleted accounts."}
+          {r.reconciled} {r.reconciled === 1 ? "student" : "students"}, plus{" "}
+          {r.staff_with_profile} staff and {r.orphan} from deleted accounts.
+          Overview counts the students only.
         </CountCard>
         <CountCard
           label="Old dashboard said"

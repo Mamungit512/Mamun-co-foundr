@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  matchCounts,
   monthKey,
   monthlySeries,
   reconcile,
@@ -151,5 +152,82 @@ describe("clerk scoping", () => {
 
   it("searches only the parent domain when subdomains are listed", () => {
     expect(searchDomains(domains)).toEqual(["utexas.edu"]);
+  });
+});
+
+describe("matchCounts", () => {
+  const completed = new Set(["a", "b", "c", "d", "staff", "x"]);
+  const students = new Set(["a", "b", "c", "d", "x"]); // staff is not a student
+
+  it("counts linked and mutual pairs but not one-sided intents", () => {
+    const result = matchCounts(
+      [{ user_a_id: "a", user_b_id: "b" }],
+      [
+        { from_user_id: "c", to_user_id: "d" },
+        { from_user_id: "d", to_user_id: "c" },
+        { from_user_id: "a", to_user_id: "x" }, // pending: x never replied
+      ],
+      completed,
+      students,
+    );
+    expect(result).toEqual({
+      matched_pairs: 2,
+      linked_pairs: 1,
+      mutual_pairs: 1,
+      students_matched: 4,
+    });
+  });
+
+  it("counts a pair once when it is both linked and mutual", () => {
+    const result = matchCounts(
+      [{ user_a_id: "a", user_b_id: "b" }],
+      [
+        { from_user_id: "a", to_user_id: "b" },
+        { from_user_id: "b", to_user_id: "a" },
+      ],
+      completed,
+      students,
+    );
+    expect(result.matched_pairs).toBe(1);
+    expect(result.linked_pairs).toBe(1);
+    expect(result.mutual_pairs).toBe(0);
+  });
+
+  it("ignores pairs where someone has not completed a profile", () => {
+    const result = matchCounts(
+      [{ user_a_id: "a", user_b_id: "ghost" }],
+      [
+        { from_user_id: "ghost", to_user_id: "b" },
+        { from_user_id: "b", to_user_id: "ghost" },
+      ],
+      completed,
+      students,
+    );
+    expect(result.matched_pairs).toBe(0);
+  });
+
+  it("counts a student matched to staff once, and not the staff member", () => {
+    const result = matchCounts(
+      [{ user_a_id: "a", user_b_id: "staff" }],
+      [],
+      completed,
+      students,
+    );
+    expect(result.matched_pairs).toBe(1);
+    expect(result.students_matched).toBe(1);
+  });
+
+  it("counts a student in several pairs once", () => {
+    const result = matchCounts(
+      [
+        { user_a_id: "a", user_b_id: "b" },
+        { user_a_id: "a", user_b_id: "c" },
+      ],
+      [],
+      completed,
+      students,
+    );
+    expect(result.matched_pairs).toBe(2);
+    expect(result.students_matched).toBe(3);
   });
 });

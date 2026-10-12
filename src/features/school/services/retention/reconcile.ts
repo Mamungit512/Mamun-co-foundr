@@ -185,3 +185,54 @@ export function maskEmail(email: string): string {
   if (at < 1) return "***";
   return `${email[0]}***${email.slice(at)}`;
 }
+
+export type MatchCounts = {
+  // Pairs where both students have completed profiles. Linked wins over
+  // mutual when a pair is both. One-sided (pending) matches are not counted.
+  matched_pairs: number;
+  linked_pairs: number;
+  mutual_pairs: number;
+  // Distinct reconciled students in at least one matched pair.
+  students_matched: number;
+};
+
+const pairKey = (a: string, b: string) => [a, b].sort().join(":");
+
+export function matchCounts(
+  links: { user_a_id: string; user_b_id: string }[],
+  intents: { from_user_id: string; to_user_id: string }[],
+  completedIds: Set<string>,
+  reconciledIds: Set<string>,
+): MatchCounts {
+  const bothComplete = (a: string, b: string) =>
+    completedIds.has(a) && completedIds.has(b);
+
+  const linked = new Map<string, [string, string]>();
+  for (const l of links) {
+    if (bothComplete(l.user_a_id, l.user_b_id)) {
+      linked.set(pairKey(l.user_a_id, l.user_b_id), [l.user_a_id, l.user_b_id]);
+    }
+  }
+
+  // Mutual means each person sent an intent to the other.
+  const sent = new Set(intents.map((i) => `${i.from_user_id}>${i.to_user_id}`));
+  const mutual = new Map<string, [string, string]>();
+  for (const i of intents) {
+    if (!sent.has(`${i.to_user_id}>${i.from_user_id}`)) continue;
+    if (!bothComplete(i.from_user_id, i.to_user_id)) continue;
+    const key = pairKey(i.from_user_id, i.to_user_id);
+    if (!linked.has(key)) mutual.set(key, [i.from_user_id, i.to_user_id]);
+  }
+
+  const students = new Set<string>();
+  for (const [a, b] of [...linked.values(), ...mutual.values()]) {
+    if (reconciledIds.has(a)) students.add(a);
+    if (reconciledIds.has(b)) students.add(b);
+  }
+  return {
+    matched_pairs: linked.size + mutual.size,
+    linked_pairs: linked.size,
+    mutual_pairs: mutual.size,
+    students_matched: students.size,
+  };
+}

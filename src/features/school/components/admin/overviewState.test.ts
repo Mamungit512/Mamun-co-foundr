@@ -15,6 +15,12 @@ const overview = (students: number): RetentionOverview => ({
   },
   monthlySeries: [],
   connections: { connections: 0, students_connected: 0, messages: 0 },
+  matches: {
+    matched_pairs: 0,
+    linked_pairs: 0,
+    mutual_pairs: 0,
+    students_matched: 0,
+  },
   freshness: { fetchedAt: "2026-10-06T12:00:00Z", staleAfterSeconds: 21600 },
 });
 
