@@ -72,7 +72,9 @@ export function belongsToOrg(
 }
 
 async function pageAll(
-  params: Parameters<Awaited<ReturnType<typeof clerkClient>>["users"]["getUserList"]>[0],
+  params: Parameters<
+    Awaited<ReturnType<typeof clerkClient>>["users"]["getUserList"]
+  >[0],
 ): Promise<User[]> {
   const client = await clerkClient();
   const users: User[] = [];
@@ -116,7 +118,9 @@ export const getDomainRecords = (orgId: string, allowedDomains: string[]) =>
 // Completed profiles whose owner was not found by domain (attribution rule 1:
 // a school profile attributes the account). Whoever Clerk cannot find is an
 // orphan. Small and uncached, since profiles change on every onboarding.
-export async function fetchProfileOwners(ids: string[]): Promise<ClerkRecord[]> {
+export async function fetchProfileOwners(
+  ids: string[],
+): Promise<ClerkRecord[]> {
   if (ids.length === 0) return [];
   const client = await clerkClient();
   const found: ClerkRecord[] = [];

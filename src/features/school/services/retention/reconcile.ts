@@ -59,7 +59,14 @@ export function splitAccounts(
     (a) => a.isStaff && completedIds.has(a.id),
   ).length;
 
-  return { students, reconciledIds, ghosts, orphanIds, staffWithProfile, completed };
+  return {
+    students,
+    reconciledIds,
+    ghosts,
+    orphanIds,
+    staffWithProfile,
+    completed,
+  };
 }
 
 export function reconcile(
@@ -116,9 +123,7 @@ export function monthKey(iso: string, timeZone: string): string {
 
 function nextMonth(key: string): string {
   const [y, m] = key.split("-").map(Number);
-  return m === 12
-    ? `${y + 1}-01`
-    : `${y}-${String(m + 1).padStart(2, "0")}`;
+  return m === 12 ? `${y + 1}-01` : `${y}-${String(m + 1).padStart(2, "0")}`;
 }
 
 export function monthlySeries(

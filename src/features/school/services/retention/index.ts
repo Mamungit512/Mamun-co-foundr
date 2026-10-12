@@ -112,6 +112,13 @@ async function loadCompletedProfiles(
     .map((r) => ({ userId: r.user_id, completedAt: r.created_at }));
 }
 
+// Completed profiles for an org, the one definition shared by every screen.
+export async function getCompletedProfiles(
+  orgId: string,
+): Promise<CompletedProfile[]> {
+  return loadCompletedProfiles(supabase(), orgId);
+}
+
 async function loadLegacyTotal(db: Db, orgId: string): Promise<number> {
   const { count, error } = await db
     .from("profiles")

@@ -6,17 +6,18 @@ import {
   type CompletedProfile,
   type SchoolAccount,
 } from "./reconcile";
-import {
-  belongsToOrg,
-  searchDomains,
-  type ClerkRecord,
-} from "./clerkAccounts";
+import { belongsToOrg, searchDomains, type ClerkRecord } from "./clerkAccounts";
 
 const acct = (
   id: string,
   createdAt: string,
   isStaff = false,
-): SchoolAccount => ({ id, createdAt, maskedEmail: "a***@utexas.edu", isStaff });
+): SchoolAccount => ({
+  id,
+  createdAt,
+  maskedEmail: "a***@utexas.edu",
+  isStaff,
+});
 const done = (userId: string, completedAt: string): CompletedProfile => ({
   userId,
   completedAt,
@@ -26,12 +27,16 @@ const done = (userId: string, completedAt: string): CompletedProfile => ({
 // 7 completed profiles: 5 students, 1 staff, 1 owned by a deleted account.
 function fixture() {
   const accounts = [
-    ...Array.from({ length: 10 }, (_, i) => acct(`s${i}`, "2026-09-10T12:00:00Z")),
+    ...Array.from({ length: 10 }, (_, i) =>
+      acct(`s${i}`, "2026-09-10T12:00:00Z"),
+    ),
     acct("staff1", "2026-08-01T12:00:00Z", true),
     acct("staff2", "2026-08-02T12:00:00Z", true),
   ];
   const profiles = [
-    ...["s0", "s1", "s2", "s3", "s4"].map((id) => done(id, "2026-09-12T12:00:00Z")),
+    ...["s0", "s1", "s2", "s3", "s4"].map((id) =>
+      done(id, "2026-09-12T12:00:00Z"),
+    ),
     done("staff1", "2026-08-05T12:00:00Z"),
     done("deleted-user", "2026-08-20T12:00:00Z"),
   ];
@@ -114,11 +119,33 @@ describe("clerk scoping", () => {
   const domains = ["utexas.edu", "eid.utexas.edu", "mccombs.utexas.edu"];
 
   it("keeps allowed domains and org claims, drops look-alikes", () => {
-    expect(belongsToOrg(record({ emailDomain: "utexas.edu" }), "org", domains)).toBe(true);
-    expect(belongsToOrg(record({ emailDomain: "mccombs.utexas.edu" }), "org", domains)).toBe(true);
-    expect(belongsToOrg(record({ emailDomain: "notutexas.edu" }), "org", domains)).toBe(false);
-    expect(belongsToOrg(record({ emailDomain: "gmail.com", publicOrgId: "org" }), "org", domains)).toBe(true);
-    expect(belongsToOrg(record({ emailDomain: "gmail.com", publicOrgId: "other" }), "org", domains)).toBe(false);
+    expect(
+      belongsToOrg(record({ emailDomain: "utexas.edu" }), "org", domains),
+    ).toBe(true);
+    expect(
+      belongsToOrg(
+        record({ emailDomain: "mccombs.utexas.edu" }),
+        "org",
+        domains,
+      ),
+    ).toBe(true);
+    expect(
+      belongsToOrg(record({ emailDomain: "notutexas.edu" }), "org", domains),
+    ).toBe(false);
+    expect(
+      belongsToOrg(
+        record({ emailDomain: "gmail.com", publicOrgId: "org" }),
+        "org",
+        domains,
+      ),
+    ).toBe(true);
+    expect(
+      belongsToOrg(
+        record({ emailDomain: "gmail.com", publicOrgId: "other" }),
+        "org",
+        domains,
+      ),
+    ).toBe(false);
     expect(belongsToOrg(record({}), "org", domains)).toBe(false);
   });
 
