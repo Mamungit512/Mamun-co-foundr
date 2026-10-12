@@ -11,14 +11,16 @@ import { toCsv } from "@/lib/csv";
 import { getCurrentCohortLabel } from "@/lib/cohort";
 import {
   getAdminTabConfig,
+  isTabVisible,
   parseAdminTab,
   type AdminTab,
 } from "@/features/school/components/admin/tabs";
 import {
   toHumanLabel,
-  type Analytics,
   type Student,
 } from "@/features/school/components/admin/types";
+import type { RetentionOverview } from "@/app/api/school/retention/overview/route";
+import { describeFreshness } from "@/features/school/components/admin/freshness";
 import AdminPageHeader, {
   AdminSecondaryButton,
 } from "@/features/school/components/admin/AdminPageHeader";
@@ -67,9 +69,9 @@ export default function SchoolAdminPage() {
   const [matchesFetched, setMatchesFetched] = useState(false);
   const [matchYearFilter, setMatchYearFilter] = useState<string>("");
 
-  const [analytics, setAnalytics] = useState<Analytics | null>(null);
-  const [analyticsLoading, setAnalyticsLoading] = useState(false);
-  const [analyticsFetched, setAnalyticsFetched] = useState(false);
+  const [overview, setOverview] = useState<RetentionOverview | null>(null);
+  const [overviewLoading, setOverviewLoading] = useState(true);
+  const [overviewError, setOverviewError] = useState(false);
 
   const [downloadingReport, setDownloadingReport] = useState<string | null>(
     null,
@@ -131,22 +133,21 @@ export default function SchoolAdminPage() {
     }
   }, [session]);
 
-  const fetchAnalytics = useCallback(async () => {
+  const fetchOverview = useCallback(async () => {
     if (!session) return;
-    setAnalyticsLoading(true);
+    setOverviewLoading(true);
+    setOverviewError(false);
     try {
       const token = await session.getToken();
-      const res = await fetch("/api/school/analytics", {
+      const res = await fetch("/api/school/retention/overview", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error("Forbidden");
-      const data = await res.json();
-      setAnalytics(data);
+      if (!res.ok) throw new Error("Failed");
+      setOverview(await res.json());
     } catch {
-      toast.error("Failed to load analytics.");
+      setOverviewError(true);
     } finally {
-      setAnalyticsLoading(false);
-      setAnalyticsFetched(true);
+      setOverviewLoading(false);
     }
   }, [session]);
 
@@ -154,18 +155,21 @@ export default function SchoolAdminPage() {
     fetchStudents();
   }, [fetchStudents]);
 
+  // Overview is the landing tab and feeds the Connections badge, so it loads
+  // up front rather than on first visit.
+  useEffect(() => {
+    fetchOverview();
+  }, [fetchOverview]);
+
   useEffect(() => {
     if (activeTab === "connections" && !matchesFetched) fetchMatchConnections();
     if (activeTab === "connections" && !connectionsFetched) fetchConnections();
-    if (activeTab === "overview" && !analyticsFetched) fetchAnalytics();
   }, [
     activeTab,
     matchesFetched,
     connectionsFetched,
-    analyticsFetched,
     fetchMatchConnections,
     fetchConnections,
-    fetchAnalytics,
   ]);
 
   const matchYears = useMemo(
@@ -279,8 +283,22 @@ export default function SchoolAdminPage() {
   const activeStudents = students.filter((s) => !s.deleted_at);
 
   const tabConfig = getAdminTabConfig(activeTab);
+  const freshness = overview
+    ? describeFreshness(
+        overview.freshness.fetchedAt,
+        overview.freshness.staleAfterSeconds,
+      )
+    : null;
   const subtitle =
-    activeTab === "overview" ? getCurrentCohortLabel() : tabConfig.subtitle;
+    activeTab === "overview"
+      ? [
+          getCurrentCohortLabel(),
+          freshness &&
+            `Clerk data fetched ${freshness.label}${freshness.stale ? ", older than expected" : ""}`,
+        ]
+          .filter(Boolean)
+          .join(" · ")
+      : tabConfig.subtitle;
 
   const refreshConnections = () => {
     fetchMatchConnections();
@@ -308,7 +326,7 @@ export default function SchoolAdminPage() {
         Refresh
       </AdminSecondaryButton>
     ) : activeTab === "overview" ? (
-      <AdminSecondaryButton onClick={fetchAnalytics}>
+      <AdminSecondaryButton onClick={fetchOverview}>
         <FaSync className="h-3 w-3" />
         Refresh
       </AdminSecondaryButton>
@@ -327,14 +345,19 @@ export default function SchoolAdminPage() {
         onSelect={selectTab}
         counts={{
           roster: activeStudents.length,
-          connections: matchConnections.length,
+          connections: overview?.connections.connections,
         }}
       />
 
       {activeTab === "overview" && (
         <OverviewTab
-          analytics={analytics}
-          analyticsLoading={analyticsLoading}
+          data={overview}
+          loading={overviewLoading}
+          error={overviewError}
+          onRetry={fetchOverview}
+          onViewSources={
+            isTabVisible("sources") ? () => selectTab("sources") : undefined
+          }
         />
       )}
 

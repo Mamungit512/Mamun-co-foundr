@@ -50,3 +50,7 @@ export function parseAdminTab(value: string | null): AdminTab {
 export function getAdminTabConfig(id: AdminTab): AdminTabConfig {
   return ADMIN_TABS.find((t) => t.id === id)!;
 }
+
+export function isTabVisible(id: AdminTab): boolean {
+  return !getAdminTabConfig(id).hidden;
+}

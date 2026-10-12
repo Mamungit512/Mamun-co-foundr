@@ -11,15 +11,6 @@ export type Student = {
   deleted_at: string | null;
 };
 
-export type Analytics = {
-  total_signups: number;
-  active_last_7_days: number;
-  technical_count: number;
-  non_technical_count: number;
-  total_connections: number;
-  total_messages: number;
-};
-
 export function toHumanLabel(value: string | null): string | null {
   if (!value) return null;
   return value
