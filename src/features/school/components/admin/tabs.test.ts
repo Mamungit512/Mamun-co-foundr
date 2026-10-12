@@ -11,8 +11,14 @@ describe("parseAdminTab", () => {
     expect(parseAdminTab("analytics")).toBe("overview");
   });
 
+  it("reaches sources", () => {
+    expect(parseAdminTab("sources")).toBe("sources");
+  });
+
   it("does not reach hidden tabs", () => {
-    expect(parseAdminTab("sources")).toBe("overview");
+    for (const tab of ADMIN_TABS.filter((t) => t.hidden)) {
+      expect(parseAdminTab(tab.id)).toBe("overview");
+    }
   });
 
   it("sends unknown values to overview", () => {

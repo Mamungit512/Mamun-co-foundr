@@ -28,8 +28,12 @@ export const ADMIN_TABS: AdminTabConfig[] = [
     title: "Connections",
     subtitle: "We Match pairs and conversations between your students.",
   },
-  // Sources ships with the reconciliation backend (build plan Phase 5).
-  { id: "sources", label: "Sources", title: "Sources", hidden: true },
+  {
+    id: "sources",
+    label: "Sources",
+    title: "Sources",
+    subtitle: "Where each number comes from, and how the two systems agree.",
+  },
   {
     id: "reports",
     label: "Reports",

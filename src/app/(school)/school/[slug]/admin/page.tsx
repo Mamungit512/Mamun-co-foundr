@@ -30,6 +30,7 @@ import RosterTab from "@/features/school/components/admin/RosterTab";
 import ConnectionsTab, {
   type ConnectionsView,
 } from "@/features/school/components/admin/ConnectionsTab";
+import SourcesTab from "@/features/school/components/admin/SourcesTab";
 import ReportsTab from "@/features/school/components/admin/ReportsTab";
 
 export default function SchoolAdminPage() {
@@ -289,16 +290,15 @@ export default function SchoolAdminPage() {
         overview.freshness.staleAfterSeconds,
       )
     : null;
+  const freshnessText = freshness
+    ? `Clerk data fetched ${freshness.label}${freshness.stale ? ", older than expected" : ""}`
+    : null;
   const subtitle =
     activeTab === "overview"
-      ? [
-          getCurrentCohortLabel(),
-          freshness &&
-            `Clerk data fetched ${freshness.label}${freshness.stale ? ", older than expected" : ""}`,
-        ]
-          .filter(Boolean)
-          .join(" · ")
-      : tabConfig.subtitle;
+      ? [getCurrentCohortLabel(), freshnessText].filter(Boolean).join(" · ")
+      : activeTab === "sources"
+        ? [tabConfig.subtitle, freshnessText].filter(Boolean).join(" ")
+        : tabConfig.subtitle;
 
   const refreshConnections = () => {
     fetchMatchConnections();
@@ -382,6 +382,17 @@ export default function SchoolAdminPage() {
           setMatchYearFilter={setMatchYearFilter}
           matchYears={matchYears}
           filteredMatchConnections={filteredMatchConnections}
+        />
+      )}
+
+      {activeTab === "sources" && (
+        <SourcesTab
+          data={overview}
+          loading={overviewLoading}
+          error={overviewError}
+          onRetry={fetchOverview}
+          downloadingReport={downloadingReport}
+          downloadReport={downloadReport}
         />
       )}
 
