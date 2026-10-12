@@ -136,7 +136,7 @@ export default function OverviewTab({
     );
   }
 
-  const { reconciliation: r, connections, monthlySeries } = data;
+  const { reconciliation: r, matches, monthlySeries } = data;
 
   if (view === "empty") {
     return (
@@ -154,7 +154,7 @@ export default function OverviewTab({
   }
 
   const activation = percent(r.reconciled, r.student_accounts) ?? 0;
-  const connected = percent(connections.students_connected, r.reconciled);
+  const matched = percent(matches.students_matched, r.reconciled);
 
   return (
     <div className="space-y-4">
@@ -192,20 +192,19 @@ export default function OverviewTab({
         </StatCard>
 
         <StatCard
-          label="Students connected"
-          value={connections.students_connected}
+          label="Students matched"
+          value={matches.students_matched}
           unit={
-            connected === null
+            matched === null
               ? undefined
-              : `${connected}% of ${r.reconciled} completed profiles`
+              : `${matched}% of ${r.reconciled} completed profiles`
           }
         >
-          <Bar value={connected ?? 0} />
+          <Bar value={matched ?? 0} />
           <Caption>
-            {connections.connections}{" "}
-            {connections.connections === 1 ? "conversation" : "conversations"},{" "}
-            {connections.messages}{" "}
-            {connections.messages === 1 ? "message" : "messages"} in total.
+            {matches.matched_pairs}{" "}
+            {matches.matched_pairs === 1 ? "matched pair" : "matched pairs"} (
+            {matches.linked_pairs} linked, {matches.mutual_pairs} mutual).
           </Caption>
         </StatCard>
       </div>

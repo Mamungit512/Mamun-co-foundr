@@ -9,7 +9,9 @@ import {
   CLERK_CACHE_SECONDS,
 } from "./clerkAccounts";
 import {
+  matchCounts,
   monthlySeries,
+  type MatchCounts,
   reconcile,
   splitAccounts,
   type CompletedProfile,
@@ -32,6 +34,8 @@ function supabase() {
 
 type Db = ReturnType<typeof supabase>;
 
+export type { MatchCounts };
+
 export type ConnectionCounts = {
   connections: number;
   students_connected: number;
@@ -44,6 +48,7 @@ export type RetentionOverview = {
   reconciliation: Reconciliation;
   monthlySeries: MonthlyPoint[];
   connections: ConnectionCounts;
+  matches: MatchCounts;
   freshness: Freshness;
 };
 
@@ -229,19 +234,48 @@ async function loadConnections(
   };
 }
 
+async function loadMatches(
+  db: Db,
+  orgId: string,
+  completedIds: Set<string>,
+  reconciledIds: Set<string>,
+): Promise<MatchCounts> {
+  const links = await selectAll<{ user_a_id: string; user_b_id: string }>(
+    (from, to) =>
+      db
+        .from("cofounder_links")
+        .select("user_a_id, user_b_id")
+        .eq("organization_id", orgId)
+        .order("id")
+        .range(from, to),
+  );
+  const intents = await selectAll<{ from_user_id: string; to_user_id: string }>(
+    (from, to) =>
+      db
+        .from("match_intents")
+        .select("from_user_id, to_user_id")
+        .eq("organization_id", orgId)
+        .order("id")
+        .range(from, to),
+  );
+
+  return matchCounts(links, intents, completedIds, reconciledIds);
+}
+
 export async function getOverview(orgId: string): Promise<RetentionOverview> {
   const { db, accounts, completed, fetchedAt } = await load(orgId);
   const legacy = await loadLegacyTotal(db, orgId);
   const split = splitAccounts(accounts, completed);
-  const connections = await loadConnections(
-    db,
-    new Set(split.completed.map((p) => p.userId)),
-    split.reconciledIds,
-  );
+  const completedIds = new Set(split.completed.map((p) => p.userId));
+  const [connections, matches] = await Promise.all([
+    loadConnections(db, completedIds, split.reconciledIds),
+    loadMatches(db, orgId, completedIds, split.reconciledIds),
+  ]);
   return {
     reconciliation: reconcile(accounts, completed, legacy),
     monthlySeries: monthlySeries(accounts, completed),
     connections,
+    matches,
     freshness: { fetchedAt, staleAfterSeconds: CLERK_CACHE_SECONDS },
   };
 }

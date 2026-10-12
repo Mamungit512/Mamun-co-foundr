@@ -58,8 +58,14 @@ describe("fetchDomainRecords", () => {
 
   it("pages through every result", async () => {
     getUserList
-      .mockResolvedValueOnce({ totalCount: 501, data: [user("a", "a@utexas.edu")] })
-      .mockResolvedValueOnce({ totalCount: 501, data: [user("b", "b@utexas.edu")] });
+      .mockResolvedValueOnce({
+        totalCount: 501,
+        data: [user("a", "a@utexas.edu")],
+      })
+      .mockResolvedValueOnce({
+        totalCount: 501,
+        data: [user("b", "b@utexas.edu")],
+      });
     const { records } = await fetchDomainRecords(ORG, DOMAINS);
     expect(getUserList).toHaveBeenCalledTimes(2);
     expect(getUserList.mock.calls[1][0].offset).toBe(500);
@@ -68,8 +74,13 @@ describe("fetchDomainRecords", () => {
 
   it("throws on a failed page instead of returning a partial list", async () => {
     getUserList
-      .mockResolvedValueOnce({ totalCount: 501, data: [user("a", "a@utexas.edu")] })
+      .mockResolvedValueOnce({
+        totalCount: 501,
+        data: [user("a", "a@utexas.edu")],
+      })
       .mockRejectedValueOnce(new Error("Clerk is down"));
-    await expect(fetchDomainRecords(ORG, DOMAINS)).rejects.toThrow("Clerk is down");
+    await expect(fetchDomainRecords(ORG, DOMAINS)).rejects.toThrow(
+      "Clerk is down",
+    );
   });
 });
