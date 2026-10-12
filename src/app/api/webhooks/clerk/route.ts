@@ -4,6 +4,8 @@ import { WebhookEvent } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 import { clerkClient } from "@clerk/nextjs/server";
 import { sendWelcomeEmail } from "@/lib/email";
+import { revalidateTag } from "next/cache";
+import { CLERK_CACHE_TAG } from "@/features/school/services/retention/clerkAccounts";
 
 export async function POST(req: NextRequest) {
   try {
@@ -161,6 +163,13 @@ export async function POST(req: NextRequest) {
           console.error("Error tracking referral:", refError);
         }
       }
+    }
+
+    // Retention numbers cache the school's Clerk accounts; signups and
+    // deletions change them, so drop the cache (runs after the org metadata
+    // update above so the next read sees it).
+    if (eventType === "user.created" || eventType === "user.deleted") {
+      revalidateTag(CLERK_CACHE_TAG);
     }
 
     return new Response("Webhook received", { status: 200 });
