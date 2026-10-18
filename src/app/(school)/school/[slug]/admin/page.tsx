@@ -417,7 +417,7 @@ export default function SchoolAdminPage() {
     ) : null;
 
   return (
-    <div className="admin-root mx-auto max-w-6xl p-4 pt-8">
+    <div className="admin-root mx-auto w-full max-w-6xl p-4 pt-8">
       <AdminPageHeader
         title={tabConfig.title}
         subtitle={subtitle}
