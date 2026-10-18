@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ADMIN_TABS, parseAdminTab } from "./tabs";
+import { ADMIN_TABS, parseAdminTab } from "./tabConfig";
 
 describe("parseAdminTab", () => {
   it("defaults to overview when no tab is given", () => {
