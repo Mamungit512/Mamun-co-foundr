@@ -3,8 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "@clerk/nextjs";
-import { FaDownload, FaSync } from "react-icons/fa";
-import toast from "react-hot-toast";
+import { FaCheck, FaDownload, FaSync } from "react-icons/fa";
 import type { OrgConnection } from "@/app/api/school/connections/route";
 import type { MatchConnection } from "@/app/api/school/match-connections/route";
 import { toCsv } from "@/lib/csv";
@@ -14,24 +13,26 @@ import {
   isTabVisible,
   parseAdminTab,
   type AdminTab,
-} from "@/features/school/components/admin/tabs";
+} from "@/features/school/components/admin/lib/tabConfig";
 import {
   toHumanLabel,
   type Student,
-} from "@/features/school/components/admin/types";
+} from "@/features/school/components/admin/lib/types";
 import type { RetentionOverview } from "@/app/api/school/retention/overview/route";
-import { describeFreshness } from "@/features/school/components/admin/freshness";
+import { describeFreshness } from "@/features/school/components/admin/lib/freshness";
+import { adminToast } from "@/features/school/components/admin/lib/adminToast";
+import { useNow } from "@/features/school/components/admin/lib/useNow";
 import AdminPageHeader, {
   AdminSecondaryButton,
-} from "@/features/school/components/admin/AdminPageHeader";
-import AdminTabs from "@/features/school/components/admin/AdminTabs";
-import OverviewTab from "@/features/school/components/admin/OverviewTab";
-import RosterTab from "@/features/school/components/admin/RosterTab";
+} from "@/features/school/components/admin/ui/AdminPageHeader";
+import AdminTabs from "@/features/school/components/admin/ui/AdminTabs";
+import OverviewTab from "@/features/school/components/admin/tabs/OverviewTab";
+import RosterTab from "@/features/school/components/admin/tabs/RosterTab";
 import ConnectionsTab, {
   type ConnectionsView,
-} from "@/features/school/components/admin/ConnectionsTab";
-import SourcesTab from "@/features/school/components/admin/SourcesTab";
-import ReportsTab from "@/features/school/components/admin/ReportsTab";
+} from "@/features/school/components/admin/tabs/ConnectionsTab";
+import SourcesTab from "@/features/school/components/admin/tabs/SourcesTab";
+import ReportsTab from "@/features/school/components/admin/tabs/ReportsTab";
 
 export default function SchoolAdminPage() {
   const { session } = useSession();
@@ -78,8 +79,8 @@ export default function SchoolAdminPage() {
     null,
   );
 
-  const fetchStudents = useCallback(async () => {
-    if (!session) return;
+  const fetchStudents = useCallback(async (): Promise<boolean> => {
+    if (!session) return false;
     setRosterLoading(true);
     try {
       const token = await session.getToken();
@@ -89,15 +90,17 @@ export default function SchoolAdminPage() {
       if (!res.ok) throw new Error("Forbidden");
       const data = await res.json();
       setStudents(data.students ?? []);
+      return true;
     } catch {
-      toast.error("Failed to load students.");
+      adminToast.error("Failed to load students.");
+      return false;
     } finally {
       setRosterLoading(false);
     }
   }, [session]);
 
-  const fetchConnections = useCallback(async () => {
-    if (!session) return;
+  const fetchConnections = useCallback(async (): Promise<boolean> => {
+    if (!session) return false;
     setConnectionsLoading(true);
     try {
       const token = await session.getToken();
@@ -107,16 +110,18 @@ export default function SchoolAdminPage() {
       if (!res.ok) throw new Error("Forbidden");
       const data = await res.json();
       setConnections(data.connections ?? []);
+      return true;
     } catch {
-      toast.error("Failed to load connections.");
+      adminToast.error("Failed to load connections.");
+      return false;
     } finally {
       setConnectionsLoading(false);
       setConnectionsFetched(true);
     }
   }, [session]);
 
-  const fetchMatchConnections = useCallback(async () => {
-    if (!session) return;
+  const fetchMatchConnections = useCallback(async (): Promise<boolean> => {
+    if (!session) return false;
     setMatchesLoading(true);
     try {
       const token = await session.getToken();
@@ -126,8 +131,10 @@ export default function SchoolAdminPage() {
       if (!res.ok) throw new Error("Forbidden");
       const data = await res.json();
       setMatchConnections(data.connections ?? []);
+      return true;
     } catch {
-      toast.error("Failed to load match connections.");
+      adminToast.error("Failed to load match connections.");
+      return false;
     } finally {
       setMatchesLoading(false);
       setMatchesFetched(true);
@@ -165,22 +172,41 @@ export default function SchoolAdminPage() {
   // Clears the cached Clerk accounts, then reloads. A 429 just means the data
   // was refreshed in the last minute, so we still reload what is there.
   const [refreshingRetention, setRefreshingRetention] = useState(false);
+  const [refreshDone, setRefreshDone] = useState(false);
   const [ghostRefreshKey, setGhostRefreshKey] = useState(0);
+
+  // The check mark on Refresh is a moment, not a state.
+  useEffect(() => {
+    if (!refreshDone) return;
+    const timer = setTimeout(() => setRefreshDone(false), 1500);
+    return () => clearTimeout(timer);
+  }, [refreshDone]);
+
   const refreshRetention = async () => {
     if (!session) return;
     setRefreshingRetention(true);
+    let outcome: "ok" | "throttled" | "failed" = "failed";
     try {
       const token = await session.getToken();
-      await fetch("/api/school/retention/refresh", {
+      const res = await fetch("/api/school/retention/refresh", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
+      outcome = res.ok ? "ok" : res.status === 429 ? "throttled" : "failed";
     } catch {
       // Fall through: reloading is still correct, just possibly not fresher.
     }
     setGhostRefreshKey((k) => k + 1);
     await fetchOverview();
     setRefreshingRetention(false);
+    if (outcome === "ok") {
+      setRefreshDone(true);
+      adminToast.success("Cohort numbers updated");
+    } else if (outcome === "throttled") {
+      adminToast.success("Already up to date");
+    } else {
+      adminToast.error("Could not refresh. Showing the last numbers.");
+    }
   };
 
   useEffect(() => {
@@ -233,9 +259,9 @@ export default function SchoolAdminPage() {
       );
       if (!res.ok) throw new Error("Delete failed");
       setStudents((prev) => prev.filter((s) => s.user_id !== userId));
-      toast.success(`${name}'s account has been deleted.`);
+      adminToast.success(`${name}'s account has been deleted.`);
     } catch {
-      toast.error("Failed to delete account.");
+      adminToast.error("Failed to delete account.");
     } finally {
       setDeletingId(null);
     }
@@ -274,6 +300,9 @@ export default function SchoolAdminPage() {
     a.download = `students-${new Date().toISOString().split("T")[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+    adminToast.success(
+      `Exported ${rows.length} ${rows.length === 1 ? "student" : "students"}`,
+    );
   };
 
   // Authenticated blob download for the on-demand report endpoints (they
@@ -295,8 +324,9 @@ export default function SchoolAdminPage() {
         "report.csv";
       a.click();
       URL.revokeObjectURL(url);
+      adminToast.success("Report downloaded");
     } catch {
-      toast.error("Export failed.");
+      adminToast.error("Export failed.");
     } finally {
       setDownloadingReport(null);
     }
@@ -305,10 +335,12 @@ export default function SchoolAdminPage() {
   const activeStudents = students.filter((s) => !s.deleted_at);
 
   const tabConfig = getAdminTabConfig(activeTab);
+  const now = useNow();
   const freshness = overview
     ? describeFreshness(
         overview.freshness.fetchedAt,
         overview.freshness.staleAfterSeconds,
+        now,
       )
     : null;
   const freshnessText = freshness
@@ -321,16 +353,34 @@ export default function SchoolAdminPage() {
         ? [tabConfig.subtitle, freshnessText].filter(Boolean).join(" ")
         : tabConfig.subtitle;
 
-  const refreshConnections = () => {
-    fetchMatchConnections();
-    fetchConnections();
+  const refreshConnections = async () => {
+    const [matchesOk, conversationsOk] = await Promise.all([
+      fetchMatchConnections(),
+      fetchConnections(),
+    ]);
+    if (matchesOk && conversationsOk) adminToast.success("Connections updated");
   };
+
+  const refreshStudents = async () => {
+    if (await fetchStudents()) adminToast.success("Roster updated");
+  };
+
+  const spin = (busy: boolean) => `h-3 w-3 ${busy ? "animate-spin" : ""}`;
+  const liveStatus =
+    (activeTab === "overview" || activeTab === "sources") && freshness
+      ? freshness.stale
+        ? "stale"
+        : "fresh"
+      : undefined;
 
   const actions =
     activeTab === "roster" ? (
       <>
-        <AdminSecondaryButton onClick={fetchStudents}>
-          <FaSync className="h-3 w-3" />
+        <AdminSecondaryButton
+          onClick={refreshStudents}
+          disabled={rosterLoading}
+        >
+          <FaSync className={spin(rosterLoading)} />
           Refresh
         </AdminSecondaryButton>
         <AdminSecondaryButton
@@ -342,8 +392,11 @@ export default function SchoolAdminPage() {
         </AdminSecondaryButton>
       </>
     ) : activeTab === "connections" ? (
-      <AdminSecondaryButton onClick={refreshConnections}>
-        <FaSync className="h-3 w-3" />
+      <AdminSecondaryButton
+        onClick={refreshConnections}
+        disabled={matchesLoading || connectionsLoading}
+      >
+        <FaSync className={spin(matchesLoading || connectionsLoading)} />
         Refresh
       </AdminSecondaryButton>
     ) : activeTab === "overview" || activeTab === "sources" ? (
@@ -351,18 +404,24 @@ export default function SchoolAdminPage() {
         onClick={refreshRetention}
         disabled={refreshingRetention}
       >
-        <FaSync
-          className={`h-3 w-3 ${refreshingRetention ? "animate-spin" : ""}`}
-        />
+        {refreshDone && !refreshingRetention ? (
+          <FaCheck
+            className="h-3 w-3"
+            style={{ color: "var(--org-primary)" }}
+          />
+        ) : (
+          <FaSync className={spin(refreshingRetention)} />
+        )}
         Refresh
       </AdminSecondaryButton>
     ) : null;
 
   return (
-    <div className="mx-auto max-w-6xl p-4 pt-8">
+    <div className="admin-root mx-auto max-w-6xl p-4 pt-8">
       <AdminPageHeader
         title={tabConfig.title}
         subtitle={subtitle}
+        liveStatus={liveStatus}
         actions={actions}
       />
 
@@ -375,60 +434,62 @@ export default function SchoolAdminPage() {
         }}
       />
 
-      {activeTab === "overview" && (
-        <OverviewTab
-          data={overview}
-          loading={overviewLoading}
-          error={overviewError}
-          onRetry={fetchOverview}
-          onViewSources={
-            isTabVisible("sources") ? () => selectTab("sources") : undefined
-          }
-        />
-      )}
+      <div key={activeTab} className="admin-view">
+        {activeTab === "overview" && (
+          <OverviewTab
+            data={overview}
+            loading={overviewLoading}
+            error={overviewError}
+            onRetry={fetchOverview}
+            onViewSources={
+              isTabVisible("sources") ? () => selectTab("sources") : undefined
+            }
+          />
+        )}
 
-      {activeTab === "roster" && (
-        <RosterTab
-          rosterLoading={rosterLoading}
-          activeStudents={activeStudents}
-          deletingId={deletingId}
-          handleDelete={handleDelete}
-        />
-      )}
+        {activeTab === "roster" && (
+          <RosterTab
+            rosterLoading={rosterLoading}
+            activeStudents={activeStudents}
+            deletingId={deletingId}
+            handleDelete={handleDelete}
+          />
+        )}
 
-      {activeTab === "connections" && (
-        <ConnectionsTab
-          connectionsView={connectionsView}
-          setConnectionsView={setConnectionsView}
-          connections={connections}
-          connectionsLoading={connectionsLoading}
-          matchConnections={matchConnections}
-          matchesLoading={matchesLoading}
-          matchYearFilter={matchYearFilter}
-          setMatchYearFilter={setMatchYearFilter}
-          matchYears={matchYears}
-          filteredMatchConnections={filteredMatchConnections}
-        />
-      )}
+        {activeTab === "connections" && (
+          <ConnectionsTab
+            connectionsView={connectionsView}
+            setConnectionsView={setConnectionsView}
+            connections={connections}
+            connectionsLoading={connectionsLoading}
+            matchConnections={matchConnections}
+            matchesLoading={matchesLoading}
+            matchYearFilter={matchYearFilter}
+            setMatchYearFilter={setMatchYearFilter}
+            matchYears={matchYears}
+            filteredMatchConnections={filteredMatchConnections}
+          />
+        )}
 
-      {activeTab === "sources" && (
-        <SourcesTab
-          data={overview}
-          loading={overviewLoading}
-          error={overviewError}
-          onRetry={fetchOverview}
-          downloadingReport={downloadingReport}
-          downloadReport={downloadReport}
-          refreshKey={ghostRefreshKey}
-        />
-      )}
+        {activeTab === "sources" && (
+          <SourcesTab
+            data={overview}
+            loading={overviewLoading}
+            error={overviewError}
+            onRetry={fetchOverview}
+            downloadingReport={downloadingReport}
+            downloadReport={downloadReport}
+            refreshKey={ghostRefreshKey}
+          />
+        )}
 
-      {activeTab === "reports" && (
-        <ReportsTab
-          downloadingReport={downloadingReport}
-          downloadReport={downloadReport}
-        />
-      )}
+        {activeTab === "reports" && (
+          <ReportsTab
+            downloadingReport={downloadingReport}
+            downloadReport={downloadReport}
+          />
+        )}
+      </div>
     </div>
   );
 }

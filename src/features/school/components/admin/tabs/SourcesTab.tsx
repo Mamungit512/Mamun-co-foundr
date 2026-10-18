@@ -2,11 +2,21 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "@clerk/nextjs";
-import { FaDownload, FaSync } from "react-icons/fa";
-import toast from "react-hot-toast";
+import { FaCheckCircle, FaDownload, FaSync } from "react-icons/fa";
 import Skeleton from "@/components/ui/Skeleton";
 import type { RetentionOverview } from "@/app/api/school/retention/overview/route";
 import type { GhostRow } from "@/app/api/school/retention/ghosts/route";
+import { adminToast } from "../lib/adminToast";
+import {
+  AdminPrimaryButton,
+  AdminSecondaryButton,
+} from "../ui/AdminPageHeader";
+import AdminEmptyState from "../ui/AdminEmptyState";
+import AdminStatCard, {
+  adminCard as card,
+  adminCardStyle as cardStyle,
+  staggerStyle,
+} from "../ui/AdminStatCard";
 
 const GHOST_EXPORT_PATH = "/api/school/reports/ghost-accounts";
 
@@ -22,59 +32,6 @@ type Props = {
 };
 
 type GhostPage = { rows: GhostRow[]; total: number; pageSize: number };
-
-const card = "rounded-xl border p-5";
-const cardStyle = {
-  borderColor: "var(--ui-border)",
-  backgroundColor: "var(--ui-surface)",
-};
-
-function CountCard({
-  label,
-  value,
-  unit,
-  children,
-  highlight,
-}: {
-  label: string;
-  value: number;
-  unit: string;
-  children: React.ReactNode;
-  highlight?: boolean;
-}) {
-  return (
-    <div
-      className={card}
-      style={
-        highlight
-          ? {
-              borderColor: "var(--org-primary)",
-              backgroundColor: "var(--ui-surface-active)",
-            }
-          : cardStyle
-      }
-    >
-      <p
-        className="text-xs font-semibold tracking-wider uppercase"
-        style={{ color: "var(--ui-text-muted)" }}
-      >
-        {label}
-      </p>
-      <p
-        className="mt-2 text-4xl font-semibold tracking-tight"
-        style={{ color: "var(--ui-text)" }}
-      >
-        {value}
-      </p>
-      <p className="text-sm" style={{ color: "var(--ui-text-muted)" }}>
-        {unit}
-      </p>
-      <p className="mt-3 text-xs" style={{ color: "var(--ui-text-muted)" }}>
-        {children}
-      </p>
-    </div>
-  );
-}
 
 type BucketRow = {
   name: string;
@@ -112,7 +69,7 @@ export default function SourcesTab({
       setGhosts(await res.json());
     } catch {
       setGhostsError(true);
-      toast.error("Failed to load ghost accounts.");
+      adminToast.error("Failed to load ghost accounts.");
     } finally {
       setGhostsLoading(false);
     }
@@ -147,16 +104,7 @@ export default function SourcesTab({
         <p className="font-medium" style={{ color: "var(--ui-text)" }}>
           We could not load the source numbers.
         </p>
-        <button
-          onClick={onRetry}
-          className="cursor-pointer rounded-lg border px-3.5 py-2 text-sm font-medium"
-          style={{
-            borderColor: "var(--ui-border-strong)",
-            color: "var(--ui-text)",
-          }}
-        >
-          Try again
-        </button>
+        <AdminSecondaryButton onClick={onRetry}>Try again</AdminSecondaryButton>
       </div>
     );
   }
@@ -202,7 +150,9 @@ export default function SourcesTab({
   return (
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-3">
-        <CountCard
+        <AdminStatCard
+          labelVariant="caps"
+          index={0}
           label="Clerk"
           value={r.student_accounts + r.staff_accounts}
           unit="accounts for this school"
@@ -210,8 +160,10 @@ export default function SourcesTab({
           {r.student_accounts}{" "}
           {r.student_accounts === 1 ? "student" : "students"} plus{" "}
           {r.staff_accounts} staff. Overview counts the students only.
-        </CountCard>
-        <CountCard
+        </AdminStatCard>
+        <AdminStatCard
+          labelVariant="caps"
+          index={1}
           label="Completed profiles"
           value={r.completed_profiles}
           unit="finished onboarding"
@@ -219,8 +171,10 @@ export default function SourcesTab({
           {r.reconciled} {r.reconciled === 1 ? "student" : "students"}, plus{" "}
           {r.staff_with_profile} staff and {r.orphan} from deleted accounts.
           Overview counts the students only.
-        </CountCard>
-        <CountCard
+        </AdminStatCard>
+        <AdminStatCard
+          labelVariant="caps"
+          index={2}
           label="Old dashboard said"
           value={r.legacy_total_signups}
           unit={'labelled "Total Signups"'}
@@ -228,10 +182,13 @@ export default function SourcesTab({
         >
           It counted profile rows only, so it missed students who never finished
           and could include accounts that were since deleted.
-        </CountCard>
+        </AdminStatCard>
       </div>
 
-      <div className={card} style={cardStyle}>
+      <div
+        className={`admin-enter ${card}`}
+        style={{ ...cardStyle, ...staggerStyle(3) }}
+      >
         <h2
           className="text-lg font-semibold"
           style={{ color: "var(--ui-text)" }}
@@ -259,11 +216,12 @@ export default function SourcesTab({
               </tr>
             </thead>
             <tbody>
-              {buckets.map((b) => (
+              {buckets.map((b, i) => (
                 <tr
                   key={b.name}
-                  className="border-b"
+                  className="admin-enter-row border-b transition-colors duration-150 hover:bg-[var(--ui-surface)]"
                   style={{
+                    ...staggerStyle(i),
                     borderColor: "var(--ui-border)",
                     backgroundColor: b.highlight
                       ? "var(--ui-surface-active)"
@@ -323,7 +281,10 @@ export default function SourcesTab({
         </div>
       </div>
 
-      <div className={card} style={cardStyle}>
+      <div
+        className={`admin-enter ${card}`}
+        style={{ ...cardStyle, ...staggerStyle(4) }}
+      >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2
@@ -347,14 +308,10 @@ export default function SourcesTab({
               Students with an account and no profile, oldest first.
             </p>
           </div>
-          <button
+          <AdminPrimaryButton
             onClick={() => downloadReport(GHOST_EXPORT_PATH)}
             disabled={downloadingReport !== null || totalGhosts === 0}
-            className="flex shrink-0 cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
-            style={{
-              backgroundColor: "var(--ui-btn-bg)",
-              color: "var(--ui-btn-text)",
-            }}
+            className="shrink-0"
           >
             {exporting ? (
               <FaSync className="h-3.5 w-3.5 animate-spin" />
@@ -362,7 +319,7 @@ export default function SourcesTab({
               <FaDownload className="h-3.5 w-3.5" />
             )}
             Export CSV
-          </button>
+          </AdminPrimaryButton>
         </div>
 
         {ghostsLoading && !ghosts ? (
@@ -381,16 +338,24 @@ export default function SourcesTab({
             </button>
           </div>
         ) : totalGhosts === 0 ? (
-          <p className="mt-4 text-sm" style={{ color: "var(--ui-text-muted)" }}>
-            No ghost accounts. Every student account has a profile.
-          </p>
+          <div className="mt-4">
+            <AdminEmptyState
+              compact
+              icon={FaCheckCircle}
+              title="No ghost accounts"
+              hint="Every student account has a profile."
+            />
+          </div>
         ) : (
           <>
             <div
-              className="mt-4 overflow-x-auto"
+              className="mt-4 overflow-x-auto transition-opacity duration-200"
               style={{ opacity: ghostsLoading ? 0.5 : 1 }}
             >
-              <table className="w-full min-w-[520px] text-sm">
+              <table
+                key={ghosts?.rows[0]?.clerk_user_id}
+                className="w-full min-w-[520px] text-sm"
+              >
                 <thead>
                   <tr
                     className="border-b text-left text-xs font-semibold tracking-wider uppercase"
@@ -406,11 +371,14 @@ export default function SourcesTab({
                   </tr>
                 </thead>
                 <tbody>
-                  {ghosts?.rows.map((g) => (
+                  {ghosts?.rows.map((g, i) => (
                     <tr
                       key={g.clerk_user_id}
-                      className="border-b"
-                      style={{ borderColor: "var(--ui-border)" }}
+                      className="admin-enter-row border-b transition-colors duration-150 hover:bg-[var(--ui-surface)]"
+                      style={{
+                        ...staggerStyle(i),
+                        borderColor: "var(--ui-border)",
+                      }}
                     >
                       <td
                         className="py-3 pr-4 font-medium"
@@ -461,7 +429,7 @@ export default function SourcesTab({
                 <button
                   onClick={() => setPage((p) => Math.max(0, p - 1))}
                   disabled={page === 0 || ghostsLoading}
-                  className="cursor-pointer rounded-md border px-3 py-1.5 font-medium disabled:cursor-not-allowed disabled:opacity-40"
+                  className="cursor-pointer rounded-md border px-3 py-1.5 font-medium transition-[background-color,transform] duration-150 hover:bg-[var(--ui-surface)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
                   style={{ borderColor: "var(--ui-border-strong)" }}
                 >
                   Previous
@@ -469,7 +437,7 @@ export default function SourcesTab({
                 <button
                   onClick={() => setPage((p) => p + 1)}
                   disabled={to >= totalGhosts || ghostsLoading}
-                  className="cursor-pointer rounded-md border px-3 py-1.5 font-medium disabled:cursor-not-allowed disabled:opacity-40"
+                  className="cursor-pointer rounded-md border px-3 py-1.5 font-medium transition-[background-color,transform] duration-150 hover:bg-[var(--ui-surface)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
                   style={{ borderColor: "var(--ui-border-strong)" }}
                 >
                   Next

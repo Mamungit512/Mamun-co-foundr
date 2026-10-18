@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import type { MonthlyPoint } from "@/features/school/services/retention/reconcile";
 
 export type ChartMode = "cumulative" | "monthly";
@@ -85,6 +86,7 @@ export default function RetentionChart({
 
   return (
     <svg
+      key={mode}
       viewBox={`0 0 ${W} ${H}`}
       role="img"
       aria-label={chartSummary(series)}
@@ -127,18 +129,27 @@ export default function RetentionChart({
       {mode === "cumulative" ? (
         <>
           {n > 1 && (
-            <path d={area} fill="var(--org-primary)" fillOpacity="0.14" />
+            <path
+              d={area}
+              fill="var(--org-primary)"
+              fillOpacity="0.14"
+              className="admin-fade-late"
+            />
           )}
           {n > 1 && (
             <>
               <path
                 d={path(accounts)}
+                pathLength={1}
+                className="admin-draw"
                 fill="none"
                 stroke="var(--ui-text-muted)"
                 strokeWidth="2"
               />
               <path
                 d={path(profiles)}
+                pathLength={1}
+                className="admin-draw"
                 fill="none"
                 stroke="var(--org-primary)"
                 strokeWidth="2.5"
@@ -161,15 +172,17 @@ export default function RetentionChart({
             cy={accounts[n - 1][1]}
             r="4.5"
             fill="var(--ui-text-muted)"
+            className="admin-fade-late"
           />
           <circle
             cx={profiles[n - 1][0]}
             cy={profiles[n - 1][1]}
             r="4.5"
             fill="var(--org-primary)"
+            className="admin-fade-late"
           />
           {gap > 0 && (
-            <g>
+            <g className="admin-fade-late">
               <text
                 x={accounts[n - 1][0] - 14}
                 y={(accounts[n - 1][1] + profiles[n - 1][1]) / 2 - 2}
@@ -205,6 +218,8 @@ export default function RetentionChart({
                 rx="2"
                 fill="var(--ui-text-muted)"
                 fillOpacity="0.55"
+                className="admin-grow-y"
+                style={{ "--i": i } as CSSProperties}
               />
               <rect
                 x={cx + 2}
@@ -213,6 +228,8 @@ export default function RetentionChart({
                 height={M.top + PLOT_H - y(p.profiles_completed)}
                 rx="2"
                 fill="var(--org-primary)"
+                className="admin-grow-y"
+                style={{ "--i": i } as CSSProperties}
               />
               {p.completion_rate !== null && (
                 <text
@@ -222,6 +239,7 @@ export default function RetentionChart({
                   fontSize="11"
                   fontWeight="600"
                   fill="var(--ui-text)"
+                  className="admin-fade-late"
                 >
                   {Math.round(p.completion_rate * 100)}%
                 </text>

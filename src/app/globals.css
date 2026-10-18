@@ -111,3 +111,125 @@ body {
 .chat-scroll::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
 }
+
+/* --- Admin dashboard motion ---
+   Scoped to .admin-root. Only opacity and transform are animated so the work
+   stays on the compositor. */
+@keyframes admin-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes admin-grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes admin-grow-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes admin-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes admin-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes admin-pulse-dot {
+  0% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  70%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+/* --i staggers siblings, capped so long lists never feel slow. */
+.admin-enter {
+  animation: admin-rise 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(min(var(--i, 0), 8) * 60ms);
+}
+
+/* Tab switches fade only; the cards inside do their own rise. */
+.admin-view {
+  animation: admin-fade 220ms ease-out both;
+}
+
+.admin-enter-row {
+  animation: admin-rise 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(min(var(--i, 0), 12) * 20ms);
+}
+
+.admin-grow-x {
+  transform-origin: left center;
+  animation: admin-grow-x 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 250ms;
+}
+
+.admin-grow-y {
+  transform-box: fill-box;
+  transform-origin: bottom;
+  animation: admin-grow-y 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+
+.admin-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: admin-draw 900ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.admin-fade-late {
+  animation: admin-fade 500ms ease-out 700ms both;
+}
+
+.admin-pulse-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: inherit;
+  animation: admin-pulse-dot 2.4s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-root *,
+  .admin-root *::before,
+  .admin-root *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .admin-root .animate-pulse {
+    animation: none !important;
+  }
+}

@@ -1,7 +1,11 @@
 "use client";
 
-import { FaUserGraduate, FaTrash, FaSync } from "react-icons/fa";
-import { toHumanLabel, type Student } from "./types";
+import { FaUserGraduate, FaTrash } from "react-icons/fa";
+import { toHumanLabel, type Student } from "../lib/types";
+import { staggerStyle } from "../ui/AdminStatCard";
+import AdminEmptyState from "../ui/AdminEmptyState";
+import RelativeDate from "../ui/RelativeDate";
+import TableSkeleton from "../ui/TableSkeleton";
 
 type Props = {
   rosterLoading: boolean;
@@ -18,32 +22,26 @@ export default function RosterTab({
 }: Props) {
   return (
     <>
-      {rosterLoading ? (
-        <div className="flex justify-center py-16">
-          <FaSync
-            className="h-6 w-6 animate-spin"
-            style={{ color: "var(--ui-text-subtle)" }}
-          />
-        </div>
+      {rosterLoading && activeStudents.length === 0 ? (
+        <TableSkeleton />
       ) : activeStudents.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 py-16 text-center">
-          <FaUserGraduate
-            className="h-10 w-10"
-            style={{ color: "var(--ui-text-subtle)" }}
-          />
-          <p style={{ color: "var(--ui-text-muted)" }}>
-            No students have joined yet.
-          </p>
-        </div>
+        <AdminEmptyState
+          icon={FaUserGraduate}
+          title="No students have joined yet."
+          hint="Students show up here as soon as they finish onboarding."
+        />
       ) : (
-        <>
+        <div
+          className="transition-opacity duration-200"
+          style={{ opacity: rosterLoading ? 0.6 : 1 }}
+        >
           {/* Mobile card list */}
           <div className="flex flex-col gap-2 md:hidden">
-            {activeStudents.map((student) => (
+            {activeStudents.map((student, i) => (
               <div
                 key={student.user_id}
-                className="rounded-xl border p-3"
-                style={{ borderColor: "var(--ui-border)" }}
+                className="admin-enter-row rounded-xl border p-3"
+                style={{ ...staggerStyle(i), borderColor: "var(--ui-border)" }}
               >
                 <div className="mb-2 flex items-start justify-between gap-2">
                   <div>
@@ -70,7 +68,7 @@ export default function RosterTab({
                       )
                     }
                     disabled={deletingId === student.user_id}
-                    className="shrink-0 cursor-pointer rounded p-1.5 transition hover:bg-red-500/15 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-30"
+                    className="shrink-0 cursor-pointer rounded p-1.5 transition-[background-color,color,transform] duration-150 hover:bg-red-500/15 hover:text-red-500 active:scale-90 disabled:cursor-not-allowed disabled:opacity-30"
                     style={{ color: "var(--ui-text-subtle)" }}
                     title="Delete account"
                   >
@@ -95,7 +93,7 @@ export default function RosterTab({
                     {student.is_technical ? "Technical" : "Non-technical"}
                   </span>
                   <span style={{ color: "var(--ui-text-subtle)" }}>
-                    Joined {new Date(student.created_at).toLocaleDateString()}
+                    Joined <RelativeDate iso={student.created_at} />
                   </span>
                 </div>
               </div>
@@ -139,11 +137,12 @@ export default function RosterTab({
                   {activeStudents.map((student, i) => (
                     <tr
                       key={student.user_id}
-                      className="border-b transition"
+                      className={`admin-enter-row border-b transition-colors duration-150 hover:bg-[var(--ui-surface-active)] ${
+                        i % 2 !== 0 ? "bg-[var(--ui-surface)]" : ""
+                      }`}
                       style={{
+                        ...staggerStyle(i),
                         borderColor: "var(--ui-border)",
-                        backgroundColor:
-                          i % 2 !== 0 ? "var(--ui-surface)" : undefined,
                       }}
                     >
                       <td className="px-4 py-3">
@@ -189,7 +188,7 @@ export default function RosterTab({
                         className="px-4 py-3 text-xs"
                         style={{ color: "var(--ui-text-subtle)" }}
                       >
-                        {new Date(student.created_at).toLocaleDateString()}
+                        <RelativeDate iso={student.created_at} />
                       </td>
                       <td className="px-4 py-3">
                         <button
@@ -200,7 +199,7 @@ export default function RosterTab({
                             )
                           }
                           disabled={deletingId === student.user_id}
-                          className="cursor-pointer rounded p-1.5 transition hover:bg-red-500/15 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-30"
+                          className="cursor-pointer rounded p-1.5 transition-[background-color,color,transform] duration-150 hover:bg-red-500/15 hover:text-red-500 active:scale-90 disabled:cursor-not-allowed disabled:opacity-30"
                           style={{ color: "var(--ui-text-subtle)" }}
                           title="Delete account"
                         >
@@ -213,7 +212,7 @@ export default function RosterTab({
               </table>
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );
