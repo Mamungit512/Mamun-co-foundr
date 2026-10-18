@@ -1,11 +1,23 @@
 "use client";
 
 import { useState } from "react";
+import { FaUserGraduate } from "react-icons/fa";
 import Skeleton from "@/components/ui/Skeleton";
 import type { RetentionOverview } from "@/app/api/school/retention/overview/route";
 import RetentionChart, { type ChartMode } from "./RetentionChart";
-import { percent } from "./freshness";
-import { overviewViewState } from "./overviewState";
+import { percent } from "../lib/freshness";
+import { overviewViewState } from "../lib/overviewState";
+import {
+  AdminPrimaryButton,
+  AdminSecondaryButton,
+} from "../ui/AdminPageHeader";
+import AdminEmptyState from "../ui/AdminEmptyState";
+import AdminStatCard, {
+  AdminBar,
+  adminCard as card,
+  adminCardStyle as cardStyle,
+  staggerStyle,
+} from "../ui/AdminStatCard";
 
 type Props = {
   data: RetentionOverview | null;
@@ -15,61 +27,6 @@ type Props = {
   // Only passed when the Sources tab is reachable.
   onViewSources?: () => void;
 };
-
-const card = "rounded-xl border p-5";
-const cardStyle = {
-  borderColor: "var(--ui-border)",
-  backgroundColor: "var(--ui-surface)",
-};
-
-function Bar({ value }: { value: number }) {
-  return (
-    <div
-      className="mt-3 h-2 overflow-hidden rounded-full"
-      style={{ backgroundColor: "var(--ui-border)" }}
-      role="presentation"
-    >
-      <div
-        className="h-full rounded-full"
-        style={{ width: `${value}%`, backgroundColor: "var(--org-primary)" }}
-      />
-    </div>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  unit,
-  children,
-}: {
-  label: string;
-  value: number;
-  unit?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className={card} style={cardStyle}>
-      <p className="text-sm" style={{ color: "var(--ui-text-muted)" }}>
-        {label}
-      </p>
-      <p className="mt-2 flex items-baseline gap-2">
-        <span
-          className="text-4xl font-semibold tracking-tight"
-          style={{ color: "var(--ui-text)" }}
-        >
-          {value}
-        </span>
-        {unit && (
-          <span className="text-sm" style={{ color: "var(--ui-text-muted)" }}>
-            {unit}
-          </span>
-        )}
-      </p>
-      {children}
-    </div>
-  );
-}
 
 function Caption({ children }: { children: React.ReactNode }) {
   return (
@@ -122,16 +79,7 @@ export default function OverviewTab({
           Nothing is shown rather than a number we cannot stand behind. Try
           again in a moment.
         </p>
-        <button
-          onClick={onRetry}
-          className="cursor-pointer rounded-lg border px-3.5 py-2 text-sm font-medium"
-          style={{
-            borderColor: "var(--ui-border-strong)",
-            color: "var(--ui-text)",
-          }}
-        >
-          Try again
-        </button>
+        <AdminSecondaryButton onClick={onRetry}>Try again</AdminSecondaryButton>
       </div>
     );
   }
@@ -141,14 +89,12 @@ export default function OverviewTab({
   if (view === "empty") {
     return (
       <div className={card} style={cardStyle}>
-        <p className="font-medium" style={{ color: "var(--ui-text)" }}>
-          No student accounts yet
-        </p>
-        <p className="mt-1 text-sm" style={{ color: "var(--ui-text-muted)" }}>
-          Once students sign up with a school email you will see how many
-          created an account, how many finished their profile, and where the gap
-          opens up.
-        </p>
+        <AdminEmptyState
+          compact
+          icon={FaUserGraduate}
+          title="No student accounts yet"
+          hint="Once students sign up with a school email you will see how many created an account, how many finished their profile, and where the gap opens up."
+        />
       </div>
     );
   }
@@ -159,8 +105,9 @@ export default function OverviewTab({
   return (
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-3">
-        <StatCard
+        <AdminStatCard
           label="Accounts created"
+          index={0}
           value={r.student_accounts}
           unit="students, all time"
         >
@@ -176,23 +123,25 @@ export default function OverviewTab({
               did not
             </span>
           </p>
-        </StatCard>
+        </AdminStatCard>
 
-        <StatCard
+        <AdminStatCard
           label="Profiles completed"
+          index={1}
           value={r.reconciled}
           unit={`${activation}% of ${r.student_accounts} accounts`}
         >
-          <Bar value={activation} />
+          <AdminBar value={activation} />
           <Caption>
             {r.ghost === 0
               ? "Every student account has a profile."
               : `${r.ghost} ${r.ghost === 1 ? "student made" : "students made"} an account and never finished onboarding.`}
           </Caption>
-        </StatCard>
+        </AdminStatCard>
 
-        <StatCard
+        <AdminStatCard
           label="Students matched"
+          index={2}
           value={matches.students_matched}
           unit={
             matched === null
@@ -200,19 +149,20 @@ export default function OverviewTab({
               : `${matched}% of ${r.reconciled} completed profiles`
           }
         >
-          <Bar value={matched ?? 0} />
+          <AdminBar value={matched ?? 0} />
           <Caption>
             {matches.matched_pairs}{" "}
             {matches.matched_pairs === 1 ? "matched pair" : "matched pairs"} (
             {matches.linked_pairs} linked, {matches.mutual_pairs} mutual).
           </Caption>
-        </StatCard>
+        </AdminStatCard>
       </div>
 
       {r.ghost > 0 && (
         <div
-          className="flex flex-col gap-3 rounded-xl border p-5 sm:flex-row sm:items-center sm:justify-between"
+          className="admin-enter flex flex-col gap-3 rounded-xl border p-5 sm:flex-row sm:items-center sm:justify-between"
           style={{
+            ...staggerStyle(3),
             borderColor: "var(--org-primary)",
             backgroundColor: "var(--ui-surface-active)",
           }}
@@ -231,21 +181,17 @@ export default function OverviewTab({
             </p>
           </div>
           {onViewSources && (
-            <button
-              onClick={onViewSources}
-              className="shrink-0 cursor-pointer rounded-lg px-4 py-2 text-sm font-medium"
-              style={{
-                backgroundColor: "var(--ui-btn-bg)",
-                color: "var(--ui-btn-text)",
-              }}
-            >
+            <AdminPrimaryButton onClick={onViewSources} className="shrink-0">
               View the {r.ghost}
-            </button>
+            </AdminPrimaryButton>
           )}
         </div>
       )}
 
-      <div className={card} style={cardStyle}>
+      <div
+        className={`admin-enter ${card}`}
+        style={{ ...cardStyle, ...staggerStyle(4) }}
+      >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2
@@ -276,7 +222,7 @@ export default function OverviewTab({
                 key={option.id}
                 onClick={() => setMode(option.id)}
                 aria-pressed={mode === option.id}
-                className="cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition"
+                className="cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-[background-color,transform] duration-150 hover:bg-[var(--ui-surface)] active:scale-95"
                 style={
                   mode === option.id
                     ? {
@@ -328,7 +274,7 @@ export default function OverviewTab({
           {onViewSources && (
             <button
               onClick={onViewSources}
-              className="cursor-pointer font-medium"
+              className="cursor-pointer font-medium underline-offset-4 hover:underline"
               style={{ color: "var(--org-primary)" }}
             >
               Reconcile the sources

@@ -1,6 +1,8 @@
 "use client";
 
 import { FaDownload, FaSync, FaUsers, FaHeart } from "react-icons/fa";
+import { AdminPrimaryButton } from "../ui/AdminPageHeader";
+import { staggerStyle } from "../ui/AdminStatCard";
 
 type Props = {
   downloadingReport: string | null;
@@ -21,9 +23,9 @@ export default function ReportsTab({
       <div className="grid gap-4 sm:grid-cols-2">
         {/* Active cohort report */}
         <div
-          className="flex flex-col rounded-xl border p-5"
+          className="admin-enter flex flex-col rounded-xl border border-[color:var(--ui-border)] p-5 transition-colors duration-200 hover:border-[color:var(--org-primary)]"
           style={{
-            borderColor: "var(--ui-border)",
+            ...staggerStyle(0),
             backgroundColor: "var(--ui-surface)",
           }}
         >
@@ -65,14 +67,10 @@ export default function ReportsTab({
               </span>
             ))}
           </div>
-          <button
+          <AdminPrimaryButton
             onClick={() => downloadReport("/api/school/reports/cohort")}
             disabled={downloadingReport !== null}
-            className="mt-4 flex w-fit cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
-            style={{
-              backgroundColor: "var(--ui-btn-bg)",
-              color: "var(--ui-btn-text)",
-            }}
+            className="mt-4 w-fit"
           >
             {downloadingReport === "/api/school/reports/cohort" ? (
               <FaSync className="h-3.5 w-3.5 animate-spin" />
@@ -80,14 +78,14 @@ export default function ReportsTab({
               <FaDownload className="h-3.5 w-3.5" />
             )}
             Export CSV
-          </button>
+          </AdminPrimaryButton>
         </div>
 
         {/* We Match outcomes */}
         <div
-          className="flex flex-col rounded-xl border p-5"
+          className="admin-enter flex flex-col rounded-xl border border-[color:var(--ui-border)] p-5 transition-colors duration-200 hover:border-[color:var(--org-primary)]"
           style={{
-            borderColor: "var(--ui-border)",
+            ...staggerStyle(1),
             backgroundColor: "var(--ui-surface)",
           }}
         >
@@ -109,14 +107,10 @@ export default function ReportsTab({
           <p className="mt-1 text-sm" style={{ color: "var(--ui-text-muted)" }}>
             One-sided interest rate and mutual match rate. Core proof point.
           </p>
-          <button
+          <AdminPrimaryButton
             onClick={() => downloadReport("/api/school/reports/match-outcomes")}
             disabled={downloadingReport !== null}
-            className="mt-auto flex w-fit cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
-            style={{
-              backgroundColor: "var(--ui-btn-bg)",
-              color: "var(--ui-btn-text)",
-            }}
+            className="mt-auto w-fit"
           >
             {downloadingReport === "/api/school/reports/match-outcomes" ? (
               <FaSync className="h-3.5 w-3.5 animate-spin" />
@@ -124,7 +118,7 @@ export default function ReportsTab({
               <FaDownload className="h-3.5 w-3.5" />
             )}
             Export CSV
-          </button>
+          </AdminPrimaryButton>
         </div>
       </div>
     </div>

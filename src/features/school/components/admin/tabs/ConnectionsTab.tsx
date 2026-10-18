@@ -1,8 +1,12 @@
 "use client";
 
-import { FaSync, FaUsers, FaLink, FaHandshake, FaClock } from "react-icons/fa";
+import { FaUsers, FaLink, FaHandshake, FaClock } from "react-icons/fa";
 import type { OrgConnection } from "@/app/api/school/connections/route";
 import type { MatchConnection } from "@/app/api/school/match-connections/route";
+import { staggerStyle } from "../ui/AdminStatCard";
+import AdminEmptyState from "../ui/AdminEmptyState";
+import RelativeDate from "../ui/RelativeDate";
+import TableSkeleton from "../ui/TableSkeleton";
 
 export type ConnectionsView = "matches" | "conversations";
 
@@ -50,7 +54,7 @@ export default function ConnectionsTab({
           <button
             key={view.id}
             onClick={() => setConnectionsView(view.id)}
-            className="cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition"
+            className="cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-[background-color,transform] duration-150 hover:bg-[var(--ui-surface-active)] active:scale-95"
             style={
               connectionsView === view.id
                 ? {
@@ -90,25 +94,19 @@ export default function ConnectionsTab({
       {/* ── Matches view ── */}
       {connectionsView === "matches" && (
         <>
-          {matchesLoading ? (
-            <div className="flex justify-center py-16">
-              <FaSync
-                className="h-6 w-6 animate-spin"
-                style={{ color: "var(--ui-text-subtle)" }}
-              />
-            </div>
+          {matchesLoading && matchConnections.length === 0 ? (
+            <TableSkeleton />
           ) : matchConnections.length === 0 ? (
-            <div className="flex flex-col items-center gap-3 py-16 text-center">
-              <FaHandshake
-                className="h-10 w-10"
-                style={{ color: "var(--ui-text-subtle)" }}
-              />
-              <p style={{ color: "var(--ui-text-muted)" }}>
-                No matches or links yet.
-              </p>
-            </div>
+            <AdminEmptyState
+              icon={FaHandshake}
+              title="No matches or links yet."
+              hint="Matches appear here as students connect through the platform."
+            />
           ) : (
-            <>
+            <div
+              className="transition-opacity duration-200"
+              style={{ opacity: matchesLoading ? 0.6 : 1 }}
+            >
               <div className="mb-3 flex justify-end">
                 <select
                   value={matchYearFilter}
@@ -191,13 +189,16 @@ export default function ConnectionsTab({
                   <>
                     {/* Mobile card list */}
                     <div className="flex flex-col gap-2 md:hidden">
-                      {filteredMatchConnections.map((conn) => {
+                      {filteredMatchConnections.map((conn, i) => {
                         const { teamName, teamWebsite } = teamOf(conn);
                         return (
                           <div
                             key={conn.id}
-                            className="rounded-xl border p-3"
-                            style={{ borderColor: "var(--ui-border)" }}
+                            className="admin-enter-row rounded-xl border p-3"
+                            style={{
+                              ...staggerStyle(i),
+                              borderColor: "var(--ui-border)",
+                            }}
                           >
                             <div className="mb-2 flex items-start justify-between gap-2">
                               <div>
@@ -241,7 +242,7 @@ export default function ConnectionsTab({
                                   </span>
                                 ))}
                               <span style={{ color: "var(--ui-text-subtle)" }}>
-                                {new Date(conn.matched_at).toLocaleDateString()}
+                                <RelativeDate iso={conn.matched_at} />
                               </span>
                             </div>
                           </div>
@@ -286,13 +287,12 @@ export default function ConnectionsTab({
                               return (
                                 <tr
                                   key={conn.id}
-                                  className="border-b transition"
+                                  className={`admin-enter-row border-b transition-colors duration-150 hover:bg-[var(--ui-surface-active)] ${
+                                    i % 2 !== 0 ? "bg-[var(--ui-surface)]" : ""
+                                  }`}
                                   style={{
+                                    ...staggerStyle(i),
                                     borderColor: "var(--ui-border)",
-                                    backgroundColor:
-                                      i % 2 !== 0
-                                        ? "var(--ui-surface)"
-                                        : undefined,
                                   }}
                                 >
                                   <td className="px-4 py-3">
@@ -361,9 +361,7 @@ export default function ConnectionsTab({
                                     className="px-4 py-3 text-xs"
                                     style={{ color: "var(--ui-text-subtle)" }}
                                   >
-                                    {new Date(
-                                      conn.matched_at,
-                                    ).toLocaleDateString()}
+                                    <RelativeDate iso={conn.matched_at} />
                                   </td>
                                   <td className="px-4 py-3">
                                     <StatusBadge conn={conn} />
@@ -378,7 +376,7 @@ export default function ConnectionsTab({
                   </>
                 );
               })()}
-            </>
+            </div>
           )}
         </>
       )}
@@ -386,27 +384,21 @@ export default function ConnectionsTab({
       {/* ── Conversations view ── */}
       {connectionsView === "conversations" && (
         <>
-          {connectionsLoading ? (
-            <div className="flex justify-center py-16">
-              <FaSync
-                className="h-6 w-6 animate-spin"
-                style={{ color: "var(--ui-text-subtle)" }}
-              />
-            </div>
+          {connectionsLoading && connections.length === 0 ? (
+            <TableSkeleton />
           ) : connections.length === 0 ? (
-            <div className="flex flex-col items-center gap-3 py-16 text-center">
-              <FaUsers
-                className="h-10 w-10"
-                style={{ color: "var(--ui-text-subtle)" }}
-              />
-              <p style={{ color: "var(--ui-text-muted)" }}>
-                No conversations yet.
-              </p>
-            </div>
+            <AdminEmptyState
+              icon={FaUsers}
+              title="No conversations yet."
+              hint="Conversations show up here once matched students start messaging."
+            />
           ) : (
             <div
-              className="overflow-hidden rounded-xl border"
-              style={{ borderColor: "var(--ui-border)" }}
+              className="overflow-hidden rounded-xl border transition-opacity duration-200"
+              style={{
+                borderColor: "var(--ui-border)",
+                opacity: connectionsLoading ? 0.6 : 1,
+              }}
             >
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[560px] text-sm">
@@ -439,11 +431,12 @@ export default function ConnectionsTab({
                     {connections.map((conn, i) => (
                       <tr
                         key={conn.conversation_id}
-                        className="border-b transition"
+                        className={`admin-enter-row border-b transition-colors duration-150 hover:bg-[var(--ui-surface-active)] ${
+                          i % 2 !== 0 ? "bg-[var(--ui-surface)]" : ""
+                        }`}
                         style={{
+                          ...staggerStyle(i),
                           borderColor: "var(--ui-border)",
-                          backgroundColor:
-                            i % 2 !== 0 ? "var(--ui-surface)" : undefined,
                         }}
                       >
                         <td className="px-4 py-3">
@@ -488,17 +481,17 @@ export default function ConnectionsTab({
                           className="px-4 py-3 text-xs"
                           style={{ color: "var(--ui-text-subtle)" }}
                         >
-                          {new Date(conn.created_at).toLocaleDateString()}
+                          <RelativeDate iso={conn.created_at} />
                         </td>
                         <td
                           className="px-4 py-3 text-xs"
                           style={{ color: "var(--ui-text-subtle)" }}
                         >
-                          {conn.last_message_at
-                            ? new Date(
-                                conn.last_message_at,
-                              ).toLocaleDateString()
-                            : "—"}
+                          {conn.last_message_at ? (
+                            <RelativeDate iso={conn.last_message_at} />
+                          ) : (
+                            "—"
+                          )}
                         </td>
                       </tr>
                     ))}

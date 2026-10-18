@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { describeFreshness, percent } from "./freshness";
+import { describeFreshness, formatRelativeTime, percent } from "./freshness";
 
 const now = new Date("2026-10-06T12:00:00Z");
 
@@ -32,5 +32,22 @@ describe("percent", () => {
     expect(percent(48, 80)).toBe(60);
     expect(percent(1, 3)).toBe(33);
     expect(percent(0, 0)).toBeNull();
+  });
+});
+
+describe("formatRelativeTime", () => {
+  it("uses compact units", () => {
+    expect(formatRelativeTime("2026-10-06T11:59:40Z", now)).toBe("just now");
+    expect(formatRelativeTime("2026-10-06T11:58:00Z", now)).toBe("2m ago");
+    expect(formatRelativeTime("2026-10-06T09:00:00Z", now)).toBe("3h ago");
+    expect(formatRelativeTime("2026-10-01T12:00:00Z", now)).toBe("5d ago");
+  });
+
+  it("treats timestamps slightly in the future as just now", () => {
+    expect(formatRelativeTime("2026-10-06T12:00:30Z", now)).toBe("just now");
+  });
+
+  it("falls back to a date after two weeks", () => {
+    expect(formatRelativeTime("2026-09-01T12:00:00Z", now)).not.toMatch(/ago/);
   });
 });
