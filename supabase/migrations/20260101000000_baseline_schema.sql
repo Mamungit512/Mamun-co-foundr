@@ -43,82 +43,103 @@ SELECT pg_catalog.set_config('search_path', '', false);
 
 
 
-CREATE TYPE IF NOT EXISTS "public"."battery_level_enum" AS ENUM (
-    'Energized',
-    'Content',
-    'Burnt out'
-);
+DO $$ BEGIN
+    CREATE TYPE "public"."battery_level_enum" AS ENUM (
+        'Energized',
+        'Content',
+        'Burnt out'
+    );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 ALTER TYPE "public"."battery_level_enum" OWNER TO "postgres";
 
 
-CREATE TYPE IF NOT EXISTS "public"."cofounder_status_enum" AS ENUM (
-    'Solo founder',
-    'Have co-founder(s)',
-    'Seeking co-founder'
-);
+DO $$ BEGIN
+    CREATE TYPE "public"."cofounder_status_enum" AS ENUM (
+        'Solo founder',
+        'Have co-founder(s)',
+        'Seeking co-founder'
+    );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 ALTER TYPE "public"."cofounder_status_enum" OWNER TO "postgres";
 
 
-CREATE TYPE IF NOT EXISTS "public"."founder_archetype" AS ENUM (
-    'the_scaler',
-    'the_steward',
-    'the_architect'
-);
+DO $$ BEGIN
+    CREATE TYPE "public"."founder_archetype" AS ENUM (
+        'the_scaler',
+        'the_steward',
+        'the_architect'
+    );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 ALTER TYPE "public"."founder_archetype" OWNER TO "postgres";
 
 
-CREATE TYPE IF NOT EXISTS "public"."fulltime_timeline_enum" AS ENUM (
-    'Already full-time',
-    'Within 1 month',
-    'Within 3 months',
-    'Within 6 months',
-    'Within 1 year',
-    'Unsure'
-);
+DO $$ BEGIN
+    CREATE TYPE "public"."fulltime_timeline_enum" AS ENUM (
+        'Already full-time',
+        'Within 1 month',
+        'Within 3 months',
+        'Within 6 months',
+        'Within 1 year',
+        'Unsure'
+    );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 ALTER TYPE "public"."fulltime_timeline_enum" OWNER TO "postgres";
 
 
-CREATE TYPE IF NOT EXISTS "public"."satisfaction_level" AS ENUM (
-    'Happy',
-    'Browsing',
-    'Content',
-    'Unhappy'
-);
+DO $$ BEGIN
+    CREATE TYPE "public"."satisfaction_level" AS ENUM (
+        'Happy',
+        'Browsing',
+        'Content',
+        'Unhappy'
+    );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 ALTER TYPE "public"."satisfaction_level" OWNER TO "postgres";
 
 
-CREATE TYPE IF NOT EXISTS "public"."startup_funding_enum" AS ENUM (
-    'Bootstrapped',
-    'Pre-seed',
-    'Seed',
-    'Series A+',
-    'Grant funded',
-    'Other',
-    'Waiting on ECC funding'
-);
+DO $$ BEGIN
+    CREATE TYPE "public"."startup_funding_enum" AS ENUM (
+        'Bootstrapped',
+        'Pre-seed',
+        'Seed',
+        'Series A+',
+        'Grant funded',
+        'Other',
+        'Waiting on ECC funding'
+    );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 ALTER TYPE "public"."startup_funding_enum" OWNER TO "postgres";
 
 
-CREATE TYPE IF NOT EXISTS "public"."startup_time_spent_enum" AS ENUM (
-    'Just started',
-    '1-3 months',
-    '3-6 months',
-    '6-12 months',
-    '1-2 years',
-    '2+ years'
-);
+DO $$ BEGIN
+    CREATE TYPE "public"."startup_time_spent_enum" AS ENUM (
+        'Just started',
+        '1-3 months',
+        '3-6 months',
+        '6-12 months',
+        '1-2 years',
+        '2+ years'
+    );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 ALTER TYPE "public"."startup_time_spent_enum" OWNER TO "postgres";
