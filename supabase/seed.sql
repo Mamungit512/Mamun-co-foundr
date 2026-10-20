@@ -325,7 +325,7 @@ BEGIN
   )
   VALUES
     ('user_mock_ut_001', ut_org_id, 'student',  2026, 'mccombs_business',     'bachelors',    'Business Administration',     ARRAY['fintech','b2b_saas','ai_ml'],          NULL),
-    ('user_mock_ut_002', ut_org_id, 'student',  2026, 'cockrell_engineering', 'bachelors',    'Computer Science',            ARRAY['ai_ml','deeptech','b2b_saas'],         NULL),
+    ('user_mock_ut_002', ut_org_id, 'student',  2026, 'natural_sciences',     'bachelors',    'Computer Science',            ARRAY['ai_ml','deeptech','b2b_saas'],         NULL),
     ('user_mock_ut_003', ut_org_id, 'student',  2027, 'school_of_information','masters',      'Data Science',                ARRAY['data','ux','edtech'],                  NULL),
     ('user_mock_ut_004', ut_org_id, 'student',  2026, 'natural_sciences',     'bachelors',    'Neuroscience',                ARRAY['healthtech','biotech'],                NULL),
     ('user_mock_ut_005', ut_org_id, 'student',  2026, 'liberal_arts',         'bachelors',    'Economics',                   ARRAY['policy','impact','govtech'],           NULL),
