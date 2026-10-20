@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -58,6 +59,37 @@ export default function CtaBand() {
           >
             Create your profile
           </Link>
+        </motion.div>
+        {/* QR to open the site on a phone — desktop/tablet only, since a
+            phone visitor is already there. Static asset in public/qr,
+            generated offline (level H, 4-module quiet zone); it encodes the
+            URL directly, no shortener. */}
+        <motion.div variants={item} className="mb-4 hidden justify-center md:flex">
+          <div className="flex max-w-sm items-center gap-4 rounded-2xl bg-white p-3 pr-5 text-left shadow-sm">
+            <Image
+              src="/qr/ut-mamuncofoundr.svg"
+              alt="QR code linking to ut.mamuncofoundr.com"
+              width={104}
+              height={104}
+              unoptimized
+              className="h-[104px] w-[104px] shrink-0"
+            />
+            <div>
+              <p className="mb-1 text-sm font-semibold" style={{ color: "#333f48" }}>
+                Invite your fellow UT colleagues
+              </p>
+              <p className="text-xs leading-relaxed" style={{ color: "#333f48" }}>
+                Scan with your phone camera to open{" "}
+                <a
+                  href="https://ut.mamuncofoundr.com/"
+                  className="font-semibold underline underline-offset-2"
+                  style={{ color: "#bf5700" }}
+                >
+                  UT.mamuncofoundr.com
+                </a>
+              </p>
+            </div>
+          </div>
         </motion.div>
         <motion.div variants={item} className="text-xs text-white">
           Exclusively for University of Texas students, alumni, and faculty
