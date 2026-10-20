@@ -300,6 +300,21 @@ export const getSchoolFullName = (school: UTCollege): string => {
   return UT_SCHOOLS_AND_PROGRAMS[school].fullName;
 };
 
+// Human-readable education line stored on profiles.education for school
+// users, e.g. "College of Natural Sciences, Class of 2026". Must never contain
+// the raw college slug: that column is display text, not an identifier.
+export const buildSchoolEducation = (
+  college: string | null | undefined,
+  gradYear: number | string | null | undefined,
+): string => {
+  const collegeName = isUTCollege(college) ? getSchoolFullName(college) : college;
+  return (
+    [collegeName, gradYear ? `Class of ${gradYear}` : null]
+      .filter(Boolean)
+      .join(', ') || 'UT Austin'
+  );
+};
+
 // Prefers a catalog abbreviation for the exact (college, level, major) match
 // (fixes e.g. a masters "Business Administration" rendering as "BBA" instead
 // of "MBA"). Falls back to the level's short label, then to the major name
