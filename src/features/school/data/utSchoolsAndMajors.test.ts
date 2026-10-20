@@ -70,12 +70,21 @@ describe("getMajorOptions", () => {
   it("falls back to all of the college's programs when none exist at that level", () => {
     // Cockrell only lists bachelors programs.
     expect(getMajorOptions("cockrell_engineering", "doctorate")).toEqual([
-      "Computer Science",
       "Electrical & Computer Engineering",
       "Mechanical Engineering",
       "Biomedical Engineering",
       "Chemical Engineering",
     ]);
+  });
+
+  it("lists Computer Science and Statistics and Data Science under Natural Sciences", () => {
+    expect(getMajorOptions("natural_sciences", "bachelors")).toEqual(
+      expect.arrayContaining(["Computer Science", "Statistics and Data Science"]),
+    );
+  });
+
+  it("does not list Computer Science under Cockrell Engineering", () => {
+    expect(getMajorOptions("cockrell_engineering", "bachelors")).not.toContain("Computer Science");
   });
 
   it("dedupes names and returns all programs when no level is given", () => {
@@ -96,7 +105,11 @@ describe("getDegreeAbbreviation", () => {
   });
 
   it("matches case- and whitespace-insensitively", () => {
-    expect(getDegreeAbbreviation("cockrell_engineering", "bachelors", " computer science ")).toBe("CS");
+    expect(getDegreeAbbreviation("natural_sciences", "bachelors", " computer science ")).toBe("CS");
+  });
+
+  it("abbreviates Statistics and Data Science as SDS", () => {
+    expect(getDegreeAbbreviation("natural_sciences", "bachelors", "Statistics and Data Science")).toBe("SDS");
   });
 
   it("maps the legacy 'professional' value onto its now-doctorate catalog entry", () => {
@@ -104,7 +117,7 @@ describe("getDegreeAbbreviation", () => {
   });
 
   it("falls back to the level's short label when there's no catalog match", () => {
-    expect(getDegreeAbbreviation("cockrell_engineering", "masters", "Computer Science")).toBe("Master's");
+    expect(getDegreeAbbreviation("natural_sciences", "masters", "Computer Science")).toBe("Master's");
     expect(getDegreeAbbreviation("liberal_arts", "doctorate", "Philosophy")).toBe("Doctorate");
     expect(getDegreeAbbreviation("not_a_college", "masters", "Anything")).toBe("Master's");
   });
