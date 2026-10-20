@@ -6,6 +6,7 @@ import {
   isUTCollege,
   getMajorOptions,
   getDegreeAbbreviation,
+  buildSchoolEducation,
 } from "./utSchoolsAndMajors";
 
 describe("DEGREE_TYPES", () => {
@@ -70,12 +71,21 @@ describe("getMajorOptions", () => {
   it("falls back to all of the college's programs when none exist at that level", () => {
     // Cockrell only lists bachelors programs.
     expect(getMajorOptions("cockrell_engineering", "doctorate")).toEqual([
-      "Computer Science",
       "Electrical & Computer Engineering",
       "Mechanical Engineering",
       "Biomedical Engineering",
       "Chemical Engineering",
     ]);
+  });
+
+  it("lists Computer Science and Statistics and Data Science under Natural Sciences", () => {
+    expect(getMajorOptions("natural_sciences", "bachelors")).toEqual(
+      expect.arrayContaining(["Computer Science", "Statistics and Data Science"]),
+    );
+  });
+
+  it("does not list Computer Science under Cockrell Engineering", () => {
+    expect(getMajorOptions("cockrell_engineering", "bachelors")).not.toContain("Computer Science");
   });
 
   it("dedupes names and returns all programs when no level is given", () => {
@@ -96,7 +106,11 @@ describe("getDegreeAbbreviation", () => {
   });
 
   it("matches case- and whitespace-insensitively", () => {
-    expect(getDegreeAbbreviation("cockrell_engineering", "bachelors", " computer science ")).toBe("CS");
+    expect(getDegreeAbbreviation("natural_sciences", "bachelors", " computer science ")).toBe("CS");
+  });
+
+  it("abbreviates Statistics and Data Science as SDS", () => {
+    expect(getDegreeAbbreviation("natural_sciences", "bachelors", "Statistics and Data Science")).toBe("SDS");
   });
 
   it("maps the legacy 'professional' value onto its now-doctorate catalog entry", () => {
@@ -104,7 +118,7 @@ describe("getDegreeAbbreviation", () => {
   });
 
   it("falls back to the level's short label when there's no catalog match", () => {
-    expect(getDegreeAbbreviation("cockrell_engineering", "masters", "Computer Science")).toBe("Master's");
+    expect(getDegreeAbbreviation("natural_sciences", "masters", "Computer Science")).toBe("Master's");
     expect(getDegreeAbbreviation("liberal_arts", "doctorate", "Philosophy")).toBe("Doctorate");
     expect(getDegreeAbbreviation("not_a_college", "masters", "Anything")).toBe("Master's");
   });
@@ -116,5 +130,31 @@ describe("getDegreeAbbreviation", () => {
   it("returns undefined when there's nothing to go on", () => {
     expect(getDegreeAbbreviation(undefined, undefined, undefined)).toBeUndefined();
     expect(getDegreeAbbreviation(null, null, null)).toBeUndefined();
+  });
+});
+
+describe("buildSchoolEducation", () => {
+  it("renders every catalog college as its full name, never a slug", () => {
+    for (const [slug, school] of Object.entries(UT_SCHOOLS_AND_PROGRAMS)) {
+      const result = buildSchoolEducation(slug, 2026);
+      expect(result).toBe(`${school.fullName}, Class of 2026`);
+      expect(result).not.toContain(slug);
+    }
+  });
+
+  it("passes an unknown college through unchanged", () => {
+    expect(buildSchoolEducation("Some Other School", 2027)).toBe("Some Other School, Class of 2027");
+  });
+
+  it("omits the class year when there is no grad year", () => {
+    expect(buildSchoolEducation("natural_sciences", undefined)).toBe("College of Natural Sciences");
+  });
+
+  it("omits the college when there is none", () => {
+    expect(buildSchoolEducation(undefined, 2026)).toBe("Class of 2026");
+  });
+
+  it("falls back to UT Austin when neither is provided", () => {
+    expect(buildSchoolEducation(undefined, undefined)).toBe("UT Austin");
   });
 });

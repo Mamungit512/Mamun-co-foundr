@@ -28,7 +28,6 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
     tier: 'core',
     color: 'from-red-600 to-red-700',
     programs: [
-      { degreeType: 'bachelors', name: 'Computer Science', abbreviation: 'CS' },
       { degreeType: 'bachelors', name: 'Electrical & Computer Engineering', abbreviation: 'ECE' },
       { degreeType: 'bachelors', name: 'Mechanical Engineering', abbreviation: 'ME' },
       { degreeType: 'bachelors', name: 'Biomedical Engineering', abbreviation: 'Biomedical' },
@@ -53,6 +52,8 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
     tier: 'core',
     color: 'from-green-600 to-green-700',
     programs: [
+      { degreeType: 'bachelors', name: 'Computer Science', abbreviation: 'CS' },
+      { degreeType: 'bachelors', name: 'Statistics and Data Science', abbreviation: 'SDS' },
       { degreeType: 'bachelors', name: 'Biology', abbreviation: 'Biology' },
       { degreeType: 'bachelors', name: 'Chemistry', abbreviation: 'Chemistry' },
       { degreeType: 'bachelors', name: 'Neuroscience', abbreviation: 'Neuroscience' },
@@ -297,6 +298,21 @@ export const getSchoolLabel = (school: UTCollege): string => {
 
 export const getSchoolFullName = (school: UTCollege): string => {
   return UT_SCHOOLS_AND_PROGRAMS[school].fullName;
+};
+
+// Human-readable education line stored on profiles.education for school
+// users, e.g. "College of Natural Sciences, Class of 2026". Must never contain
+// the raw college slug: that column is display text, not an identifier.
+export const buildSchoolEducation = (
+  college: string | null | undefined,
+  gradYear: number | string | null | undefined,
+): string => {
+  const collegeName = isUTCollege(college) ? getSchoolFullName(college) : college;
+  return (
+    [collegeName, gradYear ? `Class of ${gradYear}` : null]
+      .filter(Boolean)
+      .join(', ') || 'UT Austin'
+  );
 };
 
 // Prefers a catalog abbreviation for the exact (college, level, major) match
