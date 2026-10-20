@@ -6,6 +6,7 @@ import {
   isUTCollege,
   getMajorOptions,
   getDegreeAbbreviation,
+  buildSchoolEducation,
 } from "./utSchoolsAndMajors";
 
 describe("DEGREE_TYPES", () => {
@@ -129,5 +130,31 @@ describe("getDegreeAbbreviation", () => {
   it("returns undefined when there's nothing to go on", () => {
     expect(getDegreeAbbreviation(undefined, undefined, undefined)).toBeUndefined();
     expect(getDegreeAbbreviation(null, null, null)).toBeUndefined();
+  });
+});
+
+describe("buildSchoolEducation", () => {
+  it("renders every catalog college as its full name, never a slug", () => {
+    for (const [slug, school] of Object.entries(UT_SCHOOLS_AND_PROGRAMS)) {
+      const result = buildSchoolEducation(slug, 2026);
+      expect(result).toBe(`${school.fullName}, Class of 2026`);
+      expect(result).not.toContain(slug);
+    }
+  });
+
+  it("passes an unknown college through unchanged", () => {
+    expect(buildSchoolEducation("Some Other School", 2027)).toBe("Some Other School, Class of 2027");
+  });
+
+  it("omits the class year when there is no grad year", () => {
+    expect(buildSchoolEducation("natural_sciences", undefined)).toBe("College of Natural Sciences");
+  });
+
+  it("omits the college when there is none", () => {
+    expect(buildSchoolEducation(undefined, 2026)).toBe("Class of 2026");
+  });
+
+  it("falls back to UT Austin when neither is provided", () => {
+    expect(buildSchoolEducation(undefined, undefined)).toBe("UT Austin");
   });
 });

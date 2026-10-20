@@ -6,7 +6,11 @@ import {
   mapUTDataToSchoolProfileRow,
 } from "@/lib/mapProfileToFromDBFormat";
 import { deriveUtStatus } from "@/features/school/onboarding/deriveUtStatus";
-import { isUTCollege, normalizeDegreeType } from "@/features/school/data/utSchoolsAndMajors";
+import {
+  buildSchoolEducation,
+  isUTCollege,
+  normalizeDegreeType,
+} from "@/features/school/data/utSchoolsAndMajors";
 
 // Shared onboarding-profile service used by the unified /api/profile endpoint.
 // A user's school membership is derived from organization_id on the Clerk
@@ -140,10 +144,10 @@ export async function saveOnboardingProfile({
   if (isSchool) {
     // School profiles don't collect general satisfaction/battery fields and
     // derive education from the school-specific college/grad-year inputs.
-    const educationStr =
-      [formData.utCollege, formData.gradYear ? `Class of ${formData.gradYear}` : null]
-        .filter(Boolean)
-        .join(", ") || "UT Austin";
+    const educationStr = buildSchoolEducation(
+      formData.utCollege,
+      formData.gradYear,
+    );
 
     dbData = {
       ...dbData,
