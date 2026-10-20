@@ -28,7 +28,6 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
     tier: 'core',
     color: 'from-red-600 to-red-700',
     programs: [
-      { degreeType: 'bachelors', name: 'Computer Science', abbreviation: 'CS' },
       { degreeType: 'bachelors', name: 'Electrical & Computer Engineering', abbreviation: 'ECE' },
       { degreeType: 'bachelors', name: 'Mechanical Engineering', abbreviation: 'ME' },
       { degreeType: 'bachelors', name: 'Biomedical Engineering', abbreviation: 'Biomedical' },
@@ -53,6 +52,8 @@ export const UT_SCHOOLS_AND_PROGRAMS = {
     tier: 'core',
     color: 'from-green-600 to-green-700',
     programs: [
+      { degreeType: 'bachelors', name: 'Computer Science', abbreviation: 'CS' },
+      { degreeType: 'bachelors', name: 'Statistics and Data Science', abbreviation: 'SDS' },
       { degreeType: 'bachelors', name: 'Biology', abbreviation: 'Biology' },
       { degreeType: 'bachelors', name: 'Chemistry', abbreviation: 'Chemistry' },
       { degreeType: 'bachelors', name: 'Neuroscience', abbreviation: 'Neuroscience' },
