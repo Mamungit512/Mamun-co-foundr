@@ -21,7 +21,7 @@ const TIER_1: Dept[] = [
   },
   {
     name: "Cockrell Engineering",
-    programs: "CS · ECE · ME · Biomedical · ChE",
+    programs: "ECE · ME · Biomedical · ChE",
     accent: "#005f86",
     chips: [
       { label: "AI/ML", bg: "#e8f4fb", fg: "#005f86" },
@@ -39,7 +39,7 @@ const TIER_1: Dept[] = [
   },
   {
     name: "Natural Sciences",
-    programs: "Biology · Chemistry · Neuroscience",
+    programs: "CS · Biology · Chemistry · Neuroscience",
     accent: "#579d42",
     chips: [
       { label: "HealthTech", bg: "#eaf3de", fg: "#2d6e1a" },
