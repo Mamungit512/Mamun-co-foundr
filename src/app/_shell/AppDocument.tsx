@@ -5,9 +5,9 @@ import { Analytics } from "@vercel/analytics/next";
 import { Suspense } from "react";
 import Script from "next/script";
 
-import "./globals.css";
-import QueryProvider from "./_providers/QueryProvider";
-import { PostHogProvider } from "./_providers/PostHogProvider";
+import "../globals.css";
+import QueryProvider from "../_providers/QueryProvider";
+import { PostHogProvider } from "../_providers/PostHogProvider";
 import { Toaster } from "react-hot-toast";
 import ReferralTracker from "@/components/referrals/referral-tracker";
 // Disabled: survey modal doesn't reliably dismiss/stay dismissed across
@@ -16,10 +16,13 @@ import ReferralTracker from "@/components/referrals/referral-tracker";
 // import IntroSurveyModal from "@/components/IntroSurveyModal";
 
 const satoshi = localFont({
-  src: "../../public/fonts/Satoshi-Variable.ttf",
+  src: "../../../public/fonts/Satoshi-Variable.ttf",
 });
 
-export const metadata: Metadata = {
+// Shared <html>/<body> document for the app route groups — (general) and
+// (school). The marketing site in (site) has its own root layout and loads
+// none of these providers.
+export const appMetadata: Metadata = {
   title: "Mamun Cofounder Platform",
   description: "Cofounding Platform for the Muslim Community",
   icons: {
@@ -27,7 +30,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default function AppDocument({
   children,
 }: Readonly<{
   children: React.ReactNode;
