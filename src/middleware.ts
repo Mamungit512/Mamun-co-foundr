@@ -1,5 +1,5 @@
 import { clerkMiddleware, createRouteMatcher, clerkClient } from "@clerk/nextjs/server";
-import { NextRequest, NextResponse } from "next/server";
+import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import {
   getRequiredPrivacyPolicyVersion,
@@ -15,6 +15,11 @@ const isSchoolOnboardingRoute = createRouteMatcher([
 ]);
 const isPublicRoute = createRouteMatcher([
   "/",
+  // Marketing site (src/app/(site)) — public, no login
+  "/matching",
+  "/platform",
+  "/partner",
+  "/api/partner",
   "/careers",
   "/contact-us",
   "/mission",
@@ -153,11 +158,21 @@ async function updateUserActivity(userId: string) {
   }
 }
 
-export default clerkMiddleware(async (auth, req: NextRequest, event) => {
+const appMiddleware = clerkMiddleware(async (auth, req: NextRequest, event) => {
   const pathname = req.nextUrl.pathname;
 
   // Crawler metadata routes must bypass subdomain rewrite and auth gates
   if (pathname === "/robots.txt" || pathname === "/sitemap.xml") {
+    return NextResponse.next();
+  }
+
+  // The marketing site's generated favicons, Apple touch icon and share
+  // images (src/app/(site)/icon.tsx, apple-icon.tsx, **/opengraph-image.tsx)
+  // are public assets.
+  if (
+    /^\/(icon|apple-icon)(-\w+)?$/.test(pathname) ||
+    /^\/((matching|platform|pricing|partner)\/)?opengraph-image(-\w+)?$/.test(pathname)
+  ) {
     return NextResponse.next();
   }
 
@@ -364,6 +379,20 @@ export default clerkMiddleware(async (auth, req: NextRequest, event) => {
 
   return NextResponse.next();
 });
+
+// The marketing site's five routes need no auth. On the apex hosts they skip
+// Clerk entirely, so a first visit is never bounced through Clerk's
+// handshake redirect (spec §16: nothing third-party on these pages). School
+// subdomains still go through the full middleware, which rewrites "/".
+const SITE_PATHS = new Set(["/", "/matching", "/platform", "/pricing", "/partner"]);
+
+export default function middleware(req: NextRequest, event: NextFetchEvent) {
+  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? "";
+  if (SITE_PATHS.has(req.nextUrl.pathname) && isApexHost(host)) {
+    return NextResponse.next();
+  }
+  return appMiddleware(req, event);
+}
 
 export const config = {
   matcher: [
