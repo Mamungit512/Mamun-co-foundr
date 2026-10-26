@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import type { FlowStep } from "@/features/school/onboarding/quick/constants";
 import type { QuickUi } from "@/features/school/onboarding/quick/validation";
 
@@ -57,5 +57,5 @@ export function useQuickDraft(slug: string, userId: string | null | undefined) {
     }
   }, [slug]);
 
-  return { load, save, clear };
+  return useMemo(() => ({ load, save, clear }), [load, save, clear]);
 }
