@@ -45,20 +45,19 @@ export default function StepLooking({
         </div>
       </QField>
 
-      <QField label="What are you looking for?">
-        <div className="flex flex-col gap-2.5">
-          {INTENT_OPTIONS.map((option) => (
-            <OptionRow
-              key={option.value}
-              radio
-              pressed={data.intent === option.value}
-              onClick={() => update({ intent: option.value })}
-              title={option.title}
-              description={option.description}
-            />
-          ))}
-        </div>
-      </QField>
+      {/* The step heading already asks this question, so the rows sit under it unlabeled. */}
+      <div role="group" aria-label="What you’re looking for" className="flex flex-col gap-2.5">
+        {INTENT_OPTIONS.map((option) => (
+          <OptionRow
+            key={option.value}
+            radio
+            pressed={data.intent === option.value}
+            onClick={() => update({ intent: option.value })}
+            title={option.title}
+            description={option.description}
+          />
+        ))}
+      </div>
 
       <QField label={`Pick up to ${INTERESTS_MAX} interests`} hint={`${selected.length} of ${INTERESTS_MAX}`}>
         <div className="flex flex-wrap gap-2">
