@@ -1,16 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { isEduEmail, PARTNER_FORM } from "@/content/site/partner";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
 // /partner demo requests → the Google Form drop box (spec §11.2), posted
 // server-side so the entry ids never reach client JS. Responses land in the
 // form's linked Google Sheet.
 //
-// Form: https://forms.gle/fTh69NAa1pAiiWvP7 — if the form is ever recreated,
-// the entry ids below change and this breaks silently. Re-read them from the
-// form's page source.
-const FORM_RESPONSE_URL =
-  "https://docs.google.com/forms/d/e/1FAIpQLSdb-WToBKCUShtZmUxv0qfLT6mC0cWWmww2gcGW9UPeV_rCvQ/formResponse";
+// The form's formResponse URL comes from GOOGLE_FORM_RESPONSE_URL
+// (https://docs.google.com/forms/d/e/<form id>/formResponse). If the form is
+// ever recreated, the URL and the entry ids below change and this breaks
+// silently. Re-read the ids from the form's page source.
+const FORM_RESPONSE_URL = process.env.GOOGLE_FORM_RESPONSE_URL;
 
 const ENTRY = {
   fullName: "entry.1000057",
@@ -23,27 +24,19 @@ const ENTRY = {
   office: null as string | null,
 };
 
-// Best-effort rate limit: per server instance, 5 requests per 10 minutes per IP.
-const WINDOW_MS = 10 * 60 * 1000;
-const MAX_REQUESTS = 5;
-const hits = new Map<string, number[]>();
-
-function rateLimited(ip: string) {
-  const now = Date.now();
-  const recent = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS);
-  recent.push(now);
-  hits.set(ip, recent);
-  return recent.length > MAX_REQUESTS;
-}
-
 const text = (value: unknown, max = 500) =>
   typeof value === "string" ? value.trim().slice(0, max) : "";
 
 export async function POST(request: NextRequest) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  if (rateLimited(ip)) {
-    return NextResponse.json({ ok: false, error: "rate_limited" }, { status: 429 });
-  }
+  // Shared Postgres-backed limit, so it holds across Vercel instances. 10 per
+  // 10 minutes: campus users often share an IP.
+  const rateLimit = await checkRateLimit({
+    key: `partner:ip:${ip}`,
+    limit: 10,
+    windowSeconds: 600,
+  });
+  if (!rateLimit.allowed) return rateLimitResponse(rateLimit);
 
   let body: Record<string, unknown>;
   try {
@@ -81,6 +74,11 @@ export async function POST(request: NextRequest) {
   if (enrollment) form.append(ENTRY.enrollment, enrollment);
   if (notes) form.append(ENTRY.notes, notes);
   if (ENTRY.office) for (const o of office) form.append(ENTRY.office, o);
+
+  if (!FORM_RESPONSE_URL) {
+    console.error("partner form: GOOGLE_FORM_RESPONSE_URL is not set");
+    return NextResponse.json({ ok: false, error: "upstream" }, { status: 502 });
+  }
 
   try {
     const res = await fetch(FORM_RESPONSE_URL, {
