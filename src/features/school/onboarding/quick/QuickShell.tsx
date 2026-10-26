@@ -46,6 +46,8 @@ export function QuickShell({
             <div className="min-w-0">{children}</div>
             <aside className="flex flex-col gap-3.5 min-[901px]:sticky min-[901px]:top-[76px]">{side}</aside>
           </div>
+        ) : hideHeading ? (
+          children
         ) : (
           <div className="max-w-[680px]">{children}</div>
         )}

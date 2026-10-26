@@ -34,13 +34,13 @@ const PREVIEWS = [
     meta: "McCombs Business · Class of 2026",
     tags: ["Looking for a co-founder", "Media"],
     line: "Connect student creators with local businesses for game weekends.",
-    rotate: "rotate-[1.5deg] top-[112px] sm:top-[128px] left-0 right-[10%]",
+    rotate: "rotate-[1.5deg] top-[125px] left-0 right-[10%]",
   },
   {
     meta: "School of Information · Class of 2028",
     tags: ["Open to either", "UX"],
     line: "Make research tools usable by the people doing the research.",
-    rotate: "-rotate-1 top-[224px] sm:top-[256px] left-[10%] right-0",
+    rotate: "-rotate-1 top-[250px] left-[10%] right-0",
   },
 ];
 
@@ -62,8 +62,8 @@ export default function WelcomeCard({ onStart }: { onStart: () => void }) {
           <em className="whitespace-nowrap text-[var(--org-primary)] not-italic">at UT.</em>
         </h2>
         <p className="mt-3 max-w-[470px] text-[15px] leading-relaxed text-[var(--ui-text-muted)] sm:text-base">
-          Answer four quick steps and your Fit Card goes live in the UT founder pool. Matches show up
-          the moment you finish.
+          Answer four quick steps and your Fit Card goes live in the Fall ’26 founder pool. Matches
+          show up the moment you finish.
         </p>
 
         <div className="mt-6 mb-6 flex flex-col gap-2.5">
@@ -87,7 +87,7 @@ export default function WelcomeCard({ onStart }: { onStart: () => void }) {
         </div>
       </div>
 
-      <div aria-hidden className="relative h-[330px] w-full max-w-[440px] sm:h-[360px] min-[901px]:h-[400px] min-[901px]:max-w-none">
+      <div aria-hidden className="relative h-[410px] w-full max-w-[440px] min-[901px]:max-w-none">
         {PREVIEWS.map((card) => (
           <div
             key={card.meta}

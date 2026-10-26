@@ -59,7 +59,7 @@ export default function PhotoRow({
         }`}
       >
         <Avatar name={name} src={pfpUrl} size={56} />
-        <div className="min-w-0 flex-1 text-[13px] leading-snug text-[var(--ui-text-muted)]">
+        <div className="min-w-[180px] flex-1 text-[13px] leading-snug text-[var(--ui-text-muted)]">
           <b className="block text-sm text-[var(--ui-text)]">
             {pfpUrl ? "Your photo" : "Add a photo"}{" "}
             <small className="text-[13px] font-normal text-[var(--ui-text-muted)]">· required</small>
