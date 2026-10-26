@@ -12,12 +12,17 @@ import NodeMark from "../marks/NodeMark";
 // ink (§14).
 export default function Footer() {
   return (
-    <footer className="grid grid-cols-1 gap-40 border-t border-dark-rule bg-ink px-gutter pt-fluid-56 pb-footer md:grid-cols-2 lg:grid-cols-footer">
+    <footer data-footer="" className="grid grid-cols-1 gap-40 border-t border-dark-rule bg-ink px-gutter pt-fluid-56 pb-footer md:grid-cols-2 lg:grid-cols-footer">
       <div className="flex flex-col gap-14">
-        <span className="flex items-center gap-11 text-white type-wordmark">
+        {/* Home link, as in the header. */}
+        <Link
+          href="/"
+          aria-label="Mamun home"
+          className="flex min-h-44 items-center gap-11 self-start text-white type-wordmark lg:min-h-0"
+        >
           <CorporateMark />
-          <span>{WORDMARK}</span>
-        </span>
+          <span aria-hidden="true">{WORDMARK}</span>
+        </Link>
         <p className="max-w-tagline font-semibold text-white text-glow type-small">
           {FOOTER.tagline}
         </p>
@@ -46,7 +51,7 @@ export default function Footer() {
                 href={link.href}
                 target="_blank"
                 rel="noopener"
-                data-cta="footer"
+                data-position="footer"
                 className={classes}
               >
                 {content}

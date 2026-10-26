@@ -490,6 +490,25 @@
     transition: transform 320ms var(--ease-spring);
   }
   [data-nav] a:hover::after { transform: scaleX(1); }
+  /* Footer link columns: every link brightens to white with the same lime
+     wipe as the nav, under the label only (the node mark sits outside the
+     span). The footer logo, like the header's, has no hover. */
+  [data-footer] nav a { transition: color 200ms ease; }
+  [data-footer] nav a:hover { color: var(--color-white); }
+  [data-footer] nav a > span:last-child { position: relative; }
+  [data-footer] nav a > span:last-child::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -4px;
+    height: 2px;
+    background: var(--color-lime);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 320ms var(--ease-spring);
+  }
+  [data-footer] nav a:hover > span:last-child::after { transform: scaleX(1); }
 }
 
 /* ---------------- §8 Product mock demos ----------------

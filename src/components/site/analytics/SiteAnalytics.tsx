@@ -9,7 +9,8 @@ import { trackEvent } from "./events";
 
 // Site-wide analytics: page views, plus every Calendly and mailto click
 // caught by one delegated listener, so no button needs its own handler.
-// Position comes from the link's data-cta (header / hero / band / footer…).
+// Position comes from the link's data-cta (header / hero / band…) or, for
+// text links that aren't styled as buttons, data-position (footer).
 export default function SiteAnalytics() {
   const pathname = usePathname();
 
@@ -24,7 +25,7 @@ export default function SiteAnalytics() {
       const href = link.getAttribute("href") ?? "";
       const page = window.location.pathname;
       if (href.startsWith(CALENDLY_URL)) {
-        const position = link.getAttribute("data-cta") || "inline";
+        const position = link.getAttribute("data-cta") || link.getAttribute("data-position") || "inline";
         trackEvent("demo_cta_click", { page, position });
         trackEvent("calendly_outbound", { page, position, label: link.textContent?.trim() ?? "" });
       } else if (href.startsWith("mailto:")) {
