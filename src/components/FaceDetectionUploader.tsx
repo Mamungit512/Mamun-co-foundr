@@ -3,6 +3,7 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
 import * as faceapi from "@vladmandic/face-api";
 import Image from "next/image";
+import { FACE_MODEL_URL } from "@/features/school/onboarding/quick/profilePhoto";
 
 // Props definition
 interface FaceDetectionUploaderProps {
@@ -38,8 +39,7 @@ export default function FaceDetectionUploader({
 
         // We load the model from a reliable CDN to avoid huge local file requirements.
         // SSD Mobilenet V1 is highly accurate for distinguishing real faces.
-        const modelUrl =
-          "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/";
+        const modelUrl = FACE_MODEL_URL;
 
         // The CDN fetch can hang without ever resolving or rejecting (e.g.
         // blocked by a firewall/ad-blocker), which would otherwise leave the
