@@ -29,8 +29,10 @@ const BTN_PRIMARY_CLS = `${BTN_BASE_CLS} bg-[var(--ui-btn-bg)] text-[var(--ui-bt
 const BTN_GHOST_BASE_CLS = `${BTN_BASE_CLS} border border-[var(--ui-border)] bg-[var(--org-bg)] text-[var(--ui-text)] hover:border-[var(--org-primary)]`;
 const SIZE_CLS = "h-12 px-6 text-sm";
 const SIZE_SMALL_CLS = "h-9 px-3.5 text-[13px]";
+const SIZE_BIG_CLS = "h-[52px] px-7 text-[15.5px]";
 
 export const BTN_CLS = `${BTN_PRIMARY_CLS} ${SIZE_CLS}`;
+export const BTN_BIG_CLS = `${BTN_PRIMARY_CLS} ${SIZE_BIG_CLS}`;
 export const BTN_SMALL_CLS = `${BTN_PRIMARY_CLS} ${SIZE_SMALL_CLS}`;
 export const BTN_GHOST_CLS = `${BTN_GHOST_BASE_CLS} ${SIZE_CLS}`;
 export const BTN_GHOST_SMALL_CLS = `${BTN_GHOST_BASE_CLS} ${SIZE_SMALL_CLS}`;
@@ -61,14 +63,17 @@ export function QField({
   children: React.ReactNode;
   className?: string;
 }) {
+  const labelId = useId();
   const LabelTag = htmlFor ? "label" : "div";
+  // Without an input to label, the question names its group of choices.
+  const groupProps = htmlFor ? {} : { role: "group", "aria-labelledby": labelId };
   return (
-    <div className={`flex flex-col gap-2.5 ${className}`}>
+    <div className={`flex flex-col gap-2.5 ${className}`} {...groupProps}>
       <LabelTag
         {...(htmlFor ? { htmlFor } : {})}
         className="flex items-baseline justify-between gap-2 text-sm font-semibold text-[var(--ui-text)]"
       >
-        <span>{label}</span>
+        <span id={labelId}>{label}</span>
         {hint && (
           <small className="text-right text-xs font-normal text-[var(--ui-text-muted)]">
             {hint}
