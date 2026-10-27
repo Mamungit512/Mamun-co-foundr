@@ -7,6 +7,7 @@ import { getOrganizationBySlug } from "@/features/school/data/organizations";
 import { getOrgConfig, DEFAULT_ORG_CONFIG } from "@/features/school/registry/registry";
 import { getVerifiedPrimaryEmail, getOrgAdminEmails } from "@/features/school/auth/org-admin";
 import PublicFooter from "@/features/school/components/landing/PublicFooter";
+import { getSchoolSeo } from "@/features/school/seo";
 
 export async function generateMetadata({
   params,
@@ -16,47 +17,35 @@ export async function generateMetadata({
   const { slug } = await params;
   const org = await getOrganizationBySlug(slug);
   const cfg = getOrgConfig(slug) ?? DEFAULT_ORG_CONFIG;
-
-  const orgName = cfg.branding.wordmark
-    ? `${cfg.branding.wordmark} Co-Foundr`
-    : (org?.name ?? "School Portal");
-  const description = cfg.landing.subheadline;
-  const baseUrl =
-    org?.subdomain
-      ? `https://${org.subdomain}.mamuncofoundr.com`
-      : process.env.NEXT_PUBLIC_APP_URL ?? "https://mamuncofoundr.com";
-  const ogImage = cfg.landing.heroImageUrl ?? cfg.branding.logoUrl;
+  const seo = getSchoolSeo(slug, cfg, org);
 
   return {
-    metadataBase: new URL(baseUrl),
-    title: {
-      default: orgName,
-      template: `%s | ${orgName}`,
-    },
-    description,
-    alternates: {
-      canonical: "/",
-    },
+    metadataBase: new URL(seo.baseUrl),
+    title: seo.title,
+    description: seo.description,
     openGraph: {
       type: "website",
-      url: baseUrl,
-      siteName: orgName,
-      title: orgName,
-      description,
-      images: [ogImage],
+      url: seo.baseUrl,
+      siteName: seo.siteName,
+      title: seo.title,
+      description: seo.description,
+      images: [seo.ogImage],
     },
     twitter: {
       card: "summary_large_image",
-      title: orgName,
-      description,
-      images: [ogImage],
+      title: seo.title,
+      description: seo.description,
+      images: [seo.ogImage.url],
     },
+    // FERPA: every page on a school subdomain is noindex — sign-in, the
+    // logged-in app and student profiles. Only the public landing page opts
+    // back in (page.tsx), and only it carries a canonical.
     robots: {
-      index: true,
-      follow: true,
+      index: false,
+      follow: false,
     },
     icons: cfg.branding.faviconUrl
-      ? { icon: `${baseUrl}${cfg.branding.faviconUrl}` }
+      ? { icon: `${seo.baseUrl}${cfg.branding.faviconUrl}` }
       : undefined,
   };
 }
