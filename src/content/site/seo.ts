@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 
 // Search and share metadata for the five routes (spec §13). www is canonical
-// (spec §17). Descriptions are 150–160 characters, drawn from each page's
-// own hero copy — never rewritten for keywords.
+// (spec §17). Descriptions are 150–154 characters (spec §13's 150–160, kept
+// under 155 per MCFM SEO ticket), drawn from each page's own hero copy —
+// never rewritten for keywords. Never "UT Austin" / "at Austin" in
+// metadata (MCFM-153).
 
 export const SITE_URL = "https://www.mamuncofoundr.com";
 export const SITE_NAME = "Mamun";
@@ -14,7 +16,7 @@ export const PAGES: Record<SitePage, { path: string; title: string; description:
     path: "/",
     title: "Mamun — the co-founder engine, run by your institution",
     description:
-      "Co-founder matching in one FERPA-compliant platform your campus controls. SSO-gated, on your domain and your branding. One director's office signs. No IT build.",
+      "Co-founder matching in one FERPA-compliant platform your campus controls. SSO-gated, on your own domain and your branding. One director's office signs.",
   },
   matching: {
     path: "/matching",
@@ -26,7 +28,7 @@ export const PAGES: Record<SitePage, { path: string; title: string; description:
     path: "/platform",
     title: "Inside the platform",
     description:
-      "Four surfaces, live today at the University of Texas at Austin: matching, connections, co-founder linking, and the FERPA-gated admin dashboard, on your domain.",
+      "Four surfaces, live today at the University of Texas: matching, connections, co-founder linking, and the FERPA-gated admin dashboard, on your own domain.",
   },
   pricing: {
     path: "/pricing",
