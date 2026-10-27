@@ -1,21 +1,13 @@
 import type { MetadataRoute } from "next";
 import { headers } from "next/headers";
 
+import { PAGES, SITE_URL } from "@/content/site/seo";
+
 const APEX = new Set([
   "mamuncofoundr.com",
   "www.mamuncofoundr.com",
   "localhost",
 ]);
-
-const APEX_PUBLIC_PATHS = [
-  "",
-  "/pricing",
-  "/careers",
-  "/contact-us",
-  "/founder-archetypes",
-  "/privacy-policy",
-  "/refund-policy",
-];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const host = (await headers()).get("host") ?? "mamuncofoundr.com";
@@ -37,10 +29,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
   }
 
-  return APEX_PUBLIC_PATHS.map((p) => ({
-    url: `${base}${p || "/"}`,
+  // The marketing site: its five routes, on the canonical www host (spec §13, §17).
+  return Object.values(PAGES).map(({ path }) => ({
+    url: `${SITE_URL}${path}`,
     lastModified: new Date(),
     changeFrequency: "monthly" as const,
-    priority: p === "" ? 1 : 0.6,
+    priority: path === "/" ? 1 : 0.6,
   }));
 }

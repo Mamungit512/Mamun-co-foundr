@@ -268,4 +268,5 @@ Names only. Values live in the team vault and in Vercel project settings.
 | Analytics | `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST`, `NEXT_PUBLIC_POSTHOG_PROJECT_ID`, `POSTHOG_PERSONAL_API_KEY` |
 | Referrals | `FIRSTPROMOTER_API_KEY`, `NEXT_PUBLIC_FIRSTPROMOTER_ACCOUNT_ID` |
 | App | `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_BASE_URL`, `NEXT_PUBLIC_PRODUCTION_URL`, `NEXT_PUBLIC_MAMUN_ACCESS_CODE`, `ADMIN_EMAILS`, `CRON_SECRET` |
+| Marketing site | `GOOGLE_FORM_RESPONSE_URL` (the /partner form's Google Form `formResponse` URL) |
 | Edge Function (Supabase-managed) | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` |

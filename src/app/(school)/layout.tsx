@@ -1,7 +1,11 @@
+import AppDocument, { appMetadata } from "../_shell/AppDocument";
+
+export const metadata = appMetadata;
+
 export default function SchoolLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <AppDocument>{children}</AppDocument>;
 }
