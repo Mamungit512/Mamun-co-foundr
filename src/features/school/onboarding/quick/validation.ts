@@ -1,6 +1,7 @@
 import { isDegreeType, isUTCollege } from "@/features/school/data/utSchoolsAndMajors";
 import {
   FLOW_STEPS,
+  IDEA_STAGE,
   INTERESTS_MAX,
   INTRO_MIN,
   type FlowStep,
@@ -13,7 +14,12 @@ export type QuickUi = {
   // "Other" on the graduation year question, plus the raw text typed so far.
   gradYearOther?: boolean;
   gradYearText?: string;
+  // The three-way startup answer. Only "has a startup" is stored, so this is
+  // derived from the saved stage when it isn't in the draft.
+  startupMode?: StartupMode;
 };
+
+export type StartupMode = "building" | "idea" | "exploring";
 
 type UtStatus = "student" | "alumni";
 
@@ -44,7 +50,7 @@ export function isGradYearValid(
 
 // Strips scheme, "www." and trailing slashes so "https://www.linkedin.com/in/x/"
 // and "linkedin.com/in/x" compare (and display) the same.
-export function cleanLinkedin(value: string | undefined): string {
+export function cleanUrl(value: string | undefined): string {
   return (value ?? "")
     .trim()
     .replace(/^https?:\/\//i, "")
@@ -52,10 +58,24 @@ export function cleanLinkedin(value: string | undefined): string {
     .replace(/\/+$/, "");
 }
 
+export const cleanLinkedin = cleanUrl;
+
 // Blank is allowed; otherwise it must be a personal profile link.
 export function isLinkedinValid(value: string | undefined): boolean {
   const cleaned = cleanLinkedin(value);
   return !cleaned || /^([a-z]{2,3}\.)?linkedin\.com\/in\/[A-Za-z0-9\-_%]{2,100}$/i.test(cleaned);
+}
+
+// Blank is allowed; otherwise it must be a GitHub profile or repo link.
+export function isGithubValid(value: string | undefined): boolean {
+  const cleaned = cleanUrl(value);
+  return !cleaned || /^github\.com\/[A-Za-z0-9-]{1,39}(\/\S*)?$/i.test(cleaned);
+}
+
+// Blank is allowed; otherwise it needs a host with a dot and no spaces.
+export function isWebsiteValid(value: string | undefined): boolean {
+  const cleaned = cleanUrl(value);
+  return !cleaned || /^[^\s/@]+\.[^\s/@.]{2,}(\/\S*)?$/.test(cleaned);
 }
 
 export function isIntroValid(value: string | undefined): boolean {
@@ -78,7 +98,6 @@ export function missingFor(
     if (!isDegreeType(data.utDegreeType)) missing.push("degree level");
     if (!isUTCollege(data.utCollege)) missing.push("your college");
     if (!data.city?.trim() || !data.country?.trim()) missing.push("where you’re based");
-    if (!isLinkedinValid(data.linkedin)) missing.push("a valid LinkedIn link (or leave it blank)");
   }
 
   if (step === 3) {
@@ -88,7 +107,14 @@ export function missingFor(
   }
 
   if (step === 4) {
-    if (!data.hasStartup) missing.push("whether you have a startup");
+    if (!ui.startupMode) missing.push("whether you have a startup");
+    else if (ui.startupMode !== "exploring" && !data.startupName?.trim()) missing.push("your startup’s name");
+    if (!isLinkedinValid(data.linkedin)) missing.push("a valid LinkedIn link (or leave it blank)");
+    if (!isGithubValid(data.git)) missing.push("a valid GitHub link (or leave it blank)");
+    if (!isWebsiteValid(data.startupWebsite)) missing.push("a valid startup website (or leave it blank)");
+  }
+
+  if (step === 5) {
     if (!data.intent) missing.push("what you’re looking for");
     const interests = data.utSectorInterests ?? [];
     if (interests.length === 0) missing.push("at least 1 interest");
@@ -108,9 +134,19 @@ export function formatMissing(missing: string[]): string {
 }
 
 // Restores "Other" for a saved year that isn't one of the quick picks, so a
-// returning user sees their year instead of an unselected grid.
+// returning user sees their year instead of an unselected grid, and the
+// startup answer from the saved startup fields.
 export function normalizeUi(data: OnboardingData, ui: QuickUi, now = currentYear()): QuickUi {
-  if (!data.utStatus || data.gradYear === undefined || ui.gradYearOther) return ui;
-  if (gradYearChoices(data.utStatus, now).includes(data.gradYear)) return ui;
-  return { ...ui, gradYearOther: true, gradYearText: String(data.gradYear) };
+  const next = { ...ui };
+  if (!next.startupMode && data.hasStartup) {
+    next.startupMode =
+      data.hasStartup === "no" ? "exploring" : data.startupFunding === IDEA_STAGE ? "idea" : "building";
+  }
+  if (data.utStatus && data.gradYear !== undefined && !next.gradYearOther) {
+    if (!gradYearChoices(data.utStatus, now).includes(data.gradYear)) {
+      next.gradYearOther = true;
+      next.gradYearText = String(data.gradYear);
+    }
+  }
+  return next;
 }

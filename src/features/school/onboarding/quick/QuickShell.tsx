@@ -56,7 +56,7 @@ export function QuickShell({
   );
 }
 
-/** Side column during steps 1–4: the live Fit Card preview. */
+/** Side column during steps 1–5: the live Fit Card preview. */
 export function PreviewPanel({ children }: { children: React.ReactNode }) {
   return (
     <div aria-label="Fit Card preview" className="flex flex-col gap-2.5">
@@ -127,7 +127,7 @@ export const StepCard = forwardRef<HTMLHeadingElement, StepCardProps>(function S
             )}
           </span>
         </div>
-        <div className="grid grid-cols-4 gap-1.5" aria-hidden>
+        <div className="grid grid-cols-5 gap-1.5" aria-hidden>
           {Array.from({ length: TOTAL_STEPS }, (_, i) => (
             <i
               key={i}

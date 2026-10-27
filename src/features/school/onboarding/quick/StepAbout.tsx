@@ -11,7 +11,6 @@ import PhotoRow from "@/features/school/onboarding/quick/PhotoRow";
 import {
   gradYearBounds,
   gradYearChoices,
-  isLinkedinValid,
   type QuickUi,
 } from "@/features/school/onboarding/quick/validation";
 import {
@@ -35,7 +34,6 @@ export default function StepAbout({ data, ui, update }: StepProps) {
     last: useId(),
     year: useId(),
     college: useId(),
-    linkedin: useId(),
   };
   const [editingLocation, setEditingLocation] = useState(false);
 
@@ -46,7 +44,6 @@ export default function StepAbout({ data, ui, update }: StepProps) {
   const yearOutOfRange =
     !!bounds && /^\d{4}$/.test(yearText) && (Number(yearText) < bounds.min || Number(yearText) > bounds.max);
   const location = [data.city, data.state, data.country].filter(Boolean).join(", ");
-  const linkedinInvalid = !!data.linkedin?.trim() && !isLinkedinValid(data.linkedin);
 
   const setStatus = (next: "student" | "alumni") => {
     if (next === status) return;
@@ -192,22 +189,6 @@ export default function StepAbout({ data, ui, update }: StepProps) {
               {location ? "Change" : "Add"}
             </button>
           </div>
-        )}
-      </QField>
-
-      <QField label="LinkedIn" hint="Optional" htmlFor={ids.linkedin}>
-        <TextInput
-          id={ids.linkedin}
-          type="url"
-          inputMode="url"
-          autoComplete="url"
-          placeholder="linkedin.com/in/yourname"
-          value={data.linkedin ?? ""}
-          onChange={(e) => update({ linkedin: e.target.value })}
-          aria-invalid={linkedinInvalid}
-        />
-        {linkedinInvalid && (
-          <span className={ERROR_CLS}>Use a profile link like linkedin.com/in/yourname, or leave it blank.</span>
         )}
       </QField>
     </>

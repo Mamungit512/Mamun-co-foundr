@@ -4,17 +4,17 @@
 
 export const SCHOOL_SHORT_NAME = "UT";
 
-export const TOTAL_STEPS = 4;
+export const TOTAL_STEPS = 5;
 
 // Step 1 (consent) lives on /accept-policies, behind the middleware consent
-// gate. The onboarding page itself only renders steps 2–4.
-export type FlowStep = 2 | 3 | 4;
-export const FLOW_STEPS: FlowStep[] = [2, 3, 4];
+// gate. The onboarding page itself only renders steps 2–5.
+export type FlowStep = 2 | 3 | 4 | 5;
+export const FLOW_STEPS: FlowStep[] = [2, 3, 4, 5];
 
 export const SHELL_COPY = {
   eyebrow: "Mamun × University of Texas at Austin",
   title: "Create your profile",
-  sub: "Four quick steps, mostly taps. Your progress saves as you go, so you can leave and pick up where you stopped.",
+  sub: "Five quick steps, mostly taps. Your progress saves as you go, so you can leave and pick up where you stopped.",
   doneTitle: "Your Fit Card",
   doneSub: "This is what other UT founders see. Boost it whenever you like.",
 };
@@ -49,6 +49,23 @@ export const INTENT_OPTIONS = [
     tag: "Open to either",
     sentence: "Open to starting something or joining one.",
   },
+] as const;
+
+export const STARTUP_MODE_OPTIONS = [
+  { value: "building", label: "Yes, building" },
+  { value: "idea", label: "Have an idea" },
+  { value: "exploring", label: "No, exploring" },
+] as const;
+
+// Values match startup_funding_enum.
+export const IDEA_STAGE = "Idea stage";
+export const STARTUP_STAGES = [
+  IDEA_STAGE,
+  "Bootstrapped",
+  "Friends & Family",
+  "Pre-seed",
+  "Seed",
+  "Series A+",
 ] as const;
 
 export const ARCHETYPE_OPTIONS = [
