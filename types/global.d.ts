@@ -74,6 +74,7 @@ declare global {
     battery_level: "Energized" | "Content" | "Burnt out";
     startup_description: string | null;
     startup_funding: string | null;
+    startup_website: string | null;
     startup_name: string | null;
     startup_time_spent: string | null;
     title: string;
@@ -146,6 +147,7 @@ declare global {
     startupDescription?: string;
     startupTimeSpent?: string;
     startupFunding?: string;
+    startupWebsite?: string;
     coFounderStatus?: string;
     fullTimeTimeline?: string;
     responsibilities?: string[];

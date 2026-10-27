@@ -1,0 +1,629 @@
+/* ------------------------------------------------------------------
+   Mamun marketing site — design tokens (build spec §3).
+
+   This is the site's Tailwind config. Tailwind v4 is configured in CSS,
+   so "every token lives in the config" means every token lives here.
+   It is loaded only by the (site) root layout, scans only the site's own
+   files, and replaces Tailwind's default palette, type scale and radii,
+   so the app's styles and these never mix.
+
+   Fluid values: the prototype sizes against its shell with cqw; the shell
+   is full-width, so vw is the same measure here.
+------------------------------------------------------------------- */
+
+@import "tailwindcss" source(none);
+@source "./";
+@source "../../components/site";
+@source "../../content/site";
+
+@theme {
+  /* Drop Tailwind's defaults — only the tokens below exist. */
+  --color-*: initial;
+  --text-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --font-*: initial;
+  --breakpoint-*: initial;
+  --ease-*: initial;
+
+  /* Breakpoints (§9): base ≤767 · md 768 · lg 1024 · xl 1280 */
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+
+  /* 1 spacing unit = 1px, so p-20 is 20px and gap-30 is 30px (§3.3). */
+  --spacing: 1px;
+
+  --font-sans: var(--font-instrument), "Helvetica Neue", Helvetica, sans-serif;
+
+  /* §3.1 Colour */
+  --color-white: #ffffff;
+  --color-ink: #12120f;
+  --color-lime: #c7ea46;
+  --color-lime-deep: #4b6b00;
+  --color-lime-pale: #edf3d6;
+  --color-amber: #e0a93a; /* state only: pending / unverified */
+  --color-error: #a03a2a;
+
+  --color-bone: #f7f7f4; /* warm off-white section ground */
+  --color-bone-light: #fcfcfa;
+  --color-rule: #ebebe5; /* section dividers, header border */
+  --color-rule-card: #e5e5de; /* card borders, light hairline grid */
+  --color-rule-soft: #f0f0ea; /* drawer row dividers */
+  --color-rule-field: #dcdcd5; /* chips and form fields */
+  --color-rule-button: #cfcfc7; /* secondary button border */
+  --color-rule-hover: #c7c7bd; /* card border on hover */
+  --color-rule-mock: #edede7; /* rules and outlines inside light mocks */
+
+  --color-dark: #101010; /* dark section ground */
+  --color-dark-hero: #0f0f0f;
+  --color-dark-card: #161616;
+  --color-dark-cell-hover: #1a1a16;
+  --color-dark-rule: #2c2c26; /* hairline gaps and borders on dark */
+  --color-dark-line: #33332c; /* button borders on dark */
+  --color-dark-mock: #131310; /* product mock ground on dark */
+  --color-dark-row: #201f1b; /* row dividers inside dark mocks */
+  --color-dark-tile: #161612; /* hairline cells inside dark mocks */
+  --color-dark-row-alt: #171713; /* highlighted row inside dark mocks */
+  --color-dark-table: #26261f; /* table row dividers inside dark mocks */
+
+  /* Text greys on light grounds, strongest to faintest */
+  --color-text-strong: #3d3d37;
+  --color-text-body: #4a4a44;
+  --color-text-muted: #56564f;
+  --color-text-caption: #6b6b62;
+  --color-text-eyebrow: #6b6b62; /* spec #7C7C72 is 4.2:1 on white — fails AA at 11px (§14) */
+  --color-text-disabled: #a8a89e;
+  --color-text-placeholder: #b6b6ac;
+  --color-text-quiet: #8a8a80; /* the faded "before" card */
+
+  /* Text greys on dark grounds */
+  --color-dk-strong: #d6d6ce;
+  --color-dk-body: #a6a69c;
+  --color-dk-muted: #8e8e85;
+  --color-dk-caption: #66665c; /* fails AA for text (§14) — rules only */
+  --color-dk-link: #b8b8ae;
+
+  /* Line-heights used alongside the mock type steps */
+  --leading-100: 1;
+  --leading-130: 1.3;
+  --leading-135: 1.35;
+  --leading-140: 1.4;
+  --leading-150: 1.5;
+  --leading-155: 1.55;
+
+  /* §3.3 Radius scale */
+  --radius-card: 16px; /* cards, mocks, hairline-grid containers */
+  --radius-nested: 10px; /* cards inside a mock or grid, form fields */
+  --radius-seed: 8px; /* small nested cards in mocks */
+  --radius-badge: 4px;
+  --radius-pill: 999px; /* every button and chip */
+
+  /* Hover depth (§8.3) — shadows exist only on hover */
+  --shadow-card-hover: 0 14px 34px -18px rgb(18 18 15 / 0.22);
+  --shadow-cta-hover: 0 12px 26px -12px rgb(18 18 15 / 0.36);
+  --shadow-ut-dot: 0 0 0 3px rgb(199 234 70 / 0.28);
+  --shadow-toast: 0 14px 30px -14px rgb(18 18 15 / 0.5);
+
+  /* §8 One overshoot curve family, plus the mock-demo curve */
+  --ease-spring: cubic-bezier(0.2, 1.3, 0.36, 1);
+  --ease-demo: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------------- §3.2 Type ramp ----------------
+   Each step carries its size, line-height and tracking together. Fluid
+   steps run from the §9.1 phone size to the desktop size. Fixed steps
+   that sit under 14px on desktop are raised to the mobile floor below
+   1024px (§9.1: reading copy ≥14px, eyebrows and labels ≥12px). */
+
+@utility type-display-1 { font-size: clamp(34px, 5.16vw, 66px); line-height: 1; letter-spacing: -0.04em; font-weight: 700; }
+@utility type-display-2 { font-size: clamp(32px, 4.53vw, 58px); line-height: 1.02; letter-spacing: -0.038em; font-weight: 700; }
+@utility type-display-3 { font-size: clamp(30px, 4.22vw, 54px); line-height: 1.03; letter-spacing: -0.038em; font-weight: 700; }
+@utility type-display-4 { font-size: clamp(29px, 3.91vw, 50px); line-height: 1.04; letter-spacing: -0.036em; font-weight: 700; }
+@utility type-display-5 { font-size: clamp(28px, 3.59vw, 46px); line-height: 1.05; letter-spacing: -0.036em; font-weight: 700; }
+@utility type-head-2 { font-size: clamp(26px, 3.13vw, 40px); line-height: 1.06; letter-spacing: -0.034em; font-weight: 700; }
+@utility type-head-3 { font-size: clamp(25px, 2.81vw, 36px); line-height: 1.06; letter-spacing: -0.034em; font-weight: 700; }
+@utility type-head-5 { font-size: clamp(23px, 2.5vw, 32px); line-height: 1.1; letter-spacing: -0.028em; font-weight: 700; }
+@utility type-head-6 { font-size: clamp(22px, 2.34vw, 30px); line-height: 1.12; letter-spacing: -0.026em; font-weight: 700; }
+@utility type-card-lg { font-size: clamp(19px, 1.72vw, 22px); line-height: 1.2; letter-spacing: -0.022em; font-weight: 700; }
+@utility type-card { font-size: 20px; line-height: 1.3; letter-spacing: -0.015em; font-weight: 600; }
+
+@utility type-body-lg { font-size: 18px; line-height: 1.55; letter-spacing: 0; }
+@utility type-body { font-size: 15.5px; line-height: 1.58; letter-spacing: 0; @variant lg { font-size: 16px; } }
+@utility type-body-sm { font-size: 14.5px; line-height: 1.5; letter-spacing: 0; }
+@utility type-card-body { font-size: 14.5px; line-height: 1.55; letter-spacing: 0; }
+@utility type-small { font-size: 14px; line-height: 1.5; letter-spacing: 0; @variant lg { font-size: 13.5px; } }
+@utility type-link-sm { font-size: 14px; line-height: 1; letter-spacing: 0; @variant lg { font-size: 13.5px; } }
+@utility type-chip { font-size: 14px; line-height: 1; letter-spacing: 0; font-weight: 500; @variant lg { font-size: 13px; } }
+@utility type-nav { font-size: 13.5px; line-height: 1; letter-spacing: 0; }
+@utility type-button { font-size: 14px; line-height: 1; letter-spacing: 0; font-weight: 600; }
+@utility type-button-lg { font-size: 15px; line-height: 1; letter-spacing: 0; font-weight: 600; }
+@utility type-button-sm { font-size: 14px; line-height: 1; letter-spacing: 0; font-weight: 600; @variant lg { font-size: 13px; } }
+@utility type-drawer { font-size: 17px; line-height: 1; letter-spacing: 0; font-weight: 600; }
+@utility type-close { font-size: 26px; line-height: 1; font-weight: 400; }
+@utility type-eyebrow { font-size: 12px; line-height: 1; letter-spacing: 0.18em; font-weight: 600; text-transform: uppercase; @variant lg { font-size: 11px; } }
+@utility type-eyebrow-sm { font-size: 12px; line-height: 1; letter-spacing: 0.16em; font-weight: 600; text-transform: uppercase; @variant lg { font-size: 10.5px; } }
+@utility type-wordmark { font-size: 15px; line-height: 1; letter-spacing: 0.24em; font-weight: 700; text-transform: uppercase; }
+
+/* Homepage steps (Main.dc.html). Fixed sizes under 14px are raised to the
+   mobile floor below 1024px, as the prototype does outside product mocks. */
+@utility type-lede { font-size: 16.5px; line-height: 1.6; letter-spacing: 0; }
+@utility type-cred { font-size: clamp(14px, 1.6vw, 17px); line-height: 1.2; letter-spacing: -0.02em; }
+@utility type-cred-status { font-size: 12px; line-height: 1.4; letter-spacing: 0.18em; font-weight: 600; text-transform: uppercase; @variant lg { font-size: 10.5px; } }
+@utility type-label { font-size: 12px; line-height: 1; letter-spacing: 0.16em; font-weight: 600; text-transform: uppercase; @variant lg { font-size: 10px; } }
+@utility type-label-md { font-size: 12px; line-height: 1; letter-spacing: 0.16em; font-weight: 600; text-transform: uppercase; @variant lg { font-size: 11px; } }
+@utility type-trust-title { font-size: 15px; line-height: 1.3; letter-spacing: 0; font-weight: 700; }
+@utility type-trust-body { font-size: 14px; line-height: 1.55; letter-spacing: 0; }
+@utility type-roadmap-title { font-size: clamp(20px, 2vw, 26px); line-height: 1.2; letter-spacing: -0.025em; font-weight: 700; }
+@utility type-roadmap-body { font-size: 15.5px; line-height: 1.6; letter-spacing: 0; }
+@utility type-head-6-loose { font-size: clamp(22px, 2.34vw, 30px); line-height: 1.15; letter-spacing: -0.026em; font-weight: 700; }
+
+/* Light profile mock — not a [data-mock], so it takes the mobile floor */
+@utility type-profile-name { font-size: 19px; line-height: 1.15; letter-spacing: -0.018em; font-weight: 700; }
+@utility type-profile-sub { font-size: 14px; line-height: 1; @variant lg { font-size: 13px; } }
+@utility type-profile-body { font-size: 14px; line-height: 1.5; @variant lg { font-size: 13.5px; } }
+@utility type-profile-foot { font-size: 14px; line-height: 1; @variant lg { font-size: 12.5px; } }
+@utility type-badge { font-size: 12px; line-height: 1; font-weight: 600; @variant lg { font-size: 11px; } }
+@utility type-pill { font-size: 12px; line-height: 1; font-weight: 500; @variant lg { font-size: 11px; } }
+@utility type-avatar { font-size: 14px; line-height: 1; font-weight: 600; }
+@utility type-mini-button { font-size: 14px; line-height: 1; font-weight: 600; @variant lg { font-size: 12.5px; } }
+
+/* Dark product mocks — depictions of an interface, exempt from the floor */
+@utility type-m-title { font-size: 15px; line-height: 1; font-weight: 600; }
+@utility type-m-meta { font-size: 12px; line-height: 1; }
+@utility type-m-row { font-size: 13.5px; line-height: 1.35; }
+@utility type-m-status { font-size: 10px; line-height: 1; letter-spacing: 0.1em; font-weight: 600; text-transform: uppercase; }
+@utility type-m-label { font-size: 10px; line-height: 1; letter-spacing: 0.16em; font-weight: 600; text-transform: uppercase; }
+@utility type-m-count { font-size: 11.5px; line-height: 1; }
+@utility type-m-tick { font-size: 9px; line-height: 1; font-weight: 700; }
+@utility type-m-avatar { font-size: 9px; line-height: 1; font-weight: 600; }
+@utility type-m-name { font-size: 12.5px; line-height: 1; font-weight: 600; }
+@utility type-m-note { font-size: 13px; line-height: 1.5; }
+@utility type-toast { font-size: 12px; line-height: 1.2; font-weight: 600; }
+@utility type-replay { font-size: 11px; line-height: 1; letter-spacing: 0.02em; font-weight: 600; }
+
+/* /matching steps */
+@utility type-cta { font-size: clamp(23px, 2.5vw, 32px); line-height: 1.1; letter-spacing: -0.03em; font-weight: 700; }
+@utility type-head-5-loose { font-size: clamp(23px, 2.5vw, 32px); line-height: 1.12; letter-spacing: -0.028em; font-weight: 700; }
+@utility type-note { font-size: 14px; line-height: 1.5; letter-spacing: 0; }
+@utility type-body-16 { font-size: 16px; line-height: 1.6; letter-spacing: 0; }
+@utility type-cell-title { font-size: 15.5px; line-height: 1.3; letter-spacing: 0; font-weight: 600; }
+@utility type-cell-body { font-size: 14px; line-height: 1.5; @variant lg { font-size: 13.5px; } }
+@utility type-card-text { font-size: 15px; line-height: 1.55; letter-spacing: 0; }
+@utility type-m-heading { font-size: 21px; line-height: 1.1; letter-spacing: -0.02em; font-weight: 700; }
+@utility type-m-sub { font-size: 13px; line-height: 1; }
+@utility type-m-avatar-lg { font-size: 13px; line-height: 1; font-weight: 600; }
+@utility type-m-tag { font-size: 11px; line-height: 1; }
+
+/* /platform mock steps — sizes only; pair with font-* and leading-* */
+@utility type-caption-floor { font-size: 14px; line-height: 1.5; @variant lg { font-size: 12.5px; } }
+@utility type-m-11 { font-size: 11px; line-height: 1; }
+@utility type-m-115 { font-size: 11.5px; line-height: 1; }
+@utility type-m-12 { font-size: 12px; line-height: 1; }
+@utility type-m-125 { font-size: 12.5px; line-height: 1; }
+@utility type-m-13 { font-size: 13px; line-height: 1; }
+@utility type-m-135 { font-size: 13.5px; line-height: 1; }
+@utility type-m-14 { font-size: 14px; line-height: 1; }
+@utility type-m-15 { font-size: 15px; line-height: 1; }
+@utility type-m-155 { font-size: 15.5px; line-height: 1; }
+@utility type-m-16 { font-size: 16px; line-height: 1; }
+@utility type-m-label-lg { font-size: 10.5px; line-height: 1; letter-spacing: 0.16em; font-weight: 600; text-transform: uppercase; }
+@utility type-m-label-tight { font-size: 10.5px; line-height: 1; letter-spacing: 0.14em; font-weight: 600; text-transform: uppercase; }
+@utility type-m-display { font-size: clamp(20px, 1.88vw, 24px); line-height: 1.1; letter-spacing: -0.02em; font-weight: 700; }
+@utility type-m-monogram { font-size: clamp(20px, 1.88vw, 24px); line-height: 1; letter-spacing: 0.02em; font-weight: 600; }
+@utility type-m-stat { font-size: clamp(22px, 2.34vw, 30px); line-height: 1; letter-spacing: -0.03em; font-weight: 700; }
+@utility type-body-17 { font-size: 17px; line-height: 1.55; letter-spacing: 0; }
+@utility type-tab { font-size: 13.5px; line-height: 1; letter-spacing: 0; }
+@utility bg-photo { background: repeating-linear-gradient(135deg, #1d1d18 0 6px, #191915 6px 12px); }
+@utility grid-cols-filters { grid-template-columns: minmax(220px, 272px) minmax(0, 1fr); }
+@utility grid-cols-roster { grid-template-columns: 1.5fr 1.6fr 1fr 0.8fr 0.7fr; }
+@utility min-h-mock { min-height: 640px; }
+@utility min-w-roster { min-width: 640px; }
+@utility pt-fluid-40 { padding-top: clamp(22px, 6.5vw, 40px); }
+@utility pt-fluid-72 { padding-top: clamp(40px, 6.5vw, 72px); }
+@utility scrollbar-none { scrollbar-width: none; &::-webkit-scrollbar { display: none; } }
+/* §18 tap targets: an invisible 44px-tall hit area centred on a text link,
+   so the link itself (and its underline) keeps its drawn size. */
+@utility tap-44 {
+  position: relative;
+  &::before { content: ""; position: absolute; z-index: 1; inset-inline: 0; top: 50%; height: 44px; translate: 0 -50%; }
+}
+
+/* /pricing steps */
+@utility type-info { font-size: 14.5px; line-height: 1.45; letter-spacing: 0; }
+@utility type-tier { font-size: clamp(20px, 1.88vw, 24px); line-height: 1.2; letter-spacing: -0.022em; font-weight: 700; }
+@utility type-head-7 { font-size: clamp(21px, 2.19vw, 28px); line-height: 1.15; letter-spacing: -0.025em; font-weight: 700; }
+@utility type-ledger { font-size: 14.5px; line-height: 1.4; letter-spacing: 0; font-weight: 500; }
+@utility type-ledger-value { font-size: 14px; line-height: 1; font-weight: 600; @variant lg { font-size: 13px; } }
+@utility type-button-tier { font-size: 14px; line-height: 1; font-weight: 600; @variant lg { font-size: 13.5px; } }
+@utility min-w-info { min-width: 180px; }
+
+/* /partner steps */
+@utility type-body-17-loose { font-size: 17px; line-height: 1.6; letter-spacing: 0; }
+@utility type-step-index { font-size: 14px; line-height: 1.4; font-weight: 700; @variant lg { font-size: 13px; } }
+@utility type-step-title { font-size: 15px; line-height: 1.35; font-weight: 600; }
+@utility type-motion { font-size: 15px; line-height: 1.6; }
+@utility type-field-label { font-size: 12px; line-height: 1; letter-spacing: 0.1em; font-weight: 600; text-transform: uppercase; @variant lg { font-size: 11.5px; } }
+/* Inputs stay at 16px below 1024px so iOS Safari doesn't zoom on focus (§9.1). */
+@utility type-input { font-size: 16px; line-height: 1; @variant lg { font-size: 14px; } }
+@utility type-input-multiline { font-size: 16px; line-height: 1.5; @variant lg { font-size: 14px; } }
+@utility type-hint { font-size: 14px; line-height: 1.4; @variant lg { font-size: 12.5px; } }
+@utility type-error { font-size: 13px; line-height: 1.4; }
+@utility type-submit { font-size: 14.5px; line-height: 1; font-weight: 600; }
+@utility type-fineprint { font-size: 14px; line-height: 1.5; @variant lg { font-size: 12.5px; } }
+@utility type-stat { font-size: clamp(23px, 2.5vw, 32px); line-height: 1; letter-spacing: -0.035em; font-weight: 700; }
+@utility type-stat-caption { font-size: 14px; line-height: 1.45; @variant lg { font-size: 13.5px; } }
+@utility grid-cols-partner { grid-template-columns: minmax(0, 1fr) minmax(280px, 360px); }
+@utility basis-index { flex: 0 0 28px; }
+
+/* Homepage grid ratios */
+@utility grid-cols-lead { grid-template-columns: 1.25fr 1fr; }
+@utility grid-cols-feature { grid-template-columns: 1fr 1.25fr; }
+@utility grid-cols-who { grid-template-columns: minmax(0, 640px); }
+@utility grid-cols-split { grid-template-columns: 0.9fr 1.1fr; }
+@utility px-cred { padding-inline: clamp(12px, 3vw, 30px); }
+@utility py-roadmap { padding-block: clamp(28px, 3.4vw, 40px); }
+@utility pt-trust-last { padding-top: clamp(17px, 6.5vw, 30px); }
+
+/* ---------------- §3.3 Gutter and vertical rhythm ----------------
+   One gutter expression for every section; never a per-breakpoint value.
+   Section padding steps share the 6.5vw middle term (named by max). */
+
+@utility px-gutter { padding-inline: clamp(20px, 4.5vw, 56px); }
+@utility pl-gutter { padding-left: clamp(20px, 4.5vw, 56px); }
+@utility pr-gutter { padding-right: clamp(20px, 4.5vw, 56px); }
+@utility max-w-toast { max-width: calc(100% - 36px); }
+@utility -mx-gutter { margin-inline: calc(-1 * clamp(20px, 4.5vw, 56px)); }
+@utility py-header { padding-block: clamp(13px, 2vw, 20px); }
+@utility gap-nav { column-gap: clamp(14px, 2.2vw, 30px); }
+
+@utility py-fluid-28 { padding-block: clamp(15px, 6.5vw, 28px); }
+@utility py-fluid-44 { padding-block: clamp(31px, 6.5vw, 44px); }
+@utility pt-fluid-56 { padding-top: clamp(31px, 6.5vw, 56px); }
+@utility py-fluid-64 { padding-block: clamp(35px, 6.5vw, 64px); }
+@utility py-fluid-72 { padding-block: clamp(40px, 6.5vw, 72px); }
+@utility py-fluid-76 { padding-block: clamp(42px, 6.5vw, 76px); }
+@utility py-fluid-80 { padding-block: clamp(44px, 6.5vw, 80px); }
+@utility pt-fluid-80 { padding-top: clamp(44px, 6.5vw, 80px); }
+@utility py-fluid-84 { padding-block: clamp(46px, 6.5vw, 84px); }
+@utility py-fluid-92 { padding-block: clamp(51px, 6.5vw, 92px); }
+@utility pt-fluid-96 { padding-top: clamp(53px, 6.5vw, 96px); }
+
+/* Safe areas (§9.1): drawer top, footer bottom */
+@utility pt-safe { padding-top: env(safe-area-inset-top); }
+@utility pb-footer { padding-bottom: calc(48px + env(safe-area-inset-bottom)); }
+
+@utility text-glow { text-shadow: 0 0 18px rgb(255 255 255 / 0.45); }
+@utility max-w-tagline { max-width: 250px; }
+@utility grid-cols-footer { grid-template-columns: 1.2fr 0.6fr 0.6fr; }
+
+/* ---------------- §4 Brand marks ----------------
+   Built from boxes, coloured by currentColor, sized by --mark / --node. */
+
+@utility mark-20 { --mark: 20px; --mark-line: 1.5px; --mark-overhang: 3px; }
+@utility mark-hero { --mark: 46px; --mark-line: 2px; --mark-overhang: 7px; }
+
+@utility node-16 { --node: 16; }
+@utility node-18 { --node: 18; }
+@utility node-34 { --node: 34; }
+
+@layer components {
+  .corporate-mark {
+    position: relative;
+    display: block;
+    flex: 0 0 auto;
+    width: var(--mark);
+    height: var(--mark);
+  }
+  .corporate-mark::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: var(--mark-line) solid currentColor;
+    border-radius: 50%;
+  }
+  .corporate-mark::after {
+    content: "";
+    position: absolute;
+    left: calc(-1 * var(--mark-overhang));
+    right: calc(-1 * var(--mark-overhang));
+    top: calc((var(--mark) - var(--mark-line)) / 2);
+    height: var(--mark-line);
+    background: currentColor;
+  }
+
+  /* Matching node mark: drawn on a 64×64 grid, scaled to --node px. */
+  .node-mark {
+    display: block;
+    flex: 0 0 auto;
+    overflow: hidden;
+    width: calc(var(--node) * 1px);
+    height: calc(var(--node) * 1px);
+  }
+  .node-mark > span {
+    position: relative;
+    display: block;
+    width: 64px;
+    height: 64px;
+    transform: scale(calc(var(--node) / 64));
+    transform-origin: top left;
+  }
+  .node-mark > span > span {
+    position: absolute;
+    display: block;
+  }
+  .node-mark .arm {
+    left: 32px;
+    top: 31px;
+    width: 22px;
+    height: 3px;
+    background: currentColor;
+    transform-origin: left center;
+  }
+  .node-mark .arm-n { transform: rotate(-90deg); }
+  .node-mark .arm-s { transform: rotate(90deg); }
+  .node-mark .arm-w { transform: rotate(180deg); }
+  .node-mark .dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .node-mark .dot-n { left: 27px; top: 1px; }
+  .node-mark .dot-e { left: 53px; top: 27px; }
+  .node-mark .dot-s { left: 27px; top: 53px; }
+  .node-mark .dot-w { left: 1px; top: 27px; }
+  .node-mark .hub {
+    left: 24px;
+    top: 24px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--color-lime);
+    border: 3px solid currentColor;
+  }
+}
+
+/* ---------------- §8 Motion ----------------
+   One overshoot curve family; every rule sits behind reduced-motion, and
+   hover rules also behind (hover: hover) so touch never sticks. */
+
+/* §8.1 Scroll reveals — CSS scroll-driven, no JS. Browsers without
+   view() timelines render everything static; nothing has a hidden base
+   state outside a keyframe. The header and the hero never animate in. */
+@keyframes site-rise {
+  0%   { opacity: 0; transform: translateY(38px) scale(0.982); }
+  60%  { opacity: 1; transform: translateY(-7px) scale(1.005); }
+  82%  { transform: translateY(2px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes site-pop {
+  0%   { opacity: 0; transform: translateY(20px) scale(0.988); }
+  62%  { opacity: 1; transform: translateY(-4px) scale(1.004); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Longhands on purpose: the minifier otherwise folds animation-timeline
+       into the animation shorthand, which Chrome rejects outright. The
+       timeline comes through a custom property so it can't be folded. */
+    [data-page] > section:not(:first-child) {
+      --reveal-timeline: view();
+      animation-name: site-rise;
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+      animation-timeline: var(--reveal-timeline);
+      animation-range: entry 5% cover 26%;
+    }
+    /* backwards, not both: once a cell lands, the animation lets go of
+       transform so the card hover lift (§8.3) still works. */
+    [data-reveal] > * {
+      --reveal-timeline: view();
+      animation-name: site-pop;
+      animation-fill-mode: backwards;
+      animation-timing-function: linear;
+      animation-timeline: var(--reveal-timeline);
+      animation-range: entry 2% cover 22%;
+    }
+  }
+}
+
+/* §8.2 Page and drawer entrances */
+@keyframes page-enter {
+  0%   { opacity: 0; transform: translateY(22px) scale(0.992); }
+  58%  { opacity: 1; transform: translateY(-5px) scale(1.003); }
+  80%  { transform: translateY(1px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes drawer-in {
+  0%   { opacity: 0; transform: translateY(-16px); }
+  64%  { opacity: 1; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-page] { animation: page-enter 520ms cubic-bezier(0.2, 1.28, 0.36, 1) both; }
+  [data-drawer] { animation: drawer-in 380ms var(--ease-spring) both; }
+  [data-drawer] nav > a { animation: page-enter 420ms var(--ease-spring) both; }
+  [data-drawer] nav > a:nth-child(1) { animation-delay: 70ms; }
+  [data-drawer] nav > a:nth-child(2) { animation-delay: 120ms; }
+  [data-drawer] nav > a:nth-child(3) { animation-delay: 170ms; }
+  [data-drawer] nav > a:nth-child(4) { animation-delay: 220ms; }
+  [data-drawer] nav > a:nth-child(5) { animation-delay: 265ms; }
+  [data-drawer] nav > a:nth-child(n + 6) { animation-delay: 305ms; }
+}
+
+/* §8.3 Hover and press */
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  [data-card] {
+    transition: transform 340ms cubic-bezier(0.2, 1.25, 0.36, 1), border-color 240ms ease,
+      box-shadow 340ms cubic-bezier(0.2, 1.25, 0.36, 1);
+  }
+  [data-card]:hover {
+    transform: translateY(-5px);
+    border-color: var(--color-rule-hover);
+    box-shadow: var(--shadow-card-hover);
+  }
+  [data-cta] {
+    transition: transform 300ms cubic-bezier(0.2, 1.35, 0.36, 1), box-shadow 300ms cubic-bezier(0.2, 1.35, 0.36, 1);
+  }
+  [data-cta]:hover { transform: translateY(-3px) scale(1.018); box-shadow: var(--shadow-cta-hover); }
+  [data-cta]:active { transform: translateY(1px) scale(0.985); transition-duration: 90ms; }
+  [data-cell] { transition: background 260ms ease, transform 320ms cubic-bezier(0.2, 1.25, 0.36, 1); }
+  [data-cell]:hover { background: var(--color-dark-cell-hover); transform: translateY(-3px); }
+  [data-arrow] { transition: transform 300ms cubic-bezier(0.2, 1.35, 0.36, 1), letter-spacing 240ms ease; }
+  [data-arrow]:hover { transform: translateX(3px); letter-spacing: 0.004em; }
+  [role="tab"] { transition: color 220ms ease, transform 300ms cubic-bezier(0.2, 1.35, 0.36, 1); }
+  [role="tab"]:hover { transform: translateY(-2px); }
+  /* Nav: a 2px lime rule wipes in under the label. It never replaces the
+     active state's solid border. */
+  [data-nav] a { position: relative; transition: color 200ms ease; }
+  [data-nav] a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -5px;
+    height: 2px;
+    background: var(--color-lime);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 320ms var(--ease-spring);
+  }
+  [data-nav] a:hover::after { transform: scaleX(1); }
+  /* Footer link columns: every link brightens to white with the same lime
+     wipe as the nav, under the label only (the node mark sits outside the
+     span). The footer logo, like the header's, has no hover. */
+  [data-footer] nav a { transition: color 200ms ease; }
+  [data-footer] nav a:hover { color: var(--color-white); }
+  [data-footer] nav a > span:last-child { position: relative; }
+  [data-footer] nav a > span:last-child::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -4px;
+    height: 2px;
+    background: var(--color-lime);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 320ms var(--ease-spring);
+  }
+  [data-footer] nav a:hover > span:last-child::after { transform: scaleX(1); }
+}
+
+/* ---------------- §8 Product mock demos ----------------
+   Each mock plays once when it scrolls into view (DemoFrame sets
+   data-play), then rests on its final frame, with a Replay button. Copied
+   from the prototype: data-at = start in 150ms steps, data-step = stagger.
+   Hidden start states apply only once JS has set html[data-motion], and
+   only without reduced motion — otherwise every mock renders static. */
+
+[data-demo] { position: relative; }
+[data-dm] { --at: 0ms; --step: 90ms; }
+[data-step="fast"] { --step: 45ms; }
+[data-step="mid"] { --step: 170ms; }
+[data-step="slow"] { --step: 850ms; }
+[data-dm] > :nth-child(1) { --i: 0; }
+[data-dm] > :nth-child(2) { --i: 1; }
+[data-dm] > :nth-child(3) { --i: 2; }
+[data-dm] > :nth-child(4) { --i: 3; }
+[data-dm] > :nth-child(5) { --i: 4; }
+[data-dm] > :nth-child(6) { --i: 5; }
+[data-dm] > :nth-child(7) { --i: 6; }
+[data-dm] > :nth-child(8) { --i: 7; }
+[data-dm] > :nth-child(9) { --i: 8; }
+[data-dm] > :nth-child(10) { --i: 9; }
+[data-dm] > :nth-child(11) { --i: 10; }
+[data-dm] > :nth-child(12) { --i: 11; }
+[data-at="1"] { --at: 150ms; }
+[data-at="2"] { --at: 300ms; }
+[data-at="3"] { --at: 450ms; }
+[data-at="4"] { --at: 600ms; }
+[data-at="5"] { --at: 750ms; }
+[data-at="6"] { --at: 900ms; }
+[data-at="7"] { --at: 1050ms; }
+[data-at="8"] { --at: 1200ms; }
+[data-at="9"] { --at: 1350ms; }
+[data-at="10"] { --at: 1500ms; }
+[data-at="11"] { --at: 1650ms; }
+[data-at="12"] { --at: 1800ms; }
+[data-at="13"] { --at: 1950ms; }
+[data-at="14"] { --at: 2100ms; }
+
+[data-dm="toast"] { opacity: 0; pointer-events: none; }
+[data-dm="type"] { display: inline-block; vertical-align: bottom; overflow: hidden; white-space: nowrap; max-width: 24ch; }
+
+@keyframes dm-rise { 0% { opacity: 0; transform: translateY(16px) scale(0.985); } 60% { opacity: 1; transform: translateY(-3px) scale(1.004); } 100% { opacity: 1; transform: none; } }
+@keyframes dm-pop { 0% { opacity: 0; transform: scale(0.6); } 60% { opacity: 1; transform: scale(1.08); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes dm-slide-r { 0% { opacity: 0; transform: translateX(28px); } 65% { opacity: 1; transform: translateX(-3px); } 100% { opacity: 1; transform: none; } }
+@keyframes dm-slide-l { 0% { opacity: 0; transform: translateX(-28px); } 65% { opacity: 1; transform: translateX(3px); } 100% { opacity: 1; transform: none; } }
+@keyframes dm-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes dm-press { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgb(199 234 70 / 0.6); } 30% { transform: scale(0.9); } 60% { transform: scale(1.06); box-shadow: 0 0 0 6px rgb(199 234 70 / 0.45); } 100% { transform: scale(1); box-shadow: 0 0 0 16px rgb(199 234 70 / 0); } }
+@keyframes dm-ping { 0% { box-shadow: 0 0 0 0 rgb(199 234 70 / 0.75); } 70%, 100% { box-shadow: 0 0 0 10px rgb(199 234 70 / 0); } }
+@keyframes dm-draw { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes dm-type { from { max-width: 0; } to { max-width: 24ch; } }
+@keyframes dm-caret { 0%, 100% { border-right-color: var(--color-lime); } 50% { border-right-color: transparent; } }
+@keyframes dm-roll { 0% { opacity: 0; transform: translateY(70%); filter: blur(3px); } 70% { opacity: 1; transform: translateY(-6%); filter: blur(0); } 100% { opacity: 1; transform: none; } }
+@keyframes dm-toast { 0% { opacity: 0; transform: translateY(12px) scale(0.96); } 10% { opacity: 1; transform: translateY(-2px) scale(1.01); } 16% { transform: none; } 84% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-6px); } }
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-replay] { display: inline-flex; }
+  [data-demo]:hover > [data-replay], [data-replay]:focus-visible { opacity: 1; }
+  @media (hover: none) { [data-replay] { opacity: 0.85; } }
+
+  html[data-motion] [data-demo]:not([data-play])[data-dm="rise"] > :not([data-replay]):not([data-dm="toast"]):not(.sr-only),
+  html[data-motion] [data-demo]:not([data-play]) [data-dm="rise"] > *,
+  html[data-motion] [data-demo]:not([data-play]) [data-dm="pops"] > *,
+  html[data-motion] [data-demo]:not([data-play]) [data-dm="pop"],
+  html[data-motion] [data-demo]:not([data-play]) [data-dm="slide-l"],
+  html[data-motion] [data-demo]:not([data-play]) [data-dm="slide-r"] { opacity: 0; }
+  html[data-motion] [data-demo]:not([data-play]) [data-dm="grow"] { transform: scaleX(0); }
+  html[data-motion] [data-demo]:not([data-play]) [data-dm="draw"] { clip-path: inset(0 100% 0 0); }
+  html[data-motion] [data-demo]:not([data-play]) [data-dm="type"] { max-width: 0; }
+
+  [data-demo][data-play="1"][data-dm="rise"] > :not([data-replay]):not([data-dm="toast"]):not(.sr-only),
+  [data-demo][data-play="1"] [data-dm="rise"] > * { animation: dm-rise 640ms var(--ease-demo) both; animation-delay: calc(var(--at) + var(--i, 0) * var(--step)); }
+  [data-demo][data-play="1"] [data-dm="pops"] > * { animation: dm-pop 520ms var(--ease-demo) both; animation-delay: calc(var(--at) + var(--i, 0) * var(--step)); }
+  [data-demo][data-play="1"] [data-dm="pop"] { animation: dm-pop 520ms var(--ease-demo) both; animation-delay: var(--at); }
+  [data-demo][data-play="1"] [data-dm="slide-l"] { animation: dm-slide-l 620ms var(--ease-demo) both; animation-delay: var(--at); }
+  [data-demo][data-play="1"] [data-dm="slide-r"] { animation: dm-slide-r 620ms var(--ease-demo) both; animation-delay: var(--at); }
+  [data-demo][data-play="1"] [data-dm="grow"] { transform-origin: left center; animation: dm-grow 1100ms var(--ease-demo) both; animation-delay: var(--at); }
+  [data-demo][data-play="1"] [data-dm="press"] { animation: dm-press 640ms ease-out both; animation-delay: var(--at); }
+  [data-demo][data-play="1"] [data-dm="toast"] { animation: dm-toast 3600ms var(--ease-demo) both; animation-delay: var(--at); }
+  [data-demo][data-play="1"] [data-dm="draw"] { animation: dm-draw 900ms var(--ease-demo) both; animation-delay: var(--at); }
+  [data-demo][data-play="1"] [data-dm="type"] { border-right: 2px solid var(--color-lime); padding-right: 2px; animation: dm-type 1300ms steps(20, end) both, dm-caret 700ms step-end 6; animation-delay: var(--at), var(--at); }
+  [data-demo][data-play="1"] [data-roll] > * > span:first-child { animation: dm-roll 760ms var(--ease-demo) both; animation-delay: calc(var(--at) + var(--i, 0) * var(--step) + 200ms); }
+  [data-demo][data-play="1"] [data-dm="live"] { animation: dm-ping 2200ms ease-out infinite; animation-delay: var(--at); }
+  [data-demo][data-play="1"] [data-ticks] > div > span:first-child { animation: dm-pop 480ms var(--ease-demo) both; animation-delay: calc(var(--at) + var(--i, 0) * var(--step) + 260ms); }
+}
+
+/* ---------------- Base ---------------- */
+
+@layer base {
+  html {
+    line-height: normal; /* as the prototype; Preflight's 1.5 would loosen untyped boxes */
+    overflow-x: hidden; /* safety net only — never a fix for an overflowing section */
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    margin: 0;
+    background: var(--color-white);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  *, ::before, ::after { box-sizing: border-box; }
+  a { color: inherit; text-decoration: none; }
+  a:hover { color: var(--color-lime-deep); }
+  p, h1, h2, h3, h4 { margin: 0; text-wrap: pretty; }
+
+  /* §8.3 Focus: a real 2px lime-deep outline at 2px offset, never animated. */
+  :focus-visible {
+    outline: 2px solid var(--color-lime-deep);
+    outline-offset: 2px;
+  }
+}
+
+@media print {
+  * { animation: none !important; transition: none !important; }
+}

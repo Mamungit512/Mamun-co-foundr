@@ -54,6 +54,13 @@ export const ORG_REGISTRY: Record<string, OrgConfig> = {
       ctaPrimaryLabel: "Join with your UT email",
       ctaSecondaryLabel: "Sign in",
     },
+    // Final copy from Tes (MCFM SEO ticket); do not edit without Tes.
+    seo: {
+      title: "Find Your Co-Founder | University of Texas Co-Foundr",
+      description:
+        "Verified University of Texas students, matched by values and skills. Meet your future co-founder and start building.",
+      ogImageUrl: "/orgs/ut/og.png",
+    },
     limits: {
       unlimitedSwipes: true,
       unlimitedMessages: true,

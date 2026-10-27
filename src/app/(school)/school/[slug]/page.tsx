@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,6 +10,15 @@ import ValuesPillars from "@/features/school/components/landing/ValuesPillars";
 import CtaBand from "@/features/school/components/landing/CtaBand";
 import DepartmentMosaic from "@/features/school/components/landing/DepartmentMosaic";
 import WhyItWorks from "@/features/school/components/landing/WhyItWorks";
+import { getSchoolSeo } from "@/features/school/seo";
+
+// The public landing page is the one indexable page on a school subdomain;
+// the layout sets noindex for everything else. Canonical is the subdomain
+// root, resolved against the layout's metadataBase.
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+  robots: { index: true, follow: true },
+};
 
 export default async function SchoolLanding({
   params,
@@ -22,14 +32,14 @@ export default async function SchoolLanding({
   const cfg = getOrgConfig(slug);
   if (!cfg) notFound();
 
-  const baseUrl = `https://${org.subdomain ?? slug}.mamuncofoundr.com`;
+  const seo = getSchoolSeo(slug, cfg, org);
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
     name: cfg.branding.wordmark ?? org.name,
-    url: baseUrl,
-    logo: `${baseUrl}${cfg.branding.logoUrl}`,
-    description: cfg.landing.subheadline,
+    url: seo.baseUrl,
+    logo: `${seo.baseUrl}${cfg.branding.logoUrl}`,
+    description: seo.description,
   };
 
   const jsonLdScript = (

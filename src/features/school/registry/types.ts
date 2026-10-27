@@ -46,9 +46,27 @@ export type OrgPrivacyPolicyMeta = {
   version?: string;
 };
 
+/**
+ * Search and share metadata for the org's public landing page, the only
+ * indexable page on its subdomain. Never "UT Austin" / "at Austin" /
+ * "Texas McCombs" (MCFM-153).
+ */
+export type OrgSeo = {
+  /** Under 60 characters. Default: "Find Your Co-Founder | {school} Co-Foundr Matching". */
+  title?: string;
+  /** Under 155 characters. Default: landing.subheadline. */
+  description?: string;
+  /**
+   * 1200×630 share image under /public. Replace the file to change the image;
+   * no code change needed. Default: branding.logoUrl.
+   */
+  ogImageUrl?: string;
+};
+
 export type OrgConfig = {
   branding: OrgBranding;
   landing: OrgLanding;
+  seo?: OrgSeo;
   limits: OrgLimits;
   onboarding: OrgOnboarding;
   privacyPolicy?: OrgPrivacyPolicyMeta;
