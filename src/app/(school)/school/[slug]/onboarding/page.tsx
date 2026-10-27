@@ -13,13 +13,14 @@ import {
   getGatedFeatureLabel,
   resolvePostOnboardingRedirect,
 } from "@/features/school/onboarding/onboardingRedirect";
-import { DEFAULT_LOCATION, SHELL_COPY, type FlowStep } from "@/features/school/onboarding/quick/constants";
+import { DEFAULT_LOCATION, FLOW_STEPS, SHELL_COPY, TOTAL_STEPS, type FlowStep } from "@/features/school/onboarding/quick/constants";
 import DoneScreen from "@/features/school/onboarding/quick/DoneScreen";
 import FitCard from "@/features/school/onboarding/quick/FitCard";
 import { Banner, PreviewPanel, QuickShell, StepCard } from "@/features/school/onboarding/quick/QuickShell";
 import StepAbout from "@/features/school/onboarding/quick/StepAbout";
 import StepBring from "@/features/school/onboarding/quick/StepBring";
 import StepLooking from "@/features/school/onboarding/quick/StepLooking";
+import StepStartup from "@/features/school/onboarding/quick/StepStartup";
 import { BTN_GHOST_SMALL_CLS, BTN_SMALL_CLS, FOCUS_CLS, useToast } from "@/features/school/onboarding/quick/ui";
 import { useQuickDraft } from "@/features/school/onboarding/quick/useQuickDraft";
 import {
@@ -42,6 +43,11 @@ const STEP_COPY: Record<FlowStep, { title: string; help: string; primary: string
     primary: "Continue",
   },
   4: {
+    title: "Where are you with your startup?",
+    help: "Matches see this on your card, so they know whether there is already a company to join.",
+    primary: "Continue",
+  },
+  5: {
     title: "What are you looking for?",
     help: "This shapes who shows up in your matches.",
     primary: "Finish my profile",
@@ -271,7 +277,7 @@ export default function SchoolOnboardingPage({
             Welcome back{firstName ? `, ${firstName}` : ""}.
           </b>
           <br />
-          You stopped on step {resumeBanner} of 4. Your answers are saved.
+          You stopped on step {resumeBanner} of {TOTAL_STEPS}. Your answers are saved.
         </Banner>
       )}
       {preFilledNotice && (
@@ -320,7 +326,7 @@ export default function SchoolOnboardingPage({
               primaryLabel={STEP_COPY[step].primary}
               onPrimary={() => {
                 if (missing.length) return;
-                if (step === 4) handleSubmit();
+                if (step === FLOW_STEPS[FLOW_STEPS.length - 1]) handleSubmit();
                 else goTo((step + 1) as FlowStep, "forward");
               }}
               primaryDisabled={missing.length > 0}
@@ -330,7 +336,8 @@ export default function SchoolOnboardingPage({
             >
               {step === 2 && <StepAbout data={data} ui={ui} update={update} />}
               {step === 3 && <StepBring data={data} ui={ui} update={update} />}
-              {step === 4 && (
+              {step === 4 && <StepStartup data={data} ui={ui} update={update} />}
+              {step === 5 && (
                 <StepLooking
                   data={data}
                   ui={ui}

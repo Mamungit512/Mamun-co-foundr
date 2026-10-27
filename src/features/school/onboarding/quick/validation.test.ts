@@ -5,8 +5,10 @@ import {
   formatMissing,
   gradYearBounds,
   gradYearChoices,
+  isGithubValid,
   isGradYearValid,
   isLinkedinValid,
+  isWebsiteValid,
   missingFor,
   normalizeUi,
 } from "./validation";
@@ -33,6 +35,9 @@ const STEP3_DONE: OnboardingData = {
 
 const STEP4_DONE: OnboardingData = {
   hasStartup: "no",
+};
+
+const STEP5_DONE: OnboardingData = {
   intent: "seeking_to_join",
   utSectorInterests: ["ai_ml"],
   personalIntro: "Make it easier for students to find co-founders.",
@@ -71,6 +76,24 @@ describe("LinkedIn", () => {
   });
 });
 
+describe("GitHub and startup website", () => {
+  it("accepts blank, profile and repo links", () => {
+    expect(isGithubValid("")).toBe(true);
+    expect(isGithubValid("https://www.github.com/ada")).toBe(true);
+    expect(isGithubValid("github.com/ada/engine")).toBe(true);
+    expect(isGithubValid("gitlab.com/ada")).toBe(false);
+    expect(isGithubValid("ada")).toBe(false);
+  });
+
+  it("accepts blank and domain-like websites", () => {
+    expect(isWebsiteValid(undefined)).toBe(true);
+    expect(isWebsiteValid("lumenlearn.co")).toBe(true);
+    expect(isWebsiteValid("https://lumenlearn.co/demo")).toBe(true);
+    expect(isWebsiteValid("lumenlearn")).toBe(false);
+    expect(isWebsiteValid("not a site")).toBe(false);
+  });
+});
+
 describe("missingFor", () => {
   it("lists every required step 2 answer when empty", () => {
     expect(missingFor(2, {}, {}, NOW)).toEqual([
@@ -88,11 +111,8 @@ describe("missingFor", () => {
     expect(missingFor(2, data, {}, NOW)).toEqual(["graduation year"]);
   });
 
-  it("blocks an invalid LinkedIn link but not a blank one", () => {
-    expect(missingFor(2, { ...STEP2_DONE, linkedin: "" }, {}, NOW)).toEqual([]);
-    expect(missingFor(2, { ...STEP2_DONE, linkedin: "twitter.com/ada" }, {}, NOW)).toEqual([
-      "a valid LinkedIn link (or leave it blank)",
-    ]);
+  it("no longer asks about LinkedIn", () => {
+    expect(missingFor(2, { ...STEP2_DONE, linkedin: "twitter.com/ada" }, {}, NOW)).toEqual([]);
   });
 
   it("treats 'Not sure yet' as an answered archetype", () => {
@@ -101,12 +121,39 @@ describe("missingFor", () => {
     expect(missingFor(3, data, { archetypeUnsure: true }, NOW)).toEqual([]);
   });
 
-  it("caps interests and requires a 15+ character mission", () => {
-    expect(missingFor(4, STEP4_DONE, {}, NOW)).toEqual([]);
+  it("requires the startup answer on step 4", () => {
+    expect(missingFor(4, {}, {}, NOW)).toEqual(["whether you have a startup"]);
+    expect(missingFor(4, {}, { startupMode: "exploring" }, NOW)).toEqual([]);
+  });
+
+  it("requires a startup name unless exploring", () => {
+    for (const startupMode of ["building", "idea"] as const) {
+      expect(missingFor(4, {}, { startupMode }, NOW)).toEqual(["your startup’s name"]);
+      expect(missingFor(4, { startupName: "  " }, { startupMode }, NOW)).toEqual(["your startup’s name"]);
+      expect(missingFor(4, { startupName: "Lumen Learn" }, { startupMode }, NOW)).toEqual([]);
+    }
+  });
+
+  it("blocks invalid links on step 4 but not blank ones", () => {
+    const ui = { startupMode: "exploring" } as const;
+    expect(missingFor(4, { linkedin: "", git: "", startupWebsite: "" }, ui, NOW)).toEqual([]);
+    expect(missingFor(4, { linkedin: "twitter.com/ada" }, ui, NOW)).toEqual([
+      "a valid LinkedIn link (or leave it blank)",
+    ]);
+    expect(missingFor(4, { git: "gitlab.com/ada" }, ui, NOW)).toEqual([
+      "a valid GitHub link (or leave it blank)",
+    ]);
+    expect(missingFor(4, { startupWebsite: "not a site" }, ui, NOW)).toEqual([
+      "a valid startup website (or leave it blank)",
+    ]);
+  });
+
+  it("caps interests and requires a 15+ character mission on step 5", () => {
+    expect(missingFor(5, STEP5_DONE, {}, NOW)).toEqual([]);
     expect(
-      missingFor(4, { ...STEP4_DONE, utSectorInterests: ["ai_ml", "data", "ux", "media"] }, {}, NOW),
+      missingFor(5, { ...STEP5_DONE, utSectorInterests: ["ai_ml", "data", "ux", "media"] }, {}, NOW),
     ).toEqual(["3 interests at most"]);
-    expect(missingFor(4, { ...STEP4_DONE, personalIntro: "  too short   " }, {}, NOW)).toEqual([
+    expect(missingFor(5, { ...STEP5_DONE, personalIntro: "  too short   " }, {}, NOW)).toEqual([
       "a longer mission (15+ characters)",
     ]);
   });
@@ -118,10 +165,16 @@ describe("firstIncompleteStep", () => {
     expect(firstIncompleteStep({ ...STEP2_DONE, gradYear: new Date().getFullYear() }, {})).toBe(3);
     expect(
       firstIncompleteStep(
-        { ...STEP2_DONE, gradYear: new Date().getFullYear(), ...STEP3_DONE, ...STEP4_DONE },
-        {},
+        { ...STEP2_DONE, gradYear: new Date().getFullYear(), ...STEP3_DONE, ...STEP4_DONE, ...STEP5_DONE },
+        { startupMode: "exploring" },
       ),
     ).toBeNull();
+    expect(
+      firstIncompleteStep(
+        { ...STEP2_DONE, gradYear: new Date().getFullYear(), ...STEP3_DONE, ...STEP5_DONE },
+        {},
+      ),
+    ).toBe(4);
   });
 });
 
@@ -141,5 +194,17 @@ describe("normalizeUi", () => {
       gradYearText: "1999",
     });
     expect(normalizeUi({ utStatus: "student", gradYear: 2027 }, {}, NOW)).toEqual({});
+  });
+
+  it("derives the startup answer from the saved startup fields", () => {
+    expect(normalizeUi({}, {}, NOW)).toEqual({});
+    expect(normalizeUi({ hasStartup: "no" }, {}, NOW)).toEqual({ startupMode: "exploring" });
+    expect(normalizeUi({ hasStartup: "yes", startupFunding: "Idea stage" }, {}, NOW)).toEqual({
+      startupMode: "idea",
+    });
+    expect(normalizeUi({ hasStartup: "yes", startupFunding: "Seed" }, {}, NOW)).toEqual({
+      startupMode: "building",
+    });
+    expect(normalizeUi({ hasStartup: "no" }, { startupMode: "idea" }, NOW)).toEqual({ startupMode: "idea" });
   });
 });

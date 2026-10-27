@@ -62,7 +62,7 @@ export default function WelcomeCard({ onStart }: { onStart: () => void }) {
           <em className="whitespace-nowrap text-[var(--org-primary)] not-italic">at UT.</em>
         </h2>
         <p className="mt-3 max-w-[470px] text-[15px] leading-relaxed text-[var(--ui-text-muted)] sm:text-base">
-          Answer four quick steps and your Fit Card goes live in the Fall ’26 founder pool. Matches
+          Answer five quick steps and your Fit Card goes live in the Fall ’26 founder pool. Matches
           show up the moment you finish.
         </p>
 
