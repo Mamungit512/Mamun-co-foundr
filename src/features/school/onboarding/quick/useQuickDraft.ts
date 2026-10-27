@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import type { FlowStep } from "@/features/school/onboarding/quick/constants";
+import { FLOW_STEPS, type FlowStep } from "@/features/school/onboarding/quick/constants";
 import type { QuickUi } from "@/features/school/onboarding/quick/validation";
 
 export type QuickDraft = {
@@ -25,7 +25,7 @@ export function useQuickDraft(slug: string, userId: string | null | undefined) {
       if (!parsed || parsed.userId !== userId) return null;
       return {
         userId,
-        step: [2, 3, 4].includes(parsed.step) ? parsed.step : 2,
+        step: FLOW_STEPS.includes(parsed.step) ? parsed.step : 2,
         data: parsed.data ?? {},
         ui: parsed.ui ?? {},
       };

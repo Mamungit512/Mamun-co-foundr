@@ -10,7 +10,7 @@ import {
 } from "@/features/school/onboarding/quick/constants";
 import MissionField from "@/features/school/onboarding/quick/MissionField";
 import type { StepProps } from "@/features/school/onboarding/quick/StepAbout";
-import { Chip, Choice, OptionRow, QField } from "@/features/school/onboarding/quick/ui";
+import { Chip, OptionRow, QField } from "@/features/school/onboarding/quick/ui";
 
 const INTERESTS = Object.keys(SECTOR_INTEREST_LABELS) as UTSectorInterest[];
 
@@ -34,17 +34,6 @@ export default function StepLooking({
 
   return (
     <>
-      <QField label="Do you have a startup or idea already?">
-        <div className="grid grid-cols-2 gap-2.5">
-          <Choice pressed={data.hasStartup === "yes"} onClick={() => update({ hasStartup: "yes" })}>
-            Yes, I do
-          </Choice>
-          <Choice pressed={data.hasStartup === "no"} onClick={() => update({ hasStartup: "no" })}>
-            Not yet
-          </Choice>
-        </div>
-      </QField>
-
       {/* The step heading already asks this question, so the rows sit under it unlabeled. */}
       <div role="group" aria-label="What you’re looking for" className="flex flex-col gap-2.5">
         {INTENT_OPTIONS.map((option) => (
