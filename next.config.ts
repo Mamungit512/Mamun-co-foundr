@@ -71,7 +71,30 @@ const LEGACY_REDIRECTS = [
   { source: "/mission", destination: "/" }, // old mission page
 ];
 
+// Logged-in app routes and student data are never indexed (FERPA, MCFM SEO
+// ticket). A response header covers every response — pages, redirects and
+// data — on the main domain and on school subdomains alike. School pages also
+// carry a robots meta tag; only public landing and marketing pages index.
+const NOINDEX_ROUTES = [
+  "/admin/:path*",
+  "/billing/:path*",
+  "/cofoundr-matching/:path*",
+  "/dashboard/:path*",
+  "/edit-profile/:path*",
+  "/invite/:path*",
+  "/messages/:path*",
+  "/onboarding/:path*",
+  "/profile/:path*",
+  "/matches/:path*",
+  "/cofounder/:path*",
+  "/school/:slug/:path+",
+];
+
 const nextConfig: NextConfig = {
+  // Serve page metadata in <head> for every user agent, not just Next's
+  // short bot list (Next 15.2+ otherwise streams it into <body>). Share
+  // previewers and "view source" checks read <head> only (MCFM SEO ticket).
+  htmlLimitedBots: /.*/,
   images: {
     remotePatterns: [
       {
@@ -96,6 +119,10 @@ const nextConfig: NextConfig = {
         source,
         has: APEX_HOST,
         headers: [{ key: "Content-Security-Policy", value: siteCsp }],
+      })),
+      ...NOINDEX_ROUTES.map((source) => ({
+        source,
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
       })),
     ];
   },
