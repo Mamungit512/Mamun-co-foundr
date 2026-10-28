@@ -7,8 +7,8 @@ import { pageMetadata } from "@/content/site/seo";
 
 export const metadata: Metadata = pageMetadata("partner");
 
-// /partner — "Partner with Us" in the header nav and footer. Wide-left
-// split, then the stat band.
+// /partner — "Partner with Us" in the header nav; the footer's
+// "Security & FERPA" link. Wide-left split, then the stat band.
 export default function PartnerPage() {
   return (
     <>
