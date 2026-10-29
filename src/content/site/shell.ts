@@ -1,7 +1,6 @@
 // Copy for the global shell (header, drawer, footer). Final copy — do not
 // rewrite. Source: Main.dc.html in the Mamun Studio II design canvas;
-// "Partner with Us" in the nav and footer per PR review (replaces the
-// footer's "Security & FERPA").
+// "Partner with Us" added to the nav per PR review.
 
 export const CALENDLY_URL = "https://calendly.com/mcfm-mamuncofoundr/30min";
 
@@ -46,7 +45,7 @@ export const FOOTER = {
       heading: "Institutions",
       links: [
         { href: CALENDLY_URL, label: BOOK_A_DEMO, external: true },
-        { href: "/partner", label: "Partner with Us" },
+        { href: "/partner", label: "Security & FERPA" },
       ],
     },
   ],
