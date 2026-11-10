@@ -75,6 +75,14 @@ export interface MutualMatchEmailVariables {
   messageUrl: string;
 }
 
+export interface UtAnnouncementEmailVariables {
+  primaryColor: string;
+  wordmark: string;
+  firstName: string;
+  ctaUrl: string;
+  feedbackUrl: string;
+}
+
 export interface EmailVariablesByType {
   welcome: WelcomeEmailVariables;
   profileReminder: ProfileReminderEmailVariables;
@@ -84,6 +92,7 @@ export interface EmailVariablesByType {
   cofounderLinked: CofounderLinkedEmailVariables;
   messageNotification: MessageNotificationEmailVariables;
   mutualMatch: MutualMatchEmailVariables;
+  utAnnouncement: UtAnnouncementEmailVariables;
 }
 
 export type EmailType = keyof EmailVariablesByType;
@@ -97,5 +106,7 @@ export const EMAIL_CATALOG: Record<EmailType, { templateId: string }> = {
   cofounderLinked: { templateId: "cofounder-linked-01" },
   messageNotification: { templateId: "new-notification-design-trigger" },
   mutualMatch: { templateId: "we-match-mutual" },
+  // TODO: replace with the published template ID before the real send.
+  utAnnouncement: { templateId: "ut-announcement-01" },
 };
 

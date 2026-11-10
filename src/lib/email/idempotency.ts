@@ -11,6 +11,7 @@ const FLAG_KEYS: Record<EmailType, string> = {
   // These two types use separate dedup mechanisms and are never routed through FLAG_KEYS.
   messageNotification: "lastEmailSent",
   mutualMatch: "weMatchNotifiedAt",
+  utAnnouncement: "utAnnouncementSentAt",
 };
 
 export async function hasEmailBeenSent(
