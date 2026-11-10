@@ -106,7 +106,6 @@ export const EMAIL_CATALOG: Record<EmailType, { templateId: string }> = {
   cofounderLinked: { templateId: "cofounder-linked-01" },
   messageNotification: { templateId: "new-notification-design-trigger" },
   mutualMatch: { templateId: "we-match-mutual" },
-  // TODO: replace with the published template ID before the real send.
-  utAnnouncement: { templateId: "ut-announcement-01" },
+  utAnnouncement: { templateId: "ut-new-feature-update-05" },
 };
 

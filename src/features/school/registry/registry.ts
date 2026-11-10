@@ -97,8 +97,7 @@ export const ORG_REGISTRY: Record<string, OrgConfig> = {
       reEngagement: "ut-re-engagment-03",
       messageNotification: "ut-notifications-design-05",
       mutualMatch: "ut-mutual-match-06",
-      // TODO: replace with the published template ID before the real send.
-      utAnnouncement: "ut-announcement-01",
+      utAnnouncement: "ut-new-feature-update-05",
     },
   },
 };
