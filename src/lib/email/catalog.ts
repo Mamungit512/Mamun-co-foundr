@@ -75,12 +75,12 @@ export interface MutualMatchEmailVariables {
   messageUrl: string;
 }
 
+/**
+ * The hosted template hardcodes its colors, CTA and feedback form links, so
+ * the only variable it takes is the recipient's first name.
+ */
 export interface UtAnnouncementEmailVariables {
-  primaryColor: string;
-  wordmark: string;
   firstName: string;
-  ctaUrl: string;
-  feedbackUrl: string;
 }
 
 export interface EmailVariablesByType {
