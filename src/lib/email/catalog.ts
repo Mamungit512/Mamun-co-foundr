@@ -75,12 +75,12 @@ export interface MutualMatchEmailVariables {
   messageUrl: string;
 }
 
+/**
+ * The hosted template hardcodes its colors, CTA and feedback form links, so
+ * the only variable it takes is the recipient's first name.
+ */
 export interface UtAnnouncementEmailVariables {
-  primaryColor: string;
-  wordmark: string;
   firstName: string;
-  ctaUrl: string;
-  feedbackUrl: string;
 }
 
 export interface EmailVariablesByType {
@@ -106,7 +106,6 @@ export const EMAIL_CATALOG: Record<EmailType, { templateId: string }> = {
   cofounderLinked: { templateId: "cofounder-linked-01" },
   messageNotification: { templateId: "new-notification-design-trigger" },
   mutualMatch: { templateId: "we-match-mutual" },
-  // TODO: replace with the published template ID before the real send.
-  utAnnouncement: { templateId: "ut-announcement-01" },
+  utAnnouncement: { templateId: "ut-new-feature-update-05" },
 };
 

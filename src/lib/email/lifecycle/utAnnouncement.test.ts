@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const getUserList = vi.fn();
 const sendUtAnnouncementEmail = vi.fn();
-const mockFeedbackUrl = vi.hoisted(() => ({ value: "https://forms.example/ut" }));
 
 vi.mock("@clerk/nextjs/server", () => ({
   clerkClient: async () => ({ users: { getUserList } }),
@@ -20,9 +19,6 @@ vi.mock("@supabase/supabase-js", () => ({
 }));
 vi.mock("../emails/utAnnouncement", () => ({
   UT_ORG_SLUG: "ut",
-  get UT_ANNOUNCEMENT_FEEDBACK_URL() {
-    return mockFeedbackUrl.value;
-  },
   sendUtAnnouncementEmail: (...a: unknown[]) => sendUtAnnouncementEmail(...a),
 }));
 
@@ -55,7 +51,6 @@ beforeEach(() => {
   getUserList.mockReset();
   sendUtAnnouncementEmail.mockReset();
   sendUtAnnouncementEmail.mockResolvedValue("sent");
-  mockFeedbackUrl.value = "https://forms.example/ut";
 });
 
 describe("runUtAnnouncement", () => {
@@ -114,14 +109,5 @@ describe("runUtAnnouncement", () => {
       .mockResolvedValueOnce("sent");
     const res = await runUtAnnouncement({ dryRun: false });
     expect(res).toMatchObject({ sent: 1, failed: 1 });
-  });
-
-  it("refuses a real send while the feedback URL is unset", async () => {
-    mockFeedbackUrl.value = "";
-    getUserList.mockResolvedValue({ data: [user("a")] });
-    await expect(runUtAnnouncement({ dryRun: false })).rejects.toThrow(
-      /feedback/i,
-    );
-    expect(sendUtAnnouncementEmail).not.toHaveBeenCalled();
   });
 });

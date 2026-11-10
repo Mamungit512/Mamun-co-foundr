@@ -1,12 +1,7 @@
-import { resolveOrgBranding } from "../branding";
 import { sendTemplateEmail } from "../send";
 import { hasEmailBeenSent, markEmailSent } from "../idempotency";
 
 export const UT_ORG_SLUG = "ut";
-export const UT_ANNOUNCEMENT_CTA_URL = "https://ut.mamuncofoundr.com/";
-// TODO: set to the live feedback form URL before the real send. The runner
-// refuses to send while this is empty.
-export const UT_ANNOUNCEMENT_FEEDBACK_URL = "";
 
 export type UtAnnouncementResult = "sent" | "skipped" | "failed";
 
@@ -30,18 +25,11 @@ export async function sendUtAnnouncementEmail({
       return "skipped";
     }
 
-    const { primaryColor, wordmark } = resolveOrgBranding(UT_ORG_SLUG);
     const result = await sendTemplateEmail({
       type: "utAnnouncement",
       to: email,
       orgSlug: UT_ORG_SLUG,
-      variables: {
-        primaryColor,
-        wordmark,
-        firstName: firstName || "there",
-        ctaUrl: UT_ANNOUNCEMENT_CTA_URL,
-        feedbackUrl: UT_ANNOUNCEMENT_FEEDBACK_URL,
-      },
+      variables: { firstName: firstName || "there" },
     });
 
     if (result.ok) {
