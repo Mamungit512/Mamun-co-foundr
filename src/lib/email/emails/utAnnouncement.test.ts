@@ -32,20 +32,14 @@ describe("sendUtAnnouncementEmail", () => {
     expect(markEmailSent).not.toHaveBeenCalled();
   });
 
-  it("sends with UT branding and marks the user sent", async () => {
+  it("sends the UT template with only the first name and marks the user sent", async () => {
     expect(await sendUtAnnouncementEmail(user)).toBe("sent");
-    expect(sendTemplateEmail).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: "utAnnouncement",
-        to: "a@utexas.edu",
-        orgSlug: "ut",
-        variables: expect.objectContaining({
-          primaryColor: "#BF5700",
-          firstName: "Ada",
-          ctaUrl: "https://ut.mamuncofoundr.com/",
-        }),
-      }),
-    );
+    expect(sendTemplateEmail).toHaveBeenCalledWith({
+      type: "utAnnouncement",
+      to: "a@utexas.edu",
+      orgSlug: "ut",
+      variables: { firstName: "Ada" },
+    });
     expect(markEmailSent).toHaveBeenCalledWith("u1", "utAnnouncement");
   });
 

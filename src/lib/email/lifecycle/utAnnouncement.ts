@@ -3,7 +3,6 @@ import { createClient } from "@supabase/supabase-js";
 import {
   sendUtAnnouncementEmail,
   UT_ORG_SLUG,
-  UT_ANNOUNCEMENT_FEEDBACK_URL,
 } from "../emails/utAnnouncement";
 import type { LifecycleResult } from "./index";
 
@@ -51,10 +50,6 @@ export async function runUtAnnouncement(
   options: UtAnnouncementOptions = {},
 ): Promise<UtAnnouncementResult> {
   const { dryRun = true, limit = 50, inactiveDays } = options;
-
-  if (!dryRun && !UT_ANNOUNCEMENT_FEEDBACK_URL) {
-    throw new Error("UT announcement feedback form URL is not configured");
-  }
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
