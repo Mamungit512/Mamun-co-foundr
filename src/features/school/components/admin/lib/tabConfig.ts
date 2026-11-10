@@ -2,8 +2,13 @@ export type AdminTab =
   | "overview"
   | "roster"
   | "connections"
+  | "meetups"
   | "sources"
   | "reports";
+
+// Per-school rollout switches, resolved on the server (see useSchool().features).
+export type AdminFeatures = { meetups: boolean };
+const NO_FEATURES: AdminFeatures = { meetups: false };
 
 export type AdminTabConfig = {
   id: AdminTab;
@@ -12,6 +17,9 @@ export type AdminTabConfig = {
   subtitle?: string;
   // Hidden tabs are left out of the tab bar and unreachable by URL.
   hidden?: boolean;
+  // Shown only for schools where this rollout switch is on. Off behaves
+  // exactly like hidden.
+  feature?: keyof AdminFeatures;
 };
 
 export const ADMIN_TABS: AdminTabConfig[] = [
@@ -27,6 +35,14 @@ export const ADMIN_TABS: AdminTabConfig[] = [
     label: "Connections",
     title: "Connections",
     subtitle: "We Match pairs and conversations between your students.",
+  },
+  {
+    id: "meetups",
+    label: "Meetups",
+    title: "Meetups",
+    subtitle:
+      "Approved campus spots, and the meetups your students have proposed.",
+    feature: "meetups",
   },
   {
     id: "sources",
@@ -46,8 +62,20 @@ export const DEFAULT_ADMIN_TAB: AdminTab = "overview";
 
 // Maps a raw ?tab= value to a reachable tab. Anything unknown or hidden,
 // including the retired "analytics", lands on Overview.
-export function parseAdminTab(value: string | null): AdminTab {
-  const tab = ADMIN_TABS.find((t) => t.id === value && !t.hidden);
+export function isTabAvailable(
+  tab: AdminTabConfig,
+  features: AdminFeatures = NO_FEATURES,
+): boolean {
+  return !tab.hidden && (!tab.feature || features[tab.feature]);
+}
+
+export function parseAdminTab(
+  value: string | null,
+  features: AdminFeatures = NO_FEATURES,
+): AdminTab {
+  const tab = ADMIN_TABS.find(
+    (t) => t.id === value && isTabAvailable(t, features),
+  );
   return tab ? tab.id : DEFAULT_ADMIN_TAB;
 }
 
@@ -55,6 +83,9 @@ export function getAdminTabConfig(id: AdminTab): AdminTabConfig {
   return ADMIN_TABS.find((t) => t.id === id)!;
 }
 
-export function isTabVisible(id: AdminTab): boolean {
-  return !getAdminTabConfig(id).hidden;
+export function isTabVisible(
+  id: AdminTab,
+  features: AdminFeatures = NO_FEATURES,
+): boolean {
+  return isTabAvailable(getAdminTabConfig(id), features);
 }
