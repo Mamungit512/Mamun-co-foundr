@@ -9,3 +9,4 @@ export type LifecycleResult = {
 export { runProfileCompletionReminders } from "./profileCompletionReminder";
 export { runReEngagementReminders } from "./reEngagement";
 export { runWeeklyProfileViews } from "./weeklyProfileViews";
+export { runUtAnnouncement } from "./utAnnouncement";
