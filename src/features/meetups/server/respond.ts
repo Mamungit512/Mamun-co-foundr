@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { canRespond } from "../rules";
 import { getMeetupParties, respondToMeetup } from "./data";
 import { notFound, requireMeetupsAccess } from "./guard";
+import { sendMeetupEmails } from "./sendMeetupEmails";
 
 /**
  * Shared accept/decline handler. Responses:
@@ -45,6 +46,10 @@ export async function handleRespond(
         { status: 409 },
       );
     }
+
+    // Accepted: confirmation to both. Declined: proposer only, no reason.
+    // Sent after the response; only the winner of the atomic update gets here.
+    after(() => sendMeetupEmails(meetup.id, action === "accepted" ? "accepted" : "declined"));
 
     return NextResponse.json({ meetup });
   } catch {

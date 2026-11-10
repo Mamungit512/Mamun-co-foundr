@@ -75,6 +75,27 @@ export interface MutualMatchEmailVariables {
   messageUrl: string;
 }
 
+/**
+ * One template, three variants (proposed / accepted / declined). The hosted
+ * template has no conditionals, so the variant is expressed through these
+ * values. Every value is a string; user-derived values arrive HTML-escaped
+ * because Resend substitutes {{{triple-brace}}} variables as raw HTML.
+ * noteLabel and noteText are empty strings when there is no note to show.
+ */
+export interface MeetupEmailVariables {
+  primaryColor: string;
+  wordmark: string;
+  heading: string;
+  body: string;
+  locationName: string;
+  locationDetail: string;
+  whenLabel: string;
+  noteLabel: string;
+  noteText: string;
+  ctaLabel: string;
+  ctaUrl: string;
+}
+
 export interface EmailVariablesByType {
   welcome: WelcomeEmailVariables;
   profileReminder: ProfileReminderEmailVariables;
@@ -84,6 +105,7 @@ export interface EmailVariablesByType {
   cofounderLinked: CofounderLinkedEmailVariables;
   messageNotification: MessageNotificationEmailVariables;
   mutualMatch: MutualMatchEmailVariables;
+  meetup: MeetupEmailVariables;
 }
 
 export type EmailType = keyof EmailVariablesByType;
@@ -97,5 +119,6 @@ export const EMAIL_CATALOG: Record<EmailType, { templateId: string }> = {
   cofounderLinked: { templateId: "cofounder-linked-01" },
   messageNotification: { templateId: "new-notification-design-trigger" },
   mutualMatch: { templateId: "we-match-mutual" },
+  meetup: { templateId: "meetup-notification" },
 };
 

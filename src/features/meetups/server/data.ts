@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { isValidClerkUserId } from "@/lib/validation";
-import type { ProposalLocation } from "../rules";
+import type { MeetupEmailClaimColumn, ProposalLocation } from "../rules";
+import type { MeetupEmailContext } from "../emailContent";
 import type { MeetupDto, MeetupLocationOption } from "../types";
 
 /**
@@ -234,4 +235,93 @@ export async function respondToMeetup(
     throw new Error("meetup update failed");
   }
   return data ? toDto(data as unknown as MeetupRow) : null;
+}
+
+/**
+ * Atomically claim one email: sets the column only where it is still NULL.
+ * True for exactly one caller, however many run at once. The column name comes
+ * from a fixed union, never from input.
+ */
+export async function claimEmail(
+  meetupId: string,
+  column: MeetupEmailClaimColumn,
+): Promise<boolean> {
+  const { data, error } = await supabase()
+    .from("meetups")
+    .update({ [column]: new Date().toISOString() })
+    .eq("id", meetupId)
+    .is(column, null)
+    .select("id");
+  if (error) {
+    console.error("[meetups] claim failed:", error.code);
+    throw new Error("email claim failed");
+  }
+  return (data?.length ?? 0) > 0;
+}
+
+/** Everything the email content needs except addresses (those come from Clerk). */
+export async function getMeetupEmailBase(
+  meetupId: string,
+): Promise<MeetupEmailContext | null> {
+  if (!isUuid(meetupId)) return null;
+  const db = supabase();
+
+  const { data: row, error } = await db
+    .from("meetups")
+    .select(MEETUP_SELECT)
+    .eq("id", meetupId)
+    .maybeSingle();
+  if (error) throw new Error("meetup lookup failed");
+  if (!row) return null;
+  const r = row as unknown as MeetupRow;
+
+  const [{ data: org }, { data: profiles }, { data: parts }] = await Promise.all([
+    db
+      .from("organizations")
+      .select("slug, name, subdomain")
+      .eq("id", r.organization_id)
+      .maybeSingle(),
+    db
+      .from("profiles")
+      .select("user_id, first_name, last_name")
+      .in("user_id", [r.proposer_user_id, r.recipient_user_id]),
+    db
+      .from("conversation_participants")
+      .select("conversation_id, user_id")
+      .in("user_id", [r.proposer_user_id, r.recipient_user_id]),
+  ]);
+  if (!org) return null;
+
+  // The pair's conversation is the one both students participate in.
+  const seen = new Map<string, Set<string>>();
+  for (const p of parts ?? []) {
+    const set = seen.get(p.conversation_id as string) ?? new Set<string>();
+    set.add(p.user_id as string);
+    seen.set(p.conversation_id as string, set);
+  }
+  const conversationId =
+    [...seen.entries()].find(([, users]) => users.size === 2)?.[0] ?? null;
+
+  return {
+    meetup: {
+      id: r.id,
+      proposerUserId: r.proposer_user_id,
+      recipientUserId: r.recipient_user_id,
+      startsAt: new Date(r.starts_at).toISOString(),
+      note: r.note,
+      location: { name: r.location.name, building: r.location.building },
+    },
+    org: {
+      slug: org.slug as string,
+      name: org.name as string,
+      subdomain: (org.subdomain as string | null) ?? null,
+    },
+    people: Object.fromEntries(
+      (profiles ?? []).map((p) => [
+        p.user_id as string,
+        { firstName: p.first_name as string | null, lastName: p.last_name as string | null },
+      ]),
+    ),
+    conversationId,
+  };
 }

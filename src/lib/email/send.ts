@@ -12,12 +12,18 @@ export async function sendTemplateEmail<T extends EmailType>({
   variables,
   orgSlug,
   from = EMAIL_FROM,
+  subject,
+  idempotencyKey,
 }: {
   type: T;
   to: string;
   variables: EmailVariablesByType[T];
   orgSlug?: string | null;
   from?: string;
+  /** Overrides the subject stored on the hosted template. */
+  subject?: string;
+  /** Sent as Resend's Idempotency-Key header so a repeated call is not sent twice. */
+  idempotencyKey?: string;
 }): Promise<SendResult> {
   const resend = getResendClient();
   if (!resend) {
@@ -31,12 +37,17 @@ export async function sendTemplateEmail<T extends EmailType>({
     const result = (await (
       resend.emails.create as unknown as (
         o: Record<string, unknown>,
+        opts?: { idempotencyKey?: string },
       ) => Promise<{ data?: { id?: string } | null; error?: unknown }>
-    )({
-      from,
-      to,
-      template: { id: templateId, variables },
-    }));
+    )(
+      {
+        from,
+        to,
+        ...(subject ? { subject } : {}),
+        template: { id: templateId, variables },
+      },
+      idempotencyKey ? { idempotencyKey } : undefined,
+    ));
 
     // Resend does NOT throw on API errors — it returns { data, error }.
     if (result?.error) {

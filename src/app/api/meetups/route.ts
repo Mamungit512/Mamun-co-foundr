@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 import { isValidClerkUserId } from "@/lib/validation";
 import { validateProposal } from "@/features/meetups/rules";
@@ -9,6 +9,7 @@ import {
   insertMeetup,
   isMutualMatch,
 } from "@/features/meetups/server/data";
+import { sendMeetupEmails } from "@/features/meetups/server/sendMeetupEmails";
 import type { MeetupForPairResponse } from "@/features/meetups/types";
 
 /**
@@ -104,6 +105,11 @@ export async function POST(req: NextRequest) {
         { status: 409 },
       );
     }
+
+    // After the response: the student never waits on Resend, and a send problem
+    // cannot fail the proposal. The send itself never throws.
+    const meetupId = inserted.meetup.id;
+    after(() => sendMeetupEmails(meetupId, "proposed"));
 
     return NextResponse.json({ meetup: inserted.meetup }, { status: 201 });
   } catch {

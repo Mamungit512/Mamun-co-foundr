@@ -79,7 +79,7 @@ export default function ProposeMeetupModal({
 
     try {
       await propose.mutateAsync(values);
-      toast.success(`Meetup request sent to ${otherName}.`);
+      toast.success(`Meetup request sent to ${otherName}. They'll get an email.`);
       onClose();
     } catch (err) {
       if (err instanceof MeetupApiError && err.fields) {
@@ -205,8 +205,8 @@ export default function ProposeMeetupModal({
               </div>
 
               <p className="text-xs text-[var(--ui-text-muted)]">
-                They can accept or decline. If the time doesn&apos;t work, they decline and
-                either of you can propose again.
+                They get an email and can accept or decline. If the time doesn&apos;t work, they
+                decline and either of you can propose again.
               </p>
 
               <div className="flex gap-3">

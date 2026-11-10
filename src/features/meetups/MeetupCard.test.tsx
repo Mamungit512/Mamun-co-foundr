@@ -52,7 +52,7 @@ describe("MeetupCard", () => {
     const html = render(meetup(), ME);
     expect(html).toContain("Meetup with Bob B.");
     expect(html).toContain("Proposed");
-    expect(html).toContain("Waiting on Bob.");
+    expect(html).toContain("Waiting on Bob. You&#x27;ll get an email when they answer.");
     expect(html).not.toContain("Accept");
     expect(html).not.toContain("Decline");
   });
@@ -83,7 +83,7 @@ describe("MeetupCard", () => {
 
   it("declined recipient sees You declined, and no way to propose from the card", () => {
     const html = render(meetup({ status: "declined" }), THEM);
-    expect(html).toContain("You declined. Bob can propose again.");
+    expect(html).toContain("You declined. Bob was emailed and can propose again.");
     expect(html).not.toContain("Propose another time");
   });
 

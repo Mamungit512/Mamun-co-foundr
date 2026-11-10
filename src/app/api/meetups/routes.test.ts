@@ -11,7 +11,22 @@ const getMeetupParties = vi.fn();
 const insertMeetup = vi.fn();
 const respondToMeetup = vi.fn();
 const checkRateLimit = vi.fn();
+const sendMeetupEmails = vi.fn();
+// after() only works inside a real request, so collect its callbacks and run them by hand.
+const afterCallbacks: Array<() => unknown> = [];
+const flushAfter = async () => {
+  for (const cb of afterCallbacks.splice(0)) await cb();
+};
 
+vi.mock("next/server", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("next/server")>()),
+  after: (cb: () => unknown) => {
+    afterCallbacks.push(cb);
+  },
+}));
+vi.mock("@/features/meetups/server/sendMeetupEmails", () => ({
+  sendMeetupEmails: (...a: unknown[]) => sendMeetupEmails(...a),
+}));
 vi.mock("@clerk/nextjs/server", () => ({ auth: () => auth() }));
 vi.mock("@/lib/rateLimit", () => ({
   checkRateLimit: (...a: unknown[]) => checkRateLimit(...a),
@@ -89,6 +104,7 @@ const validBody = (over: Record<string, unknown> = {}) => ({
 
 beforeEach(() => {
   vi.resetAllMocks();
+  afterCallbacks.length = 0;
   vi.useFakeTimers({ toFake: ["Date"] });
   vi.setSystemTime(new Date("2026-11-05T15:00:00Z"));
   vi.stubEnv("MEETUPS_V1_ORGS", "ut");
@@ -365,5 +381,93 @@ describe("double accept", () => {
   it("accept after decline is rejected too", async () => {
     getMeetupParties.mockResolvedValue(parties({ status: "declined" }));
     expect((await acceptPOST(post("/x"), ctxFor())).status).toBe(409);
+  });
+});
+
+describe("emails are scheduled after the response", () => {
+  it("proposing sends the 'proposed' email, but only after the response", async () => {
+    insertMeetup.mockResolvedValue({ ok: true, meetup: meetupDto() });
+    const res = await proposePOST(post("/api/meetups", validBody()));
+    expect(res.status).toBe(201);
+    // Scheduled, not yet run: the request itself never waits on Resend.
+    expect(afterCallbacks).toHaveLength(1);
+    expect(sendMeetupEmails).not.toHaveBeenCalled();
+    await flushAfter();
+    expect(sendMeetupEmails).toHaveBeenCalledWith(MEETUP_ID, "proposed");
+  });
+
+  it("accepting sends the 'accepted' email", async () => {
+    getMeetupParties.mockResolvedValue(parties());
+    respondToMeetup.mockResolvedValue(meetupDto({ status: "accepted" }));
+    await acceptPOST(post("/x"), ctxFor());
+    await flushAfter();
+    expect(sendMeetupEmails).toHaveBeenCalledTimes(1);
+    expect(sendMeetupEmails).toHaveBeenCalledWith(MEETUP_ID, "accepted");
+  });
+
+  it("declining sends the 'declined' email", async () => {
+    getMeetupParties.mockResolvedValue(parties());
+    respondToMeetup.mockResolvedValue(meetupDto({ status: "declined" }));
+    await declinePOST(post("/x"), ctxFor());
+    await flushAfter();
+    expect(sendMeetupEmails).toHaveBeenCalledTimes(1);
+    expect(sendMeetupEmails).toHaveBeenCalledWith(MEETUP_ID, "declined");
+  });
+
+  it("a send problem cannot fail the request", async () => {
+    insertMeetup.mockResolvedValue({ ok: true, meetup: meetupDto() });
+    sendMeetupEmails.mockRejectedValue(new Error("resend is down"));
+    const res = await proposePOST(post("/api/meetups", validBody()));
+    expect(res.status).toBe(201);
+    await expect(flushAfter()).rejects.toThrow(); // surfaces only in the background callback
+    expect((await res.json()).meetup.id).toBe(MEETUP_ID);
+  });
+
+  it("sends nothing when the request is rejected", async () => {
+    // Unmatched, invalid, duplicate, rate limited.
+    isMutualMatch.mockResolvedValueOnce(false);
+    await proposePOST(post("/api/meetups", validBody()));
+    await proposePOST(post("/api/meetups", validBody({ startsAtLocal: "2020-01-01T10:00" })));
+    insertMeetup.mockResolvedValueOnce({ ok: false, reason: "open_exists" });
+    await proposePOST(post("/api/meetups", validBody()));
+    checkRateLimit.mockResolvedValueOnce({ allowed: false });
+    await proposePOST(post("/api/meetups", validBody()));
+    expect(afterCallbacks).toHaveLength(0);
+  });
+
+  it("sends nothing for a proposer, a stranger, a repeat or a lost race", async () => {
+    // Proposer tries to answer.
+    getMeetupParties.mockResolvedValueOnce(parties({ proposerUserId: ME, recipientUserId: THEM }));
+    await acceptPOST(post("/x"), ctxFor());
+    // Stranger.
+    signedIn(STRANGER);
+    getMeetupParties.mockResolvedValueOnce(parties());
+    await declinePOST(post("/x"), ctxFor());
+    signedIn(ME);
+    // Already answered.
+    getMeetupParties.mockResolvedValueOnce(parties({ status: "accepted" }));
+    await acceptPOST(post("/x"), ctxFor());
+    // Lost the race: the atomic update matched nothing.
+    getMeetupParties.mockResolvedValueOnce(parties());
+    respondToMeetup.mockResolvedValueOnce(null);
+    await acceptPOST(post("/x"), ctxFor());
+    expect(afterCallbacks).toHaveLength(0);
+  });
+
+  it("a double accept schedules exactly one email", async () => {
+    getMeetupParties
+      .mockResolvedValueOnce(parties())
+      .mockResolvedValueOnce(parties({ status: "accepted" }));
+    respondToMeetup.mockResolvedValueOnce(meetupDto({ status: "accepted" }));
+    await acceptPOST(post("/x"), ctxFor());
+    await acceptPOST(post("/x"), ctxFor());
+    expect(afterCallbacks).toHaveLength(1);
+  });
+
+  it("sends nothing when the flag is off", async () => {
+    vi.stubEnv("MEETUPS_V1_ORGS", "");
+    await proposePOST(post("/api/meetups", validBody()));
+    await acceptPOST(post("/x"), ctxFor());
+    expect(afterCallbacks).toHaveLength(0);
   });
 });

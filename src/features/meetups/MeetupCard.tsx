@@ -89,12 +89,14 @@ export default function MeetupCard({
       </dl>
 
       {state === "waiting" && (
-        <p className="mt-3 text-xs text-[var(--ui-text-muted)]">Waiting on {otherFirstName}.</p>
+        <p className="mt-3 text-xs text-[var(--ui-text-muted)]">
+          Waiting on {otherFirstName}. You&apos;ll get an email when they answer.
+        </p>
       )}
 
       {state === "confirmed" && (
         <p className="mt-3 text-xs text-[var(--ui-text-muted)]">
-          Confirmed. You both have the same details.
+          Confirmed. Both of you have the details by email.
         </p>
       )}
 
@@ -115,7 +117,7 @@ export default function MeetupCard({
 
       {state === "declined_recipient" && (
         <p className="mt-3 text-xs text-[var(--ui-text-muted)]">
-          You declined. {otherFirstName} can propose again.
+          You declined. {otherFirstName} was emailed and can propose again.
         </p>
       )}
 
