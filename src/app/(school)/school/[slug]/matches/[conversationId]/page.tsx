@@ -17,6 +17,11 @@ import ProfileDetailModal from "@/features/matches/ProfileDetailModal";
 import { useProfileByUserId } from "@/features/profile/useProfile";
 import { useWeMatch, useWeMatchStatus } from "@/features/matches/useWeMatch";
 import { useToggleLike } from "@/features/likes/useLikes";
+import { useSchool } from "@/features/school/components/SchoolContext";
+import ProposeMeetupPill from "@/features/meetups/ProposeMeetupPill";
+import ProposeMeetupModal from "@/features/meetups/ProposeMeetupModal";
+import ChatMeetupCard from "@/features/meetups/ChatMeetupCard";
+import { shortName } from "@/features/meetups/viewState";
 
 interface ConversationPageProps {
   params: Promise<{
@@ -35,6 +40,8 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
   const [sendError, setSendError] = React.useState<string | null>(null);
   const [isLimitReached, setIsLimitReached] = React.useState<boolean>(false);
   const [showProfile, setShowProfile] = React.useState<boolean>(false);
+  const [showMeetupModal, setShowMeetupModal] = React.useState<boolean>(false);
+  const { features } = useSchool();
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
@@ -177,7 +184,7 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
           </div>
 
           {!isConversationLoading && conversation?.otherParticipant && (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center justify-end gap-2">
               {mutualSet.has(otherUserId) ? (
                 <span className="flex items-center gap-1.5 rounded-full bg-[var(--org-primary)] px-3 py-1.5 text-xs font-semibold text-white">
                   <FaHandshake className="h-3 w-3" />
@@ -198,6 +205,13 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
                   We Match
                 </button>
               )}
+              {features.meetups && (
+                <ProposeMeetupPill
+                  otherUserId={otherUserId}
+                  otherFirstName={conversation.otherParticipant.first_name}
+                  onOpen={() => setShowMeetupModal(true)}
+                />
+              )}
               <button
                 onClick={() => setShowProfile(true)}
                 className="flex items-center gap-1.5 rounded-full border border-[var(--ui-border)] px-3 py-1.5 text-xs font-medium text-[var(--ui-text-muted)] transition hover:border-[var(--org-primary)] hover:text-[var(--org-primary)] cursor-pointer"
@@ -209,6 +223,15 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
           )}
         </div>
       </motion.div>
+
+      {features.meetups && otherUserId && (
+        <ChatMeetupCard
+          otherUserId={otherUserId}
+          otherFirstName={conversation?.otherParticipant?.first_name}
+          otherLastName={conversation?.otherParticipant?.last_name}
+          onProposeAnother={() => setShowMeetupModal(true)}
+        />
+      )}
 
       {/* Notices */}
       <div className="mb-4 space-y-2">
@@ -329,6 +352,18 @@ export default function SchoolConversationPage({ params }: ConversationPageProps
           </form>
         </div>
       </motion.div>
+
+      {features.meetups && otherUserId && (
+        <ProposeMeetupModal
+          open={showMeetupModal}
+          onClose={() => setShowMeetupModal(false)}
+          otherUserId={otherUserId}
+          otherName={shortName(
+            conversation?.otherParticipant?.first_name,
+            conversation?.otherParticipant?.last_name,
+          )}
+        />
+      )}
 
       <ProfileDetailModal
         profile={showProfile ? (otherProfile ?? null) : null}

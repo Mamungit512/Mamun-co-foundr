@@ -8,6 +8,7 @@ import { getOrgConfig, DEFAULT_ORG_CONFIG } from "@/features/school/registry/reg
 import { getVerifiedPrimaryEmail, getOrgAdminEmails } from "@/features/school/auth/org-admin";
 import PublicFooter from "@/features/school/components/landing/PublicFooter";
 import { getSchoolSeo } from "@/features/school/seo";
+import { isMeetupsEnabled } from "@/features/meetups/flag";
 
 export async function generateMetadata({
   params,
@@ -84,7 +85,13 @@ export default async function SchoolSlugLayout({
   }
 
   return (
-    <SchoolProvider slug={slug} orgId={org.id} schoolName={org.name} config={cfg}>
+    <SchoolProvider
+      slug={slug}
+      orgId={org.id}
+      schoolName={org.name}
+      config={cfg}
+      features={{ meetups: isMeetupsEnabled(slug) }}
+    >
       <div
         style={
           {

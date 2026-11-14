@@ -97,8 +97,10 @@ export const ORG_REGISTRY: Record<string, OrgConfig> = {
       reEngagement: "ut-re-engagment-03",
       messageNotification: "ut-notifications-design-05",
       mutualMatch: "ut-mutual-match-06",
+      meetup: "ut-meetup-07",
       utAnnouncement: "ut-new-feature-update-05",
     },
+    emailFromName: "UT Austin Co-Foundr",
   },
 };
 

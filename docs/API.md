@@ -64,6 +64,20 @@ route below; routes with no note have none.
 | GET        | `/api/cofounder-link/[userId]`          | Auth               | Lightweight co-founder badge data for a user's profile card. Cross-org access blocked explicitly (see the IDOR comment in the route).                                         |
 | DELETE     | `/api/cofounder-link`                   | Auth               | Unlinks a co-founder pair. Either party may call it; body: `{ linkId }`.                                                                                                      |
 
+## Meetups (school, behind `meetups-v1`)
+
+Every meetups route returns **404 when the flag is off** for the caller's school (`MEETUPS_V1_ORGS`, a comma-separated list of school slugs; unset means off everywhere). Only the two students in a mutual We Match can see or act on a meetup. A decline carries no reason, and the note is only ever returned to the two students in the pair.
+
+| Method | Path                         | Auth                   | Description                                                                                                                                                                                  |
+| ------ | ---------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/api/meetups/locations`     | Auth                   | Active campus spots for the caller's school.                                                                                                                                                 |
+| GET    | `/api/meetups?with={userId}` | Auth                   | `{ matched, meetup }`: whether the pair is a mutual match, and their latest meetup (either direction). Unmatched pairs get `{ matched: false, meetup: null }`.                               |
+| POST   | `/api/meetups`               | Auth · 10/hour         | Propose a meetup to a mutual match: `{ toUserId, locationId, startsAtLocal, note }`. 403 not matched, 400 field errors, 409 if the pair already has an open proposal. Emails the recipient.  |
+| POST   | `/api/meetups/[id]/accept`   | Auth (recipient only)  | Confirms the meetup and emails both students. 404 for a non-member, 409 for the proposer or an already-answered meetup.                                                                      |
+| POST   | `/api/meetups/[id]/decline`  | Auth (recipient only)  | Declines the meetup and emails the proposer. Takes no body: there is no reason field.                                                                                                        |
+
+Emails are sent after the response (`after()`), claimed atomically on the meetup row before Resend is called, so they are never sent twice. There is no retry. Times are stored in UTC and validated and shown in America/Chicago.
+
 ## Messaging
 
 | Method     | Path                                  | Auth | Description                                                                                                                                                                                                                                                                               |
@@ -92,6 +106,9 @@ All require `requireOrgAdmin()` — the caller's verified email must be on the o
 | GET    | `/api/school/analytics`              | Org-level usage analytics.                                                                                                   |
 | GET    | `/api/school/connections`            | Org's actual conversation connections.                                                                                       |
 | GET    | `/api/school/match-connections`      | Org's matching-queue-derived connections (a different dataset from the above — matching intent, not realized conversations). |
+| GET / POST | `/api/school/meetup-locations`      | Org's campus spots for meetups (switched-off ones included) / add a spot. 404 when `meetups-v1` is off for the school. |
+| PATCH  | `/api/school/meetup-locations/[id]`  | Switch a spot on or off: `{ isActive }`. Spots are never deleted. 403 if the spot belongs to another school. |
+| GET    | `/api/school/meetups`                | Org's meetups: students, spot, time, status. Never includes the note. |
 | GET    | `/api/school/reports/cohort`         | Downloads a cohort CSV.                                                                                                      |
 | GET    | `/api/school/reports/match-outcomes` | Downloads a match-outcomes CSV.                                                                                              |
 

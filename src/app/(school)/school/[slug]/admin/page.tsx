@@ -33,13 +33,17 @@ import ConnectionsTab, {
 } from "@/features/school/components/admin/tabs/ConnectionsTab";
 import SourcesTab from "@/features/school/components/admin/tabs/SourcesTab";
 import ReportsTab from "@/features/school/components/admin/tabs/ReportsTab";
+import MeetupsTab from "@/features/school/components/admin/tabs/MeetupsTab";
+import { useSchool } from "@/features/school/components/SchoolContext";
 
 export default function SchoolAdminPage() {
   const { session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
-  const activeTab = parseAdminTab(tabParam);
+  // The Meetups tab exists only for schools with meetups switched on.
+  const { features } = useSchool();
+  const activeTab = parseAdminTab(tabParam, features);
 
   // Normalise stale or unknown links (e.g. the retired ?tab=analytics) so the
   // address bar always names the tab on screen.
@@ -428,6 +432,7 @@ export default function SchoolAdminPage() {
       <AdminTabs
         activeTab={activeTab}
         onSelect={selectTab}
+        features={features}
         counts={{
           roster: activeStudents.length,
           connections: overview?.connections.connections,
@@ -470,6 +475,8 @@ export default function SchoolAdminPage() {
             filteredMatchConnections={filteredMatchConnections}
           />
         )}
+
+        {activeTab === "meetups" && <MeetupsTab />}
 
         {activeTab === "sources" && (
           <SourcesTab
