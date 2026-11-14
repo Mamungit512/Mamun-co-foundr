@@ -73,4 +73,6 @@ export type OrgConfig = {
   termsAndConditions?: OrgPrivacyPolicyMeta;
   /** Per-org Resend template ID overrides. Keys are EmailType values. Unlisted keys fall back to the default catalog entry. */
   emailTemplates?: Partial<Record<string, string>>;
+  /** Display name on meetup emails: "{emailFromName} <meetups@mamuncofoundr.com>". Default: "{wordmark} Co-Foundr". */
+  emailFromName?: string;
 };

@@ -8,6 +8,8 @@ type SchoolContextValue = {
   orgId: string;
   schoolName: string;
   config: OrgConfig;
+  /** Server-resolved rollout switches for this school. */
+  features: { meetups: boolean };
 };
 
 const SchoolContext = createContext<SchoolContextValue | null>(null);
@@ -17,10 +19,13 @@ export function SchoolProvider({
   orgId,
   schoolName,
   config,
+  features,
   children,
 }: SchoolContextValue & { children: React.ReactNode }) {
   return (
-    <SchoolContext.Provider value={{ slug, orgId, schoolName, config }}>
+    <SchoolContext.Provider
+      value={{ slug, orgId, schoolName, config, features }}
+    >
       {children}
     </SchoolContext.Provider>
   );

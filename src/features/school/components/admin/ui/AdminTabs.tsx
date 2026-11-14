@@ -1,15 +1,27 @@
 "use client";
 
-import { ADMIN_TABS, type AdminTab } from "../lib/tabConfig";
+import {
+  ADMIN_TABS,
+  isTabAvailable,
+  type AdminFeatures,
+  type AdminTab,
+} from "../lib/tabConfig";
 
 type Props = {
   activeTab: AdminTab;
   onSelect: (tab: AdminTab) => void;
   // Shown after the label when greater than zero, e.g. "Roster 48".
   counts?: Partial<Record<AdminTab, number>>;
+  // Tabs gated on a school feature appear only when it is on.
+  features?: AdminFeatures;
 };
 
-export default function AdminTabs({ activeTab, onSelect, counts = {} }: Props) {
+export default function AdminTabs({
+  activeTab,
+  onSelect,
+  counts = {},
+  features,
+}: Props) {
   return (
     <div className="mb-6 border-b" style={{ borderColor: "var(--ui-border)" }}>
       <nav
@@ -17,7 +29,7 @@ export default function AdminTabs({ activeTab, onSelect, counts = {} }: Props) {
         aria-label="Admin sections"
         className="-mb-px flex gap-6 overflow-x-auto"
       >
-        {ADMIN_TABS.filter((tab) => !tab.hidden).map((tab) => {
+        {ADMIN_TABS.filter((tab) => isTabAvailable(tab, features)).map((tab) => {
           const isActive = tab.id === activeTab;
           const count = counts[tab.id];
           return (

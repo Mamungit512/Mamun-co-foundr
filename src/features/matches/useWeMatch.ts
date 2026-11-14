@@ -29,6 +29,8 @@ export function useWeMatch() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["we-match-status"] });
+      // A completed match unlocks "Propose a meetup" on the chat page.
+      queryClient.invalidateQueries({ queryKey: ["meetup"] });
 
       if (!data.success) {
         toast.error(data.error || "Failed to send We Match", {
