@@ -8,6 +8,7 @@ const FLAG_KEYS: Record<EmailType, string> = {
   weeklyProfileViews: "weeklyProfileViewsSentAt",
   cofounderInvite: "cofounderInviteSentAt",
   cofounderLinked: "cofounderLinkedSentAt",
+  utAnnouncement: "utAnnouncementSentAt",
   // These types use separate dedup mechanisms and are never routed through FLAG_KEYS.
   // meetup dedups on claim columns on the meetups row (see sendMeetupEmails).
   messageNotification: "lastEmailSent",

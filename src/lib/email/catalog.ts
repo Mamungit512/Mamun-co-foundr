@@ -96,6 +96,14 @@ export interface MeetupEmailVariables {
   ctaUrl: string;
 }
 
+/**
+ * The hosted template hardcodes its colors, CTA and feedback form links, so
+ * the only variable it takes is the recipient's first name.
+ */
+export interface UtAnnouncementEmailVariables {
+  firstName: string;
+}
+
 export interface EmailVariablesByType {
   welcome: WelcomeEmailVariables;
   profileReminder: ProfileReminderEmailVariables;
@@ -106,6 +114,7 @@ export interface EmailVariablesByType {
   messageNotification: MessageNotificationEmailVariables;
   mutualMatch: MutualMatchEmailVariables;
   meetup: MeetupEmailVariables;
+  utAnnouncement: UtAnnouncementEmailVariables;
 }
 
 export type EmailType = keyof EmailVariablesByType;
@@ -120,5 +129,6 @@ export const EMAIL_CATALOG: Record<EmailType, { templateId: string }> = {
   messageNotification: { templateId: "new-notification-design-trigger" },
   mutualMatch: { templateId: "we-match-mutual" },
   meetup: { templateId: "meetup-notification" },
+  utAnnouncement: { templateId: "ut-new-feature-update-05" },
 };
 
