@@ -76,13 +76,14 @@ export interface MutualMatchEmailVariables {
 }
 
 /**
- * Meetup emails: one hosted template per variant (proposed / accepted /
- * declined), all taking the same variables. Every value is a string;
+ * Meetup emails: one hosted template per variant. Every value is a string;
  * user-derived values arrive HTML-escaped because Resend substitutes
- * {{{triple-brace}}} variables as raw HTML. noteLabel and note are empty
- * strings when there is no note to show.
+ * {{{triple-brace}}} variables as raw HTML.
+ *
+ * The proposal carries the note, so its template has note rows. noteLabel and
+ * note are empty strings when there is no note to show.
  */
-export interface MeetupEmailVariables {
+export interface MeetupProposedEmailVariables {
   eyebrow: string;
   kicker: string;
   headline: string;
@@ -94,6 +95,19 @@ export interface MeetupEmailVariables {
   noteLabel: string;
   note: string;
   ctaLabel: string;
+  ctaUrl: string;
+}
+
+/**
+ * The accepted and declined templates hardcode their headline, copy and
+ * button label, and have no note. matchName is the other student's first name.
+ */
+export interface MeetupResponseEmailVariables {
+  firstName: string;
+  matchName: string;
+  locationName: string;
+  locationBuilding: string;
+  meetupTime: string;
   ctaUrl: string;
 }
 
@@ -114,9 +128,9 @@ export interface EmailVariablesByType {
   cofounderLinked: CofounderLinkedEmailVariables;
   messageNotification: MessageNotificationEmailVariables;
   mutualMatch: MutualMatchEmailVariables;
-  meetupProposed: MeetupEmailVariables;
-  meetupAccepted: MeetupEmailVariables;
-  meetupDeclined: MeetupEmailVariables;
+  meetupProposed: MeetupProposedEmailVariables;
+  meetupAccepted: MeetupResponseEmailVariables;
+  meetupDeclined: MeetupResponseEmailVariables;
   utAnnouncement: UtAnnouncementEmailVariables;
 }
 

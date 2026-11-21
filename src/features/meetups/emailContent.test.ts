@@ -48,6 +48,8 @@ describe("subjects", () => {
   });
 });
 
+const asRecord = (v: object) => v as Record<string, unknown>;
+
 describe("variants", () => {
   it("proposed", () => {
     const v = buildMeetupEmail("proposed", ctx(), RECIPIENT).variables;
@@ -66,60 +68,67 @@ describe("variants", () => {
 
   it("accepted greets each student by name and names the other one", () => {
     const toRecipient = buildMeetupEmail("accepted", ctx(), RECIPIENT).variables;
-    expect(toRecipient.headline).toBe("Your meetup is confirmed");
-    expect(toRecipient.kicker).toBe("Confirmed");
-    expect(toRecipient.firstName).toBe("Ethan");
-    expect(toRecipient.message).toContain("you and Hannah both said yes");
-    expect(toRecipient.ctaLabel).toBe("View meetup");
-    expect(toRecipient.note).toContain("Coffee");
+    expect(toRecipient).toEqual({
+      firstName: "Ethan",
+      matchName: "Hannah",
+      locationName: "Synthetic Lounge",
+      locationBuilding: "Synthetic Hall",
+      meetupTime: "Tue Oct 20 · 4:00 PM Central",
+      ctaUrl: `https://ut.mamuncofoundr.com/matches/${CONVO}`,
+    });
 
     const toProposer = buildMeetupEmail("accepted", ctx(), PROPOSER).variables;
     expect(toProposer.firstName).toBe("Hannah");
-    expect(toProposer.message).toContain("you and Ethan both said yes");
+    expect(toProposer.matchName).toBe("Ethan");
   });
 
-  it("declined has no reason and no note, and says they are still matched", () => {
+  it("declined names the student who declined, and has no reason", () => {
     const { variables: v } = buildMeetupEmail("declined", ctx(), PROPOSER);
-    expect(v.headline).toBe("Ethan can't make this one");
     expect(v.firstName).toBe("Hannah");
-    expect(v.message).toContain("no reason is shared");
-    expect(v.message).toContain("still matched");
-    expect(v.ctaLabel).toBe("Propose another time");
-    expect(v.noteLabel).toBe("");
-    expect(v.note).toBe("");
-    // The note must not leak into any field of a decline email.
-    expect(JSON.stringify(v)).not.toContain("Coffee");
+    expect(v.matchName).toBe("Ethan");
+    expect(v.locationName).toBe("Synthetic Lounge");
+    expect(v.meetupTime).toBe("Tue Oct 20 · 4:00 PM Central");
   });
 
-  it("leaves the note empty when there isn't one", () => {
-    for (const variant of ["proposed", "accepted"] as const) {
-      const v = buildMeetupEmail(variant, ctx({ note: null }), RECIPIENT).variables;
-      expect(v.noteLabel).toBe("");
-      expect(v.note).toBe("");
+  it("the note appears only in the proposal, never in accepted or declined", () => {
+    for (const variant of ["accepted", "declined"] as const) {
+      const v = buildMeetupEmail(variant, ctx(), RECIPIENT).variables;
+      expect(JSON.stringify(v)).not.toContain("Coffee");
+      expect(Object.keys(v)).not.toContain("note");
     }
   });
 
-  it("has an empty building when the spot has none", () => {
-    const v = buildMeetupEmail("proposed", ctx({ location: { name: "Spot", building: null } }), RECIPIENT).variables;
-    expect(v.locationBuilding).toBe("");
+  it("leaves the proposal's note empty when there isn't one", () => {
+    const v = buildMeetupEmail("proposed", ctx({ note: null }), RECIPIENT).variables;
+    expect(v.noteLabel).toBe("");
+    expect(v.note).toBe("");
   });
 
-  it("supplies exactly the variables the templates declare, all strings", () => {
-    const keys = [
+  it("has an empty building when the spot has none", () => {
+    for (const variant of ["proposed", "accepted", "declined"] as const) {
+      const v = asRecord(buildMeetupEmail(variant, ctx({ location: { name: "Spot", building: null } }), RECIPIENT).variables);
+      expect(v.locationBuilding).toBe("");
+    }
+  });
+
+  it("supplies exactly the variables each template declares, all strings", () => {
+    const proposed = [
       "eyebrow", "kicker", "headline", "firstName", "message", "locationName",
       "locationBuilding", "meetupTime", "noteLabel", "note", "ctaLabel", "ctaUrl",
     ];
+    const response = ["firstName", "matchName", "locationName", "locationBuilding", "meetupTime", "ctaUrl"];
+    const expected = { proposed, accepted: response, declined: response } as const;
     for (const variant of ["proposed", "accepted", "declined"] as const) {
-      const v = buildMeetupEmail(variant, ctx(), RECIPIENT).variables as unknown as Record<string, unknown>;
-      expect(Object.keys(v).sort()).toEqual([...keys].sort());
-      for (const k of keys) expect(typeof v[k]).toBe("string");
+      const v = asRecord(buildMeetupEmail(variant, ctx(), RECIPIENT).variables);
+      expect(Object.keys(v).sort()).toEqual([...expected[variant]].sort());
+      for (const k of expected[variant]) expect(typeof v[k]).toBe("string");
     }
   });
 
   it("uses no em-dashes in anything a student reads", () => {
     for (const variant of ["proposed", "accepted", "declined"] as const) {
-      const { subject, variables: v } = buildMeetupEmail(variant, ctx(), RECIPIENT);
-      for (const text of [subject, v.eyebrow, v.kicker, v.headline, v.message, v.ctaLabel, v.noteLabel]) {
+      const { subject, variables } = buildMeetupEmail(variant, ctx(), RECIPIENT);
+      for (const text of [subject, ...Object.values(asRecord(variables)).map(String)]) {
         expect(text).not.toContain("—");
       }
     }
@@ -135,8 +144,7 @@ describe("escaping", () => {
       { people: { [PROPOSER]: { firstName: hostile, lastName: "B" }, [RECIPIENT]: { firstName: hostile, lastName: "C" } } },
     );
     for (const variant of ["proposed", "accepted", "declined"] as const) {
-      const v = buildMeetupEmail(variant, c, RECIPIENT).variables;
-      const all = Object.values(v).join("\n");
+      const all = Object.values(asRecord(buildMeetupEmail(variant, c, RECIPIENT).variables)).join("\n");
       expect(all).not.toContain("<img");
       expect(all).not.toContain("<b>");
     }
@@ -146,6 +154,8 @@ describe("escaping", () => {
     expect(proposed.locationBuilding).toContain("&lt;img");
     expect(proposed.headline).toContain("&lt;img");
     expect(proposed.firstName).toContain("&lt;img");
+    expect(buildMeetupEmail("accepted", c, RECIPIENT).variables.matchName).toContain("&lt;img");
+    expect(buildMeetupEmail("declined", c, RECIPIENT).variables.matchName).toContain("&lt;img");
   });
 });
 
@@ -181,7 +191,8 @@ describe("names", () => {
   it("falls back gracefully when a profile has no name", () => {
     const c = ctx({}, { people: {} });
     expect(buildMeetupEmail("proposed", c, RECIPIENT).subject).toBe("Your match wants to meet, Tue Oct 20");
-    expect(buildMeetupEmail("declined", c, RECIPIENT).variables.headline).toBe("Your match can't make this one");
-    expect(buildMeetupEmail("declined", c, RECIPIENT).variables.firstName).toBe("there");
+    const declined = buildMeetupEmail("declined", c, RECIPIENT).variables;
+    expect(declined.matchName).toBe("Your match");
+    expect(declined.firstName).toBe("there");
   });
 });

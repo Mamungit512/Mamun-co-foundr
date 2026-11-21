@@ -1,9 +1,9 @@
 import type { SendResult } from "@/lib/email/send";
-import type { MeetupEmailVariables } from "@/lib/email/catalog";
 import {
   buildMeetupEmail,
   meetupFrom,
   type MeetupEmailContext,
+  type MeetupEmailVariables,
 } from "../emailContent";
 import { emailsFor, type MeetupEmailClaimColumn, type MeetupEmailVariant } from "../rules";
 
