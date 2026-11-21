@@ -1,4 +1,5 @@
 import { clerkClient } from "@clerk/nextjs/server";
+import type { EmailType } from "@/lib/email/catalog";
 import { sendTemplateEmail } from "@/lib/email/send";
 import type { MeetupEmailVariant } from "../rules";
 import { claimEmail, getMeetupEmailBase } from "./data";
@@ -20,6 +21,12 @@ async function addressesFor(userIds: string[]): Promise<Record<string, string | 
   return Object.fromEntries(entries);
 }
 
+const EMAIL_TYPE_BY_VARIANT = {
+  proposed: "meetupProposed",
+  accepted: "meetupAccepted",
+  declined: "meetupDeclined",
+} as const satisfies Record<MeetupEmailVariant, EmailType>;
+
 const realDeps: MeetupEmailDeps = {
   async load(meetupId) {
     const base = await getMeetupEmailBase(meetupId);
@@ -31,9 +38,9 @@ const realDeps: MeetupEmailDeps = {
     return { ...base, emails };
   },
   claim: claimEmail,
-  send: ({ to, orgSlug, from, subject, variables, idempotencyKey }) =>
+  send: ({ variant, to, orgSlug, from, subject, variables, idempotencyKey }) =>
     sendTemplateEmail({
-      type: "meetup",
+      type: EMAIL_TYPE_BY_VARIANT[variant],
       to,
       orgSlug,
       from,
