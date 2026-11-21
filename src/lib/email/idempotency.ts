@@ -10,10 +10,12 @@ const FLAG_KEYS: Record<EmailType, string> = {
   cofounderLinked: "cofounderLinkedSentAt",
   utAnnouncement: "utAnnouncementSentAt",
   // These types use separate dedup mechanisms and are never routed through FLAG_KEYS.
-  // meetup dedups on claim columns on the meetups row (see sendMeetupEmails).
+  // meetup emails dedup on claim columns on the meetups row (see sendMeetupEmails).
   messageNotification: "lastEmailSent",
   mutualMatch: "weMatchNotifiedAt",
-  meetup: "meetupEmailSentAt",
+  meetupProposed: "meetupProposedEmailSentAt",
+  meetupAccepted: "meetupAcceptedEmailSentAt",
+  meetupDeclined: "meetupDeclinedEmailSentAt",
 };
 
 export async function hasEmailBeenSent(

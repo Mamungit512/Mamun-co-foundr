@@ -71,6 +71,15 @@ describe("who gets which email", () => {
     });
   });
 
+  it("passes the variant through so the proposal can use its own template", async () => {
+    const { deps, send } = makeDeps();
+    await runMeetupEmails(MEETUP, "proposed", deps);
+    expect(send.mock.calls[0][0].variant).toBe("proposed");
+    send.mockClear();
+    await runMeetupEmails(MEETUP, "declined", deps);
+    expect(send.mock.calls[0][0].variant).toBe("declined");
+  });
+
   it("accepted: both students, same subject", async () => {
     const { deps, send } = makeDeps();
     await runMeetupEmails(MEETUP, "accepted", deps);
