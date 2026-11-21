@@ -43,6 +43,8 @@ export type BuiltMeetupEmail = {
 
 const first = (p: EmailPerson | undefined) => (p?.firstName ?? "").trim() || "Your match";
 
+const greetingName = (p: EmailPerson | undefined) => (p?.firstName ?? "").trim() || "there";
+
 function short(p: EmailPerson | undefined): string {
   const f = first(p);
   const l = (p?.lastName ?? "").trim();
@@ -68,27 +70,31 @@ export function meetupCtaUrl(
 export function buildMeetupEmail(
   variant: MeetupEmailVariant,
   ctx: MeetupEmailContext,
+  /** The student this copy is for; it fills the "Hi {firstName}" greeting. */
+  toUserId: string,
 ): BuiltMeetupEmail {
   const { meetup, org } = ctx;
   const proposer = ctx.people[meetup.proposerUserId];
   const recipient = ctx.people[meetup.recipientUserId];
+  const other = ctx.people[toUserId === meetup.proposerUserId ? meetup.recipientUserId : meetup.proposerUserId];
   const { date, time } = formatChicagoParts(meetup.startsAt);
-  const cfg = getOrgConfig(org.slug);
 
   const base = {
-    primaryColor: cfg?.branding.primaryColor ?? "#000000",
-    wordmark: escapeHtml(org.name),
+    eyebrow: "Meetup",
+    firstName: escapeHtml(greetingName(ctx.people[toUserId])),
     locationName: escapeHtml(meetup.location.name),
-    locationDetail: escapeHtml(meetup.location.building ?? ""),
-    whenLabel: `${date} · ${time} Central`,
+    locationBuilding: escapeHtml(meetup.location.building ?? ""),
+    meetupTime: `${date} · ${time} Central`,
     ctaUrl: meetupCtaUrl(org, ctx.conversationId),
   };
 
   const withNote =
     meetup.note && variant !== "declined"
-      ? { noteLabel: "Note", noteText: `“${escapeHtml(meetup.note)}”` }
-      : { noteLabel: "", noteText: "" };
+      ? { noteLabel: "Note", note: `“${escapeHtml(meetup.note)}”` }
+      : { noteLabel: "", note: "" };
 
+  // The template reads "Hi {firstName} - {message}", so every message starts
+  // lowercase and finishes the sentence.
   switch (variant) {
     case "proposed":
       return {
@@ -96,8 +102,9 @@ export function buildMeetupEmail(
         variables: {
           ...base,
           ...withNote,
-          heading: `${escapeHtml(first(proposer))} wants to meet you on campus`,
-          body: `Accept or decline from your chat with ${escapeHtml(first(proposer))}.`,
+          kicker: "New proposal",
+          headline: `${escapeHtml(first(proposer))} wants to meet you on campus`,
+          message: `${escapeHtml(first(proposer))} proposed a meetup. Accept or decline from your chat.`,
           ctaLabel: "Respond",
         },
       };
@@ -107,8 +114,9 @@ export function buildMeetupEmail(
         variables: {
           ...base,
           ...withNote,
-          heading: "Your meetup is confirmed",
-          body: "Both of you said yes. Same details for both of you.",
+          kicker: "Confirmed",
+          headline: "Your meetup is confirmed",
+          message: `you and ${escapeHtml(first(other))} both said yes. Here are the details.`,
           ctaLabel: "View meetup",
         },
       };
@@ -118,8 +126,9 @@ export function buildMeetupEmail(
         variables: {
           ...base,
           ...withNote,
-          heading: `${escapeHtml(first(recipient))} can't make this one`,
-          body: "No reason is shared. You're still matched. Propose another time whenever you like.",
+          kicker: "Update",
+          headline: `${escapeHtml(first(recipient))} can't make this one`,
+          message: "no reason is shared, and you're still matched. Propose another time whenever you like.",
           ctaLabel: "Propose another time",
         },
       };

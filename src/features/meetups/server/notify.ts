@@ -32,6 +32,7 @@ export type MeetupEmailDeps = {
   /** Atomically set the claim column where it is NULL. True only for the winner. */
   claim(meetupId: string, column: MeetupEmailClaimColumn): Promise<boolean>;
   send(args: {
+    variant: MeetupEmailVariant;
     to: string;
     orgSlug: string;
     from: string;
@@ -53,7 +54,6 @@ export async function runMeetupEmails(
       return;
     }
 
-    const built = buildMeetupEmail(event, ctx);
     const from = meetupFrom(ctx.org.slug, ctx.org.name);
 
     await Promise.all(
@@ -68,7 +68,9 @@ export async function runMeetupEmails(
           // Claim first. Losing means it was already sent (or is being sent).
           if (!(await deps.claim(meetupId, planned.claimColumn))) return;
 
+          const built = buildMeetupEmail(event, ctx, planned.toUserId);
           const result = await deps.send({
+            variant: planned.variant,
             to,
             orgSlug: ctx.org.slug,
             from,
