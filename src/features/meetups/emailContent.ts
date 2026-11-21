@@ -1,5 +1,8 @@
 import { escapeHtml } from "@/lib/html";
-import type { MeetupEmailVariables } from "@/lib/email/catalog";
+import type {
+  MeetupProposedEmailVariables,
+  MeetupResponseEmailVariables,
+} from "@/lib/email/catalog";
 import { getOrgConfig } from "@/features/school/registry/registry";
 import { formatChicagoParts, type MeetupEmailVariant } from "./rules";
 
@@ -36,9 +39,11 @@ export type MeetupEmailContext = {
   conversationId: string | null;
 };
 
-export type BuiltMeetupEmail = {
+export type MeetupEmailVariables = MeetupProposedEmailVariables | MeetupResponseEmailVariables;
+
+export type BuiltMeetupEmail<V extends MeetupEmailVariables = MeetupEmailVariables> = {
   subject: string;
-  variables: MeetupEmailVariables;
+  variables: V;
 };
 
 const first = (p: EmailPerson | undefined) => (p?.firstName ?? "").trim() || "Your match";
@@ -68,6 +73,21 @@ export function meetupCtaUrl(
 }
 
 export function buildMeetupEmail(
+  variant: "proposed",
+  ctx: MeetupEmailContext,
+  toUserId: string,
+): BuiltMeetupEmail<MeetupProposedEmailVariables>;
+export function buildMeetupEmail(
+  variant: "accepted" | "declined",
+  ctx: MeetupEmailContext,
+  toUserId: string,
+): BuiltMeetupEmail<MeetupResponseEmailVariables>;
+export function buildMeetupEmail(
+  variant: MeetupEmailVariant,
+  ctx: MeetupEmailContext,
+  toUserId: string,
+): BuiltMeetupEmail;
+export function buildMeetupEmail(
   variant: MeetupEmailVariant,
   ctx: MeetupEmailContext,
   /** The student this copy is for; it fills the "Hi {firstName}" greeting. */
@@ -79,8 +99,7 @@ export function buildMeetupEmail(
   const other = ctx.people[toUserId === meetup.proposerUserId ? meetup.recipientUserId : meetup.proposerUserId];
   const { date, time } = formatChicagoParts(meetup.startsAt);
 
-  const base = {
-    eyebrow: "Meetup",
+  const common = {
     firstName: escapeHtml(greetingName(ctx.people[toUserId])),
     locationName: escapeHtml(meetup.location.name),
     locationBuilding: escapeHtml(meetup.location.building ?? ""),
@@ -88,49 +107,34 @@ export function buildMeetupEmail(
     ctaUrl: meetupCtaUrl(org, ctx.conversationId),
   };
 
-  const withNote =
-    meetup.note && variant !== "declined"
-      ? { noteLabel: "Note", note: `“${escapeHtml(meetup.note)}”` }
-      : { noteLabel: "", note: "" };
-
-  // The template reads "Hi {firstName} - {message}", so every message starts
-  // lowercase and finishes the sentence.
   switch (variant) {
-    case "proposed":
+    case "proposed": {
+      // The note goes only in the proposal, to the other student in the pair.
+      const note = meetup.note
+        ? { noteLabel: "Note", note: `“${escapeHtml(meetup.note)}”` }
+        : { noteLabel: "", note: "" };
       return {
         subject: `${short(proposer)} wants to meet, ${date}`,
         variables: {
-          ...base,
-          ...withNote,
+          ...common,
+          ...note,
+          eyebrow: "Meetup",
           kicker: "New proposal",
           headline: `${escapeHtml(first(proposer))} wants to meet you on campus`,
           message: `${escapeHtml(first(proposer))} proposed a meetup. Accept or decline from your chat.`,
           ctaLabel: "Respond",
         },
       };
+    }
     case "accepted":
       return {
         subject: `Confirmed: meetup ${date}, ${time}`,
-        variables: {
-          ...base,
-          ...withNote,
-          kicker: "Confirmed",
-          headline: "Your meetup is confirmed",
-          message: `you and ${escapeHtml(first(other))} both said yes. Here are the details.`,
-          ctaLabel: "View meetup",
-        },
+        variables: { ...common, matchName: escapeHtml(first(other)) },
       };
     case "declined":
       return {
         subject: `${first(recipient)} can't make ${date}`,
-        variables: {
-          ...base,
-          ...withNote,
-          kicker: "Update",
-          headline: `${escapeHtml(first(recipient))} can't make this one`,
-          message: "no reason is shared, and you're still matched. Propose another time whenever you like.",
-          ctaLabel: "Propose another time",
-        },
+        variables: { ...common, matchName: escapeHtml(first(recipient)) },
       };
   }
 }
