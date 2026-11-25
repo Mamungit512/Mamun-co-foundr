@@ -20,6 +20,14 @@ export async function sendReEngagementEmail({
   orgSlug?: string | null;
 }): Promise<ReEngagementResult> {
   try {
+    // UT-only for now: the general (non-school) templates were deleted from
+    // Resend, so sending without an org would 404. Not marked as sent, so the
+    // user gets the school email once they are linked to their org.
+    if (!orgSlug) {
+      console.log(`[email] reEngagement skipped: no org (${userId})`);
+      return "skipped";
+    }
+
     const alreadySent = await hasEmailBeenSent(userId, "reEngagement");
     if (alreadySent) {
       console.log(

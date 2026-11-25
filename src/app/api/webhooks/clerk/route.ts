@@ -2,7 +2,12 @@ import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { NextRequest } from "next/server";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
-import { clerkClient } from "@clerk/nextjs/server";
+import {
+  assignUserToOrg,
+  fetchOrgsForDomain,
+  resolveOrgForEmail,
+} from "@/features/school/services/orgLink";
+import { getEmailDomain } from "@/features/school/auth/email-domain";
 import { sendWelcomeEmail } from "@/lib/email";
 import { revalidateTag } from "next/cache";
 import { CLERK_CACHE_TAG } from "@/features/school/services/retention/clerkAccounts";
@@ -32,33 +37,23 @@ export async function POST(req: NextRequest) {
       // Email domain allowlist: automatically assign school org based on email domain
       if (email && id) {
         try {
-          const domain = email.split("@")[1]?.toLowerCase();
+          const domain = getEmailDomain(email);
 
           if (domain) {
-            const supabaseForOrg = createClient(
-              process.env.NEXT_PUBLIC_SUPABASE_URL!,
-              process.env.SUPABASE_SERVICE_ROLE_KEY!,
+            const resolution = resolveOrgForEmail(
+              email,
+              await fetchOrgsForDomain(domain),
             );
+            const org = resolution.org;
 
-            const { data: org } = await supabaseForOrg
-              .from("organizations")
-              .select("id, slug, ferpa_dpa_signed_at")
-              .contains("allowed_email_domains", [domain])
-              .single();
-
-            if (org?.ferpa_dpa_signed_at) {
-              const client = await clerkClient();
-              await client.users.updateUserMetadata(id, {
-                publicMetadata: {
-                  organization_id: org.id,
-                },
-              });
+            if (resolution.status === "assign") {
+              await assignUserToOrg(id, resolution.org.id);
               console.log(
-                `🏫 School user auto-assigned: ${domain} → org ${org.slug} (${org.id})`,
+                `🏫 School user auto-assigned: ${domain} → org ${resolution.org.slug} (${resolution.org.id})`,
               );
-            } else if (org) {
+            } else if (resolution.status === "unsigned") {
               console.warn(
-                `⚠️  Domain "${domain}" matches org "${org.slug}" but FERPA DPA not yet signed — not assigning.`,
+                `⚠️  Domain "${domain}" matches org "${resolution.org.slug}" but FERPA DPA not yet signed — not assigning.`,
               );
             }
 

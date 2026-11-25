@@ -1,27 +1,37 @@
 import { sendTemplateEmail } from "../send";
-import { hasEmailBeenSent, markEmailSent } from "../idempotency";
+import { hasCampaignBeenSent, markCampaignSent } from "../idempotency";
 
 export const UT_ORG_SLUG = "ut";
+
+/** Clerk privateMetadata key holding `{ [campaignId]: sentAtIso }`. */
+export const UT_ANNOUNCEMENT_CAMPAIGNS_KEY = "utAnnouncementCampaigns";
 
 export type UtAnnouncementResult = "sent" | "skipped" | "failed";
 
 /**
- * Sends the UT feature announcement to one user. Idempotent: a per-user flag
- * in Clerk privateMetadata guarantees it is only ever sent once, and the flag
- * is written only after the send succeeds.
+ * Sends one UT newsletter campaign to one user. Idempotent per campaign: a
+ * per-user, per-campaign flag in Clerk privateMetadata guarantees each
+ * campaign is sent at most once, and the flag is written only after the send
+ * succeeds. A new campaign id can be sent to users who got earlier ones.
  */
 export async function sendUtAnnouncementEmail({
   userId,
   email,
   firstName,
+  campaignId,
 }: {
   userId: string;
   email: string;
   firstName?: string | null;
+  campaignId: string;
 }): Promise<UtAnnouncementResult> {
   try {
-    if (await hasEmailBeenSent(userId, "utAnnouncement")) {
-      console.log(`[email] utAnnouncement already sent for ${userId} — skipping`);
+    if (
+      await hasCampaignBeenSent(userId, UT_ANNOUNCEMENT_CAMPAIGNS_KEY, campaignId)
+    ) {
+      console.log(
+        `[email] utAnnouncement ${campaignId} already sent for ${userId} — skipping`,
+      );
       return "skipped";
     }
 
@@ -30,10 +40,13 @@ export async function sendUtAnnouncementEmail({
       to: email,
       orgSlug: UT_ORG_SLUG,
       variables: { firstName: firstName || "there" },
+      // Guards against a double send if the flag write below fails and the
+      // batch is re-run within Resend's 24h idempotency window.
+      idempotencyKey: `ut-announcement/${campaignId}/${userId}`,
     });
 
     if (result.ok) {
-      await markEmailSent(userId, "utAnnouncement");
+      await markCampaignSent(userId, UT_ANNOUNCEMENT_CAMPAIGNS_KEY, campaignId);
       return "sent";
     }
     return "failed";

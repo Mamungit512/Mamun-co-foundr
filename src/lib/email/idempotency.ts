@@ -75,3 +75,63 @@ export async function markEmailSent(
     );
   }
 }
+
+/**
+ * Per-campaign dedup for repeatable sends (e.g. UT newsletters). Stored in
+ * Clerk privateMetadata as `{ [mapKey]: { [campaignId]: sentAtIso } }`, so
+ * each campaign reaches a user at most once while later campaigns still can.
+ */
+export function getCampaignSentAt(
+  privateMetadata: Record<string, unknown> | null | undefined,
+  mapKey: string,
+  campaignId: string,
+): string | null {
+  const map = privateMetadata?.[mapKey];
+  if (!map || typeof map !== "object") return null;
+  const sentAt = (map as Record<string, unknown>)[campaignId];
+  return typeof sentAt === "string" ? sentAt : null;
+}
+
+export async function hasCampaignBeenSent(
+  userId: string,
+  mapKey: string,
+  campaignId: string,
+): Promise<boolean> {
+  try {
+    const clerk = await clerkClient();
+    const user = await clerk.users.getUser(userId);
+    return !!getCampaignSentAt(user.privateMetadata, mapKey, campaignId);
+  } catch (err) {
+    console.error(
+      `[email/idempotency] error checking campaign ${campaignId} for ${userId}:`,
+      err,
+    );
+    // Fail closed: a duplicate newsletter is worse than a missed one.
+    return true;
+  }
+}
+
+export async function markCampaignSent(
+  userId: string,
+  mapKey: string,
+  campaignId: string,
+): Promise<void> {
+  try {
+    const clerk = await clerkClient();
+    const user = await clerk.users.getUser(userId);
+    const existing = user.privateMetadata?.[mapKey];
+    await clerk.users.updateUserMetadata(userId, {
+      privateMetadata: {
+        [mapKey]: {
+          ...(existing && typeof existing === "object" ? existing : {}),
+          [campaignId]: new Date().toISOString(),
+        },
+      },
+    });
+  } catch (err) {
+    console.error(
+      `[email/idempotency] error marking campaign ${campaignId} for ${userId}:`,
+      err,
+    );
+  }
+}

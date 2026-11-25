@@ -5,6 +5,10 @@ import {
   type LifecycleResult,
 } from "@/lib/email/lifecycle";
 import { verifyCronSecret } from "@/lib/cronAuth";
+import {
+  backfillUserOrganizations,
+  type OrgBackfillResult,
+} from "@/features/school/services/orgLink";
 
 /**
  * Unified lifecycle email cron — runs all lifecycle checks daily.
@@ -30,6 +34,18 @@ export async function GET(req: NextRequest) {
     const authError = verifyCronSecret(req);
     if (authError) return authError;
 
+    // Link existing users to their school first, so the checks below send
+    // them the school-branded templates. A failure here must not block emails.
+    let orgBackfill: OrgBackfillResult | null = null;
+    try {
+      orgBackfill = await backfillUserOrganizations();
+    } catch (err) {
+      console.error(
+        "❌ [lifecycle] org backfill failed:",
+        err instanceof Error ? err.message : "unknown error",
+      );
+    }
+
     const results: LifecycleResult[] = [];
 
     for (const check of CHECKS) {
@@ -53,6 +69,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      orgBackfill,
       results,
       timestamp: new Date().toISOString(),
     });
