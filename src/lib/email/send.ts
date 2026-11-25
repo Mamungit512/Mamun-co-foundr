@@ -1,10 +1,15 @@
 import { getResendClient, EMAIL_FROM } from "./client";
 import { EmailType, EmailVariablesByType } from "./catalog";
 import { resolveTemplateId } from "./templateResolver";
+import {
+  buildUnsubscribeUrls,
+  isEmailUnsubscribed,
+  UNSUBSCRIBE_MAILTO,
+} from "./unsubscribe";
 
 export type SendResult =
   | { ok: true }
-  | { ok: false; reason: "no_api_key" | "send_error" };
+  | { ok: false; reason: "no_api_key" | "send_error" | "unsubscribed" };
 
 export async function sendTemplateEmail<T extends EmailType>({
   type,
@@ -31,7 +36,27 @@ export async function sendTemplateEmail<T extends EmailType>({
     return { ok: false, reason: "no_api_key" };
   }
 
+  // The recipient opted out of all email on the unsubscribe page.
+  if (await isEmailUnsubscribed(to)) {
+    console.log(`[email] skipping ${type}: recipient unsubscribed`);
+    return { ok: false, reason: "unsubscribed" };
+  }
+
   const templateId = resolveTemplateId(type, orgSlug);
+  const unsubscribe = buildUnsubscribeUrls(to);
+  // Every template's footer links to {{{unsubscribeUrl}}}, the UT newsletter
+  // (sent through the admin announcement tool) included.
+  const templateVariables = {
+    ...variables,
+    unsubscribeUrl: unsubscribe?.pageUrl ?? UNSUBSCRIBE_MAILTO,
+  };
+  // Lets Gmail, Apple Mail and Outlook show their own Unsubscribe button.
+  const headers = unsubscribe
+    ? {
+        "List-Unsubscribe": `<${unsubscribe.oneClickUrl}>, <${UNSUBSCRIBE_MAILTO}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      }
+    : undefined;
 
   try {
     const result = (await (
@@ -44,7 +69,8 @@ export async function sendTemplateEmail<T extends EmailType>({
         from,
         to,
         ...(subject ? { subject } : {}),
-        template: { id: templateId, variables },
+        template: { id: templateId, variables: templateVariables },
+        ...(headers ? { headers } : {}),
       },
       idempotencyKey ? { idempotencyKey } : undefined,
     ));
