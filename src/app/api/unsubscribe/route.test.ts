@@ -30,7 +30,7 @@ describe("/api/unsubscribe", () => {
     expect(unsubscribeEmail).not.toHaveBeenCalled();
   });
 
-  it("GET never unsubscribes; it redirects to the confirm page", async () => {
+  it("GET never unsubscribes; it redirects to the /unsubscribe page", async () => {
     const url = buildUnsubscribeUrls("a@utexas.edu")!.oneClickUrl;
     const res = GET(new NextRequest(url));
     expect(res.status).toBe(307);

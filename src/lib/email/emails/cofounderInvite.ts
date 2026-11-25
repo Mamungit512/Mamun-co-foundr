@@ -1,6 +1,6 @@
 import { sendTemplateEmail } from "../send";
 import { resolveOrgBranding } from "../branding";
-import { getAppUrl } from "../client";
+import { getOrgAppUrl } from "../client";
 
 export async function sendCofounderInviteEmail({
   to,
@@ -14,7 +14,7 @@ export async function sendCofounderInviteEmail({
   token: string;
 }) {
   const branding = resolveOrgBranding(slug);
-  const acceptUrl = `${getAppUrl()}/school/${slug}/invite/${token}`;
+  const acceptUrl = `${getOrgAppUrl(slug)}/invite/${token}`;
 
   return sendTemplateEmail({
     type: "cofounderInvite",
@@ -38,7 +38,7 @@ export async function sendCofounderLinkedEmail({
   slug: string;
 }) {
   const branding = resolveOrgBranding(slug);
-  const dashboardUrl = `${getAppUrl()}/school/${slug}/dashboard`;
+  const dashboardUrl = `${getOrgAppUrl(slug)}/dashboard`;
 
   return sendTemplateEmail({
     type: "cofounderLinked",

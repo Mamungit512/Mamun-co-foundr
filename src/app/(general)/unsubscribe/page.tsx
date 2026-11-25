@@ -1,9 +1,6 @@
-import {
-  isEmailUnsubscribed,
-  readUnsubscribeParams,
-} from "@/lib/email/unsubscribe";
+import { readUnsubscribeParams } from "@/lib/email/unsubscribe";
+import AutoUnsubscribe from "./AutoUnsubscribe";
 import Card from "./Card";
-import UnsubscribeForm from "./UnsubscribeForm";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -19,8 +16,9 @@ function maskEmail(email: string): string {
 }
 
 /**
- * Landing page for the footer Unsubscribe link. Opting out needs one button
- * press (not just opening the page), so link scanners can't unsubscribe anyone.
+ * Landing page for the footer Unsubscribe link. Opening it unsubscribes the
+ * address (added to Resend's suppression list and flagged in Clerk) and
+ * confirms it. No sign-in and no extra click.
  */
 export default async function UnsubscribePage({
   searchParams,
@@ -42,17 +40,5 @@ export default async function UnsubscribePage({
     );
   }
 
-  if (await isEmailUnsubscribed(email)) {
-    return (
-      <Card title="You're already unsubscribed">
-        <p>We don&apos;t send any emails to {maskEmail(email)}.</p>
-        <p>
-          Changed your mind? Email{" "}
-          <a className="text-[#bf5700] underline" href={`mailto:${CONTACT}`}>{CONTACT}</a>.
-        </p>
-      </Card>
-    );
-  }
-
-  return <UnsubscribeForm e={e!} t={t!} maskedEmail={maskEmail(email)} contact={CONTACT} />;
+  return <AutoUnsubscribe e={e!} t={t!} maskedEmail={maskEmail(email)} contact={CONTACT} />;
 }

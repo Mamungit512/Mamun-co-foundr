@@ -58,8 +58,9 @@ export function decodeEmail(encoded: string): string | null {
 }
 
 /**
- * Links for one recipient: `pageUrl` for the footer link (opens a confirm
- * page, so mail scanners that prefetch links can't unsubscribe anyone) and
+ * Links for one recipient: `pageUrl` for the footer link (the page
+ * unsubscribes from the browser, so mail scanners that only fetch the link
+ * can't unsubscribe anyone) and
  * `oneClickUrl` for the List-Unsubscribe header (mail apps POST to it).
  * Null when no signing secret is configured.
  */
