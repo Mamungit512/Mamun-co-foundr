@@ -51,14 +51,21 @@ describe("sendTemplateEmail unsubscribe handling", () => {
     );
   });
 
-  it("leaves the newsletter template's variables alone", async () => {
+  it("gives the UT newsletter the same per-recipient unsubscribe link", async () => {
     await sendTemplateEmail({
       type: "utAnnouncement",
       to: "a@utexas.edu",
       orgSlug: "ut",
       variables: { firstName: "Ada" },
     });
-    expect(create.mock.calls[0][0].template.variables).toEqual({ firstName: "Ada" });
+    const payload = create.mock.calls[0][0];
+    expect(payload.template.variables).toEqual({
+      firstName: "Ada",
+      unsubscribeUrl: expect.stringMatching(
+        /^https:\/\/mamuncofoundr\.com\/unsubscribe\?e=.+&t=.+$/,
+      ),
+    });
+    expect(payload.headers["List-Unsubscribe-Post"]).toBe("List-Unsubscribe=One-Click");
   });
 
   it("falls back to the mailto link with no signing secret", async () => {

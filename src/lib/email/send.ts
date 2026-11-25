@@ -7,14 +7,6 @@ import {
   UNSUBSCRIBE_MAILTO,
 } from "./unsubscribe";
 
-/**
- * Templates whose footer link is {{{unsubscribeUrl}}}. The UT newsletter is
- * sent as a Resend broadcast, which has its own unsubscribe link.
- */
-const NO_UNSUBSCRIBE_VARIABLE: ReadonlySet<EmailType> = new Set([
-  "utAnnouncement",
-]);
-
 export type SendResult =
   | { ok: true }
   | { ok: false; reason: "no_api_key" | "send_error" | "unsubscribed" };
@@ -52,12 +44,12 @@ export async function sendTemplateEmail<T extends EmailType>({
 
   const templateId = resolveTemplateId(type, orgSlug);
   const unsubscribe = buildUnsubscribeUrls(to);
-  const templateVariables = NO_UNSUBSCRIBE_VARIABLE.has(type)
-    ? variables
-    : {
-        ...variables,
-        unsubscribeUrl: unsubscribe?.pageUrl ?? UNSUBSCRIBE_MAILTO,
-      };
+  // Every template's footer links to {{{unsubscribeUrl}}}, the UT newsletter
+  // (sent through the admin announcement tool) included.
+  const templateVariables = {
+    ...variables,
+    unsubscribeUrl: unsubscribe?.pageUrl ?? UNSUBSCRIBE_MAILTO,
+  };
   // Lets Gmail, Apple Mail and Outlook show their own Unsubscribe button.
   const headers = unsubscribe
     ? {
