@@ -6,8 +6,9 @@ import { readUnsubscribeParams, unsubscribeEmail } from "@/lib/email/unsubscribe
  * here when someone taps their built-in Unsubscribe button; the address and
  * its signature come from the List-Unsubscribe header's URL.
  *
- * Only POST unsubscribes. A GET (e.g. a link scanner) is sent to the confirm
- * page instead, so prefetching a link never opts anyone out.
+ * Only POST unsubscribes (mail apps, and the /unsubscribe page from the
+ * browser). A GET (e.g. a link scanner) is sent to the /unsubscribe page
+ * instead, so prefetching a link never opts anyone out.
  */
 export async function POST(req: NextRequest) {
   const { searchParams } = req.nextUrl;
