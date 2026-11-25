@@ -30,6 +30,9 @@ const isPublicRoute = createRouteMatcher([
   "/api/webhooks/clerk",
   "/api/cron/(.*)",
   "/api/send",
+  // One-click unsubscribe from email links: no sign-in.
+  "/unsubscribe",
+  "/api/unsubscribe",
   "/school/:slug",
   "/school/:slug/privacy-policy",
   "/school/:slug/terms-and-conditions",

@@ -49,6 +49,8 @@ export async function sendUtAnnouncementEmail({
       await markCampaignSent(userId, UT_ANNOUNCEMENT_CAMPAIGNS_KEY, campaignId);
       return "sent";
     }
+    // Opted out of all email: not a failure, and never retried.
+    if (result.reason === "unsubscribed") return "skipped";
     return "failed";
   } catch (err) {
     console.error(
