@@ -19,6 +19,7 @@ vi.mock("@supabase/supabase-js", () => ({
 }));
 vi.mock("../emails/utAnnouncement", () => ({
   UT_ORG_SLUG: "ut",
+  UT_ANNOUNCEMENT_CAMPAIGNS_KEY: "utAnnouncementCampaigns",
   sendUtAnnouncementEmail: (...a: unknown[]) => sendUtAnnouncementEmail(...a),
 }));
 
@@ -30,7 +31,8 @@ function user(
   id: string,
   opts: {
     org?: string;
-    sentAt?: string;
+    campaigns?: Record<string, string>;
+    legacySentAt?: string;
     lastActiveAt?: number | null;
     email?: string | null;
   } = {},
@@ -43,7 +45,10 @@ function user(
     primaryEmailAddressId: "e1",
     emailAddresses: email ? [{ id: "e1", emailAddress: email }] : [],
     publicMetadata: { organization_id: opts.org ?? "org-ut" },
-    privateMetadata: opts.sentAt ? { utAnnouncementSentAt: opts.sentAt } : {},
+    privateMetadata: {
+      ...(opts.campaigns ? { utAnnouncementCampaigns: opts.campaigns } : {}),
+      ...(opts.legacySentAt ? { utAnnouncementSentAt: opts.legacySentAt } : {}),
+    },
   };
 }
 
@@ -59,11 +64,11 @@ describe("runUtAnnouncement", () => {
       data: [
         user("a"),
         user("b", { org: "org-other" }),
-        user("c", { sentAt: "2026-11-09T00:00:00Z" }),
+        user("c", { campaigns: { dec: "2026-12-01T00:00:00Z" } }),
         user("d", { email: null }),
       ],
     });
-    const res = await runUtAnnouncement();
+    const res = await runUtAnnouncement({ campaignId: "dec" });
     expect(res.dryRun).toBe(true);
     expect(res.candidates).toBe(1);
     expect(res.sample).toEqual(["a***@utexas.edu"]);
@@ -74,17 +79,21 @@ describe("runUtAnnouncement", () => {
     getUserList.mockResolvedValue({
       data: [user("a"), user("b", { org: "org-other" })],
     });
-    const res = await runUtAnnouncement({ dryRun: false });
+    const res = await runUtAnnouncement({ dryRun: false, campaignId: "dec" });
     expect(sendUtAnnouncementEmail).toHaveBeenCalledTimes(1);
     expect(sendUtAnnouncementEmail).toHaveBeenCalledWith(
-      expect.objectContaining({ userId: "a" }),
+      expect.objectContaining({ userId: "a", campaignId: "dec" }),
     );
     expect(res).toMatchObject({ sent: 1, failed: 0, remaining: 0 });
   });
 
   it("respects limit and reports what remains", async () => {
     getUserList.mockResolvedValue({ data: [user("a"), user("b"), user("c")] });
-    const res = await runUtAnnouncement({ dryRun: false, limit: 2 });
+    const res = await runUtAnnouncement({
+      dryRun: false,
+      limit: 2,
+      campaignId: "dec",
+    });
     expect(sendUtAnnouncementEmail).toHaveBeenCalledTimes(2);
     expect(res.candidates).toBe(3);
     expect(res.remaining).toBe(1);
@@ -107,7 +116,29 @@ describe("runUtAnnouncement", () => {
     sendUtAnnouncementEmail
       .mockResolvedValueOnce("failed")
       .mockResolvedValueOnce("sent");
-    const res = await runUtAnnouncement({ dryRun: false });
+    const res = await runUtAnnouncement({ dryRun: false, campaignId: "dec" });
     expect(res).toMatchObject({ sent: 1, failed: 1 });
+  });
+
+  it("lets a new campaign reach users who received earlier ones", async () => {
+    getUserList.mockResolvedValue({
+      data: [
+        user("got-nov", { campaigns: { nov: "2026-11-09T00:00:00Z" } }),
+        user("got-old-flag", { legacySentAt: "2026-11-01T00:00:00Z" }),
+        user("got-dec", { campaigns: { dec: "2026-12-01T00:00:00Z" } }),
+      ],
+    });
+    await runUtAnnouncement({ dryRun: false, campaignId: "dec" });
+    expect(
+      sendUtAnnouncementEmail.mock.calls.map((c) => (c[0] as { userId: string }).userId),
+    ).toEqual(["got-nov", "got-old-flag"]);
+  });
+
+  it("refuses to send without a campaign id", async () => {
+    getUserList.mockResolvedValue({ data: [user("a")] });
+    await expect(runUtAnnouncement({ dryRun: false })).rejects.toThrow(
+      /campaignId/,
+    );
+    expect(sendUtAnnouncementEmail).not.toHaveBeenCalled();
   });
 });

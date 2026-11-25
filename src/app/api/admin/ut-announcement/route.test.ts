@@ -61,6 +61,7 @@ describe("POST /api/admin/ut-announcement", () => {
     const res = await POST(post());
     expect(res.status).toBe(200);
     expect(runUtAnnouncement).toHaveBeenCalledWith({
+      campaignId: undefined,
       dryRun: true,
       limit: undefined,
       inactiveDays: undefined,
@@ -72,8 +73,16 @@ describe("POST /api/admin/ut-announcement", () => {
     expect(runUtAnnouncement).toHaveBeenLastCalledWith(
       expect.objectContaining({ dryRun: true }),
     );
-    await POST(post({ dryRun: false, limit: 10, inactiveDays: 14 }));
+    await POST(
+      post({
+        dryRun: false,
+        campaignId: "2026-12-newsletter",
+        limit: 10,
+        inactiveDays: 14,
+      }),
+    );
     expect(runUtAnnouncement).toHaveBeenLastCalledWith({
+      campaignId: "2026-12-newsletter",
       dryRun: false,
       limit: 10,
       inactiveDays: 14,
@@ -84,6 +93,27 @@ describe("POST /api/admin/ut-announcement", () => {
     expect((await POST(post({ limit: 0 }))).status).toBe(400);
     expect((await POST(post({ limit: 5000 }))).status).toBe(400);
     expect((await POST(post({ inactiveDays: -1 }))).status).toBe(400);
+    expect(runUtAnnouncement).not.toHaveBeenCalled();
+  });
+
+  it("requires a campaignId to send, but not for a dry run", async () => {
+    const res = await POST(post({ dryRun: false }));
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({
+      error: "campaignId is required when dryRun is false",
+    });
+    expect(runUtAnnouncement).not.toHaveBeenCalled();
+
+    expect((await POST(post({ campaignId: "dec" }))).status).toBe(200);
+    expect(runUtAnnouncement).toHaveBeenLastCalledWith(
+      expect.objectContaining({ campaignId: "dec", dryRun: true }),
+    );
+  });
+
+  it("rejects a malformed campaignId", async () => {
+    for (const campaignId of ["", "has space", "a/b", 42, "x".repeat(65)]) {
+      expect((await POST(post({ campaignId, dryRun: false }))).status).toBe(400);
+    }
     expect(runUtAnnouncement).not.toHaveBeenCalled();
   });
 });

@@ -13,6 +13,13 @@ export async function sendWelcomeEmail({
   orgSlug?: string | null;
 }): Promise<void> {
   try {
+    // UT-only for now: the general (non-school) templates were deleted from
+    // Resend, so sending without an org would 404.
+    if (!orgSlug) {
+      console.log(`[email] welcome skipped: no org (${userId})`);
+      return;
+    }
+
     const alreadySent = await hasEmailBeenSent(userId, "welcome");
     if (alreadySent) {
       console.log(`[email] welcome already sent for ${userId} — skipping`);

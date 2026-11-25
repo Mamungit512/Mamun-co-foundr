@@ -14,3 +14,11 @@ describe("meetup template ids", () => {
     expect(resolveTemplateId("meetupDeclined", null)).toBe("meetup-declined");
   });
 });
+
+describe("profile reminder template id", () => {
+  it("UT uses its hosted profile-completion template", () => {
+    expect(resolveTemplateId("profileReminder", "ut")).toBe(
+      "profile-completion-03-1",
+    );
+  });
+});

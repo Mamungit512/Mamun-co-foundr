@@ -2,8 +2,10 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 import {
   sendUtAnnouncementEmail,
+  UT_ANNOUNCEMENT_CAMPAIGNS_KEY,
   UT_ORG_SLUG,
 } from "../emails/utAnnouncement";
+import { getCampaignSentAt } from "../idempotency";
 import type { LifecycleResult } from "./index";
 
 const PAGE_SIZE = 100;
@@ -12,6 +14,12 @@ const SEND_DELAY_MS = 550;
 const SAMPLE_SIZE = 10;
 
 export type UtAnnouncementOptions = {
+  /**
+   * Identifies one newsletter (e.g. "2026-12-newsletter"). Each campaign goes
+   * to every UT user at most once. Required to send; optional for a dry run,
+   * where it excludes users who already received that campaign.
+   */
+  campaignId?: string;
   /** When true (the default) nothing is sent and no flags are written. */
   dryRun?: boolean;
   /** Max emails to send in this invocation; re-run to continue. */
@@ -22,6 +30,7 @@ export type UtAnnouncementOptions = {
 
 export type UtAnnouncementResult = LifecycleResult & {
   dryRun: boolean;
+  campaignId: string | null;
   /** Eligible users not processed in this run (because of `limit`). */
   remaining: number;
   /** Masked emails of the first few eligible users. */
@@ -42,14 +51,17 @@ function maskEmail(email: string): string {
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /**
- * Sends the UT feature announcement to every UT user who has not received it.
- * Manually triggered (not on a cron). Safe to re-run: users already flagged
- * are skipped.
+ * Sends a UT newsletter campaign to every UT user who has not received that
+ * campaign. Manually triggered (not on a cron). Safe to re-run with the same
+ * campaign id: users already flagged for it are skipped.
  */
 export async function runUtAnnouncement(
   options: UtAnnouncementOptions = {},
 ): Promise<UtAnnouncementResult> {
-  const { dryRun = true, limit = 50, inactiveDays } = options;
+  const { dryRun = true, limit = 50, inactiveDays, campaignId } = options;
+  if (!dryRun && !campaignId) {
+    throw new Error("campaignId is required to send");
+  }
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -83,7 +95,16 @@ export async function runUtAnnouncement(
 
     for (const user of users) {
       if (user.publicMetadata?.organization_id !== org.id) continue;
-      if (user.privateMetadata?.utAnnouncementSentAt) continue;
+      if (
+        campaignId &&
+        getCampaignSentAt(
+          user.privateMetadata,
+          UT_ANNOUNCEMENT_CAMPAIGNS_KEY,
+          campaignId,
+        )
+      ) {
+        continue;
+      }
       if (
         cutoff !== null &&
         user.lastActiveAt != null &&
@@ -112,6 +133,7 @@ export async function runUtAnnouncement(
     name: "utAnnouncement",
     candidates: candidates.length,
     dryRun,
+    campaignId: campaignId ?? null,
     sample: candidates.slice(0, SAMPLE_SIZE).map((c) => maskEmail(c.email)),
   };
 
@@ -134,6 +156,7 @@ export async function runUtAnnouncement(
       userId: c.userId,
       email: c.email,
       firstName: c.firstName,
+      campaignId: campaignId!,
     });
     if (result === "sent") sent++;
     else if (result === "skipped") skipped++;

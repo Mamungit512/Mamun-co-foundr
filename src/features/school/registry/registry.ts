@@ -93,6 +93,7 @@ export const ORG_REGISTRY: Record<string, OrgConfig> = {
     },
     emailTemplates: {
       welcome: "ut-welcome-email-01",
+      profileReminder: "profile-completion-03-1",
       weeklyProfileViews: "ut-weekly-profile-02",
       reEngagement: "ut-re-engagment-03",
       messageNotification: "ut-notifications-design-05",
